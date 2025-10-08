@@ -1,0 +1,28 @@
+name: Update Badges
+permissions:
+  contents: read
+
+on:
+  workflow_run:
+    workflows: ["Code Quality & Analysis", "SonarCloud Analysis"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  update-badges:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Create badge directory
+        run: mkdir -p .github/badges
+        
+      - name: Generate status badge
+        run: |
+          echo "[![Code Quality](https://github.com/${{ github.repository }}/actions/workflows/code-quality.yml/badge.svg)](https://github.com/${{ github.repository }}/actions/workflows/code-quality.yml)" > .github/badges/code-quality.md
+          echo "[![SonarCloud](https://sonarcloud.io/api/project_badges/measure?project=GiveProtocol_Duration-Give&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=GiveProtocol_Duration-Give)" > .github/badges/sonarcloud.md
+          echo "[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=GiveProtocol_Duration-Give&metric=coverage)](https://sonarcloud.io/summary/new_code?id=GiveProtocol_Duration-Give)" > .github/badges/coverage.md

@@ -1,0 +1,90 @@
+name: New Code Analysis
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - main
+
+jobs:
+  analyze-new-code:
+    name: Analyze New Code
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout PR code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for new code detection
+          
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v46
+        with:
+          files: |
+            **/*.ts
+            **/*.tsx
+            **/*.js
+            **/*.jsx
+            **/*.sol
+          files_ignore: |
+            **/*.test.ts
+            **/*.test.tsx
+            **/*.spec.js
+            **/node_modules/**
+            
+      - name: Setup Node.js
+        if: steps.changed-files.outputs.any_changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: npm ci
+        
+      - name: Analyze changed files
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          echo "## 📊 New Code Analysis" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Changed Files:" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          echo "${{ steps.changed-files.outputs.all_changed_files }}" | tr ' ' '\n' >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          
+      - name: Run focused tests
+        if: steps.changed-files.outputs.any_changed == 'true'
+        run: |
+          # Run tests only for changed files
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            # Find corresponding test file
+            test_file="${file%.ts}.test.ts"
+            test_file_tsx="${file%.tsx}.test.tsx"
+            
+            if [ -f "$test_file" ]; then
+              echo "Running tests for $test_file"
+              npm run test:jest -- "$test_file" --coverage --collectCoverageFrom="$file"
+            elif [ -f "$test_file_tsx" ]; then
+              echo "Running tests for $test_file_tsx"
+              npm run test:jest -- "$test_file_tsx" --coverage --collectCoverageFrom="$file"
+            fi
+          done
+        continue-on-error: true
+        
+      - name: SonarCloud Scan - New Code Focus
+        if: false  # Temporarily disabled
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+            -Dsonar.newCode.referenceBranch=main

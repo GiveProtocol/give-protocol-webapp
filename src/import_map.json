@@ -1,0 +1,17 @@
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.3.1",
+    "react-dom": "https://esm.sh/react-dom@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client",
+    "react-router-dom": "https://esm.sh/react-router-dom@6.22.3",
+    "@tanstack/react-query": "https://esm.sh/@tanstack/react-query@5.24.1",
+    "lucide-react": "https://esm.sh/lucide-react@0.344.0",
+    "clsx": "https://esm.sh/clsx@2.1.0",
+    "tailwind-merge": "https://esm.sh/tailwind-merge@2.2.1",
+    "ethers": "https://esm.sh/ethers@6.11.1",
+    "viem": "https://esm.sh/viem@2.7.9",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.39.7",
+    "buffer": "https://deno.land/std@0.220.1/node/buffer.ts",
+    "@/": "./src/"
+  }
+}

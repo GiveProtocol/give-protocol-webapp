@@ -1,0 +1,50 @@
+version = 1
+
+# Exclude third-party and generated files from analysis
+exclude_patterns = [
+  "public/silktide-consent-manager.js",
+  "public/silktide-consent-manager.css",
+  "public/silktide-*",
+  "public/**/*.js",
+  "**/node_modules/**",
+  "**/dist/**",
+  "**/build/**",
+  "**/coverage/**",
+  "**/*.min.js",
+  "**/*.min.css",
+  "**/vendor/**",
+  "docs/_site/**"
+]
+
+[[analyzers]]
+name = "javascript"
+enabled = true
+
+  [analyzers.meta]
+  plugins = ["react"]
+  environment = ["nodejs"]
+  style_guide = "standard"
+  skip_doc_coverage = ["function-expression", "arrow-function-expression", "class-expression", "method-definition", "function-declaration"]
+
+[[analyzers]]
+name = "secrets"
+enabled = true
+
+[[transformers]]
+name = "prettier"
+enabled = true
+
+# Issue-specific configurations
+[[issue_overrides]]
+issue_id = "JS-0415"
+enabled = false
+
+[[issue_overrides]]
+issue_id = "JS-0105"
+path_patterns = ["public/silktide-consent-manager.js"]
+enabled = false
+
+[[issue_overrides]]
+issue_id = "JS-D1001"
+path_patterns = ["public/silktide-consent-manager.js"]
+enabled = false
