@@ -34,7 +34,7 @@ jobs:
 
       - name: Run tests with coverage
         run: |
-          npm run test:jest -- --coverage --coverageReporters=lcov --coverageReporters=text-summary || true
+          npm run test -- --coverage --coverageReporters=lcov --coverageReporters=text-summary || true
         continue-on-error: true
 
       - name: Run ESLint and generate report
