@@ -1,6 +1,14 @@
-# CLAUDE.md
+# CLAUDE.md - Give Protocol Web App
 
-Duration is a blockchain-based charitable giving platform built with React, TypeScript, and Solidity smart contracts targeting the Moonbeam Network.
+Give Protocol Web App - Progressive Web Application for blockchain-based charitable giving, built with React, TypeScript, and Vite. Part of the Give Protocol distributed repository architecture.
+
+## Repository Structure
+
+This is the **webapp** repository, one of four Give Protocol repositories:
+- **give-protocol-webapp** (this repo): React/Vite Progressive Web App
+- **give-protocol-contracts**: Solidity smart contracts and Hardhat infrastructure
+- **give-protocol-docs**: Jekyll documentation site
+- **give-protocol-backend**: Supabase backend and admin functions
 
 ## Essential Commands
 
@@ -8,8 +16,8 @@ Duration is a blockchain-based charitable giving platform built with React, Type
 npm run dev          # Start Vite dev server (port 5173)
 npm run lint         # Run ESLint
 npm run build        # Production build (TypeScript + Vite)
-npm run compile      # Compile Solidity contracts
-npm run test         # Run Hardhat tests
+npm run test         # Run Jest tests
+npm run test:e2e     # Run Cypress end-to-end tests
 ```
 
 ## Architecture
@@ -18,14 +26,13 @@ npm run test         # Run Hardhat tests
 - **Components**: `/src/components/` with feature-specific subdirectories
 - **Hooks**: `/src/hooks/` including web3-specific hooks in `/src/hooks/web3/`
 - **Contexts**: React Context for Auth, Web3, Settings, Toast
-- **Smart Contracts**: `/contracts/` - DurationDonation, CharityScheduledDistribution, VolunteerVerification, DistributionExecutor
+- **Smart Contracts**: See `give-protocol-contracts` repository
 
 ## Environment Setup
 
 `.env` file required:
 - `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
 - `VITE_MOONBASE_RPC_URL`
-- Private keys for deployment (never commit!)
 
 ## CRITICAL: Code Quality Rules
 
