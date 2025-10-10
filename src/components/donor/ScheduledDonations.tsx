@@ -145,9 +145,9 @@ export const ScheduledDonations: React.FC = () => {
           {schedules.map((schedule) => (
             <div key={schedule.id} className="p-6 hover:bg-gray-50 transition-colors">
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                <div className="flex-1">
+                <div className="flex-1 space-y-4">
                   {/* Charity Name and Icon */}
-                  <div className="flex items-start gap-3 mb-4">
+                  <div className="flex items-start gap-3">
                     <div className="p-2 bg-indigo-100 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600" /></div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900">
