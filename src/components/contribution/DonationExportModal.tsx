@@ -118,14 +118,9 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
 
   return (
     <section className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <form
-        className="bg-white rounded-lg shadow-xl max-w-md w-full divide-y divide-gray-200"
-        onSubmit={handleFormSubmit}
-      >
+      <form className="bg-white rounded-lg shadow-xl max-w-md w-full divide-y divide-gray-200" onSubmit={handleFormSubmit}>
         <div className="flex justify-between items-center p-6">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t("export.title")}
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">{t("export.title")}</h2>
           <button
             onClick={handleClose}
             className="p-0 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded"

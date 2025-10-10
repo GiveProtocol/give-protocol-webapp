@@ -168,9 +168,8 @@ export const Editor: React.FC<EditorProps> = ({
     <div id={id} className={cn(containerClasses, className)}>
       {showLinkModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 space-y-4">
+          <form onSubmit={handleLinkSubmit} className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 space-y-4">
             <h3 className="text-lg font-medium">Add Link</h3>
-            <form onSubmit={handleLinkSubmit} className="space-y-4">
               <Input
                 label="URL"
                 type="url"
@@ -178,18 +177,11 @@ export const Editor: React.FC<EditorProps> = ({
                 onChange={handleLinkUrlChange}
                 placeholder="https://example.com"
               />
-              <footer className="flex justify-end space-x-3">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  onClick={handleLinkCancel}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit">Add Link</Button>
-              </footer>
-            </form>
-          </div>
+            <footer className="flex justify-end space-x-3">
+              <Button type="button" variant="secondary" onClick={handleLinkCancel}>Cancel</Button>
+              <Button type="submit">Add Link</Button>
+            </footer>
+          </form>
         </div>
       )}
       <div className={toolbarClasses}>

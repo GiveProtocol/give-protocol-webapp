@@ -173,14 +173,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     walletProvider.on("chainChanged", handleChainChanged);
     walletProvider.on("disconnect", handleDisconnect);
 
-    // deepsource-disable JS-0045
+    // React cleanup functions return void/undefined by design
+    // deepcode ignore JS-0045: React useEffect cleanup functions are designed to return void
     return () => {
-      // React cleanup functions return void/undefined by design
       walletProvider.removeListener?.("accountsChanged", handleAccountsChanged);
       walletProvider.removeListener?.("chainChanged", handleChainChanged);
       walletProvider.removeListener?.("disconnect", handleDisconnect);
     };
-    // deepsource-enable JS-0045
   }, [handleAccountsChanged, handleChainChanged, currentWalletProvider]);
 
   const switchChain = useCallback(

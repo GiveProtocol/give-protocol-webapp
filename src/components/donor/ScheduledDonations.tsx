@@ -135,19 +135,11 @@ export const ScheduledDonations: React.FC = () => {
   return (
     <div>
       <Card className="mb-6">
-        <div className="p-6 border-b border-gray-200">
-          <div className="flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Monthly Donation Schedules
-            </h2>
-            <Button
-              variant="secondary"
-              onClick={fetchSchedules}
-              disabled={loading}
-            >
-              {loading ? "Refreshing..." : "Refresh"}
-            </Button>
-          </div>
+        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+          <h2 className="text-xl font-semibold text-gray-900">Monthly Donation Schedules</h2>
+          <Button variant="secondary" onClick={fetchSchedules} disabled={loading}>
+            {loading ? "Refreshing..." : "Refresh"}
+          </Button>
         </div>
         <div className="divide-y divide-gray-200">
           {schedules.map((schedule) => (
@@ -156,16 +148,12 @@ export const ScheduledDonations: React.FC = () => {
                 <div className="flex-1">
                   {/* Charity Name and Icon */}
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="p-2 bg-indigo-100 rounded-lg">
-                      <Calendar className="h-5 w-5 text-indigo-600" />
-                    </div>
+                    <div className="p-2 bg-indigo-100 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600" /></div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900">
                         {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
                       </h3>
-                      <p className="text-sm text-gray-500 font-mono">
-                        {schedule.charity}
-                      </p>
+                      <p className="text-sm text-gray-500 font-mono">{schedule.charity}</p>
                     </div>
                   </div>
 
@@ -251,9 +239,7 @@ export const ScheduledDonations: React.FC = () => {
       {isCancelModalOpen && selectedSchedule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 text-center">
-            <div className="bg-red-100 rounded-full p-3 mx-auto w-fit">
-              <AlertTriangle className="h-6 w-6 text-red-600" />
-            </div>
+            <div className="bg-red-100 rounded-full p-3 mx-auto w-fit"><AlertTriangle className="h-6 w-6 text-red-600" /></div>
             
             <h3 className="text-lg font-medium text-gray-900">
               Confirm Cancellation
