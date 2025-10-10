@@ -136,24 +136,38 @@ export const ScheduledDonations: React.FC = () => {
     <div>
       <Card className="mb-6">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900">Monthly Donation Schedules</h2>
-          <Button variant="secondary" onClick={fetchSchedules} disabled={loading}>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Monthly Donation Schedules
+          </h2>
+          <Button
+            variant="secondary"
+            onClick={fetchSchedules}
+            disabled={loading}
+          >
             {loading ? "Refreshing..." : "Refresh"}
           </Button>
         </div>
         <div className="divide-y divide-gray-200">
           {schedules.map((schedule) => (
-            <div key={schedule.id} className="p-6 hover:bg-gray-50 transition-colors">
+            <div
+              key={schedule.id}
+              className="p-6 hover:bg-gray-50 transition-colors"
+            >
               <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
                 <div className="flex-1">
                   {/* Charity Name and Icon */}
                   <div className="flex items-start gap-3 mb-4">
-                    <div className="p-2 bg-indigo-100 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600" /></div>
+                    <div className="p-2 bg-indigo-100 rounded-lg">
+                      <Calendar className="h-5 w-5 text-indigo-600" />
+                    </div>
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900">
-                        {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
+                        {schedule.charityName ||
+                          `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
                       </h3>
-                      <p className="text-sm text-gray-500 font-mono">{schedule.charity}</p>
+                      <p className="text-sm text-gray-500 font-mono">
+                        {schedule.charity}
+                      </p>
                     </div>
                   </div>
 
@@ -165,7 +179,8 @@ export const ScheduledDonations: React.FC = () => {
                         Total Commitment
                       </p>
                       <p className="text-base font-semibold text-gray-900">
-                        {schedule.totalAmount} {schedule.tokenSymbol || 'tokens'}
+                        {schedule.totalAmount}{" "}
+                        {schedule.tokenSymbol || "tokens"}
                       </p>
                     </div>
 
@@ -175,7 +190,8 @@ export const ScheduledDonations: React.FC = () => {
                         Monthly Payment
                       </p>
                       <p className="text-base font-semibold text-green-700">
-                        {schedule.amountPerMonth} {schedule.tokenSymbol || 'tokens'}
+                        {schedule.amountPerMonth}{" "}
+                        {schedule.tokenSymbol || "tokens"}
                       </p>
                     </div>
 
@@ -188,9 +204,11 @@ export const ScheduledDonations: React.FC = () => {
                         {12 - schedule.monthsRemaining} of 12 months
                       </p>
                       <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5">
-                        <div 
-                          className="bg-blue-600 h-1.5 rounded-full" 
-                          style={{ width: `${((12 - schedule.monthsRemaining) / 12) * 100}%` }}
+                        <div
+                          className="bg-blue-600 h-1.5 rounded-full"
+                          style={{
+                            width: `${((12 - schedule.monthsRemaining) / 12) * 100}%`,
+                          }}
                         />
                       </div>
                     </div>
@@ -208,11 +226,10 @@ export const ScheduledDonations: React.FC = () => {
 
                   {/* Token Address */}
                   <div className="mt-3 flex items-center gap-2">
-                    <p className="text-xs text-gray-500">
-                      Token Contract: 
-                    </p>
+                    <p className="text-xs text-gray-500">Token Contract:</p>
                     <p className="text-xs text-gray-600 font-mono">
-                      {schedule.token.substring(0, 6)}...{schedule.token.substring(38)}
+                      {schedule.token.substring(0, 6)}...
+                      {schedule.token.substring(38)}
                     </p>
                   </div>
                 </div>
@@ -239,19 +256,23 @@ export const ScheduledDonations: React.FC = () => {
       {isCancelModalOpen && selectedSchedule && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 text-center">
-            <div className="bg-red-100 rounded-full p-3 mx-auto w-fit"><AlertTriangle className="h-6 w-6 text-red-600" /></div>
-            
+            <div className="bg-red-100 rounded-full p-3 mx-auto w-fit">
+              <AlertTriangle className="h-6 w-6 text-red-600" />
+            </div>
+
             <h3 className="text-lg font-medium text-gray-900">
               Confirm Cancellation
             </h3>
-            
+
             <div className="space-y-3">
               <p className="text-sm text-gray-600">
-                Are you sure you want to cancel your monthly donation schedule to:
+                Are you sure you want to cancel your monthly donation schedule
+                to:
               </p>
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="font-medium text-gray-900">
-                  {selectedSchedule.charityName || `Charity ${selectedSchedule.charity.substring(0, 6)}...`}
+                  {selectedSchedule.charityName ||
+                    `Charity ${selectedSchedule.charity.substring(0, 6)}...`}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
                   {selectedSchedule.monthsRemaining} payments remaining
@@ -262,7 +283,11 @@ export const ScheduledDonations: React.FC = () => {
               </p>
               <div className="bg-blue-50 rounded-lg p-3 text-center">
                 <p className="text-lg font-semibold text-blue-700">
-                  {(parseFloat(selectedSchedule.amountPerMonth) * selectedSchedule.monthsRemaining).toFixed(2)} {selectedSchedule.tokenSymbol || 'tokens'}
+                  {(
+                    parseFloat(selectedSchedule.amountPerMonth) *
+                    selectedSchedule.monthsRemaining
+                  ).toFixed(2)}{" "}
+                  {selectedSchedule.tokenSymbol || "tokens"}
                 </p>
               </div>
             </div>

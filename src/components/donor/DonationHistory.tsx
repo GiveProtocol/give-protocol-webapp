@@ -71,7 +71,9 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
   return (
     <div className="bg-white rounded-lg shadow-md">
       <header className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-        <h2 className="text-xl font-semibold text-gray-900">Donation History</h2>
+        <h2 className="text-xl font-semibold text-gray-900">
+          Donation History
+        </h2>
         <nav className="flex items-center space-x-4">
           <Calendar className="h-5 w-5 text-gray-400" />
           <select
