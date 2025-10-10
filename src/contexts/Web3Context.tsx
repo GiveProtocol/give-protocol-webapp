@@ -174,7 +174,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     walletProvider.on("disconnect", handleDisconnect);
 
     // React cleanup functions return void/undefined by design
-    // deepcode ignore JS-0045: React useEffect cleanup functions are designed to return void
+    // eslint-disable-next-line consistent-return
     return () => {
       walletProvider.removeListener?.("accountsChanged", handleAccountsChanged);
       walletProvider.removeListener?.("chainChanged", handleChainChanged);

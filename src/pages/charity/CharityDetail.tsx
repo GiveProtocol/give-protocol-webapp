@@ -42,11 +42,7 @@ const CharityDetail: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="relative h-80 rounded-xl overflow-hidden mb-6">
-        <img
-          src={charity.image}
-          alt={charity.name}
-          className="w-full h-full object-cover"
-        />
+        <img src={charity.image} alt={charity.name} className="w-full h-full object-cover" />
         <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-white">
           <span className="px-3 py-1 bg-green-500 text-white text-sm font-medium rounded-full mb-2 inline-block">Verified</span>
           <span className="ml-3 text-sm opacity-90">{charity.country}</span>
