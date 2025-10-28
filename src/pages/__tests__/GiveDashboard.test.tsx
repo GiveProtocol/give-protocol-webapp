@@ -1,4 +1,5 @@
-import React from 'react';
+import _React from 'react';
+import type { ReactElement } from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -48,7 +49,7 @@ const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
 const mockUseWeb3 = useWeb3 as jest.MockedFunction<typeof useWeb3>;
 const mockUseTranslation = useTranslation as jest.MockedFunction<typeof useTranslation>;
 
-const renderWithRouter = (component: React.ReactElement) => {
+const renderWithRouter = (component: ReactElement) => {
   return render(
     <MemoryRouter>
       {component}

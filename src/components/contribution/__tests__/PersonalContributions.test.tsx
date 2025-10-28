@@ -1,4 +1,4 @@
-import React from 'react';
+import _React from 'react';
 import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { PersonalContributions } from '../PersonalContributions';
@@ -33,8 +33,9 @@ describe('PersonalContributions', () => {
 
   it('displays total personal contributions', async () => {
     render(<PersonalContributions />);
-    
-    await screen.findByText(/125/); // 50 + 75
+
+    const totalElement = await screen.findByText(/125/); // 50 + 75
+    expect(totalElement).toBeInTheDocument();
   });
 
   it('shows loading state', () => {
@@ -49,9 +50,10 @@ describe('PersonalContributions', () => {
         eq: () => Promise.resolve({ data: [], error: null })
       })
     });
-    
+
     render(<PersonalContributions />);
-    
-    await screen.findByText(/no contributions/i);
+
+    const emptyMessage = await screen.findByText(/no contributions/i);
+    expect(emptyMessage).toBeInTheDocument();
   });
 });

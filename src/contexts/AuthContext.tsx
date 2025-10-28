@@ -587,13 +587,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 /**
  * Hook to access the authentication context
  * Must be used within an AuthProvider component
  * @returns AuthContextType containing user state and authentication methods
  * @throws Error if used outside of AuthProvider
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useAuth() {
   const context = useContext(AuthContext);
   if (!context) {

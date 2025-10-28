@@ -368,13 +368,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 /**
  * Hook to access Web3 context for blockchain interactions
  * Provides wallet connection state, provider access, and connection methods
  * @returns Web3ContextType containing wallet state and blockchain interaction methods
  * @throws Error if used outside of Web3Provider
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useWeb3() {
   const context = useContext(Web3Context);
   if (!context) {

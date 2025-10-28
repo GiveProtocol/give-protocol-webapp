@@ -1,4 +1,5 @@
-import React from 'react';
+import _React from 'react';
+import type { ReactNode } from 'react';
 import { jest } from '@jest/globals';
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -25,7 +26,7 @@ jest.mock("@/components/ui/Card", () => ({
     children,
     className,
   }: {
-    children: React.ReactNode;
+    children: ReactNode;
     className?: string;
   }) => (
     <div className={className} data-testid="card">
@@ -40,7 +41,7 @@ jest.mock("@/components/ui/Button", () => ({
     variant,
     disabled,
   }: {
-    children: React.ReactNode;
+    children: ReactNode;
     onClick?: () => void;
     variant?: string;
     disabled?: boolean;

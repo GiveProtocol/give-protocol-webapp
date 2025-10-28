@@ -1,4 +1,4 @@
-import React from 'react';
+import _React from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
@@ -63,6 +63,7 @@ describe('AppRoutes', () => {
     };
 
     for (const { path, testId, name } of publicRoutes) {
+      // eslint-disable-next-line jest/expect-expect
       it(`renders ${name} page at ${path}`, async () => {
         await testPublicRoute(path, testId, name);
       });
@@ -75,6 +76,7 @@ describe('AppRoutes', () => {
     ];
 
     for (const { path, testId, name } of charityRoutes) {
+      // eslint-disable-next-line jest/expect-expect
       it(`renders ${name} page at ${path}`, async () => {
         await testPublicRoute(path, testId, name);
       });
@@ -87,6 +89,7 @@ describe('AppRoutes', () => {
     ];
 
     for (const { path, testId, name } of portfolioRoutes) {
+      // eslint-disable-next-line jest/expect-expect
       it(`renders ${name} page at ${path}`, async () => {
         await testPublicRoute(path, testId, name);
       });
@@ -136,6 +139,7 @@ describe('AppRoutes', () => {
     };
 
     for (const { path, testId: _testId, name } of protectedRoutes) {
+      // eslint-disable-next-line jest/expect-expect
       it(`renders ${name} page at ${path} when authenticated`, async () => {
         await testProtectedRoute(path, name);
       });
