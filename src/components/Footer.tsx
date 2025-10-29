@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Github, Bird, Disc as Discord } from "lucide-react";
+import { FaBluesky, FaGithub, FaDiscord } from "react-icons/fa6";
 import { Logo } from "@/components/Logo";
 import { DOCS_CONFIG } from "@/config/docs";
 
@@ -89,21 +89,21 @@ export const Footer: React.FC = () => {
                 className="text-gray-400 hover:text-indigo-600 transition-colors focus:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-1"
                 aria-label="Bluesky"
               >
-                <Bird className="h-5 w-5" />
+                <FaBluesky className="h-5 w-5" />
               </a>
               <a
                 href="https://github.com/giveprotocol"
                 className="text-gray-400 hover:text-indigo-600 transition-colors focus:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-1"
                 aria-label="GitHub"
               >
-                <Github className="h-5 w-5" />
+                <FaGithub className="h-5 w-5" />
               </a>
               <a
                 href="https://discord.gg/giveprotocol"
                 className="text-gray-400 hover:text-indigo-600 transition-colors focus:text-indigo-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded p-1"
                 aria-label="Discord"
               >
-                <Discord className="h-5 w-5" />
+                <FaDiscord className="h-5 w-5" />
               </a>
             </div>
           </div>

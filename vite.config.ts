@@ -77,5 +77,8 @@ export default defineConfig(({ mode }) => ({
       'viem'
     ],
     force: true
+  },
+  ssr: {
+    noExternal: ['react-router-dom', '@supabase/supabase-js']
   }
 }));

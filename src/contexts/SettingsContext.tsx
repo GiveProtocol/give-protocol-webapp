@@ -53,24 +53,30 @@ export const useSettings = () => {
 };
 
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Initialize from localStorage or use defaults
-  const [language, setLanguageState] = useState<Language>(
-    () => (localStorage.getItem('language') as Language) || 'en'
-  );
-  
-  const [currency, setCurrencyState] = useState<Currency>(
-    () => (localStorage.getItem('currency') as Currency) || 'USD'
-  );
+  // Initialize from localStorage or use defaults (SSR-safe)
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window === 'undefined') return 'en';
+    return (localStorage.getItem('language') as Language) || 'en';
+  });
 
-  // Update localStorage when settings change
+  const [currency, setCurrencyState] = useState<Currency>(() => {
+    if (typeof window === 'undefined') return 'USD';
+    return (localStorage.getItem('currency') as Currency) || 'USD';
+  });
+
+  // Update localStorage when settings change (client-only)
   useEffect(() => {
-    localStorage.setItem('language', language);
-    document.documentElement.lang = language;
-    // In a real app, this would trigger i18next language change
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('language', language);
+      document.documentElement.lang = language;
+      // In a real app, this would trigger i18next language change
+    }
   }, [language]);
 
   useEffect(() => {
-    localStorage.setItem('currency', currency);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('currency', currency);
+    }
   }, [currency]);
 
   const setLanguage = (newLanguage: Language) => {

@@ -70,9 +70,9 @@ const ComingSoon: React.FC = () => {
             Launching Q1 2026
           </span>
         </div>
-        <h1 className="text-5xl sm:text-7xl font-bold text-gray-900 mb-8 leading-tight animate-fade-in-up">
+        <h1 className="text-5xl sm:text-7xl font-bold text-gray-900 mb-8 leading-relaxed overflow-visible animate-fade-in-up">
           The Future of
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 pb-3">
             Transparent Giving
           </span>
         </h1>
@@ -93,7 +93,7 @@ const ComingSoon: React.FC = () => {
             value={email}
             onChange={handleEmailChange}
             placeholder="Enter your email for pre-launch access"
-            className="w-full px-4 py-3 rounded-lg border border-indigo-200 bg-indigo-100 text-indigo-800 placeholder:text-indigo-600/60 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-indigo-300"
+            className="w-full px-4 py-3 rounded-lg border border-indigo-200 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-indigo-300"
             disabled={status === "loading" || status === "success"}
           />
           <button

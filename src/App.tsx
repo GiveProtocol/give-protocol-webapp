@@ -1,5 +1,4 @@
 import React, { useCallback } from "react";
-import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react";
 import { ToastProvider } from "./contexts/ToastContext";
@@ -57,13 +56,11 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
   </CoreProviders>
 );
 
-// Router wrapper component
+// Router wrapper component (Router is now provided by entry files)
 const AppRouter = () => (
-  <BrowserRouter future={{ v7_relativeSplatPath: true }}>
-    <Layout>
-      <AppRoutes />
-    </Layout>
-  </BrowserRouter>
+  <Layout>
+    <AppRoutes />
+  </Layout>
 );
 
 /**
