@@ -184,6 +184,26 @@ useEffect(() => {
 **Fix:** Initialize with safe defaults on server, hydrate on client
 **Status:** ✅ Fixed
 
+### Issue: "window is not defined" in wallet providers
+
+**Cause:** Wallet provider classes accessing window in constructors during SSR
+**Fix:** Guard all window access with SSR checks:
+```typescript
+constructor() {
+  super(
+    "MetaMask",
+    "metamask",
+    typeof window !== 'undefined' && window.ethereum?.isMetaMask ? window.ethereum : null,
+  );
+}
+
+isInstalled(): boolean {
+  if (typeof window === 'undefined') return false;
+  return Boolean(window.ethereum?.isMetaMask);
+}
+```
+**Status:** ✅ Fixed in `src/hooks/useWallet.ts`
+
 ## Performance Optimization
 
 ### Lazy Loading Routes

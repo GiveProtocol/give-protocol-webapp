@@ -185,12 +185,13 @@ class MetaMaskWallet extends EVMWalletBase {
     super(
       "MetaMask",
       "metamask",
-      window.ethereum?.isMetaMask ? window.ethereum : null,
+      typeof window !== 'undefined' && window.ethereum?.isMetaMask ? window.ethereum : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
+    if (typeof window === 'undefined') return false;
     return Boolean(window.ethereum?.isMetaMask);
   }
 }
@@ -268,12 +269,13 @@ class NovaWallet extends EVMWalletBase {
     super(
       "Nova Wallet",
       "nova",
-      window.nova ? window.nova : null,
+      typeof window !== 'undefined' && window.nova ? window.nova : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
+    if (typeof window === 'undefined') return false;
     return typeof window.nova !== "undefined";
   }
 }
@@ -300,12 +302,13 @@ class SubWallet extends EVMWalletBase {
     super(
       "SubWallet",
       "subwallet",
-      window.SubWallet ? window.SubWallet : null,
+      typeof window !== 'undefined' && window.SubWallet ? window.SubWallet : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
+    if (typeof window === 'undefined') return false;
     return typeof window.SubWallet !== "undefined";
   }
 }
@@ -332,12 +335,13 @@ class TalismanWallet extends EVMWalletBase {
     super(
       "Talisman",
       "talisman",
-      window.talismanEth ? window.talismanEth : null,
+      typeof window !== 'undefined' && window.talismanEth ? window.talismanEth : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
+    if (typeof window === 'undefined') return false;
     return typeof window.talismanEth !== "undefined";
   }
 }
