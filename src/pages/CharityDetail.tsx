@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { DonationButton } from "@/components/web3/donation/DonationButton";
 import { ScheduledDonationButton } from "@/components/web3/donation/ScheduledDonationButton";
 import { formatCurrency } from "@/utils/money";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface CharityStats {
   totalDonated: number;
@@ -41,7 +42,7 @@ const CharityDetail: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="relative h-80 rounded-xl overflow-hidden mb-6">
+      <div className="animate-fade-in-up relative h-80 rounded-xl overflow-hidden mb-6">
         <img
           src={charity.image}
           alt={charity.name}
@@ -55,6 +56,7 @@ const CharityDetail: React.FC = () => {
         </div>
       </div>
 
+      <ScrollReveal direction="up" delay={100}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -103,7 +105,9 @@ const CharityDetail: React.FC = () => {
             </div>
         </div>
       </div>
+      </ScrollReveal>
 
+      <ScrollReveal direction="up" delay={200}>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -126,6 +130,7 @@ const CharityDetail: React.FC = () => {
           </ul>
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 };

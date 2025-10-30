@@ -5,6 +5,7 @@ import { VolunteerApplicationForm } from "../components/volunteer/VolunteerAppli
 import { useTranslation } from "@/hooks/useTranslation";
 import { WorkLanguage } from "@/types/volunteer";
 import { useToast } from "@/contexts/ToastContext";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface Opportunity {
   id: number;
@@ -209,11 +210,13 @@ const VolunteerOpportunities: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="space-y-8">
-        <div>
+        <div className="animate-fade-in-up">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             {t("volunteer.opportunities", "Volunteer Opportunities")}
           </h1>
+        </div>
 
+        <ScrollReveal direction="up" delay={100}>
           <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
             <div className="relative flex-grow">
               <input
@@ -276,8 +279,9 @@ const VolunteerOpportunities: React.FC = () => {
               ))}
             </select>
           </div>
-        </div>
+        </ScrollReveal>
 
+        <ScrollReveal direction="up" delay={200}>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredOpportunities.map((opportunity) => (
             <Card key={opportunity.id} className="overflow-hidden">
@@ -335,6 +339,7 @@ const VolunteerOpportunities: React.FC = () => {
             </Card>
           ))}
         </div>
+        </ScrollReveal>
 
         {filteredOpportunities.length === 0 && (
           <div className="text-center py-12 text-gray-500">

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 interface StaticPageLayoutProps {
   children: React.ReactNode;
@@ -16,7 +17,7 @@ export const StaticPageLayout: React.FC<StaticPageLayoutProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       {/* Header section matching home page style */}
-      <div className="text-center mb-16">
+      <div className="animate-fade-in-up text-center mb-16">
         <h1 className="text-3xl font-bold text-gray-900 sm:text-4xl">
           {title}
         </h1>
@@ -31,8 +32,9 @@ export const StaticPageLayout: React.FC<StaticPageLayoutProps> = ({
           </p>
         )}
       </div>
-      
+
       {/* Content with proper typography */}
+      <ScrollReveal direction="up" delay={100}>
       <div className="max-w-4xl mx-auto">
         <div className="prose prose-lg prose-gray max-w-none
           prose-headings:font-bold prose-headings:text-gray-900
@@ -46,6 +48,7 @@ export const StaticPageLayout: React.FC<StaticPageLayoutProps> = ({
           {children}
         </div>
       </div>
+      </ScrollReveal>
     </div>
   );
 };

@@ -8,6 +8,7 @@ import {
 import { useToast } from "../contexts/ToastContext";
 import { useTranslation } from "../hooks/useTranslation";
 import { Heart, Users, TrendingUp, Clock, AlertCircle } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface DonationModalProps {
   fund: PortfolioFund;
@@ -312,18 +313,22 @@ const PortfolioFunds: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="space-y-8">
-        <div>
+        <div className="animate-fade-in-up">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">
             {t("portfolio.title", "Portfolio Funds")}
           </h1>
+        </div>
+
+        <ScrollReveal direction="up" delay={100}>
           <p className="text-lg text-gray-600 max-w-3xl">
             {t(
               "portfolio.description",
               "Donate to curated groups of verified charities with equal distribution. Each fund focuses on a specific cause area with maximum impact.",
             )}
           </p>
-        </div>
+        </ScrollReveal>
 
+        <ScrollReveal direction="up" delay={200}>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {funds.map((fund) => (
             <Card
@@ -381,6 +386,7 @@ const PortfolioFunds: React.FC = () => {
             </Card>
           ))}
         </div>
+        </ScrollReveal>
 
         {funds.length === 0 && !loading && (
           <div className="text-center py-12 text-gray-500">

@@ -1,17 +1,21 @@
 import React from "react";
 import { Shield, Users, Vote, Scale, Clock, AlertTriangle } from "lucide-react";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 export const Governance: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">
-        Protocol Governance
-      </h1>
-      <p className="text-xl text-gray-600 text-center mb-12">
-        Empowering our community through transparent and decentralized
-        decision-making
-      </p>
+      <div className="animate-fade-in-up">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">
+          Protocol Governance
+        </h1>
+        <p className="text-xl text-gray-600 text-center mb-12">
+          Empowering our community through transparent and decentralized
+          decision-making
+        </p>
+      </div>
 
+      <ScrollReveal direction="up" delay={100}>
       <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-12">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
@@ -77,8 +81,10 @@ export const Governance: React.FC = () => {
           </p>
         </div>
       </div>
+      </ScrollReveal>
 
       <div className="space-y-8">
+        <ScrollReveal direction="up" delay={200}>
         <div className="bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-6 flex items-center">
             <Scale className="h-8 w-8 text-indigo-600 mr-3" />
@@ -117,7 +123,9 @@ export const Governance: React.FC = () => {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
+        <ScrollReveal direction="up" delay={300}>
         <div className="bg-white p-8 rounded-lg shadow-md">
           <h2 className="text-2xl font-semibold mb-6 flex items-center">
             <Clock className="h-8 w-8 text-indigo-600 mr-3" />
@@ -150,7 +158,9 @@ export const Governance: React.FC = () => {
             </div>
           </div>
         </div>
+        </ScrollReveal>
 
+        <ScrollReveal direction="scale" delay={400}>
         <div className="bg-indigo-50 p-8 rounded-lg flex items-start">
           <AlertTriangle className="h-6 w-6 text-indigo-600 mt-1 mr-3 flex-shrink-0" />
           <div>
@@ -165,6 +175,7 @@ export const Governance: React.FC = () => {
             </p>
           </div>
         </div>
+        </ScrollReveal>
       </div>
     </div>
   );
