@@ -1,38 +1,44 @@
 import React from 'react';
 import { Users, Target, Heart, Shield, Globe, TrendingUp } from 'lucide-react';
 import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 export const About: React.FC = () => {
   return (
-    <StaticPageLayout 
+    <StaticPageLayout
       title="About Give Protocol"
       subtitle="Revolutionizing charitable giving through blockchain technology"
     >
       <div className="space-y-16">
         {/* Mission & Vision */}
         <section className="grid md:grid-cols-2 gap-8">
+          <ScrollReveal direction="left">
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
               <Target className="h-8 w-8 text-indigo-600 mb-3" />
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-gray-600 leading-relaxed">
-                To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency, 
+                To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
                 efficiency, and lasting impact for both donors and charitable organizations.
               </p>
             </div>
+          </ScrollReveal>
+          <ScrollReveal direction="right" delay={100}>
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
               <Globe className="h-8 w-8 text-indigo-600 mb-3" />
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Vision</h2>
               <p className="text-gray-600 leading-relaxed">
-                A world where every charitable donation creates maximum impact through transparent, 
+                A world where every charitable donation creates maximum impact through transparent,
                 efficient, and sustainable giving mechanisms.
               </p>
             </div>
+          </ScrollReveal>
         </section>
 
         {/* What We Do */}
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
-          <div className="grid md:grid-cols-3 gap-8">
+        <ScrollReveal direction="up">
+          <section>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
+            <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <Heart className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Direct Donations</h3>
@@ -55,9 +61,11 @@ export const About: React.FC = () => {
               </p>
             </div>
           </div>
-        </section>
+          </section>
+        </ScrollReveal>
 
         {/* Our Values */}
+        <ScrollReveal direction="up">
         <section className="bg-gray-50 rounded-lg p-8 grid md:grid-cols-2 gap-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">Our Values</h2>
           <div>
@@ -101,8 +109,10 @@ export const About: React.FC = () => {
             </p>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* The Technology */}
+        <ScrollReveal direction="up">
         <section>
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Built on Blockchain</h2>
           <div className="max-w-3xl mx-auto text-center">
@@ -126,8 +136,10 @@ export const About: React.FC = () => {
             </div>
           </div>
         </section>
+        </ScrollReveal>
 
         {/* Join Us */}
+        <ScrollReveal direction="scale">
         <section className="text-center bg-indigo-50 rounded-lg p-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Join the Future of Giving</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
@@ -144,6 +156,7 @@ export const About: React.FC = () => {
             </button>
           </div>
         </section>
+        </ScrollReveal>
       </div>
     </StaticPageLayout>
   );

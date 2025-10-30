@@ -4,6 +4,7 @@ import { CharityGrid } from "../components/charity/CharityGrid";
 import { PortfolioGrid } from "../components/charity/PortfolioGrid";
 import { CauseGrid } from "../components/charity/CauseGrid";
 import { Button } from "../components/ui/Button";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 type ViewMode = "charities" | "causes" | "portfolios";
 
@@ -71,11 +72,14 @@ const CharityBrowser: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-4">
-        Discover Impact Opportunities
-      </h1>
+      <div className="animate-fade-in-up">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          Discover Impact Opportunities
+        </h1>
+      </div>
 
-      <div className="flex space-x-4 mb-6">
+      <ScrollReveal direction="up" delay={100}>
+        <div className="flex space-x-4 mb-6">
         <Button
           variant={viewMode === "charities" ? "primary" : "secondary"}
           onClick={handleCharitiesClick}
@@ -95,7 +99,9 @@ const CharityBrowser: React.FC = () => {
           Portfolio Funds
         </Button>
       </div>
+      </ScrollReveal>
 
+      <ScrollReveal direction="up" delay={200}>
       <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
         <div className="relative flex-grow">
           <input
@@ -123,8 +129,10 @@ const CharityBrowser: React.FC = () => {
           <option value="Animal Welfare">Animal Welfare</option>
         </select>
       </div>
+      </ScrollReveal>
 
       {viewMode === "charities" && (
+        <ScrollReveal direction="up" delay={300}>
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
@@ -141,9 +149,12 @@ const CharityBrowser: React.FC = () => {
             Verified Charities Only
           </label>
         </div>
+        </ScrollReveal>
       )}
 
-      {renderContent()}
+      <ScrollReveal direction="up" delay={400}>
+        {renderContent()}
+      </ScrollReveal>
     </div>
   );
 };
