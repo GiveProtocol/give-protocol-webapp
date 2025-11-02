@@ -5,6 +5,7 @@ import { ToastProvider } from "./contexts/ToastContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Web3Provider } from "./contexts/Web3Context";
 import { SettingsProvider } from "./contexts/SettingsContext";
+import { CurrencyProvider } from "./contexts/CurrencyContext";
 import { AppRoutes } from "./routes";
 import { Layout } from "./components/layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -44,7 +45,9 @@ const CoreProviders = ({ children }: { children: React.ReactNode }) => (
 const AuthWeb3Providers = ({ children }: { children: React.ReactNode }) => (
   <AuthProvider>
     <SettingsProvider>
-      <Web3Provider>{children}</Web3Provider>
+      <CurrencyProvider>
+        <Web3Provider>{children}</Web3Provider>
+      </CurrencyProvider>
     </SettingsProvider>
   </AuthProvider>
 );

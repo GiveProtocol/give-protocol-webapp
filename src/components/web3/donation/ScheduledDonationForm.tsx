@@ -1,12 +1,17 @@
 import React, { useState, useCallback } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useCurrencyContext } from "@/contexts/CurrencyContext";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { validateAmount } from "@/utils/validation";
 import { useToast } from "@/contexts/ToastContext";
 import { Logger } from "@/utils/logger";
 import { ethers } from "ethers";
 import { getContractAddress } from "@/config/contracts";
+import { MOONBEAM_TOKENS } from "@/config/tokens";
+import { TokenSelector } from "./TokenSelector";
+import { FiatPresets } from "./FiatPresets";
+import { DualAmountInput } from "./DualAmountInput";
+import { formatCrypto, formatFiat } from "@/utils/formatters";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
 
 // Error type guards for transaction errors
@@ -40,10 +45,11 @@ function isUserRejection(error: unknown): boolean {
 import { formatDate } from "@/utils/date";
 
 interface SuccessMessageProps {
-  amount: string;
+  amount: number;
   charityName: string;
   transactionHash: string | null;
   onClose: () => void;
+  tokenSymbol: string;
 }
 
 /**
@@ -58,10 +64,12 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
   charityName,
   transactionHash,
   onClose,
+  tokenSymbol,
 }) => {
   const startDate = new Date();
   const endDate = new Date();
   endDate.setMonth(endDate.getMonth() + 12);
+  const monthlyAmount = amount / 12;
 
   return (
     <div className="space-y-4">
@@ -71,15 +79,21 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
         </svg>
         <div className="flex-1">
           <h3 className="text-sm font-medium text-green-800">Monthly donation scheduled successfully!</h3>
-          <p className="mt-2 text-sm text-green-700">Your donation of {amount} tokens has been scheduled.</p>
+          <p className="mt-2 text-sm text-green-700">
+            Your donation of {amount.toFixed(4)} {tokenSymbol} has been scheduled.
+          </p>
         </div>
       </div>
 
       <div className="bg-white p-4 rounded-md border border-gray-200">
         <h4 className="text-sm font-medium text-gray-900 mb-2">Schedule Details:</h4>
         <div className="space-y-2 text-sm text-gray-600">
-          <div><span className="font-medium">Total Amount:</span> {amount} tokens</div>
-          <div><span className="font-medium">Monthly Payment:</span> {(parseFloat(amount) / 12).toFixed(2)} tokens</div>
+          <div>
+            <span className="font-medium">Total Amount:</span> {amount.toFixed(4)} {tokenSymbol}
+          </div>
+          <div>
+            <span className="font-medium">Monthly Payment:</span> {monthlyAmount.toFixed(4)} {tokenSymbol}
+          </div>
           <div><span className="font-medium">Start Date:</span> {formatDate(startDate.toISOString())}</div>
           <div><span className="font-medium">End Date:</span> {formatDate(endDate.toISOString())}</div>
           <div><span className="font-medium">Recipient:</span> {charityName}</div>
@@ -141,33 +155,42 @@ export function ScheduledDonationForm({
   onSuccess,
   onClose: _onClose,
 }: ScheduledDonationFormProps) {
-  const [amount, setAmount] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [selectedToken, setSelectedToken] = useState(MOONBEAM_TOKENS[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const { provider, address, isConnected, connect } = useWeb3();
   const { showToast: _showToast } = useToast();
+  const { selectedCurrency, convertToFiat } = useCurrencyContext();
 
   // Calculate start and end dates for the donation schedule
   const startDate = new Date();
   const endDate = new Date();
   endDate.setMonth(endDate.getMonth() + 12);
 
-  const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAmount(e.target.value);
-    },
-    [],
-  );
+  const handleAmountChange = useCallback((newAmount: number) => {
+    setAmount(newAmount);
+  }, []);
+
+  const handleTokenSelect = useCallback((token: typeof MOONBEAM_TOKENS[0]) => {
+    setSelectedToken(token);
+    setAmount(0); // Reset amount when token changes
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setError(null);
 
-      if (!validateAmount(parseFloat(amount))) {
+      if (!validateAmount(amount)) {
         setError("Please enter a valid amount between 0 and 1,000,000");
+        return;
+      }
+
+      if (amount <= 0) {
+        setError("Please enter an amount greater than 0");
         return;
       }
 

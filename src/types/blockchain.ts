@@ -42,3 +42,30 @@ export interface TransactionRequest {
   gasLimit?: string;
   nonce?: number;
 }
+
+export interface TokenPrice {
+  /** Token ID (usually CoinGecko ID) */
+  tokenId: string;
+  /** Price in target currency */
+  price: number;
+  /** Currency code (e.g., "usd", "eur") */
+  currency: string;
+  /** Timestamp of price fetch */
+  timestamp: number;
+}
+
+export interface PriceCache {
+  /** Cached prices by token ID */
+  prices: Record<string, TokenPrice>;
+  /** Last update timestamp */
+  lastUpdate: number;
+}
+
+export interface CurrencyFormatOptions {
+  /** Show currency symbol */
+  showSymbol?: boolean;
+  /** Number of decimal places */
+  decimals?: number;
+  /** Use compact notation (K, M, B) */
+  compact?: boolean;
+}

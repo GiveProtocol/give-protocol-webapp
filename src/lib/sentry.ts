@@ -180,7 +180,9 @@ export function trackTransaction(
     amount?: string;
     token?: string;
     charity?: string;
-    status?: "pending" | "success" | "failed";
+    charityId?: string;
+    donationType?: string;
+    status?: "pending" | "success" | "failed" | "started";
     error?: string;
   },
 ) {
@@ -201,6 +203,22 @@ export function trackTransaction(
   } else {
     console.log(`Transaction tracked: ${operation}`, data);
   }
+
+  // Return an object with a finish method for transaction lifecycle tracking
+  return {
+    finish: (status: "ok" | "error") => {
+      if (import.meta.env.PROD) {
+        Sentry.addBreadcrumb({
+          message: `Transaction finished: ${operation}`,
+          data: { ...data, finalStatus: status },
+          level: status === "error" ? "error" : "info",
+          category: "transaction",
+        });
+      } else {
+        console.log(`Transaction finished: ${operation}`, { status, data });
+      }
+    },
+  };
 }
 
 // Custom event capture for testing and debugging

@@ -1,54 +1,13 @@
 import React, { useState, useCallback } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { validateAmount } from "@/utils/validation";
 import { useDonation, DonationType } from "@/hooks/web3/useDonation";
 import { Logger } from "@/utils/logger";
-
-interface RadioOptionProps {
-  value: DonationType;
-  checked: boolean;
-  onChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
-  children: React.ReactNode;
-}
-
-/**
- * Radio button option component for donation type selection
- * @function RadioOption
- * @description Renders a styled radio button option with label for selecting donation types (GLMR or ERC20 tokens)
- * @param {Object} props - Component props
- * @param {DonationType} props.value - The donation type value this option represents
- * @param {boolean} props.checked - Whether this option is currently selected
- * @param {function} props.onChange - Event handler for when this option is selected
- * @param {React.ReactNode} props.children - The label content to display next to the radio button
- * @returns {React.ReactElement} Labeled radio input element
- * @example
- * ```tsx
- * <RadioOption
- *   value={DonationType.NATIVE}
- *   checked={selectedType === DonationType.NATIVE}
- *   onChange={handleTypeChange}
- * >
- *   GLMR
- * </RadioOption>
- * ```
- */
-function RadioOption({ value, checked, onChange, children }: RadioOptionProps) {
-  return (
-    <label className="inline-flex items-center">
-      <input
-        type="radio"
-        className="form-radio text-indigo-600"
-        name="donationType"
-        value={value}
-        checked={checked}
-        onChange={onChange}
-      />
-      <span className="ml-2">{children}</span>
-    </label>
-  );
-}
+import { TokenSelector } from "./TokenSelector";
+import { DualAmountInput } from "./DualAmountInput";
+import { FiatPresets } from "./FiatPresets";
+import { MOONBEAM_TOKENS } from "@/config/tokens";
 
 interface DonationFormProps {
   charityAddress: string;
@@ -73,63 +32,55 @@ interface DonationFormProps {
  * ```
  */
 export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
-  const [amount, setAmount] = useState("");
-  const [donationType, setDonationType] = useState<DonationType>(
-    DonationType.NATIVE,
-  );
-  const [tokenAddress, setTokenAddress] = useState("");
+  const [amount, setAmount] = useState(0);
+  const [selectedToken, setSelectedToken] = useState(MOONBEAM_TOKENS[0]); // Default to GLMR
   const { donate, loading, error: donationError } = useDonation();
   const { isConnected, connect } = useWeb3();
   const [error, setError] = useState("");
 
-  const handleDonationTypeChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setDonationType(e.target.value as DonationType);
-    },
-    [],
-  );
+  const handleAmountChange = useCallback((newAmount: number) => {
+    setAmount(newAmount);
+  }, []);
 
-  const handleTokenAddressChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setTokenAddress(e.target.value);
-    },
-    [],
-  );
-
-  const handleAmountChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setAmount(e.target.value);
-    },
-    [],
-  );
+  const handleTokenSelect = useCallback((token: typeof MOONBEAM_TOKENS[0]) => {
+    setSelectedToken(token);
+    setAmount(0); // Reset amount when token changes
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
       setError("");
 
-      if (!validateAmount(parseFloat(amount))) {
+      if (!validateAmount(amount)) {
         setError("Please enter a valid amount between 0 and 1,000,000");
         return;
       }
 
+      if (amount <= 0) {
+        setError("Please enter an amount greater than 0");
+        return;
+      }
+
       try {
+        const donationType = selectedToken.isNative
+          ? DonationType._NATIVE
+          : DonationType._TOKEN;
+
         await donate({
           charityAddress,
-          amount,
+          amount: amount.toString(),
           type: donationType,
-          tokenAddress:
-            donationType === DonationType.TOKEN ? tokenAddress : undefined,
+          _tokenAddress: selectedToken.isNative ? undefined : selectedToken.address,
         });
 
-        setAmount("");
+        setAmount(0);
         onSuccess?.();
 
         Logger.info("Donation submitted", {
           charity: charityAddress,
           amount,
-          type: donationType,
-          token: tokenAddress || "GLMR",
+          token: selectedToken.symbol,
         });
       } catch (err) {
         setError(
@@ -137,7 +88,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
         );
       }
     },
-    [amount, charityAddress, donationType, tokenAddress, donate, onSuccess],
+    [amount, charityAddress, selectedToken, donate, onSuccess],
   );
 
   if (!isConnected) {
@@ -150,63 +101,32 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {(error || donationError) && (
         <div className="p-3 bg-red-50 text-red-600 rounded-md">
           {error || donationError}
         </div>
       )}
 
-      <fieldset>
-        <legend className="block text-sm font-medium text-gray-700 mb-2">
-          Donation Type
-        </legend>
-        <div className="flex space-x-4">
-          <RadioOption
-            value={DonationType.NATIVE}
-            checked={donationType === DonationType.NATIVE}
-            onChange={handleDonationTypeChange}
-          >
-            GLMR
-          </RadioOption>
-          <RadioOption
-            value={DonationType.TOKEN}
-            checked={donationType === DonationType.TOKEN}
-            onChange={handleDonationTypeChange}
-          >
-            ERC20 Token
-          </RadioOption>
-        </div>
-      </fieldset>
+      <TokenSelector
+        selectedToken={selectedToken}
+        onSelectToken={handleTokenSelect}
+      />
 
-      {donationType === DonationType.TOKEN && (
-        <Input
-          label="Token Address"
-          type="text"
-          value={tokenAddress}
-          onChange={handleTokenAddressChange}
-          placeholder="Enter ERC20 token address"
-          required
-        />
-      )}
+      <FiatPresets
+        selectedToken={selectedToken}
+        onAmountSelect={handleAmountChange}
+      />
 
-      <Input
-        label={`Amount (${donationType === DonationType.NATIVE ? "GLMR" : "Tokens"})`}
-        type="number"
-        min="0"
-        step="0.000000000000000001"
+      <DualAmountInput
+        token={selectedToken}
         value={amount}
         onChange={handleAmountChange}
-        required
       />
 
       <Button
         type="submit"
-        disabled={
-          loading ||
-          !amount ||
-          (donationType === DonationType.TOKEN && !tokenAddress)
-        }
+        disabled={loading || amount <= 0}
         className="w-full"
       >
         {loading ? "Processing..." : "Donate"}

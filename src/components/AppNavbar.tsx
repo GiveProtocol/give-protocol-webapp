@@ -9,6 +9,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { ConnectButton } from "./web3/ConnectButton";
 import { SettingsMenu } from "./SettingsMenu";
+import { CurrencySelector } from "./CurrencySelector";
 import { Menu, X, Calendar } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -260,6 +261,7 @@ const NavActions: React.FC<{
   menuButtonRef: React.RefObject<HTMLButtonElement>;
 }> = ({ isMenuOpen, toggleMenu, menuButtonRef }) => (
   <div className="flex items-center space-x-2">
+    <CurrencySelector />
     <SettingsMenu />
     <ConnectButton />
     <MobileMenuButton

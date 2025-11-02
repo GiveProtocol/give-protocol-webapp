@@ -9,6 +9,38 @@ const base = process.env.BASE || '/';
 // Create http server
 const app = express();
 
+// API Proxy routes for external services (to avoid CORS issues)
+app.get('/api/coingecko/*', async (req, res) => {
+  try {
+    const path = req.params[0];
+    const query = new URLSearchParams(req.query).toString();
+    const url = `https://api.coingecko.com/api/v3/${path}${query ? `?${query}` : ''}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    res.json(data);
+  } catch (error) {
+    console.error('CoinGecko proxy error:', error);
+    res.status(500).json({ error: 'Failed to fetch from CoinGecko' });
+  }
+});
+
+app.get('/api/exchangerate/*', async (req, res) => {
+  try {
+    const path = req.params[0];
+    const url = `https://api.exchangerate-api.com/v4/latest/${path}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    res.json(data);
+  } catch (error) {
+    console.error('Exchange rate proxy error:', error);
+    res.status(500).json({ error: 'Failed to fetch exchange rates' });
+  }
+});
+
 // Add Vite or respective production middlewares
 let vite;
 if (!isProduction) {
