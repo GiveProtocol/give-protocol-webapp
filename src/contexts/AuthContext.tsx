@@ -554,7 +554,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         "Username reminder sent",
         "If an account exists with this email, a reminder will be sent",
       );
-      return Promise.resolve();
+      return;
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to send username reminder";
