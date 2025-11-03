@@ -119,7 +119,7 @@ export function TokenSelector({
                     <div className="font-medium text-gray-900">{token.symbol}</div>
                     <div className="text-sm text-gray-500">{token.name}</div>
                   </div>
-                  {price && (
+                  {price !== undefined && (
                     <div className="text-sm text-gray-600">
                       {formatFiat(price, selectedCurrency, { decimals: 2 })}
                     </div>
