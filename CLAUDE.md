@@ -201,6 +201,8 @@ const sanitized = input.replace(/[<>]/g, "");
 - **Export functions need JSDoc** with `@param` and `@returns`
 - **Use `useCallback` for ALL functions passed to JSX props**
 - **Flatten JSX to ≤4 levels by combining CSS classes**
+- **ALWAYS wrap Context Provider values in `useMemo`** to maintain stable identities
+- **Use explicit boolean checks in conditional rendering** (e.g., `value !== undefined` instead of `value`)
 
 ### Additional Important Rules
 
@@ -223,6 +225,9 @@ const sanitized = input.replace(/[<>]/g, "");
 - [ ] JSX nesting ≤4 levels
 - [ ] Template literals instead of string concatenation
 - [ ] `Boolean()` instead of `!!`
+- [ ] `Number.parseFloat()` / `Number.parseInt()` instead of global functions
+- [ ] Context Provider values wrapped in `useMemo`
+- [ ] Explicit boolean checks in conditional rendering (`value !== undefined` not `value`)
 
 ## JSX Nesting Verification
 
