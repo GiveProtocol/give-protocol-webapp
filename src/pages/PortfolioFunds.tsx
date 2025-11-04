@@ -39,7 +39,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
   }, [getPlatformFee]);
 
   const handleDonation = useCallback(async () => {
-    if (!amount || parseFloat(amount) <= 0) {
+    if (!amount || Number.parseFloat(amount) <= 0) {
       showToast("error", "Please enter a valid amount");
       return;
     }
@@ -74,7 +74,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
 
   const calculateFee = () => {
     if (!amount) return { fee: "0", net: "0" };
-    const donationAmount = parseFloat(amount);
+    const donationAmount = Number.parseFloat(amount);
     const feeAmount = (donationAmount * platformFee) / 10000;
     const netAmount = donationAmount - feeAmount;
     return {
@@ -216,7 +216,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
             </div>
             <div className="text-xs text-gray-500 mt-2">
               Each charity receives:{" "}
-              {(parseFloat(net) / fund.charities.length).toFixed(6)}{" "}
+              {(Number.parseFloat(net) / fund.charities.length).toFixed(6)}{" "}
               {donationType === "native" ? "DEV" : "TEST"}
             </div>
           </div>
@@ -234,7 +234,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
           <Button
             onClick={handleDonation}
             className="flex-1"
-            disabled={loading || !amount || parseFloat(amount) <= 0}
+            disabled={loading || !amount || Number.parseFloat(amount) <= 0}
           >
             {loading ? "Processing..." : "Donate"}
           </Button>
