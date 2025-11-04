@@ -121,15 +121,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     { value: 'PKR', label: 'Pakistani Rupee', symbol: '₨' }
   ];
 
-  return (
-    <SettingsContext.Provider value={{ 
-      language, 
-      setLanguage, 
-      currency, 
+  const contextValue = React.useMemo(
+    () => ({
+      language,
+      setLanguage,
+      currency,
       setCurrency,
       languageOptions,
-      currencyOptions
-    }}>
+      currencyOptions,
+    }),
+    [language, currency, languageOptions, currencyOptions]
+  );
+
+  return (
+    <SettingsContext.Provider value={contextValue}>
       {children}
     </SettingsContext.Provider>
   );

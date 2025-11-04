@@ -349,20 +349,23 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  const contextValue = React.useMemo(
+    () => ({
+      provider,
+      address,
+      chainId,
+      isConnected: Boolean(address),
+      isConnecting,
+      connect,
+      disconnect,
+      error,
+      switchChain,
+    }),
+    [provider, address, chainId, isConnecting, connect, disconnect, error, switchChain]
+  );
+
   return (
-    <Web3Context.Provider
-      value={{
-        provider,
-        address,
-        chainId,
-        isConnected: Boolean(address),
-        isConnecting,
-        connect,
-        disconnect,
-        error,
-        switchChain,
-      }}
-    >
+    <Web3Context.Provider value={contextValue}>
       {children}
     </Web3Context.Provider>
   );

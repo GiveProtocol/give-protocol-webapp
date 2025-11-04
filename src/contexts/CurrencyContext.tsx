@@ -148,18 +148,21 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
     [tokenPrices]
   );
 
+  const contextValue = React.useMemo(
+    () => ({
+      selectedCurrency,
+      setSelectedCurrency,
+      tokenPrices,
+      isLoading,
+      refreshPrices,
+      convertToFiat,
+      convertFromFiat,
+    }),
+    [selectedCurrency, setSelectedCurrency, tokenPrices, isLoading, refreshPrices, convertToFiat, convertFromFiat]
+  );
+
   return (
-    <CurrencyContext.Provider
-      value={{
-        selectedCurrency,
-        setSelectedCurrency,
-        tokenPrices,
-        isLoading,
-        refreshPrices,
-        convertToFiat,
-        convertFromFiat,
-      }}
-    >
+    <CurrencyContext.Provider value={contextValue}>
       {children}
     </CurrencyContext.Provider>
   );

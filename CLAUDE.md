@@ -150,6 +150,38 @@ npm run test:e2e     # Run Cypress end-to-end tests
     const isConnected = Boolean(address);
     ```
 
+11. **React Context Provider values must be memoized** - Wrap in useMemo
+
+    ```typescript
+    // WRONG - Creates new object every render
+    <MyContext.Provider value={{ foo, bar }}>
+      {children}
+    </MyContext.Provider>
+
+    // CORRECT - Memoized with useMemo
+    const contextValue = React.useMemo(
+      () => ({ foo, bar }),
+      [foo, bar]
+    );
+    <MyContext.Provider value={contextValue}>
+      {children}
+    </MyContext.Provider>
+    ```
+
+12. **Use Number static methods** - Prefer explicit Number methods
+
+    ```typescript
+    // WRONG - Global functions
+    const num = parseFloat("3.14");
+    const int = parseInt("42", 10);
+    const invalid = isNaN(value);
+
+    // CORRECT - Number static methods
+    const num = Number.parseFloat("3.14");
+    const int = Number.parseInt("42", 10);
+    const invalid = Number.isNaN(value);
+    ```
+
 ### Security Patterns
 
 **HTML Sanitization (CodeQL js/incomplete-multi-character-sanitization)**

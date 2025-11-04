@@ -42,8 +42,13 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     return () => removeToast(id);
   }, [removeToast]);
 
+  const contextValue = React.useMemo(
+    () => ({ showToast }),
+    [showToast]
+  );
+
   return (
-    <ToastContext.Provider value={{ showToast }}>
+    <ToastContext.Provider value={contextValue}>
       {children}
       <div className="fixed bottom-0 right-0 p-4 space-y-4 z-50 pointer-events-none">
         {toasts.map(toast => (

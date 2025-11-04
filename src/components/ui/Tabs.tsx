@@ -32,8 +32,13 @@ const TabsContext = React.createContext<{
 export const Tabs: React.FC<TabsProps> = ({ defaultValue, children, className }) => {
   const [value, setValue] = React.useState(defaultValue);
 
+  const contextValue = React.useMemo(
+    () => ({ value, onChange: setValue }),
+    [value]
+  );
+
   return (
-    <TabsContext.Provider value={{ value, onChange: setValue }}>
+    <TabsContext.Provider value={contextValue}>
       <div className={cn('space-y-2', className)}>
         {children}
       </div>
