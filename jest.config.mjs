@@ -42,6 +42,8 @@ export default {
     '!src/types/**/*',
     '!src/mocks/**/*'
   ],
+  coverageReporters: ['text', 'lcov', 'json', 'html'],
+  coverageDirectory: 'coverage',
   coverageThreshold: {
     global: {
       branches: 80,

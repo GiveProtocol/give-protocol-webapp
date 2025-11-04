@@ -218,6 +218,7 @@ const sanitized = input.replace(/[<>]/g, "");
 ## Pre-Commit Checklist
 
 - [ ] Run `npm run lint` and fix ALL errors
+- [ ] Run `npm test -- --coverage` and ensure new code has tests
 - [ ] No `any` types
 - [ ] All variables used or prefixed with `_`
 - [ ] Only ES6 imports
@@ -228,6 +229,8 @@ const sanitized = input.replace(/[<>]/g, "");
 - [ ] `Number.parseFloat()` / `Number.parseInt()` instead of global functions
 - [ ] Context Provider values wrapped in `useMemo`
 - [ ] Explicit boolean checks in conditional rendering (`value !== undefined` not `value`)
+- [ ] Write tests for all new utility functions and business logic
+- [ ] Ensure test coverage is generated before committing
 
 ## JSX Nesting Verification
 
@@ -246,9 +249,72 @@ rg "<Card.*>[\s\S]*?<div.*>[\s\S]*?<div.*>[\s\S]*?<div" src/ --type tsx  # Deep 
 5. **Promise Misuse**: `await` Promise-returning methods in conditions
 6. **Array.reduce() Safety**: Always provide initial value
 
+## Testing Requirements
+
+### Why Tests Are Required
+
+SonarCloud requires test coverage on all new code. Without tests, builds will fail with "Coverage on New Code: 0.0%" errors.
+
+### When to Write Tests
+
+**ALWAYS write tests for:**
+- New utility functions (`src/utils/`)
+- New business logic
+- New validation functions
+- New formatting/parsing functions
+- New services and API integrations
+
+**Test file naming:**
+- Place tests next to the source file: `foo.ts` → `foo.test.ts`
+- Use descriptive test names: `it('should format USD currency correctly')`
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm test -- --coverage
+
+# Run specific test file
+npm test src/utils/formatters.test.ts
+
+# Run tests in watch mode during development
+npm test -- --watch
+```
+
+### Test Coverage Requirements
+
+- All new utility functions must have tests
+- Aim for >80% coverage on new code
+- Tests run automatically in CI/CD before SonarQube scan
+- Coverage reports are generated in `coverage/` directory
+
+### Example Test Structure
+
+```typescript
+describe('myFunction', () => {
+  it('should handle valid input', () => {
+    expect(myFunction('valid')).toBe('expected');
+  });
+
+  it('should handle edge cases', () => {
+    expect(myFunction('')).toBe('default');
+    expect(myFunction(null)).toBe('default');
+  });
+
+  it('should throw on invalid input', () => {
+    expect(() => myFunction('invalid')).toThrow();
+  });
+});
+```
+
 ## Git Workflow
 
 1. Run `npm run lint` before committing
-2. Write descriptive commit messages
-3. Keep commits focused on single logical changes
-4. Group related DeepSource fixes in single commits
+2. Run `npm test -- --coverage` before committing
+3. Write descriptive commit messages
+4. Keep commits focused on single logical changes
+5. Group related DeepSource fixes in single commits
+6. Ensure tests exist for all new business logic
