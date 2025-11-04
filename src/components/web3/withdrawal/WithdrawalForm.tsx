@@ -40,7 +40,7 @@ export function WithdrawalForm({ onSuccess }: WithdrawalFormProps) {
       e.preventDefault();
       setError("");
 
-      if (!validateAmount(parseFloat(amount))) {
+      if (!validateAmount(Number.parseFloat(amount))) {
         setError("Please enter a valid amount between 0 and 1,000,000");
         return;
       }

@@ -29,7 +29,7 @@ export function FiatPresets({
 
   const handlePresetClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      const fiatAmount = parseFloat(e.currentTarget.dataset.amount || "0");
+      const fiatAmount = Number.parseFloat(e.currentTarget.dataset.amount || "0");
       if (fiatAmount <= 0) return;
 
       const tokenPrice = tokenPrices[selectedToken.coingeckoId];

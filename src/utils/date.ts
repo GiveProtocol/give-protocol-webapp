@@ -6,7 +6,7 @@ export const formatDate = (dateString: string, includeTime = false): string => {
   try {
     const date = new Date(dateString);
 
-    if (isNaN(date.getTime())) {
+    if (Number.isNaN(date.getTime())) {
       return "";
     }
 
@@ -37,7 +37,7 @@ export const formatDate = (dateString: string, includeTime = false): string => {
 
 export const isValidDate = (dateString: string): boolean => {
   const date = new Date(dateString);
-  return date instanceof Date && !isNaN(date.getTime());
+  return date instanceof Date && !Number.isNaN(date.getTime());
 };
 
 export const formatDateForInput = (dateString: string): string => {

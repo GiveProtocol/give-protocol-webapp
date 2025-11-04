@@ -262,7 +262,7 @@ export const ScheduledDonations: React.FC = () => {
               </p>
               <div className="bg-blue-50 rounded-lg p-3 text-center">
                 <p className="text-lg font-semibold text-blue-700">
-                  {(parseFloat(selectedSchedule.amountPerMonth) * selectedSchedule.monthsRemaining).toFixed(2)} {selectedSchedule.tokenSymbol || 'tokens'}
+                  {(Number.parseFloat(selectedSchedule.amountPerMonth) * selectedSchedule.monthsRemaining).toFixed(2)} {selectedSchedule.tokenSymbol || 'tokens'}
                 </p>
               </div>
             </div>

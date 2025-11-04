@@ -27,7 +27,7 @@ interface TransactionFormConfig {
  *
  * const submitDonation = async (amount: string) => {
  *   // Custom transaction logic
- *   await processDonation(parseFloat(amount));
+ *   await processDonation(Number.parseFloat(amount));
  * };
  *
  * return (
@@ -53,7 +53,7 @@ export function useTransactionForm({ onSuccess }: TransactionFormConfig) {
     e.preventDefault();
     setValidationError("");
 
-    const numAmount = parseFloat(amount);
+    const numAmount = Number.parseFloat(amount);
     if (!validateAmount(numAmount)) {
       setValidationError("Please enter a valid amount between 0 and 1,000,000");
       return;

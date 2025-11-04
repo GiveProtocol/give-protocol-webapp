@@ -23,7 +23,7 @@ const WithdrawalRequestForm: React.FC<WithdrawalRequestFormProps> = ({
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      const numAmount = parseFloat(amount);
+      const numAmount = Number.parseFloat(amount);
 
       if (!isValidAmount(numAmount)) {
         setValidationError("Please enter a valid amount");

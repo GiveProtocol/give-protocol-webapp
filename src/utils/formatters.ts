@@ -155,13 +155,13 @@ export function parseFormattedNumber(formattedValue: string): number {
   // Handle European format (comma as decimal separator)
   if (cleaned.includes(",") && cleaned.includes(".")) {
     // If both exist, assume comma is thousands separator
-    return parseFloat(cleaned.replace(/,/g, ""));
+    return Number.parseFloat(cleaned.replace(/,/g, ""));
   } else if (cleaned.includes(",")) {
     // Comma as decimal separator
-    return parseFloat(cleaned.replace(",", "."));
+    return Number.parseFloat(cleaned.replace(",", "."));
   }
 
-  return parseFloat(cleaned) || 0;
+  return Number.parseFloat(cleaned) || 0;
 }
 
 /**

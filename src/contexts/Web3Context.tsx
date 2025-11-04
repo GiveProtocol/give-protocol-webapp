@@ -105,7 +105,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   // Handle chain changes
   const handleChainChanged = useCallback((chainIdHex: string) => {
-    const newChainId = parseInt(chainIdHex, 16);
+    const newChainId = Number.parseInt(chainIdHex, 16);
     setChainId(newChainId);
     Logger.info("Chain changed", { chainId: newChainId });
 

@@ -20,6 +20,25 @@
     "no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
     "no-console": "warn",
     "no-debugger": "error",
-    "no-alert": "warn"
+    "no-alert": "warn",
+    "no-restricted-globals": [
+      "error",
+      {
+        "name": "parseFloat",
+        "message": "Use Number.parseFloat() instead of parseFloat() for explicit parsing."
+      },
+      {
+        "name": "parseInt",
+        "message": "Use Number.parseInt() instead of parseInt() for explicit parsing."
+      },
+      {
+        "name": "isNaN",
+        "message": "Use Number.isNaN() instead of isNaN() for explicit type checking."
+      },
+      {
+        "name": "isFinite",
+        "message": "Use Number.isFinite() instead of isFinite() for explicit type checking."
+      }
+    ]
   }
 }

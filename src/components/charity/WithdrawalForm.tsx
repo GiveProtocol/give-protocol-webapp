@@ -17,7 +17,7 @@ export const WithdrawalForm: React.FC = () => {
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      await requestWithdrawal(parseFloat(amount));
+      await requestWithdrawal(Number.parseFloat(amount));
       setAmount("");
     },
     [amount, requestWithdrawal],

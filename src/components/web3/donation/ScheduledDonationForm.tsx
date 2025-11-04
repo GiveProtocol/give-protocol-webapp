@@ -344,7 +344,7 @@ export function ScheduledDonationForm({
       <div className="bg-blue-50 p-3 rounded-md mb-2">
         <p className="text-sm text-blue-700">
           <span className="font-medium">Monthly payment:</span>{" "}
-          {amount ? (parseFloat(amount) / 12).toFixed(2) : "0.00"} tokens
+          {amount ? (Number.parseFloat(amount) / 12).toFixed(2) : "0.00"} tokens
         </p>
         <p className="text-sm text-blue-700 mt-1">
           <span className="font-medium">Schedule period:</span>{" "}

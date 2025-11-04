@@ -58,8 +58,8 @@ export function DualAmountInput({
       const newValue = e.target.value;
       setDisplayValue(newValue);
 
-      const numValue = parseFloat(newValue);
-      if (isNaN(numValue) || numValue <= 0) {
+      const numValue = Number.parseFloat(newValue);
+      if (Number.isNaN(numValue) || numValue <= 0) {
         onChange(0);
         return;
       }

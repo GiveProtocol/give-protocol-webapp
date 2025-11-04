@@ -80,7 +80,7 @@ export function validateFileUpload(file: File): void {
  * @returns true if amount is positive, <= 1,000,000, and not NaN
  */
 export function isValidAmount(amount: number): boolean {
-  return amount > 0 && amount <= 1000000 && !isNaN(amount);
+  return amount > 0 && amount <= 1000000 && !Number.isNaN(amount);
 }
 
 /**
