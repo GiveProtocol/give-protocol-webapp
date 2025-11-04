@@ -27,6 +27,19 @@ jobs:
         run: npm test -- --coverage --watchAll=false
         continue-on-error: true
 
+      - name: Verify coverage file exists
+        run: |
+          echo "Checking for coverage file..."
+          ls -la coverage/
+          if [ -f coverage/lcov.info ]; then
+            echo "✓ coverage/lcov.info exists"
+            echo "File size: $(wc -c < coverage/lcov.info) bytes"
+            echo "Lines: $(wc -l < coverage/lcov.info)"
+          else
+            echo "✗ coverage/lcov.info NOT FOUND"
+            exit 1
+          fi
+
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v6
         env:
