@@ -152,7 +152,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
                   onChange={handleSetDonationTypeNative}
                   className="sr-only"
                 />
-                DEV (Native)
+                <span>DEV (Native)</span>
               </label>
               <label
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium cursor-pointer text-center ${
@@ -169,7 +169,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
                   onChange={handleSetDonationTypeToken}
                   className="sr-only"
                 />
-                TEST Token
+                <span>TEST Token</span>
               </label>
             </div>
           </fieldset>
