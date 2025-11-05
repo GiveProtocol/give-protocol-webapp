@@ -12,9 +12,14 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const isHomePage = location.pathname === '/';
 
+  // Landing page has its own navigation and footer, so render without layout wrapper
+  if (isHomePage) {
+    return <>{children}</>;
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-background-primary">
-      {isHomePage ? <Navbar /> : <AppNavbar />}
+      <AppNavbar />
       <main className="flex-grow">
         {children}
       </main>

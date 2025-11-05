@@ -31,7 +31,7 @@ export const Logo: React.FC<LogoProps> = ({ className }) => {
   return (
     <img
       ref={imgRef}
-      src="/logo.svg"
+      src="/give_logo_gradient.svg"
       alt="Give Protocol"
       className={className}
       width={32}

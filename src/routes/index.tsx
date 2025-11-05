@@ -12,6 +12,7 @@ import Register from "@/pages/Register";
 
 // Lazy load other routes
 const Home = lazy(() => import("@/pages/Home"));
+const AppDashboard = lazy(() => import("@/pages/AppDashboard"));
 const CharityBrowser = lazy(() => import("@/pages/CharityBrowser"));
 const SentryTest = lazy(() => import("@/pages/SentryTest"));
 const GlobalWaterFoundation = lazy(
@@ -102,7 +103,7 @@ export function AppRoutes() {
           path="/"
           element={
             <RouteTransition>
-              <ComingSoon />
+              <Home />
             </RouteTransition>
           }
         />
@@ -290,7 +291,7 @@ export function AppRoutes() {
           path="/app"
           element={
             <RouteTransition>
-              <Home />
+              <AppDashboard />
             </RouteTransition>
           }
         />

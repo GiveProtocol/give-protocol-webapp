@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Heart, TrendingUp, Users, Globe, Shield, Zap, ArrowRight, Check } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 
@@ -51,7 +52,7 @@ const Home: React.FC = () => {
           <a href="#charities" className="hover:text-emerald-400 transition-colors">Charities</a>
           <a href="#volunteer" className="hover:text-emerald-400 transition-colors">Volunteer</a>
         </div>
-        <button className="bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-emerald-500/50 transition-all">
+        <button disabled className="bg-gradient-to-r from-emerald-500/50 to-teal-500/50 px-6 py-2 rounded-full font-semibold cursor-not-allowed opacity-60">
           Coming Soon
         </button>
       </nav>
@@ -91,13 +92,13 @@ const Home: React.FC = () => {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <button className="bg-gradient-to-r from-emerald-500 to-teal-500 px-8 py-4 rounded-full font-semibold text-lg hover:shadow-2xl hover:shadow-emerald-500/50 transition-all flex items-center space-x-2 group">
-            <span>Join Waitlist</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <button disabled className="bg-gradient-to-r from-emerald-500/50 to-teal-500/50 px-8 py-4 rounded-full font-semibold text-lg cursor-not-allowed opacity-60 flex items-center space-x-2">
+            <span>Coming Soon</span>
+            <ArrowRight className="w-5 h-5" />
           </button>
-          <button className="bg-white/10 backdrop-blur-sm border border-white/20 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all">
+          <Link to="/documentation" className="bg-white/10 backdrop-blur-sm border border-white/20 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all">
             Read Documentation
-          </button>
+          </Link>
         </div>
       </section>
 
@@ -311,12 +312,12 @@ const Home: React.FC = () => {
             Join our community building a better future for charitable giving.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-white text-emerald-600 px-8 py-4 rounded-full font-semibold text-lg hover:shadow-2xl hover:scale-105 transition-all">
-              Join Waitlist
+            <button disabled className="bg-white/50 text-emerald-600/70 px-8 py-4 rounded-full font-semibold text-lg cursor-not-allowed opacity-60">
+              Coming Soon
             </button>
-            <button className="bg-white/20 backdrop-blur-sm border border-white/30 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/30 transition-all">
+            <Link to="/documentation" className="bg-white/20 backdrop-blur-sm border border-white/30 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/30 transition-all">
               Read Documentation
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -326,7 +327,7 @@ const Home: React.FC = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <Heart className="w-6 h-6 text-emerald-400" fill="currentColor" />
+              <img src="/give_logo_gradient.svg" alt="Give Protocol" className="w-8 h-8" />
               <span className="text-xl font-bold">Give Protocol</span>
             </div>
             <p className="text-gray-400 text-sm">
