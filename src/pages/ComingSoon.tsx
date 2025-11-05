@@ -70,7 +70,7 @@ const ComingSoon: React.FC = () => {
             Launching Q1 2026
           </span>
         </div>
-        <h1 className="text-5xl sm:text-7xl font-bold text-gray-900 mb-8 leading-relaxed overflow-visible animate-fade-in-up">
+        <h1 className="text-5xl sm:text-7xl font-bold text-gray-100 mb-8 leading-relaxed overflow-visible animate-fade-in-up">
           The Future of
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 pb-3">
             Transparent Giving
@@ -93,7 +93,7 @@ const ComingSoon: React.FC = () => {
             value={email}
             onChange={handleEmailChange}
             placeholder="Enter your email for pre-launch access"
-            className="w-full px-4 py-3 rounded-lg border border-indigo-200 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-indigo-300"
+            className="w-full px-4 py-3 rounded-lg border border-indigo-200 bg-white text-gray-100 placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-indigo-300"
             disabled={status === "loading" || status === "success"}
           />
           <button
@@ -127,7 +127,7 @@ const ComingSoon: React.FC = () => {
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors mx-auto">
             <Eye className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-100 group-hover:text-indigo-600 transition-colors mb-2">
             Transparent
           </h3>
           <p className="text-gray-600">
@@ -138,7 +138,7 @@ const ComingSoon: React.FC = () => {
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors mx-auto">
             <Zap className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-100 group-hover:text-purple-600 transition-colors mb-2">
             Efficient
           </h3>
           <p className="text-gray-600">
@@ -149,7 +149,7 @@ const ComingSoon: React.FC = () => {
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-white transition-colors mx-auto">
             <TrendingUp className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-100 group-hover:text-indigo-600 transition-colors mb-2">
             Impactful
           </h3>
           <p className="text-gray-600">
@@ -160,7 +160,7 @@ const ComingSoon: React.FC = () => {
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition-colors mx-auto">
             <Infinity className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-100 group-hover:text-purple-600 transition-colors mb-2">
             Sustainable
           </h3>
           <p className="text-gray-600">

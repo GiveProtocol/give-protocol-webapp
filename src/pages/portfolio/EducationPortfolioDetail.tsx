@@ -83,7 +83,7 @@ const EducationPortfolioDetail: React.FC = () => {
       <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-sm text-gray-500">Total Donated</p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="text-2xl font-bold text-gray-100">
               {formatCurrency(PORTFOLIO.totalDonated)}
             </p>
           </div>
@@ -97,7 +97,7 @@ const EducationPortfolioDetail: React.FC = () => {
         </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+        <h2 className="text-2xl font-bold text-gray-100 mb-6">
           Supported Education Organizations
         </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

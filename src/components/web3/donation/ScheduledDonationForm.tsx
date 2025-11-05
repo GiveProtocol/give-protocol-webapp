@@ -86,7 +86,7 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
       </div>
 
       <div className="bg-white p-4 rounded-md border border-gray-200">
-        <h4 className="text-sm font-medium text-gray-900 mb-2">Schedule Details:</h4>
+        <h4 className="text-sm font-medium text-gray-100 mb-2">Schedule Details:</h4>
         <div className="space-y-2 text-sm text-gray-600">
           <div>
             <span className="font-medium">Total Amount:</span> {amount.toFixed(4)} {tokenSymbol}

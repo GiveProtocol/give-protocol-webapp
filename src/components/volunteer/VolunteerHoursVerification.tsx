@@ -93,7 +93,7 @@ export const VolunteerHoursVerification: React.FC<
     <div className="bg-white border border-gray-200 rounded-lg p-4">
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-lg font-medium text-gray-900">{volunteerName}</h3>
+          <h3 className="text-lg font-medium text-gray-100">{volunteerName}</h3>
           <p className="text-sm text-gray-500">
             {hours} {t("volunteer.hours")} {formatDate(datePerformed)}
           </p>

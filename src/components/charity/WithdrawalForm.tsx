@@ -25,7 +25,7 @@ export const WithdrawalForm: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">
+      <h2 className="text-xl font-semibold text-gray-100 mb-6">
         Request Withdrawal
       </h2>
       {error && (

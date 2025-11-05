@@ -27,10 +27,10 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({ withdrawals }) => {
       <tbody className="divide-y divide-gray-200">
         {withdrawals.map((withdrawal) => (
           <tr key={withdrawal.id}>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
               {formatDate(withdrawal.created_at)}
             </td>
-            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
               {formatCurrency(withdrawal.amount)}
             </td>
             <td className="px-6 py-4 whitespace-nowrap">

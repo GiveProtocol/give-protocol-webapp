@@ -120,7 +120,7 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
     <section className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <form className="bg-white rounded-lg shadow-xl max-w-md w-full divide-y divide-gray-200" onSubmit={handleFormSubmit}>
         <div className="flex justify-between items-center p-6">
-          <h2 className="text-xl font-semibold text-gray-900">{t("export.title")}</h2>
+          <h2 className="text-xl font-semibold text-gray-100">{t("export.title")}</h2>
           <button
             onClick={handleClose}
             className="p-0 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded"
@@ -168,7 +168,7 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
               onChange={handleIncludePersonalInfoChange}
               className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-2"
             />
-            <span className="text-sm text-gray-900">
+            <span className="text-sm text-gray-100">
               {t("export.includePersonal")}
             </span>
           </label>

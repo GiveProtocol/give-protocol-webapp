@@ -107,7 +107,7 @@ export const WalletAliasSettings: React.FC = () => {
       <Card className="p-6">
         <div className="flex items-center mb-4">
           <Wallet className="h-5 w-5 text-gray-500 mr-2" />
-          <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
+          <h2 className="text-lg font-medium text-gray-100">Wallet Alias</h2>
         </div>
         <p className="text-gray-600 mb-4">
           Connect your wallet to set a public alias that will be displayed on
@@ -122,7 +122,7 @@ export const WalletAliasSettings: React.FC = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <Wallet className="h-5 w-5 text-gray-500 mr-2" />
-          <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
+          <h2 className="text-lg font-medium text-gray-100">Wallet Alias</h2>
         </div>
         {!editMode && alias && (
           <Button
@@ -151,7 +151,7 @@ export const WalletAliasSettings: React.FC = () => {
         </p>
         <div className="bg-gray-50 p-3 rounded-md">
           <p className="text-sm text-gray-500">Current Wallet</p>
-          <p className="font-mono text-gray-900">
+          <p className="font-mono text-gray-100">
             {shortenAddress(address || "")}
           </p>
         </div>
@@ -208,7 +208,7 @@ export const WalletAliasSettings: React.FC = () => {
 
       {aliases.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-md font-medium text-gray-900 mb-3">
+          <h3 className="text-md font-medium text-gray-100 mb-3">
             Your Wallet Aliases
           </h3>
           <div className="space-y-3">
@@ -218,7 +218,7 @@ export const WalletAliasSettings: React.FC = () => {
                 className="flex justify-between items-center p-3 bg-gray-50 rounded-md"
               >
                 <div>
-                  <p className="font-medium text-gray-900">{item.alias}</p>
+                  <p className="font-medium text-gray-100">{item.alias}</p>
                   <p className="text-xs text-gray-500 font-mono">
                     {shortenAddress(item.walletAddress)}
                   </p>
@@ -242,7 +242,7 @@ export const WalletAliasSettings: React.FC = () => {
           <div className="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4 space-y-4">
             <header className="flex items-center">
               <AlertCircle className="h-6 w-6 text-red-500 mr-3" />
-              <h3 className="text-lg font-medium text-gray-900">
+              <h3 className="text-lg font-medium text-gray-100">
                 Confirm Deletion
               </h3>
             </header>

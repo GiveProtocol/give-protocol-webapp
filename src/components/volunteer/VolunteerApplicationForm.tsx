@@ -385,7 +385,7 @@ export const VolunteerApplicationForm: React.FC<
         >
           {/* Personal Information Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
               <span className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
                 1
               </span>{" "}
@@ -570,7 +570,7 @@ export const VolunteerApplicationForm: React.FC<
 
           {/* Skills & Interests Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
               <span className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
                 2
               </span>{" "}
@@ -661,7 +661,7 @@ export const VolunteerApplicationForm: React.FC<
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <div className="font-semibold text-gray-900 mb-1">
+                      <div className="font-semibold text-gray-100 mb-1">
                         One-time
                       </div>
                       <div className="text-sm text-gray-600">
@@ -688,7 +688,7 @@ export const VolunteerApplicationForm: React.FC<
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <div className="font-semibold text-gray-900 mb-1">
+                      <div className="font-semibold text-gray-100 mb-1">
                         Short-Term
                       </div>
                       <div className="text-sm text-gray-600">
@@ -715,7 +715,7 @@ export const VolunteerApplicationForm: React.FC<
                       className="sr-only"
                     />
                     <div className="text-center">
-                      <div className="font-semibold text-gray-900 mb-1">
+                      <div className="font-semibold text-gray-100 mb-1">
                         Long-Term
                       </div>
                       <div className="text-sm text-gray-600">
@@ -753,7 +753,7 @@ export const VolunteerApplicationForm: React.FC<
 
           {/* Consent & Agreement Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
               <span className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
                 3
               </span>{" "}
@@ -761,7 +761,7 @@ export const VolunteerApplicationForm: React.FC<
             </h2>
 
             <div className="bg-gray-50 rounded-xl p-6 border-l-4 border-indigo-600">
-              <h3 className="font-semibold text-gray-900 mb-4">
+              <h3 className="font-semibold text-gray-100 mb-4">
                 Volunteer Application Consent
               </h3>
 
@@ -775,7 +775,7 @@ export const VolunteerApplicationForm: React.FC<
               </div>
 
               <div className="mb-4">
-                <p className="font-semibold text-gray-900 mb-3">
+                <p className="font-semibold text-gray-100 mb-3">
                   I understand that:
                 </p>
                 <ol className="list-decimal pl-6 space-y-2 text-gray-700 text-sm">
@@ -827,7 +827,7 @@ export const VolunteerApplicationForm: React.FC<
               </div>
 
               <div className="border-t border-gray-200 pt-4">
-                <p className="font-semibold text-gray-900 mb-3">
+                <p className="font-semibold text-gray-100 mb-3">
                   SPECIFIC CONSENTS
                 </p>
                 <p className="text-gray-600 text-sm mb-4">
@@ -849,7 +849,7 @@ export const VolunteerApplicationForm: React.FC<
                       className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <div className="ml-3">
-                      <strong className="font-semibold text-gray-900">
+                      <strong className="font-semibold text-gray-100">
                         Essential Processing (Required):
                       </strong>
                       <p className="text-gray-700 text-sm mt-1">
@@ -880,7 +880,7 @@ export const VolunteerApplicationForm: React.FC<
                       className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <div className="ml-3">
-                      <strong className="font-semibold text-gray-900">
+                      <strong className="font-semibold text-gray-100">
                         International Transfers (if applicable):
                       </strong>
                       <p className="text-gray-700 text-sm mt-1">
@@ -896,7 +896,7 @@ export const VolunteerApplicationForm: React.FC<
               </div>
 
               <div className="border-t border-gray-200 pt-4 mt-4">
-                <p className="font-semibold text-gray-900 mb-3">
+                <p className="font-semibold text-gray-100 mb-3">
                   ACKNOWLEDGMENT
                 </p>
 
@@ -913,7 +913,7 @@ export const VolunteerApplicationForm: React.FC<
                     className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   <div className="ml-3">
-                    <strong className="font-semibold text-gray-900">
+                    <strong className="font-semibold text-gray-100">
                       Age Confirmation:
                     </strong>
                     <p className="text-gray-700 text-sm mt-1">
@@ -939,7 +939,7 @@ export const VolunteerApplicationForm: React.FC<
                     className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                   />
                   <div className="ml-3">
-                    <strong className="font-semibold text-gray-900">
+                    <strong className="font-semibold text-gray-100">
                       Privacy Notice:
                     </strong>
                     <p className="text-gray-700 text-sm mt-1">

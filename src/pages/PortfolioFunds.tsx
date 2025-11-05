@@ -314,7 +314,7 @@ const PortfolioFunds: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="space-y-8">
         <div className="animate-fade-in-up">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-100 mb-4">
             {t("portfolio.title", "Portfolio Funds")}
           </h1>
         </div>
@@ -336,7 +336,7 @@ const PortfolioFunds: React.FC = () => {
               className="overflow-hidden hover:shadow-lg transition-shadow p-6"
             >
               <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-xl font-semibold text-gray-100">
                   {fund.name}
                 </h3>
                 <div className="flex items-center text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">

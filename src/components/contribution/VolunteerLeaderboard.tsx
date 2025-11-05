@@ -232,7 +232,7 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
                     {leader.rank}
                   </span>
                   <div>
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-gray-100">
                       {leader.displayName}
                     </p>
                     <p className="text-sm text-gray-500">

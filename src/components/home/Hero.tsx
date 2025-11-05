@@ -6,7 +6,7 @@ export const Hero: React.FC = () => {
   
   return (
     <>
-      <h1 className="text-4xl font-bold text-gray-900 sm:text-6xl">
+      <h1 className="text-4xl font-bold text-gray-100 sm:text-6xl">
         {t('app.tagline')}
       </h1>
       <p className="mt-4 text-xl text-gray-600">

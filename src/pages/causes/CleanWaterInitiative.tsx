@@ -41,7 +41,7 @@ const CleanWaterInitiative: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Funding Progress</h2>
+            <h2 className="text-xl font-semibold text-gray-100">Funding Progress</h2>
             <div className="flex justify-between text-sm text-gray-500 mb-1">
               <span>Progress</span>
               <span>{formatCurrency(cause.raisedAmount)} of {formatCurrency(cause.targetAmount)}</span>
@@ -53,7 +53,7 @@ const CleanWaterInitiative: React.FC = () => {
           </div>
 
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">Project Details</h2>
+            <h2 className="text-xl font-semibold text-gray-100">Project Details</h2>
             <dl className="space-y-4">
               <div>
                 <dt className="text-sm text-gray-500">Timeline</dt>
@@ -76,7 +76,7 @@ const CleanWaterInitiative: React.FC = () => {
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Impact Highlights</h2>
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">Impact Highlights</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {cause.impact.map((item) => (
               <p key={item} className="flex items-start text-gray-700">

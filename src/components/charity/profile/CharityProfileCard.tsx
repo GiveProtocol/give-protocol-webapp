@@ -21,7 +21,7 @@ const CharityProfileCard: React.FC<CharityProfileCardProps> = ({ profile }) => {
         <span className="text-sm font-medium text-indigo-600">
           {profile.category}
         </span>
-        <h3 className="mt-2 text-xl font-semibold text-gray-900">
+        <h3 className="mt-2 text-xl font-semibold text-gray-100">
           {profile.name}
         </h3>
         <p className="mt-2 text-gray-600">

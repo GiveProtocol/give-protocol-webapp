@@ -120,7 +120,7 @@ const Login: React.FC = () => {
       case "select":
         return (
           <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-center text-gray-900">
+            <h2 className="text-2xl font-semibold text-center text-gray-100">
               Choose Account Type
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -175,7 +175,7 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-sm text-gray-600 hover:text-gray-900"
+                className="text-sm text-gray-600 hover:text-gray-100"
               >
                 ← Back to selection
               </button>

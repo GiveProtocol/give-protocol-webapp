@@ -22,7 +22,7 @@ const ScheduledDonationsPage: React.FC = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Connect Your Wallet</h2>
+          <h2 className="text-2xl font-bold text-gray-100 mb-4">Connect Your Wallet</h2>
           <p className="text-gray-600 mb-6">
             To view your scheduled donations, please connect your wallet.
           </p>
@@ -35,7 +35,7 @@ const ScheduledDonationsPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Scheduled Donations</h1>
+        <h1 className="text-3xl font-bold text-gray-100">Scheduled Donations</h1>
         <p className="mt-2 text-gray-600">Manage your monthly donation schedules</p>
       </div>
 

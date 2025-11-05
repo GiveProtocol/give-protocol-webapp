@@ -42,11 +42,11 @@ export const GlobalContributions: React.FC<GlobalContributionsProps> = ({ filter
 
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Donation Leaderboard</h2>
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">Donation Leaderboard</h2>
           <DonationLeaderboard />
         </div>
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">Volunteer Leaderboard</h2>
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">Volunteer Leaderboard</h2>
           <VolunteerLeaderboard />
         </div>
       </div>

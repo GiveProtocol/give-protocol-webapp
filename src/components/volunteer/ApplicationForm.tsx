@@ -88,7 +88,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
   <form onSubmit={onSubmit} className="space-y-6">
     {/* Personal Information */}
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">
+      <h3 className="text-lg font-medium text-gray-100">
         Personal Information
       </h3>
       <Input
@@ -128,7 +128,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
 
     {/* Availability */}
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Availability</h3>
+      <h3 className="text-lg font-medium text-gray-100">Availability</h3>
       <p className="block text-sm font-medium text-gray-700 mb-1">
         Preferred Days
       </p>
@@ -195,7 +195,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
 
     {/* Skills & Experience */}
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Skills & Experience</h3>
+      <h3 className="text-lg font-medium text-gray-100">Skills & Experience</h3>
       <label className="block">
         <span className="text-sm font-medium text-gray-700 mb-1 block">
           Relevant Experience *
@@ -229,7 +229,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
 
     {/* Interests */}
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">
+      <h3 className="text-lg font-medium text-gray-100">
         Interests & Preferences
       </h3>
       <Input
@@ -242,7 +242,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
 
     {/* References */}
     <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">References</h3>
+      <h3 className="text-lg font-medium text-gray-100">References</h3>
       {formData.references.map((ref, index) => (
         <div key={ref.id} className="space-y-2">
           <Input
@@ -263,7 +263,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
 
     {/* Work Samples */}
     <div>
-      <h3 className="text-lg font-medium text-gray-900 mb-2">Work Samples</h3>
+      <h3 className="text-lg font-medium text-gray-100 mb-2">Work Samples</h3>
       <Input
         label="Links to Work Samples (comma-separated)"
         value={formData.workSamples}
@@ -613,7 +613,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4">
-        <h2 className="text-2xl font-semibold text-gray-900">
+        <h2 className="text-2xl font-semibold text-gray-100">
           Apply for: {opportunityTitle}
         </h2>
 

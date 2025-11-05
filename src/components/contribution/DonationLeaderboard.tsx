@@ -91,9 +91,9 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
             <span className="text-gray-500 font-medium">{entry.rank}</span>
           </div>
         )}
-        <span className="font-medium text-gray-900">{entry.displayName}</span>
+        <span className="font-medium text-gray-100">{entry.displayName}</span>
       </div>
-      <span className="text-gray-900 font-semibold">
+      <span className="text-gray-100 font-semibold">
         {formatCurrency(entry.totalDonated)}
       </span>
     </div>

@@ -46,14 +46,14 @@ describe('Tabs Component', () => {
     const tab2 = screen.getByText('Tab 2');
     
     // Tab 1 should be active initially
-    expect(tab1.closest('button')).toHaveClass('bg-white', 'text-gray-900', 'shadow');
+    expect(tab1.closest('button')).toHaveClass('bg-white', 'text-gray-100', 'shadow');
     expect(tab2.closest('button')).toHaveClass('text-gray-600');
     
     // Click tab 2
     fireEvent.click(tab2);
     
     // Tab 2 should now be active
-    expect(tab2.closest('button')).toHaveClass('bg-white', 'text-gray-900', 'shadow');
+    expect(tab2.closest('button')).toHaveClass('bg-white', 'text-gray-100', 'shadow');
     expect(tab1.closest('button')).toHaveClass('text-gray-600');
   });
 

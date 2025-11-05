@@ -26,7 +26,7 @@ const OpportunityCard: React.FC<OpportunityCardProps> = ({
 }) => (
   <div className="border border-gray-200 rounded-lg p-4">
     <div className="flex justify-between items-start mb-4">
-      <h3 className="text-lg font-medium text-gray-900 flex-grow">
+      <h3 className="text-lg font-medium text-gray-100 flex-grow">
         {opportunity.title}
       </h3>
       <div className="flex space-x-2 ml-4">
@@ -165,7 +165,7 @@ export const OpportunityManagement: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-md">
       <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-        <h2 className="text-xl font-semibold text-gray-900">
+        <h2 className="text-xl font-semibold text-gray-100">
           {t("volunteer.opportunities", "Volunteer Opportunities")}
         </h2>
         <Button onClick={handleShowForm} className="flex items-center">

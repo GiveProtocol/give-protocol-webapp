@@ -174,7 +174,7 @@ const WalletSelectMenu: React.FC<WalletSelectMenuProps> = ({
   return (
     <div className="absolute right-0 mt-2 w-72 rounded-lg shadow-lg bg-white ring-1 ring-gray-200 z-50">
       <div className="p-4 border-b border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900">Connect Wallet</h3>
+        <h3 className="text-lg font-semibold text-gray-100">Connect Wallet</h3>
         <p className="text-sm text-gray-500 mt-1">
           Choose your preferred wallet provider
         </p>
@@ -194,7 +194,7 @@ const WalletSelectMenu: React.FC<WalletSelectMenuProps> = ({
               aria-hidden="true"
             />
             <div className="flex flex-col items-start">
-              <span className="font-medium text-gray-900">{wallet.name}</span>
+              <span className="font-medium text-gray-100">{wallet.name}</span>
               <span className="text-xs text-gray-500">
                 Connect to your {wallet.name} wallet
               </span>
@@ -203,7 +203,7 @@ const WalletSelectMenu: React.FC<WalletSelectMenuProps> = ({
         ))}
         {getInstalledWallets().length === 0 && (
           <div className="px-4 py-4 text-sm">
-            <p className="font-medium text-gray-900 mb-1">No wallets found</p>
+            <p className="font-medium text-gray-100 mb-1">No wallets found</p>
             <p className="text-gray-500">Install MetaMask to continue</p>
           </div>
         )}

@@ -66,13 +66,13 @@ export const PortfolioGrid: React.FC<PortfolioGridProps> = ({ searchTerm, catego
               className="w-full h-48 object-cover"
             />
             <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{portfolio.name}</h3>
+              <h3 className="text-xl font-semibold text-gray-100 mb-2">{portfolio.name}</h3>
               <p className="text-gray-600 mb-4">{portfolio.description}</p>
               
               <div className="space-y-4">
                 <div>
                   <p className="text-sm text-gray-500">Total Donated</p>
-                  <p className="text-lg font-semibold text-gray-900">
+                  <p className="text-lg font-semibold text-gray-100">
                     {formatCurrency(portfolio.totalDonated)}
                   </p>
                 </div>

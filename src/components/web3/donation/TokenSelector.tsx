@@ -70,7 +70,7 @@ export function TokenSelector({
             className="w-6 h-6 rounded-full"
           />
           <div className="text-left">
-            <div className="font-medium text-gray-900">{selectedToken.symbol}</div>
+            <div className="font-medium text-gray-100">{selectedToken.symbol}</div>
             {walletBalance !== undefined && (
               <div className="text-sm text-gray-500">
                 Balance: {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
@@ -116,7 +116,7 @@ export function TokenSelector({
                     className="w-6 h-6 rounded-full"
                   />
                   <div className="flex-1 text-left">
-                    <div className="font-medium text-gray-900">{token.symbol}</div>
+                    <div className="font-medium text-gray-100">{token.symbol}</div>
                     <div className="text-sm text-gray-500">{token.name}</div>
                   </div>
                   {price !== undefined && (

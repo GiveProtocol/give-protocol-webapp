@@ -75,7 +75,7 @@ export const CauseGrid: React.FC<CauseGridProps> = ({ searchTerm, category }) =>
               className="w-full h-48 object-cover"
             />
             <div className="p-6 space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{cause.name}</h3>
+              <h3 className="text-xl font-semibold text-gray-100 mb-2">{cause.name}</h3>
               <p className="text-gray-600 mb-4">{cause.description}</p>
               
               <div className="flex justify-between text-sm text-gray-500 mb-1">

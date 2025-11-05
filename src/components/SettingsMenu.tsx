@@ -105,7 +105,7 @@ export const SettingsMenu: React.FC = () => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-2 px-4 border-b border-gray-100">
-            <h3 className="text-sm font-medium text-gray-900">
+            <h3 className="text-sm font-medium text-gray-100">
               {t("settings.title")}
             </h3>
           </div>

@@ -18,7 +18,7 @@ export const GlobalStats: React.FC = () => {
         <DollarSign className="h-6 w-6 p-3 rounded-full bg-indigo-100 text-indigo-600" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">Total Donated</p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             {formatCurrency(stats.totalDonated)}
           </p>
         </div>
@@ -28,7 +28,7 @@ export const GlobalStats: React.FC = () => {
         <Users className="h-6 w-6 p-3 rounded-full bg-green-100 text-green-600" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">Active Volunteers</p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             {stats.totalVolunteers.toLocaleString()}
           </p>
         </div>
@@ -38,7 +38,7 @@ export const GlobalStats: React.FC = () => {
         <Clock className="h-6 w-6 p-3 rounded-full bg-purple-100 text-purple-600" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">Volunteer Hours</p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             {stats.totalHours.toLocaleString()}
           </p>
         </div>
@@ -48,7 +48,7 @@ export const GlobalStats: React.FC = () => {
         <Award className="h-6 w-6 p-3 rounded-full bg-amber-100 text-amber-600" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">Skills Endorsed</p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             {stats.totalSkills.toLocaleString()}
           </p>
         </div>

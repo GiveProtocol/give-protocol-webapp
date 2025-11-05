@@ -121,7 +121,7 @@ export const ScheduledDonations: React.FC = () => {
       <Card className="p-6">
         <div className="text-center py-8">
           <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
+          <h3 className="text-lg font-medium text-gray-100 mb-2">
             No Scheduled Donations
           </h3>
           <p className="text-gray-500 mb-4">
@@ -136,7 +136,7 @@ export const ScheduledDonations: React.FC = () => {
     <div>
       <Card className="mb-6">
         <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900">Monthly Donation Schedules</h2>
+          <h2 className="text-xl font-semibold text-gray-100">Monthly Donation Schedules</h2>
           <Button variant="secondary" onClick={fetchSchedules} disabled={loading}>
             {loading ? "Refreshing..." : "Refresh"}
           </Button>
@@ -150,7 +150,7 @@ export const ScheduledDonations: React.FC = () => {
                   <div className="flex items-start gap-3">
                     <div className="p-2 bg-indigo-100 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600" /></div>
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">
+                      <h3 className="text-lg font-semibold text-gray-100">
                         {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
                       </h3>
                       <p className="text-sm text-gray-500 font-mono">{schedule.charity}</p>
@@ -164,7 +164,7 @@ export const ScheduledDonations: React.FC = () => {
                       <p className="text-xs text-gray-500 uppercase tracking-wider mb-1">
                         Total Commitment
                       </p>
-                      <p className="text-base font-semibold text-gray-900">
+                      <p className="text-base font-semibold text-gray-100">
                         {schedule.totalAmount} {schedule.tokenSymbol || 'tokens'}
                       </p>
                     </div>
@@ -241,7 +241,7 @@ export const ScheduledDonations: React.FC = () => {
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 text-center">
             <div className="bg-red-100 rounded-full p-3 mx-auto w-fit"><AlertTriangle className="h-6 w-6 text-red-600" /></div>
             
-            <h3 className="text-lg font-medium text-gray-900">
+            <h3 className="text-lg font-medium text-gray-100">
               Confirm Cancellation
             </h3>
             
@@ -250,7 +250,7 @@ export const ScheduledDonations: React.FC = () => {
                 Are you sure you want to cancel your monthly donation schedule to:
               </p>
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="font-medium text-gray-900">
+                <p className="font-medium text-gray-100">
                   {selectedSchedule.charityName || `Charity ${selectedSchedule.charity.substring(0, 6)}...`}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">

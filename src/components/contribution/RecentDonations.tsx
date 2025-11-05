@@ -62,7 +62,7 @@ export const RecentDonations: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Donations</h2>
+      <h2 className="text-xl font-semibold text-gray-100 mb-4">Recent Donations</h2>
       <div className="space-y-4">
         {donations?.map((donation) => (
           <div
@@ -70,10 +70,10 @@ export const RecentDonations: React.FC = () => {
             className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
           >
             <div>
-              <p className="font-medium text-gray-900">{donation.organization}</p>
+              <p className="font-medium text-gray-100">{donation.organization}</p>
               <p className="text-sm text-gray-500">{formatDate(donation.date)}</p>
             </div>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-gray-100">
               {formatCurrency(donation.amount)}
             </span>
           </div>

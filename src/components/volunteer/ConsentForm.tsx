@@ -121,7 +121,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
         </div>
 
         <div className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">
             Volunteer Application Consent
           </h2>
 
@@ -132,7 +132,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
             Notice, which I have read and understood.
           </p>
 
-          <p className="font-semibold text-gray-900 mb-3">
+          <p className="font-semibold text-gray-100 mb-3">
             I understand that:
           </p>
           <ol className="list-decimal pl-6 space-y-2 text-gray-700 mb-6">
@@ -180,7 +180,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
           </ol>
 
           <div className="border-t border-gray-200 pt-6 mb-6">
-            <p className="font-semibold text-gray-900 mb-4">
+            <p className="font-semibold text-gray-100 mb-4">
               SPECIFIC CONSENTS
             </p>
             <p className="text-gray-600 text-sm mb-6">
@@ -203,7 +203,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
                       className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <div className="ml-4">
-                      <strong className="font-semibold text-gray-900">
+                      <strong className="font-semibold text-gray-100">
                         Essential Processing (Required):
                       </strong>
                       <p className="text-gray-700 mt-1">
@@ -234,7 +234,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
                       className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
                     />
                     <div className="ml-4">
-                      <strong className="font-semibold text-gray-900">
+                      <strong className="font-semibold text-gray-100">
                         International Transfers (if applicable):
                       </strong>
                       <p className="text-gray-700 mt-1">
@@ -249,7 +249,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
           </div>
 
           <div className="border-t border-gray-200 pt-6">
-            <p className="font-semibold text-gray-900 mb-4">ACKNOWLEDGMENT</p>
+            <p className="font-semibold text-gray-100 mb-4">ACKNOWLEDGMENT</p>
 
             <label
               htmlFor="age-confirmation"
@@ -264,7 +264,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
                 className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
               <div className="ml-4">
-                <strong className="font-semibold text-gray-900">
+                <strong className="font-semibold text-gray-100">
                   Age Confirmation:
                 </strong>
                 <p className="text-gray-700 mt-1">
@@ -290,7 +290,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
                 className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
               />
               <div className="ml-4">
-                <strong className="font-semibold text-gray-900">
+                <strong className="font-semibold text-gray-100">
                   Privacy Notice:
                 </strong>
                 <p className="text-gray-700 mt-1">

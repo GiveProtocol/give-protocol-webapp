@@ -40,7 +40,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
         <div className="p-2 rounded-full bg-green-100">
           <CheckCircle className="h-6 w-6 text-green-600" />
         </div>
-        <h3 className="ml-3 text-lg font-semibold text-gray-900">
+        <h3 className="ml-3 text-lg font-semibold text-gray-100">
           Volunteer Contribution Verification
         </h3>
       </div>
@@ -50,7 +50,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
           <dl className="flex items-start">
             <User className="h-5 w-5 text-gray-400 mt-0.5 mr-2" />
             <dt className="text-sm font-medium text-gray-500">Volunteer
-              <dd className="text-base text-gray-900 mt-1">{verification.applicantName}</dd>
+              <dd className="text-base text-gray-100 mt-1">{verification.applicantName}</dd>
             </dt>
           </dl>
         )}
@@ -59,7 +59,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
           <dl className="flex items-start">
             <Clock className="h-5 w-5 text-gray-400 mt-0.5 mr-2" />
             <dt className="text-sm font-medium text-gray-500">Opportunity
-              <dd className="text-base text-gray-900 mt-1">{verification.opportunityTitle}</dd>
+              <dd className="text-base text-gray-100 mt-1">{verification.opportunityTitle}</dd>
             </dt>
           </dl>
         )}
@@ -68,7 +68,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
           <dl className="flex items-start">
             <Building className="h-5 w-5 text-gray-400 mt-0.5 mr-2" />
             <dt className="text-sm font-medium text-gray-500">Organization
-              <dd className="text-base text-gray-900 mt-1">{verification.charityName}</dd>
+              <dd className="text-base text-gray-100 mt-1">{verification.charityName}</dd>
             </dt>
           </dl>
         )}
@@ -78,7 +78,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
             <dl className="flex items-start">
               <Calendar className="h-5 w-5 text-gray-400 mt-0.5 mr-2" />
               <dt className="text-sm font-medium text-gray-500">Accepted On
-                <dd className="text-base text-gray-900 mt-1">{formatDate(verification.acceptedAt, true)}</dd>
+                <dd className="text-base text-gray-100 mt-1">{formatDate(verification.acceptedAt, true)}</dd>
               </dt>
             </dl>
           )}
@@ -87,7 +87,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
             <dl className="flex items-start">
               <Calendar className="h-5 w-5 text-gray-400 mt-0.5 mr-2" />
               <dt className="text-sm font-medium text-gray-500">Verified On
-                <dd className="text-base text-gray-900 mt-1">{formatDate(verification.verifiedAt, true)}</dd>
+                <dd className="text-base text-gray-100 mt-1">{formatDate(verification.verifiedAt, true)}</dd>
               </dt>
             </dl>
           )}
@@ -99,14 +99,14 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
           {verification.acceptanceHash && (
             <div className="mb-2">
               <p className="text-xs text-gray-500">Acceptance Hash</p>
-              <p className="text-sm font-mono text-gray-900 break-all">{verification.acceptanceHash}</p>
+              <p className="text-sm font-mono text-gray-100 break-all">{verification.acceptanceHash}</p>
             </div>
           )}
           
           {verification.verificationHash && (
             <div className="mb-2">
               <p className="text-xs text-gray-500">Verification Hash</p>
-              <p className="text-sm font-mono text-gray-900 break-all">{verification.verificationHash}</p>
+              <p className="text-sm font-mono text-gray-100 break-all">{verification.verificationHash}</p>
             </div>
           )}
           

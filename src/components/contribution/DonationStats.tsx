@@ -27,7 +27,7 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
               ? t('dashboard.yourTotalDonated', 'Your Total Donated') 
               : t('dashboard.totalDonations')}
           </p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             <CurrencyDisplay amount={stats.totalDonated} />
           </p>
         </div>
@@ -41,7 +41,7 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
               ? t('dashboard.yourVolunteerHours', 'Your Volunteer Hours') 
               : t('dashboard.volunteerHours')}
           </p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             {stats.volunteerHours.toLocaleString()}
           </p>
         </div>
@@ -55,7 +55,7 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
               ? t('dashboard.yourSkillsEndorsed', 'Your Skills Endorsed') 
               : t('dashboard.skillsEndorsed')}
           </p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             {stats.skillsEndorsed.toLocaleString()}
           </p>
         </div>

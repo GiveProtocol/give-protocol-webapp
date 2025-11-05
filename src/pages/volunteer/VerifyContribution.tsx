@@ -52,7 +52,7 @@ const VerifyContribution: React.FC = () => {
       <Button
         variant="ghost"
         onClick={handleBack}
-        className="mb-6 flex items-center text-gray-600 hover:text-gray-900"
+        className="mb-6 flex items-center text-gray-600 hover:text-gray-100"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         Back
@@ -60,7 +60,7 @@ const VerifyContribution: React.FC = () => {
 
       <div className="bg-white rounded-lg shadow-md overflow-hidden">
         <div className="p-6 border-b border-gray-200">
-          <h1 className="text-2xl font-bold text-gray-900">Volunteer Contribution Verification</h1>
+          <h1 className="text-2xl font-bold text-gray-100">Volunteer Contribution Verification</h1>
         </div>
 
         <div className="p-6">

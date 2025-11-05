@@ -25,7 +25,7 @@ export const StatCard: React.FC<StatCardProps> = ({
         </div>
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">{label}</p>
-          <p className="text-2xl font-semibold text-gray-900">
+          <p className="text-2xl font-semibold text-gray-100">
             <CurrencyDisplay amount={value} />
           </p>
         </div>

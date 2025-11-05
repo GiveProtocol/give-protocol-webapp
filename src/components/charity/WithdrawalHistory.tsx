@@ -21,10 +21,10 @@ interface WithdrawalRowProps {
  */
 const WithdrawalRow: React.FC<WithdrawalRowProps> = ({ withdrawal }) => (
   <tr>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
       {formatDate(withdrawal.created_at)}
     </td>
-    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
       {formatCurrency(withdrawal.amount)}
     </td>
     <td className="px-6 py-4 whitespace-nowrap">
@@ -74,7 +74,7 @@ export const WithdrawalHistory: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-md">
       <div className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Withdrawal History</h2>
+        <h2 className="text-xl font-semibold text-gray-100 mb-4">Withdrawal History</h2>
         <WithdrawalTable withdrawals={withdrawals} />
       </div>
     </div>

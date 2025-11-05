@@ -211,7 +211,7 @@ const VolunteerOpportunities: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="space-y-8">
         <div className="animate-fade-in-up">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
+          <h1 className="text-3xl font-bold text-gray-100 mb-4">
             {t("volunteer.opportunities", "Volunteer Opportunities")}
           </h1>
         </div>
@@ -291,7 +291,7 @@ const VolunteerOpportunities: React.FC = () => {
                 className="w-full h-48 object-cover"
               />
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                <h3 className="text-xl font-semibold text-gray-100 mb-2">
                   {opportunity.title}
                 </h3>
                 <p className="text-sm font-medium text-indigo-600 mb-2">

@@ -411,7 +411,7 @@ export const GiveDashboard: React.FC = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-gray-100 mb-4">
             Admin Dashboard
           </h2>
           <p className="text-gray-600 mb-6">
@@ -427,7 +427,7 @@ export const GiveDashboard: React.FC = () => {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <h2 className="text-2xl font-bold text-gray-100 mb-4">
             Connect Your Wallet
           </h2>
           <p className="text-gray-600 mb-6">
@@ -444,7 +444,7 @@ export const GiveDashboard: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8 flex justify-between items-start">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">
+          <h1 className="text-3xl font-bold text-gray-100">
             {t("dashboard.title")}
           </h1>
           <p className="mt-2 text-gray-600">{t("dashboard.subtitle")}</p>
@@ -489,7 +489,7 @@ export const GiveDashboard: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("dashboard.totalDonations")}
             </p>
-            <p className="text-2xl font-semibold text-gray-900">
+            <p className="text-2xl font-semibold text-gray-100">
               <CurrencyDisplay amount={2450} />
             </p>
           </div>
@@ -501,7 +501,7 @@ export const GiveDashboard: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("dashboard.volunteerHours")}
             </p>
-            <p className="text-2xl font-semibold text-gray-900">48</p>
+            <p className="text-2xl font-semibold text-gray-100">48</p>
           </div>
         </Card>
 
@@ -511,7 +511,7 @@ export const GiveDashboard: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("dashboard.skillsEndorsed")}
             </p>
-            <p className="text-2xl font-semibold text-gray-900">12</p>
+            <p className="text-2xl font-semibold text-gray-100">12</p>
           </div>
         </Card>
       </div>
@@ -519,7 +519,7 @@ export const GiveDashboard: React.FC = () => {
       {/* Contributions - Flattened to reduce nesting */}
       <div className="bg-white rounded-lg shadow-md mb-8 overflow-x-auto">
         <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-100">
             {t("dashboard.contributions")}
           </h2>
           <div className="flex items-center space-x-4 flex-wrap gap-2">
@@ -612,20 +612,20 @@ export const GiveDashboard: React.FC = () => {
           <tbody className="divide-y divide-gray-200">
             {filteredContributions.map((contribution) => (
               <tr key={contribution.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
                   {formatDate(contribution.timestamp, true)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
                   {t(
                     `contribution.type.${contribution.purpose.toLowerCase().replace(" ", "")}`,
                     contribution.purpose,
                   )}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
                   {contribution.metadata?.organization ||
                     t("common.unknown", "Unknown")}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
                   {contribution.purpose === "Donation" ? (
                     <>
                       {contribution.amount} {contribution.cryptoType} (
@@ -697,7 +697,7 @@ export const GiveDashboard: React.FC = () => {
       {/* Skills & Endorsements - Flattened from 4 to 3 levels */}
       <div className="bg-white rounded-lg shadow-md">
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 className="text-xl font-semibold text-gray-100">
             {t("skills.endorsements", "Skills & Endorsements")}
           </h2>
         </div>
@@ -714,7 +714,7 @@ export const GiveDashboard: React.FC = () => {
               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div>
-                <h3 className="font-medium text-gray-900">{item.skill}</h3>
+                <h3 className="font-medium text-gray-100">{item.skill}</h3>
                 <p className="text-sm text-gray-500">
                   {item.endorsements} {t("skills.endorsements", "endorsements")}
                 </p>

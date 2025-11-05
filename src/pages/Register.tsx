@@ -35,7 +35,7 @@ export const Register: React.FC = () => {
           <Link to="/" className="inline-flex items-center mb-4">
             <Logo className="h-12 w-12" />
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
+          <h2 className="text-3xl font-bold text-gray-100">Create Account</h2>
           <p className="mt-2 text-sm text-gray-600">
             Already have an account?{' '}
             <Link to={`/login?type=${userType}`} className="font-medium text-indigo-600 hover:text-indigo-500">

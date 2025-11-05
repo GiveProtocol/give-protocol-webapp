@@ -156,7 +156,7 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-gray-100">Admin Dashboard</h1>
         <button
           onClick={fetchAdminStats}
           className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
@@ -170,7 +170,7 @@ const AdminDashboard: React.FC = () => {
         <Card className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Total Users</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
+            <p className="text-2xl font-bold text-gray-100">{stats.totalUsers.toLocaleString()}</p>
           </div>
           <div className="text-2xl">👥</div>
         </Card>
@@ -178,7 +178,7 @@ const AdminDashboard: React.FC = () => {
         <Card className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Total Donations</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalDonations}</p>
+            <p className="text-2xl font-bold text-gray-100">{stats.totalDonations}</p>
           </div>
           <div className="text-2xl">💰</div>
         </Card>
@@ -186,7 +186,7 @@ const AdminDashboard: React.FC = () => {
         <Card className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Verified Charities</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalCharities}</p>
+            <p className="text-2xl font-bold text-gray-100">{stats.totalCharities}</p>
           </div>
           <div className="text-2xl">🏛️</div>
         </Card>
@@ -194,7 +194,7 @@ const AdminDashboard: React.FC = () => {
         <Card className="p-6 flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-600">Active Volunteers</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalVolunteers}</p>
+            <p className="text-2xl font-bold text-gray-100">{stats.totalVolunteers}</p>
           </div>
           <div className="text-2xl">🤝</div>
         </Card>
@@ -202,12 +202,12 @@ const AdminDashboard: React.FC = () => {
 
       {/* Recent Activity - Flattened from 5 to 3 levels */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+        <h2 className="text-xl font-semibold text-gray-100 mb-4">Recent Activity</h2>
         {stats.recentActivity.map((activity) => (
           <div key={activity.id} className="flex items-center justify-between p-4 mb-4 border rounded-lg">
             <span className="text-2xl mr-4">{getActivityIcon(activity.type)}</span>
             <div className="flex-1">
-              <p className="font-medium text-gray-900">{activity.description}</p>
+              <p className="font-medium text-gray-100">{activity.description}</p>
               <p className="text-sm text-gray-500">{formatRelativeTime(activity.timestamp)}</p>
             </div>
             {activity.amount && (
@@ -219,7 +219,7 @@ const AdminDashboard: React.FC = () => {
 
       {/* Quick Actions - Flattened to 3 levels */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <h2 className="text-xl font-semibold text-gray-100 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
             <span className="text-2xl block mb-2">📊</span>
