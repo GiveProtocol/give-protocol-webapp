@@ -44,7 +44,7 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
           {getRankIcon() || <span className="text-gray-600">{rank}</span>}
         </div>
         <div>
-          <span className="font-medium text-gray-100">{name}</span>
+          <span className="font-medium text-gray-900">{name}</span>
           {walletAddress && (
             <span className="text-xs text-gray-500 block font-mono">{walletAddress.substring(0, 6)}...{walletAddress.substring(walletAddress.length - 4)}</span>
           )}
@@ -52,7 +52,7 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
       </div>
       
       <div className="flex items-center space-x-4">
-        <span className="font-semibold text-gray-100">
+        <span className="font-semibold text-gray-900">
           {metric === 'donations' ? formatCurrency(value) : `${value} hours`}
         </span>
         

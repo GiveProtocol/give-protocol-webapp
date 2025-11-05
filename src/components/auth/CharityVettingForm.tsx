@@ -184,7 +184,7 @@ export const CharityVettingForm: React.FC = () => {
         </div>
       )}
 
-      <h3 className="text-lg font-semibold text-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900">
         Organization Details
       </h3>
       <Input
@@ -231,7 +231,7 @@ export const CharityVettingForm: React.FC = () => {
         error={validationErrors["taxId"]}
       />
 
-      <h3 className="text-lg font-semibold text-gray-100">Address</h3>
+      <h3 className="text-lg font-semibold text-gray-900">Address</h3>
       <Input
         label="Street Address"
         name="streetAddress"
@@ -295,7 +295,7 @@ export const CharityVettingForm: React.FC = () => {
         />
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-100">
+      <h3 className="text-lg font-semibold text-gray-900">
         Contact Information
       </h3>
       <Input
@@ -325,7 +325,7 @@ export const CharityVettingForm: React.FC = () => {
         error={validationErrors["contactPhone"]}
       />
 
-      <h3 className="text-lg font-semibold text-gray-100">Account Security</h3>
+      <h3 className="text-lg font-semibold text-gray-900">Account Security</h3>
       <Input
         label="Password"
         type="password"

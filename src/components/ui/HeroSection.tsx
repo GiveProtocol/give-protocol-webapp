@@ -20,7 +20,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         alt={title}
         className="w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-white">
+      <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-gray-900">
         {children}
         <h1 className="text-4xl font-bold mb-2">{title}</h1>
         <p className="text-lg opacity-90">{description}</p>

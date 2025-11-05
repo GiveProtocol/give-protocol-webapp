@@ -84,16 +84,16 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
       <div className="flex items-center space-x-4">
         {entry.rank <= 3 ? (
           <div className={`p-2 rounded-full ${getRankColor(entry.rank)}`}>
-            <Trophy className="h-5 w-5 text-white" aria-hidden="true" />
+            <Trophy className="h-5 w-5 text-gray-900" aria-hidden="true" />
           </div>
         ) : (
           <div className="w-9 h-9 flex items-center justify-center">
             <span className="text-gray-500 font-medium">{entry.rank}</span>
           </div>
         )}
-        <span className="font-medium text-gray-100">{entry.displayName}</span>
+        <span className="font-medium text-gray-900">{entry.displayName}</span>
       </div>
-      <span className="text-gray-100 font-semibold">
+      <span className="text-gray-900 font-semibold">
         {formatCurrency(entry.totalDonated)}
       </span>
     </div>

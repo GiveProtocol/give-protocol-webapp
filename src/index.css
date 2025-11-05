@@ -15,7 +15,7 @@
   }
 
   body {
-    @apply bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 min-h-screen text-gray-100;
+    @apply bg-gray-50 min-h-screen text-gray-900;
   }
 
   /* Focus visible utilities */
@@ -30,7 +30,7 @@
 
 @layer components {
   .card {
-    @apply bg-white/5 backdrop-blur-lg rounded-lg shadow-card border border-white/10 transition-all duration-200 ease-in-out hover:shadow-card-hover hover:border-emerald-500/30;
+    @apply bg-white rounded-lg shadow-card border border-gray-200 transition-all duration-200 ease-in-out hover:shadow-card-hover hover:border-emerald-500/30;
   }
 
   .btn {
@@ -42,7 +42,7 @@
   }
 
   .btn-secondary {
-    @apply bg-white/10 backdrop-blur-sm hover:bg-white/20 text-gray-100 hover:text-white border border-white/20 focus:ring-emerald-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5;
+    @apply bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 hover:border-emerald-500 focus:ring-emerald-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5;
   }
 }
 

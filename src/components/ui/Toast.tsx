@@ -35,7 +35,7 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
           type === 'loading' && "text-blue-500 animate-spin"
         )} />
         <div className="ml-3 w-0 flex-1 pt-0.5">
-          <p className="text-sm font-medium text-gray-100">{title}</p>
+          <p className="text-sm font-medium text-gray-900">{title}</p>
           {message && (
             <p className="mt-1 text-sm text-gray-500">{message}</p>
           )}

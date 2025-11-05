@@ -8,7 +8,7 @@ export const ProtocolStats: React.FC = () => {
         <DollarSign className="h-6 w-6 text-gray-700 p-3 rounded-full bg-gray-100" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">Total Value Donated</p>
-          <p className="text-2xl font-semibold text-gray-100">$1,245,392</p>
+          <p className="text-2xl font-semibold text-gray-900">$1,245,392</p>
         </div>
       </div>
       
@@ -16,7 +16,7 @@ export const ProtocolStats: React.FC = () => {
         <Hash className="h-6 w-6 text-gray-700 p-3 rounded-full bg-gray-100" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">Total Donations</p>
-          <p className="text-2xl font-semibold text-gray-100">3,427</p>
+          <p className="text-2xl font-semibold text-gray-900">3,427</p>
         </div>
       </div>
     </div>

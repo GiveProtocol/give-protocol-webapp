@@ -94,7 +94,7 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
             </svg>
           </div>
         </div>
-        <h3 className="text-lg font-medium text-gray-100 mb-2">
+        <h3 className="text-lg font-medium text-gray-900 mb-2">
           Check your email
         </h3>
         <p className="text-sm text-gray-600 mb-6">{successMessage}</p>
@@ -113,7 +113,7 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Sign In
         </Button>
-        <h2 className="text-2xl font-bold text-gray-100">{title}</h2>
+        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
         <p className="text-sm text-gray-600 mt-2">{description}</p>
       </div>
 

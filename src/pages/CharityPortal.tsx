@@ -607,7 +607,7 @@ export const CharityPortal: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-100">
+        <h1 className="text-3xl font-bold text-gray-900">
           {t("charity.dashboard")}
         </h1>
         <p className="mt-2 text-gray-600">{t("charity.subtitle")}</p>
@@ -621,7 +621,7 @@ export const CharityPortal: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("dashboard.totalDonations")}
             </p>
-            <p className="text-2xl font-semibold text-gray-100">
+            <p className="text-2xl font-semibold text-gray-900">
               <CurrencyDisplay amount={charityStats.totalDonated} />
             </p>
           </div>
@@ -633,7 +633,7 @@ export const CharityPortal: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("charity.activeVolunteers")}
             </p>
-            <p className="text-2xl font-semibold text-gray-100">
+            <p className="text-2xl font-semibold text-gray-900">
               {charityStats.activeVolunteers}
             </p>
           </div>
@@ -645,7 +645,7 @@ export const CharityPortal: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("dashboard.volunteerHours")}
             </p>
-            <p className="text-2xl font-semibold text-gray-100">
+            <p className="text-2xl font-semibold text-gray-900">
               {charityStats.volunteerHours}
             </p>
           </div>
@@ -657,7 +657,7 @@ export const CharityPortal: React.FC = () => {
             <p className="text-sm font-medium text-gray-600">
               {t("dashboard.skillsEndorsed")}
             </p>
-            <p className="text-2xl font-semibold text-gray-100">
+            <p className="text-2xl font-semibold text-gray-900">
               {charityStats.skillsEndorsed}
             </p>
           </div>
@@ -716,7 +716,7 @@ export const CharityPortal: React.FC = () => {
       {activeTab === "transactions" && (
         <div className="bg-white rounded-lg shadow-md mb-8">
           <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-gray-100">
+            <h2 className="text-xl font-semibold text-gray-900">
               {t("charity.transactions")}
             </h2>
             <Button
@@ -771,21 +771,21 @@ export const CharityPortal: React.FC = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {sortedTransactions().map((transaction) => (
                     <tr key={transaction.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {formatDate(transaction.timestamp, true)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {t(
                           `contribution.type.${transaction.purpose.toLowerCase().replace(" ", "")}`,
                           transaction.purpose,
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         {transaction.metadata?.organization ||
                           transaction.metadata?.donor ||
                           t("donor.anonymous", "Anonymous")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-100">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                         <span>
                           {transaction.amount} {transaction.cryptoType} (
                           <CurrencyDisplay
@@ -845,7 +845,7 @@ export const CharityPortal: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md mb-8">
           <div className="p-6 border-b border-gray-200">
             <div className="flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-100">
+              <h2 className="text-xl font-semibold text-gray-900">
                 {t("volunteer.pendingHours", "Pending Volunteer Hours")}
               </h2>
               <Button variant="secondary" className="flex items-center">
@@ -862,7 +862,7 @@ export const CharityPortal: React.FC = () => {
                   className="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-start"
                 >
                   <div className="flex-grow pr-4">
-                    <h3 className="text-lg font-medium text-gray-100">
+                    <h3 className="text-lg font-medium text-gray-900">
                       {hours.volunteerName}
                     </h3>
                     <p className="text-sm text-gray-500 mb-2">
@@ -908,7 +908,7 @@ export const CharityPortal: React.FC = () => {
       {activeTab === "applications" && (
         <div className="bg-white rounded-lg shadow-md mb-8">
           <div className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-semibold text-gray-100">
+            <h2 className="text-xl font-semibold text-gray-900">
               {t("volunteer.pendingApplications", "Pending Applications")}
             </h2>
           </div>
@@ -920,7 +920,7 @@ export const CharityPortal: React.FC = () => {
                   className="bg-white border border-gray-200 rounded-lg p-4 flex justify-between items-start"
                 >
                   <div className="flex-grow">
-                    <h3 className="text-lg font-medium text-gray-100">
+                    <h3 className="text-lg font-medium text-gray-900">
                       {application.full_name}
                     </h3>
                     <p className="text-sm text-gray-500">
@@ -956,7 +956,7 @@ export const CharityPortal: React.FC = () => {
       {activeTab === "opportunities" && (
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-100">
+            <h2 className="text-xl font-semibold text-gray-900">
               {t("volunteer.opportunities", "Volunteer Opportunities")}
             </h2>
             <Link to="/charity-portal/create-opportunity">

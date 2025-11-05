@@ -15,7 +15,7 @@ export const About: React.FC = () => {
           <ScrollReveal direction="left">
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
               <Target className="h-8 w-8 text-indigo-600 mb-3" />
-              <h2 className="text-2xl font-semibold text-gray-100 mb-6">Our Mission</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-gray-600 leading-relaxed">
                 To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
                 efficiency, and lasting impact for both donors and charitable organizations.
@@ -25,7 +25,7 @@ export const About: React.FC = () => {
           <ScrollReveal direction="right" delay={100}>
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
               <Globe className="h-8 w-8 text-indigo-600 mb-3" />
-              <h2 className="text-2xl font-semibold text-gray-100 mb-6">Our Vision</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Vision</h2>
               <p className="text-gray-600 leading-relaxed">
                 A world where every charitable donation creates maximum impact through transparent,
                 efficient, and sustainable giving mechanisms.
@@ -37,25 +37,25 @@ export const About: React.FC = () => {
         {/* What We Do */}
         <ScrollReveal direction="up">
           <section>
-            <h2 className="text-3xl font-bold text-gray-100 mb-8 text-center">What We Do</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
             <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
               <Heart className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-100 mb-4">Direct Donations</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Direct Donations</h3>
               <p className="text-gray-600">
                 Enable cryptocurrency donations directly to verified charitable organizations with complete transparency.
               </p>
             </div>
             <div className="text-center">
               <Users className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-100 mb-4">Volunteer Connection</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Volunteer Connection</h3>
               <p className="text-gray-600">
                 Connect volunteers with meaningful opportunities and track verified volunteer hours on the blockchain.
               </p>
             </div>
             <div className="text-center">
               <TrendingUp className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-100 mb-4">Portfolio Funds</h3>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4">Portfolio Funds</h3>
               <p className="text-gray-600">
                 Support multiple organizations in the same sector through diversified giving portfolios.
               </p>
@@ -67,9 +67,9 @@ export const About: React.FC = () => {
         {/* Our Values */}
         <ScrollReveal direction="up">
         <section className="bg-gray-50 rounded-lg p-8 grid md:grid-cols-2 gap-8">
-          <h2 className="text-3xl font-bold text-gray-100 mb-8 text-center md:col-span-2">Our Values</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">Our Values</h2>
           <div>
-            <h3 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <Shield className="h-6 w-6 text-indigo-600 mr-3" />
               Transparency
             </h3>
@@ -79,7 +79,7 @@ export const About: React.FC = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <Target className="h-6 w-6 text-indigo-600 mr-3" />
               Impact
             </h3>
@@ -89,7 +89,7 @@ export const About: React.FC = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <Users className="h-6 w-6 text-indigo-600 mr-3" />
               Community
             </h3>
@@ -99,7 +99,7 @@ export const About: React.FC = () => {
             </p>
           </div>
           <div>
-            <h3 className="text-xl font-semibold text-gray-100 mb-4 flex items-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
               <TrendingUp className="h-6 w-6 text-indigo-600 mr-3" />
               Innovation
             </h3>
@@ -114,7 +114,7 @@ export const About: React.FC = () => {
         {/* The Technology */}
         <ScrollReveal direction="up">
         <section>
-          <h2 className="text-3xl font-bold text-gray-100 mb-8 text-center">Built on Blockchain</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Built on Blockchain</h2>
           <div className="max-w-3xl mx-auto text-center">
             <p className="text-lg text-gray-600 mb-8">
               Give Protocol is built on the Moonbeam Network, providing the security and transparency 
@@ -122,15 +122,15 @@ export const About: React.FC = () => {
             </p>
             <div className="grid md:grid-cols-3 gap-6 text-sm">
               <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h4 className="font-semibold text-gray-100 mb-2">Smart Contracts</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Smart Contracts</h4>
                 <p className="text-gray-600">Automated, transparent execution of donations and volunteer agreements</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h4 className="font-semibold text-gray-100 mb-2">Immutable Records</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Immutable Records</h4>
                 <p className="text-gray-600">Permanent, tamper-proof record of all charitable activities</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h4 className="font-semibold text-gray-100 mb-2">Decentralized Governance</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Decentralized Governance</h4>
                 <p className="text-gray-600">Community-driven decision making for platform development</p>
               </div>
             </div>
@@ -141,17 +141,17 @@ export const About: React.FC = () => {
         {/* Join Us */}
         <ScrollReveal direction="scale">
         <section className="text-center bg-indigo-50 rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-100 mb-4">Join the Future of Giving</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Join the Future of Giving</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             Whether you&apos;re a donor looking to make an impact, a volunteer ready to contribute your time, 
             or an organization seeking support, Give Protocol provides the tools you need to create 
             meaningful change.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-indigo-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition-colors">
+            <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-sm hover:shadow-lg">
               Start Giving
             </button>
-            <button className="border border-indigo-600 text-indigo-600 px-8 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
+            <button className="border-2 border-emerald-500 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
               Find Opportunities
             </button>
           </div>

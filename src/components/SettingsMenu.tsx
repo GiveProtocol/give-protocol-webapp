@@ -94,7 +94,7 @@ export const SettingsMenu: React.FC = () => {
     <div className="relative" ref={menuRef}>
       <button
         onClick={toggleMenu}
-        className="p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+        className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
         aria-expanded={isOpen}
         aria-haspopup="true"
         aria-label="Settings"
@@ -105,7 +105,7 @@ export const SettingsMenu: React.FC = () => {
       {isOpen && (
         <div className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-2 px-4 border-b border-gray-100">
-            <h3 className="text-sm font-medium text-gray-100">
+            <h3 className="text-sm font-medium text-gray-900">
               {t("settings.title")}
             </h3>
           </div>

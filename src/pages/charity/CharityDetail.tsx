@@ -43,8 +43,8 @@ const CharityDetail: React.FC = () => {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="relative h-80 rounded-xl overflow-hidden mb-6">
         <img src={charity.image} alt={charity.name} className="w-full h-full object-cover" />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-white">
-          <span className="px-3 py-1 bg-green-500 text-white text-sm font-medium rounded-full mb-2 inline-block">Verified</span>
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-gray-900">
+          <span className="px-3 py-1 bg-green-500 text-gray-900 text-sm font-medium rounded-full mb-2 inline-block">Verified</span>
           <span className="ml-3 text-sm opacity-90">{charity.country}</span>
           <h1 className="text-4xl font-bold mb-2 mt-2">{charity.name}</h1>
           <p className="text-lg opacity-90">{charity.description}</p>
@@ -53,25 +53,25 @@ const CharityDetail: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-100 mb-4">Impact Statistics</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Impact Statistics</h2>
           <dl className="grid grid-cols-3 gap-4 text-center">
             <div>
               <dt className="text-sm text-gray-500">Total Donated</dt>
-              <dd className="text-xl font-bold text-gray-100 mt-1">{formatCurrency(charity.stats.totalDonated)}</dd>
+              <dd className="text-xl font-bold text-gray-900 mt-1">{formatCurrency(charity.stats.totalDonated)}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">Donors</dt>
-              <dd className="text-xl font-bold text-gray-100 mt-1">{charity.stats.donorCount}</dd>
+              <dd className="text-xl font-bold text-gray-900 mt-1">{charity.stats.donorCount}</dd>
             </div>
             <div>
               <dt className="text-sm text-gray-500">Projects</dt>
-              <dd className="text-xl font-bold text-gray-100 mt-1">{charity.stats.projectsCompleted}</dd>
+              <dd className="text-xl font-bold text-gray-900 mt-1">{charity.stats.projectsCompleted}</dd>
             </div>
           </dl>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-100 mb-4">Giving Options</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">Giving Options</h2>
           <div className="space-y-4">
             <DonationButton charityName={charity.name} charityAddress={charity.id} buttonText="Give Once" />
             <ScheduledDonationButton charityName={charity.name} charityAddress={charity.id} buttonText="Give Monthly" />
@@ -84,14 +84,14 @@ const CharityDetail: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-100 mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Our Mission
           </h2>
           <p className="text-gray-600">{charity.mission}</p>
         </div>
 
         <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-100 mb-4">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Impact Highlights
           </h2>
           <ul className="space-y-2">

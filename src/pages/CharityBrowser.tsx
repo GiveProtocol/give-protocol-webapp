@@ -73,7 +73,7 @@ const CharityBrowser: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div className="animate-fade-in-up">
-        <h1 className="text-3xl font-bold text-gray-100 mb-4">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">
           Discover Impact Opportunities
         </h1>
       </div>

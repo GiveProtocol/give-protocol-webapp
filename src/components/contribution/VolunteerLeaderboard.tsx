@@ -227,12 +227,12 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
                       leader.rank <= 3
                         ? getRankColor(leader.rank)
                         : "bg-gray-200"
-                    } text-white font-semibold`}
+                    } text-gray-900 font-semibold`}
                   >
                     {leader.rank}
                   </span>
                   <div>
-                    <p className="font-medium text-gray-100">
+                    <p className="font-medium text-gray-900">
                       {leader.displayName}
                     </p>
                     <p className="text-sm text-gray-500">

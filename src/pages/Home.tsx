@@ -19,7 +19,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-gray-900 overflow-hidden">
       {/* Animated Background Elements - Emerald/Teal Theme */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
@@ -248,7 +248,7 @@ const Home: React.FC = () => {
         <div className="grid md:grid-cols-2 gap-8">
           <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden hover:border-emerald-500/30 transition-all">
             <div className="h-48 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-              <Globe className="w-24 h-24 text-white/80" />
+              <Globe className="w-24 h-24 text-gray-900/80" />
             </div>
             <div className="p-6">
               <h3 className="text-2xl font-bold mb-2">Environmental Impact Fund</h3>
@@ -261,7 +261,7 @@ const Home: React.FC = () => {
 
           <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden hover:border-teal-500/30 transition-all">
             <div className="h-48 bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center">
-              <Users className="w-24 h-24 text-white/80" />
+              <Users className="w-24 h-24 text-gray-900/80" />
             </div>
             <div className="p-6">
               <h3 className="text-2xl font-bold mb-2">Education Opportunity Fund</h3>

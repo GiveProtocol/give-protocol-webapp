@@ -41,7 +41,7 @@ const NotFound: React.FC<NotFoundProps> = ({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-4">
       <div className="text-center">
-        <h1 className="mb-2 text-6xl font-bold text-gray-100">404</h1>
+        <h1 className="mb-2 text-6xl font-bold text-gray-900">404</h1>
         <h2 className="mb-4 text-3xl font-semibold text-gray-800">{title}</h2>
         <p className="mb-8 text-lg text-gray-600">{message}</p>
         

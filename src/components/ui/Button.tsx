@@ -58,11 +58,11 @@ export function Button({
     primary:
       "bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm",
     secondary:
-      "bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-100 border border-gray-300 focus:ring-indigo-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm",
+      "bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 focus:ring-indigo-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm",
     danger:
       "bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:translate-y-0 active:shadow-sm",
     ghost:
-      "bg-transparent hover:bg-gray-100 text-gray-700 hover:text-gray-100 focus:ring-gray-500 transform hover:-translate-y-0.5 active:translate-y-0",
+      "bg-transparent hover:bg-gray-100 text-gray-700 hover:text-gray-900 focus:ring-gray-500 transform hover:-translate-y-0.5 active:translate-y-0",
   };
 
   const sizes = {

@@ -84,10 +84,10 @@ export function CurrencySelector(): React.ReactElement {
         onClick={handleToggle}
         className={cn(
           "flex items-center space-x-1 px-3 py-2 rounded-lg",
-          "text-sm font-medium text-gray-700",
-          "hover:bg-gray-100 transition-colors",
-          "focus:outline-none focus:ring-2 focus:ring-indigo-500",
-          isOpen && "bg-gray-100"
+          "text-sm font-medium text-white",
+          "hover:bg-white/10 transition-colors",
+          "focus:outline-none focus:ring-2 focus:ring-white",
+          isOpen && "bg-white/10"
         )}
         aria-label="Select currency"
         aria-expanded={isOpen}

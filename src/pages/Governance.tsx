@@ -6,7 +6,7 @@ export const Governance: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="animate-fade-in-up">
-        <h1 className="text-4xl font-bold text-gray-100 mb-4 text-center">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4 text-center">
           Protocol Governance
         </h1>
         <p className="text-xl text-gray-600 text-center mb-12">
@@ -92,14 +92,14 @@ export const Governance: React.FC = () => {
           </h2>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <div>
-              <h4 className="font-semibold text-gray-100 mb-2">1. Creation</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">1. Creation</h4>
               <p className="text-gray-600">
                 Any account with minimum voting power can submit detailed
                 proposals with implementation plans.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-100 mb-2">
+              <h4 className="font-semibold text-gray-900 mb-2">
                 2. Discussion
               </h4>
               <p className="text-gray-600">
@@ -108,14 +108,14 @@ export const Governance: React.FC = () => {
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-100 mb-2">3. Voting</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">3. Voting</h4>
               <p className="text-gray-600">
                 48-hour voting period with weighted voting based on
                 participation metrics.
               </p>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-100 mb-2">4. Execution</h4>
+              <h4 className="font-semibold text-gray-900 mb-2">4. Execution</h4>
               <p className="text-gray-600">
                 Successful proposals are implemented after meeting all required
                 thresholds.
@@ -133,7 +133,7 @@ export const Governance: React.FC = () => {
           </h2>
           <div className="grid gap-6 md:grid-cols-2">
             <div>
-              <h4 className="font-semibold text-gray-100 mb-2">
+              <h4 className="font-semibold text-gray-900 mb-2">
                 Standard Changes
               </h4>
               <div className="text-gray-600 mb-2">
@@ -145,7 +145,7 @@ export const Governance: React.FC = () => {
               </div>
             </div>
             <div>
-              <h4 className="font-semibold text-gray-100 mb-2">
+              <h4 className="font-semibold text-gray-900 mb-2">
                 Emergency Actions
               </h4>
               <div className="text-gray-600 mb-2">

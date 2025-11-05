@@ -22,7 +22,7 @@ export const DonorStats: React.FC<DonorStatsProps> = ({
         <PiggyBank className="h-6 w-6 text-indigo-600 p-3 rounded-full bg-indigo-100" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">{t('dashboard.totalDonations')}</p>
-          <p className="text-2xl font-semibold text-gray-100">
+          <p className="text-2xl font-semibold text-gray-900">
             <CurrencyDisplay amount={totalDonated} />
           </p>
         </div>
@@ -32,7 +32,7 @@ export const DonorStats: React.FC<DonorStatsProps> = ({
         <TrendingUp className="h-6 w-6 text-green-600 p-3 rounded-full bg-green-100" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">{t('dashboard.impactGrowth', 'Impact Growth')}</p>
-          <p className="text-2xl font-semibold text-gray-100">
+          <p className="text-2xl font-semibold text-gray-900">
             <CurrencyDisplay amount={impactGrowth} />
           </p>
         </div>
@@ -42,7 +42,7 @@ export const DonorStats: React.FC<DonorStatsProps> = ({
         <Heart className="h-6 w-6 text-purple-600 p-3 rounded-full bg-purple-100" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600">{t('dashboard.charitiesSupported', 'Charities Supported')}</p>
-          <p className="text-2xl font-semibold text-gray-100">
+          <p className="text-2xl font-semibold text-gray-900">
             {charitiesSupported}
           </p>
         </div>

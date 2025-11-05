@@ -13,7 +13,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ Icon, title, descripti
       <div className="flex justify-center">
         <Icon className="h-12 w-12 text-gray-700" />
       </div>
-      <h3 className="mt-4 text-xl font-semibold text-gray-100">{title}</h3>
+      <h3 className="mt-4 text-xl font-semibold text-gray-900">{title}</h3>
       <p className="mt-2 text-gray-600">{description}</p>
     </div>
   );

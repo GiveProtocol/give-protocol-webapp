@@ -24,7 +24,7 @@ const CharityProfileSection: React.FC = () => {
   if (!profile) {
     return (
       <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold text-gray-100 mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
           Charity Profile
         </h2>
         <p className="text-gray-600">Loading profile&hellip;</p>
@@ -35,7 +35,7 @@ const CharityProfileSection: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-semibold text-gray-100">Charity Profile</h2>
+        <h2 className="text-xl font-semibold text-gray-900">Charity Profile</h2>
         <Button onClick={handleToggleEdit} variant="secondary">
           {isEditing ? "Cancel" : "Edit Profile"}
         </Button>

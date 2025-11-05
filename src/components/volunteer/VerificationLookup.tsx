@@ -39,7 +39,7 @@ export const VerificationLookup: React.FC = () => {
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-100 mb-4">
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">
         Verify Volunteer Contribution
       </h2>
 

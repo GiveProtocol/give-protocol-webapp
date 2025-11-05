@@ -217,7 +217,7 @@ const MobileMenu: React.FC<{
 
   return (
     <nav className="md:hidden" id="mobile-menu" aria-label="Mobile navigation">
-      <div className="px-2 pt-2 pb-3 space-y-1 bg-slate-900/95 backdrop-blur-lg shadow-lg rounded-b-lg border-b border-emerald-500/20">
+      <div className="px-2 pt-2 pb-3 space-y-1 bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg">
         {children}
       </div>
     </nav>
@@ -233,7 +233,7 @@ const MobileMenuButton: React.FC<{
   <button
     ref={menuButtonRef}
     type="button"
-    className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-emerald-400 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
+    className="md:hidden inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
     aria-controls="mobile-menu"
     aria-expanded={isMenuOpen}
     aria-label={isMenuOpen ? "Close menu" : "Open menu"}
@@ -292,8 +292,8 @@ export const AppNavbar: React.FC = () => {
   const isActive = useCallback(
     (path: string) =>
       location.pathname === path
-        ? "bg-emerald-500/20 text-emerald-400"
-        : "text-gray-300 hover:bg-white/10 hover:text-emerald-400",
+        ? "bg-white/20 text-white font-semibold"
+        : "text-white/90 hover:bg-white/10 hover:text-white",
     [location.pathname],
   );
 
@@ -330,7 +330,7 @@ export const AppNavbar: React.FC = () => {
 
   return (
     <nav
-      className="bg-slate-900/50 backdrop-blur-lg border-b border-emerald-500/20 shadow-sm"
+      className="bg-gradient-to-r from-emerald-600 to-teal-600 border-b border-emerald-700 shadow-lg"
       aria-label="Application navigation"
     >
       <div

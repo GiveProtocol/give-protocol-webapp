@@ -22,7 +22,7 @@ const CreateOpportunity: React.FC = () => {
       <Button
         variant="ghost"
         onClick={handleBack}
-        className="mb-6 flex items-center text-gray-600 hover:text-gray-100"
+        className="mb-6 flex items-center text-gray-600 hover:text-gray-900"
       >
         <ArrowLeft className="h-4 w-4 mr-2" />
         {t("common.back", "Back")}

@@ -70,8 +70,8 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, class
       className={cn(
         'px-3 py-1.5 text-sm font-medium rounded-md transition-all',
         isActive
-          ? 'bg-white text-gray-100 shadow'
-          : 'text-gray-600 hover:text-gray-100',
+          ? 'bg-white text-gray-900 shadow'
+          : 'text-gray-600 hover:text-gray-900',
         className
       )}
     >

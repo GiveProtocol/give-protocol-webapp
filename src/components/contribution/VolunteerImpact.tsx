@@ -54,7 +54,7 @@ export const VolunteerImpact: React.FC = () => {
           <div className="flex items-center justify-center">
             <Clock className="h-8 w-8 text-indigo-600" />
           </div>
-          <p className="mt-2 text-2xl font-semibold text-gray-100">
+          <p className="mt-2 text-2xl font-semibold text-gray-900">
             {stats?.totalHours}
           </p>
           <p className="text-sm text-gray-500">Hours</p>
@@ -64,7 +64,7 @@ export const VolunteerImpact: React.FC = () => {
           <div className="flex items-center justify-center">
             <Award className="h-8 w-8 text-green-600" />
           </div>
-          <p className="mt-2 text-2xl font-semibold text-gray-100">
+          <p className="mt-2 text-2xl font-semibold text-gray-900">
             {stats?.skillsEndorsed}
           </p>
           <p className="text-sm text-gray-500">Skills Endorsed</p>
@@ -74,7 +74,7 @@ export const VolunteerImpact: React.FC = () => {
           <div className="flex items-center justify-center">
             <Users className="h-8 w-8 text-purple-600" />
           </div>
-          <p className="mt-2 text-2xl font-semibold text-gray-100">
+          <p className="mt-2 text-2xl font-semibold text-gray-900">
             {stats?.organizationsHelped}
           </p>
           <p className="text-sm text-gray-500">Organizations</p>
@@ -82,7 +82,7 @@ export const VolunteerImpact: React.FC = () => {
       </div>
 
       <div>
-        <h3 className="text-lg font-medium text-gray-100 mb-4">Recent Achievements</h3>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Recent Achievements</h3>
         <div className="space-y-3">
           {stats?.recentAchievements.map((achievement) => (
             <div
@@ -90,7 +90,7 @@ export const VolunteerImpact: React.FC = () => {
               className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
             >
               <div>
-                <p className="font-medium text-gray-100">{achievement.title}</p>
+                <p className="font-medium text-gray-900">{achievement.title}</p>
                 <p className="text-sm text-gray-500">{achievement.organization}</p>
               </div>
               <span className="text-sm text-gray-500">{achievement.date}</span>

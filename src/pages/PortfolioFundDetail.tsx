@@ -79,7 +79,7 @@ const PortfolioFundDetail: React.FC = () => {
             alt={SAMPLE_PORTFOLIO.name}
             className="w-full h-full object-cover opacity-60"
           />
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-gray-900">
             <h1 className="text-3xl font-bold mb-2">{SAMPLE_PORTFOLIO.name}</h1>
             <p className="text-lg opacity-90">{SAMPLE_PORTFOLIO.description}</p>
           </div>
@@ -88,7 +88,7 @@ const PortfolioFundDetail: React.FC = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <p className="text-sm text-gray-500">Total Donated</p>
-            <p className="text-2xl font-bold text-gray-100">
+            <p className="text-2xl font-bold text-gray-900">
               {formatCurrency(SAMPLE_PORTFOLIO.totalDonated)}
             </p>
           </div>
@@ -103,7 +103,7 @@ const PortfolioFundDetail: React.FC = () => {
       </div>
 
       <div>
-        <h2 className="text-2xl font-bold text-gray-100 mb-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Supported Organizations
         </h2>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

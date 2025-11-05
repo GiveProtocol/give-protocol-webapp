@@ -37,7 +37,7 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
     <div className={`bg-white p-4 rounded-lg shadow-md mb-6 ${className}`}>
       <div className="flex items-center space-x-4 mb-4">
         <Filter className="h-5 w-5 text-gray-500" aria-hidden="true" />
-        <h2 className="text-lg font-medium text-gray-100">Filters</h2>
+        <h2 className="text-lg font-medium text-gray-900">Filters</h2>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
