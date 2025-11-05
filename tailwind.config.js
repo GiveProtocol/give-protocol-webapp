@@ -5,24 +5,24 @@ export default {
     extend: {
       colors: {
         primary: {
-          50: '#f8f9fa',
-          100: '#f1f3f5',
-          200: '#e9ecef',
-          300: '#dee2e6',
-          400: '#ced4da',
-          500: '#adb5bd',
-          600: '#868e96',
-          700: '#495057',
-          800: '#343a40',
-          900: '#212529',
+          50: '#f0fdfa',
+          100: '#ccfbf1',
+          200: '#99f6e4',
+          300: '#5eead4',
+          400: '#2dd4bf',
+          500: '#14b8a6',
+          600: '#0d9488',
+          700: '#0f766e',
+          800: '#115e59',
+          900: '#134e4a',
         },
         background: {
-          primary: '#F0EEE7',
-          secondary: '#F8F9FA',
+          primary: '#0f172a',
+          secondary: '#1e293b',
         },
         text: {
-          primary: '#212529',
-          secondary: '#495057',
+          primary: '#f1f5f9',
+          secondary: '#cbd5e1',
         }
       },
       boxShadow: {
@@ -42,11 +42,11 @@ export default {
         DEFAULT: {
           css: {
             maxWidth: 'none',
-            color: '#212529',
+            color: '#cbd5e1',
             a: {
-              color: '#4F46E5',
+              color: '#5eead4',
               '&:hover': {
-                color: '#4338CA',
+                color: '#2dd4bf',
               },
             },
           },
