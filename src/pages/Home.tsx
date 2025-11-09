@@ -85,7 +85,7 @@ const Home: React.FC = () => {
           </h3>
           <p className="text-gray-300 text-lg leading-relaxed">
             Give Protocol is building the infrastructure for transparent, sustainable philanthropy on the blockchain.
-            By leveraging Moonbeam's EVM compatibility and Polkadot's security, we're creating innovative funding
+            By leveraging Moonbeam&apos;s EVM compatibility and Polkadot&apos;s security, we&apos;re creating innovative funding
             mechanisms that transform one-time donations into lasting impact for verified charitable organizations worldwide.
           </p>
         </div>
@@ -277,9 +277,9 @@ const Home: React.FC = () => {
       {/* Why Moonbeam Section */}
       <section className="relative z-10 container mx-auto px-6 py-20">
         <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-12 text-center">
-          <h2 className="text-4xl font-bold mb-6">Why We're Building on Moonbeam</h2>
+          <h2 className="text-4xl font-bold mb-6">Why We&apos;re Building on Moonbeam</h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Moonbeam's EVM compatibility, Polkadot security, and interoperability make it the perfect
+            Moonbeam&apos;s EVM compatibility, Polkadot security, and interoperability make it the perfect
             foundation for transparent, global philanthropy.
           </p>
           <div className="grid md:grid-cols-4 gap-6 text-center">
