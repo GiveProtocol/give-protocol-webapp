@@ -71,13 +71,13 @@ const ComingSoon: React.FC = () => {
           </span>
         </div>
         <h1 className="text-5xl sm:text-7xl font-bold text-gray-900 mb-8 leading-relaxed overflow-visible animate-fade-in-up">
-          The Future of
+          The Future of{" "}
           <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 pb-3">
             Transparent Giving
           </span>
         </h1>
         <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto animate-fade-in-up animation-delay-200">
-          Join the waitlist for pre-launch access
+          Join the waitlist for pre-launch access{" "}
           <span className="block font-semibold text-gray-800 mt-2">
             Transform how charities sustain impact
           </span>
