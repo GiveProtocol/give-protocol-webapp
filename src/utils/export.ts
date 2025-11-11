@@ -79,7 +79,7 @@ export function downloadCSV(data: string, filename: string): void {
   
   document.body.appendChild(link);
   link.click();
-  document.body.removeChild(link);
+  link.remove();
 }
 
 /**

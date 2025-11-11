@@ -93,7 +93,7 @@ export class InputSanitizer {
         const element = child as Element;
 
         if (!this.allowedTags.includes(element.tagName.toLowerCase())) {
-          node.removeChild(child);
+          child.remove();
           return;
         }
 
