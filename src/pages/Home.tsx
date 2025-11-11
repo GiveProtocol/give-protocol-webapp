@@ -346,19 +346,19 @@ const Home: React.FC = () => {
           <div>
             <h4 className="font-semibold mb-4">Resources</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="#" className="hover:text-emerald-400">Documentation</a></li>
-              <li><a href="#" className="hover:text-emerald-400">Whitepaper</a></li>
-              <li><a href="#" className="hover:text-emerald-400">Blog</a></li>
-              <li><a href="#" className="hover:text-emerald-400">Community</a></li>
+              <li><Link to="/documentation" className="hover:text-emerald-400">Documentation</Link></li>
+              <li><span className="opacity-60">Whitepaper (Coming Soon)</span></li>
+              <li><span className="opacity-60">Blog (Coming Soon)</span></li>
+              <li><span className="opacity-60">Community (Coming Soon)</span></li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-4">Connect</h4>
             <ul className="space-y-2 text-gray-400 text-sm">
-              <li><a href="#" className="hover:text-emerald-400">Twitter</a></li>
-              <li><a href="#" className="hover:text-emerald-400">Discord</a></li>
-              <li><a href="#" className="hover:text-emerald-400">GitHub</a></li>
-              <li><a href="#" className="hover:text-emerald-400">Contact</a></li>
+              <li><a href="https://giveprotocol.bsky.social" className="hover:text-emerald-400" target="_blank" rel="noopener noreferrer">Bluesky</a></li>
+              <li><a href="https://discord.gg/giveprotocol" className="hover:text-emerald-400" target="_blank" rel="noopener noreferrer">Discord</a></li>
+              <li><a href="https://github.com/giveprotocol" className="hover:text-emerald-400" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+              <li><span className="opacity-60">Contact (Coming Soon)</span></li>
             </ul>
           </div>
         </div>
