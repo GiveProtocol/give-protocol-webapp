@@ -170,7 +170,8 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
                     href="mailto:legal@giveprotocol.io"
                     className="text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
                   >
-                    legal@giveprotocol.io <Mail className="h-3 w-3" aria-hidden="true" />
+                    legal@giveprotocol.io{" "}
+                    <Mail className="h-3 w-3" aria-hidden="true" />
                   </a>
                   , though this will not affect the lawfulness of processing
                   based on my consent before withdrawal. Withdrawing consent may
