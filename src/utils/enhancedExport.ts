@@ -207,7 +207,6 @@ export function convertToCSVWithFields<T extends Record<string, unknown>>(
   return [headerRow, ...rows].join("\n");
 }
 
-
 /**
  * Exports transactions to CSV with enhanced fields
  * @param transactions Array of all transaction types
