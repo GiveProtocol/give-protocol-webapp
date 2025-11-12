@@ -134,12 +134,14 @@ const Home: React.FC = () => {
             <span>Coming Soon</span>
             <ArrowRight className="w-5 h-5" />
           </button>
-          <Link
-            to="/documentation"
+          <a
+            href="https://docs.giveprotocol.io/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="bg-white/10 backdrop-blur-sm border border-white/20 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/20 transition-all"
           >
             Read Documentation
-          </Link>
+          </a>
         </div>
       </section>
 
@@ -400,12 +402,14 @@ const Home: React.FC = () => {
             >
               Coming Soon
             </button>
-            <Link
-              to="/documentation"
+            <a
+              href="https://docs.giveprotocol.io/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="bg-white/20 backdrop-blur-sm border border-white/30 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/30 transition-all"
             >
               Read Documentation
-            </Link>
+            </a>
           </div>
         </div>
       </section>
