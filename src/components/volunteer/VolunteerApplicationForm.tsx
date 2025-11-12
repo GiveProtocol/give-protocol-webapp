@@ -814,8 +814,7 @@ export const VolunteerApplicationForm: React.FC<
                         href="mailto:legal@giveprotocol.io"
                         className="text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
                       >
-                        legal@giveprotocol.io{" "}
-                        <Mail className="w-3 h-3" />
+                        legal@giveprotocol.io <Mail className="w-3 h-3" />
                       </a>
                     </span>
                     , though this will not affect the lawfulness of processing
