@@ -32,9 +32,7 @@ describe("csvHelpers", () => {
     });
 
     it("should handle null and undefined values", () => {
-      const data = [
-        { name: "John", age: null, city: undefined },
-      ];
+      const data = [{ name: "John", age: null, city: undefined }];
 
       const result = convertToCSV(data);
       const lines = result.split("\n");
@@ -87,10 +85,12 @@ describe("csvHelpers", () => {
         .mockReturnValue(mockLink as unknown as HTMLElement);
 
       // Mock document.body.appendChild
-      appendChildSpy = jest.spyOn(document.body, "appendChild").mockImplementation(() => {
-        // Empty mock to prevent actual execution
-        return mockLink as unknown as Node;
-      });
+      appendChildSpy = jest
+        .spyOn(document.body, "appendChild")
+        .mockImplementation(() => {
+          // Empty mock to prevent actual execution
+          return mockLink as unknown as Node;
+        });
 
       // Mock URL methods by assigning them to global URL
       URL.createObjectURL = jest.fn().mockReturnValue("blob:mock-url");
@@ -137,7 +137,10 @@ describe("csvHelpers", () => {
       downloadCSV(csvData, filename);
 
       expect(createElementSpy).toHaveBeenCalledWith("a");
-      expect(mockLink.setAttribute).toHaveBeenCalledWith("href", "blob:mock-url");
+      expect(mockLink.setAttribute).toHaveBeenCalledWith(
+        "href",
+        "blob:mock-url",
+      );
       expect(mockLink.setAttribute).toHaveBeenCalledWith("download", filename);
       expect(mockLink.style.visibility).toBe("hidden");
     });
