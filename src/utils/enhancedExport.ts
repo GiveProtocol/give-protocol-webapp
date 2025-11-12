@@ -4,6 +4,7 @@ import {
   type VolunteerTransactionType,
 } from "@/types/volunteerTransaction";
 import { formatDate } from "./date";
+import { downloadCSV } from "./csvHelpers";
 
 /**
  * Enhanced export data structure that includes all transaction types
@@ -206,25 +207,6 @@ export function convertToCSVWithFields<T extends Record<string, unknown>>(
   return [headerRow, ...rows].join("\n");
 }
 
-/**
- * Downloads CSV data
- * @param data CSV string
- * @param filename Filename for the downloaded file
- */
-export function downloadCSV(data: string, filename: string): void {
-  const blob = new Blob([data], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-
-  link.setAttribute("href", url);
-  link.setAttribute("download", filename);
-  link.style.visibility = "hidden";
-
-  document.body.appendChild(link);
-  link.click();
-  link.remove();
-  URL.revokeObjectURL(url);
-}
 
 /**
  * Exports transactions to CSV with enhanced fields
