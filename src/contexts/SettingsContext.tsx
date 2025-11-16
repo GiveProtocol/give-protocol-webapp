@@ -14,7 +14,7 @@ export type Language =
   | 'ar' // Arabic
   | 'hi'; // Hindi
 
-export type Currency = 
+export type Currency =
   | 'USD' // US Dollar
   | 'CAD' // Canadian Dollar
   | 'EUR' // Euro
@@ -32,11 +32,15 @@ export type Currency =
   | 'HKD' // Hong Kong Dollar
   | 'PKR'; // Pakistani Rupee
 
+export type Theme = 'light' | 'dark';
+
 interface SettingsContextType {
   language: Language;
   setLanguage: (_language: Language) => void;
   currency: Currency;
   setCurrency: (_currency: Currency) => void;
+  theme: Theme;
+  setTheme: (_theme: Theme) => void;
   languageOptions: { value: Language; label: string }[];
   currencyOptions: { value: Currency; label: string; symbol: string }[];
 }
@@ -64,6 +68,23 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     return (localStorage.getItem('currency') as Currency) || 'USD';
   });
 
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window === 'undefined') return 'light';
+    return (localStorage.getItem('theme') as Theme) || 'light';
+  });
+
+  // Apply initial theme on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedTheme = localStorage.getItem('theme') as Theme;
+      if (savedTheme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+    }
+  }, []);
+
   // Update localStorage when settings change (client-only)
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -79,12 +100,32 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     }
   }, [currency]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      console.log('Theme changed to:', theme);
+      localStorage.setItem('theme', theme);
+      // Apply theme to document
+      if (theme === 'dark') {
+        console.log('Adding dark class to document');
+        document.documentElement.classList.add('dark');
+      } else {
+        console.log('Removing dark class from document');
+        document.documentElement.classList.remove('dark');
+      }
+      console.log('Document classes:', document.documentElement.className);
+    }
+  }, [theme]);
+
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
   };
 
   const setCurrency = (newCurrency: Currency) => {
     setCurrencyState(newCurrency);
+  };
+
+  const setTheme = (newTheme: Theme) => {
+    setThemeState(newTheme);
   };
 
   const languageOptions = [
@@ -127,10 +168,12 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       setLanguage,
       currency,
       setCurrency,
+      theme,
+      setTheme,
       languageOptions,
       currencyOptions,
     }),
-    [language, currency, languageOptions, currencyOptions]
+    [language, currency, theme]
   );
 
   return (

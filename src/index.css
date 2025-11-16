@@ -9,13 +9,13 @@
     text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
   }
-  
+
   html {
     @apply scroll-smooth;
   }
 
   body {
-    @apply bg-gray-50 min-h-screen text-gray-900;
+    @apply bg-gray-50 min-h-screen text-gray-900 transition-colors duration-200;
   }
 
   /* Focus visible utilities */
@@ -26,6 +26,12 @@
   *:focus-visible {
     @apply ring-2 ring-offset-2 ring-emerald-500 rounded;
   }
+}
+
+/* Dark mode - Applied outside @layer to ensure they work */
+.dark body {
+  background-color: rgb(17 24 39);
+  color: rgb(243 244 246);
 }
 
 @layer components {
@@ -44,6 +50,22 @@
   .btn-secondary {
     @apply bg-white hover:bg-gray-50 text-gray-900 border border-gray-300 hover:border-emerald-500 focus:ring-emerald-500 shadow-sm hover:shadow-md transform hover:-translate-y-0.5;
   }
+}
+
+/* Dark mode component styles - Applied outside @layer */
+.dark .card {
+  background-color: rgb(31 41 55);
+  border-color: rgb(55 65 81);
+}
+
+.dark .btn-secondary {
+  background-color: rgb(31 41 55);
+  color: rgb(243 244 246);
+  border-color: rgb(75 85 99);
+}
+
+.dark .btn-secondary:hover {
+  background-color: rgb(55 65 81);
 }
 
 /* Fix for Silktide consent manager backdrop-filter Safari compatibility */
@@ -256,4 +278,49 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Dark mode - Target Tailwind utility classes directly with !important */
+.dark {
+  color-scheme: dark;
+}
+
+.dark .bg-gray-50 {
+  background-color: rgb(17 24 39) !important;
+}
+
+.dark .bg-white {
+  background-color: rgb(31 41 55) !important;
+}
+
+.dark .text-gray-900 {
+  color: rgb(243 244 246) !important;
+}
+
+.dark .text-gray-800 {
+  color: rgb(229 231 235) !important;
+}
+
+.dark .text-gray-700 {
+  color: rgb(209 213 219) !important;
+}
+
+.dark .text-gray-600 {
+  color: rgb(156 163 175) !important;
+}
+
+.dark .text-gray-500 {
+  color: rgb(156 163 175) !important;
+}
+
+.dark .border-gray-200 {
+  border-color: rgb(55 65 81) !important;
+}
+
+.dark .border-gray-100 {
+  border-color: rgb(55 65 81) !important;
+}
+
+.dark .border-gray-300 {
+  border-color: rgb(75 85 99) !important;
 }

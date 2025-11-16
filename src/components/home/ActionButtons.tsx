@@ -9,7 +9,7 @@ export const ActionButtons: React.FC = () => {
     <div className="mt-12 flex justify-center">
       <Link
         to="/give-dashboard"
-        className="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-gray-900 bg-gray-800 hover:bg-gray-900"
+        className="inline-flex items-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-200"
       >
         {t('home.startDonating', 'Start Donating')}
       </Link>

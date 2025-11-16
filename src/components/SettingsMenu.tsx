@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { Settings, Check, Globe, DollarSign } from "lucide-react";
-import { useSettings, Language, Currency } from "@/contexts/SettingsContext";
+import { Settings, Check, Globe, DollarSign, Moon, Sun } from "lucide-react";
+import { useSettings, Language, Currency, Theme } from "@/contexts/SettingsContext";
 import { cn } from "@/utils/cn";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -11,6 +11,8 @@ export const SettingsMenu: React.FC = () => {
     setLanguage,
     currency,
     setCurrency,
+    theme,
+    setTheme,
     languageOptions,
     currencyOptions,
   } = useSettings();
@@ -66,6 +68,13 @@ export const SettingsMenu: React.FC = () => {
     [setCurrency],
   );
 
+  const handleThemeChange = useCallback(
+    (newTheme: Theme) => {
+      setTheme(newTheme);
+    },
+    [setTheme],
+  );
+
   const toggleMenu = useCallback(() => {
     setIsOpen(!isOpen);
   }, [isOpen]);
@@ -90,6 +99,19 @@ export const SettingsMenu: React.FC = () => {
     [handleCurrencyChange],
   );
 
+  const handleThemeClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const value = e.currentTarget.dataset.value as Theme;
+      console.log('Theme button clicked, value:', value);
+      if (value) {
+        handleThemeChange(value);
+      }
+    },
+    [handleThemeChange],
+  );
+
   return (
     <div className="relative" ref={menuRef}>
       <button
@@ -108,6 +130,56 @@ export const SettingsMenu: React.FC = () => {
             <h3 className="text-sm font-medium text-gray-900">
               {t("settings.title")}
             </h3>
+          </div>
+
+          {/* Theme Selection */}
+          <div className="py-3 px-4 border-b border-gray-100">
+            <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
+              {theme === 'dark' ? (
+                <Moon className="h-4 w-4 text-gray-500 mr-2" />
+              ) : (
+                <Sun className="h-4 w-4 text-gray-500 mr-2" />
+              )}
+              {t("settings.theme", "Theme")}
+            </h4>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button
+                data-value="light"
+                onClick={handleThemeClick}
+                className={cn(
+                  "flex items-center justify-between px-3 py-2 text-sm rounded-md",
+                  theme === "light"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-700 hover:bg-gray-50",
+                )}
+              >
+                <span className="flex items-center">
+                  <Sun className="h-4 w-4 mr-2" />
+                  {t("settings.light", "Light")}
+                </span>
+                {theme === "light" && (
+                  <Check className="h-4 w-4 text-indigo-600" />
+                )}
+              </button>
+              <button
+                data-value="dark"
+                onClick={handleThemeClick}
+                className={cn(
+                  "flex items-center justify-between px-3 py-2 text-sm rounded-md",
+                  theme === "dark"
+                    ? "bg-indigo-50 text-indigo-700"
+                    : "text-gray-700 hover:bg-gray-50",
+                )}
+              >
+                <span className="flex items-center">
+                  <Moon className="h-4 w-4 mr-2" />
+                  {t("settings.dark", "Dark")}
+                </span>
+                {theme === "dark" && (
+                  <Check className="h-4 w-4 text-indigo-600" />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Language Selection */}
