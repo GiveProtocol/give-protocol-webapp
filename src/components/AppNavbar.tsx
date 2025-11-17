@@ -57,25 +57,25 @@ const DesktopNavLinks: React.FC<{
     <>
       <Link
         to="/browse"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-center ${isActive("/browse")}`}
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/browse")}`}
       >
         {t("nav.browse")}
       </Link>
       <Link
         to="/opportunities"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-center ${isActive("/opportunities")}`}
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/opportunities")}`}
       >
         {t("nav.opportunities")}
       </Link>
       <Link
         to="/contributions"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-center ${isActive("/contributions")}`}
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/contributions")}`}
       >
         {t("nav.contributions")}
       </Link>
       <button
         onClick={handleDashboardClick}
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-center ${
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
           isActive("/give-dashboard") || isActive("/charity-portal")
         }`}
       >
@@ -84,14 +84,14 @@ const DesktopNavLinks: React.FC<{
       {userType === "donor" && (
         <Link
           to="/scheduled-donations"
-          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-center ${isActive("/scheduled-donations")}`}
+          className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/scheduled-donations")}`}
         >
           Monthly Donations
         </Link>
       )}
       <Link
         to="/governance"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-center ${isActive("/governance")}`}
+        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/governance")}`}
       >
         {t("nav.governance")}
       </Link>
