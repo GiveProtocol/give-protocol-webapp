@@ -115,9 +115,12 @@ export const WalletAliasSettings: React.FC = () => {
           <div className="flex items-start">
             <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-amber-900">Authentication Required</p>
+              <p className="text-sm font-medium text-amber-900">
+                Authentication Required
+              </p>
               <p className="text-sm text-amber-700 mt-1">
-                Please sign in to set a wallet alias. Wallet aliases are tied to your account.
+                Please sign in to set a wallet alias. Wallet aliases are tied to
+                your account.
               </p>
             </div>
           </div>
@@ -137,9 +140,12 @@ export const WalletAliasSettings: React.FC = () => {
           <div className="flex items-start">
             <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
             <div>
-              <p className="text-sm font-medium text-blue-900">Wallet Not Connected</p>
+              <p className="text-sm font-medium text-blue-900">
+                Wallet Not Connected
+              </p>
               <p className="text-sm text-blue-700 mt-1">
-                Connect your wallet to set a public alias that will be displayed on the contribution tracker.
+                Connect your wallet to set a public alias that will be displayed
+                on the contribution tracker.
               </p>
             </div>
           </div>
@@ -277,12 +283,12 @@ export const WalletAliasSettings: React.FC = () => {
                 Confirm Deletion
               </h3>
             </header>
-            
+
             <p className="text-gray-600">
               Are you sure you want to delete this wallet alias? This action
               cannot be undone.
             </p>
-            
+
             <footer className="flex justify-end space-x-3">
               <Button
                 type="button"
