@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from "react";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/useToast";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -9,6 +10,7 @@ import { Wallet, Edit, Trash2, AlertCircle, Check } from "lucide-react";
 import { shortenAddress } from "@/utils/web3";
 
 export const WalletAliasSettings: React.FC = () => {
+  const { user } = useAuth();
   const { address, isConnected } = useWeb3();
   const { alias, aliases, loading, error, setWalletAlias, deleteWalletAlias } =
     useWalletAlias();
@@ -102,6 +104,28 @@ export const WalletAliasSettings: React.FC = () => {
     [handleDeleteRequest],
   );
 
+  if (!user) {
+    return (
+      <Card className="p-6">
+        <div className="flex items-center mb-4">
+          <Wallet className="h-5 w-5 text-gray-500 mr-2" />
+          <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
+        </div>
+        <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-4">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-amber-900">Authentication Required</p>
+              <p className="text-sm text-amber-700 mt-1">
+                Please sign in to set a wallet alias. Wallet aliases are tied to your account.
+              </p>
+            </div>
+          </div>
+        </div>
+      </Card>
+    );
+  }
+
   if (!isConnected) {
     return (
       <Card className="p-6">
@@ -109,10 +133,17 @@ export const WalletAliasSettings: React.FC = () => {
           <Wallet className="h-5 w-5 text-gray-500 mr-2" />
           <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
         </div>
-        <p className="text-gray-600 mb-4">
-          Connect your wallet to set a public alias that will be displayed on
-          the contribution tracker.
-        </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4">
+          <div className="flex items-start">
+            <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
+            <div>
+              <p className="text-sm font-medium text-blue-900">Wallet Not Connected</p>
+              <p className="text-sm text-blue-700 mt-1">
+                Connect your wallet to set a public alias that will be displayed on the contribution tracker.
+              </p>
+            </div>
+          </div>
+        </div>
       </Card>
     );
   }
