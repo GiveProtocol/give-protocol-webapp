@@ -138,21 +138,6 @@
       }
     </script>
 
-    <!-- Dark mode initialization - Must run before React hydration -->
-    <script>
-      // Immediately apply dark mode class to prevent flash
-      (function() {
-        try {
-          const theme = localStorage.getItem('theme');
-          if (theme === 'dark') {
-            document.documentElement.classList.add('dark');
-          }
-        } catch (e) {
-          // localStorage might not be available (private browsing, etc.)
-        }
-      })();
-    </script>
-
     <title>Give Protocol - Smart Giving Platform</title>
   </head>
   <body>

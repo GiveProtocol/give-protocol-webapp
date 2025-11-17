@@ -1,5 +1,6 @@
 import fs from 'node:fs/promises';
 import express from 'express';
+import cookieParser from 'cookie-parser';
 
 // Constants
 const isProduction = process.env.NODE_ENV === 'production';
@@ -8,6 +9,9 @@ const base = process.env.BASE || '/';
 
 // Create http server
 const app = express();
+
+// Parse cookies
+app.use(cookieParser());
 
 // API Proxy routes for external services (to avoid CORS issues)
 app.get('/api/coingecko/*', async (req, res) => {
@@ -63,6 +67,9 @@ app.use('*', async (req, res) => {
   try {
     const url = req.originalUrl.replace(base, '');
 
+    // Read theme from cookie (default to 'light')
+    const theme = req.cookies.theme || 'light';
+
     let template;
     let render;
     if (!isProduction) {
@@ -75,9 +82,14 @@ app.use('*', async (req, res) => {
       render = (await import('./dist/server/entry-server.js')).render;
     }
 
-    const appHtml = render(url);
+    const appHtml = render(url, theme);
 
-    const html = template.replace(`<!--app-html-->`, appHtml);
+    // Apply dark class to html element if theme is dark
+    const htmlWithTheme = theme === 'dark'
+      ? template.replace('<html lang="en">', '<html lang="en" class="dark">')
+      : template;
+
+    const html = htmlWithTheme.replace(`<!--app-html-->`, appHtml);
 
     res.status(200).set({ 'Content-Type': 'text/html' }).send(html);
   } catch (e) {

@@ -70,20 +70,33 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   const [theme, setThemeState] = useState<Theme>(() => {
     if (typeof window === 'undefined') return 'light';
-    return (localStorage.getItem('theme') as Theme) || 'light';
+
+    // Try to read from cookie first (for SSR consistency), then localStorage
+    const getCookie = (name: string): string | null => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
+      return null;
+    };
+
+    const cookieTheme = getCookie('theme');
+    const localTheme = localStorage.getItem('theme');
+
+    return (cookieTheme as Theme) || (localTheme as Theme) || 'light';
   });
 
-  // Apply initial theme on mount
+  // Apply initial theme on mount (SSR will have already set the class, just sync state)
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const savedTheme = localStorage.getItem('theme') as Theme;
-      if (savedTheme === 'dark') {
+      // Ensure the class matches our state (SSR already set it, but verify)
+      if (theme === 'dark') {
         document.documentElement.classList.add('dark');
       } else {
         document.documentElement.classList.remove('dark');
       }
     }
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount - theme dependency handled by separate effect below
 
   // Update localStorage when settings change (client-only)
   useEffect(() => {
@@ -102,17 +115,19 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      console.log('Theme changed to:', theme);
       localStorage.setItem('theme', theme);
+
+      // Set cookie for SSR (expires in 1 year)
+      const expiryDate = new Date();
+      expiryDate.setFullYear(expiryDate.getFullYear() + 1);
+      document.cookie = `theme=${theme}; path=/; expires=${expiryDate.toUTCString()}; SameSite=Lax`;
+
       // Apply theme to document
       if (theme === 'dark') {
-        console.log('Adding dark class to document');
         document.documentElement.classList.add('dark');
       } else {
-        console.log('Removing dark class from document');
         document.documentElement.classList.remove('dark');
       }
-      console.log('Document classes:', document.documentElement.className);
     }
   }, [theme]);
 
