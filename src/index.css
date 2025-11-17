@@ -109,7 +109,9 @@
   .scroll-reveal {
     opacity: 0;
     transform: translateY(30px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition:
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
   }
 
   .scroll-reveal.is-visible {
@@ -120,7 +122,9 @@
   .scroll-reveal-left {
     opacity: 0;
     transform: translateX(-30px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition:
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
   }
 
   .scroll-reveal-left.is-visible {
@@ -131,7 +135,9 @@
   .scroll-reveal-right {
     opacity: 0;
     transform: translateX(30px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition:
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
   }
 
   .scroll-reveal-right.is-visible {
@@ -142,7 +148,9 @@
   .scroll-reveal-scale {
     opacity: 0;
     transform: scale(0.9);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    transition:
+      opacity 0.6s ease-out,
+      transform 0.6s ease-out;
   }
 
   .scroll-reveal-scale.is-visible {
