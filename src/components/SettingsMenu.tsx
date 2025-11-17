@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Settings, Check, Globe, DollarSign, Moon, Sun } from "lucide-react";
-import { useSettings, Language, Currency, Theme } from "@/contexts/SettingsContext";
+import {
+  useSettings,
+  Language,
+  Currency,
+  Theme,
+} from "@/contexts/SettingsContext";
 import { cn } from "@/utils/cn";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -104,7 +109,7 @@ export const SettingsMenu: React.FC = () => {
       e.preventDefault();
       e.stopPropagation();
       const value = e.currentTarget.dataset.value as Theme;
-      console.log('Theme button clicked, value:', value);
+      console.log("Theme button clicked, value:", value);
       if (value) {
         handleThemeChange(value);
       }
@@ -135,7 +140,7 @@ export const SettingsMenu: React.FC = () => {
           {/* Theme Selection */}
           <div className="py-3 px-4 border-b border-gray-100">
             <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
-              {theme === 'dark' ? (
+              {theme === "dark" ? (
                 <Moon className="h-4 w-4 text-gray-500 mr-2" />
               ) : (
                 <Sun className="h-4 w-4 text-gray-500 mr-2" />

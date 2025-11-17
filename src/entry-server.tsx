@@ -1,7 +1,7 @@
-import { StrictMode } from 'react';
-import { renderToString } from 'react-dom/server';
-import { StaticRouter } from 'react-router-dom/server';
-import App from './App';
+import { StrictMode } from "react";
+import { renderToString } from "react-dom/server";
+import { StaticRouter } from "react-router-dom/server";
+import App from "./App";
 
 /**
  * Server-side rendering entry point
@@ -17,7 +17,7 @@ export function render(url: string, _theme?: string) {
       <StaticRouter location={url}>
         <App />
       </StaticRouter>
-    </StrictMode>
+    </StrictMode>,
   );
   return html;
 }
