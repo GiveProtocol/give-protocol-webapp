@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Link, Navigate, useLocation, useSearchParams, useNavigate } from "react-router-dom";
+import {
+  Link,
+  Navigate,
+  useLocation,
+  useSearchParams,
+  useNavigate,
+} from "react-router-dom";
 import { Building2, Users } from "lucide-react";
 import { CharityLogin } from "../components/auth/CharityLogin";
 import { ForgotPassword } from "../components/auth/ForgotPassword";
@@ -9,11 +15,7 @@ import { Logo } from "../components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
 
-type View =
-  | "select"
-  | "charity"
-  | "forgotPassword"
-  | "forgotUsername";
+type View = "select" | "charity" | "forgotPassword" | "forgotUsername";
 
 const Login: React.FC = () => {
   const [searchParams] = useSearchParams();
