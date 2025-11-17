@@ -43,7 +43,8 @@ const Login: React.FC = () => {
   const handleDonorWalletConnect = useCallback(async () => {
     try {
       await connect();
-      // Navigation to dashboard will happen via useEffect when address is set
+      // Wallet connected - user can now sign in with traditional auth
+      // They will be redirected to dashboard after successful login
     } catch (error) {
       // Error handling is done in Web3Context
       console.error("Failed to connect wallet:", error);
@@ -65,21 +66,10 @@ const Login: React.FC = () => {
     }
   }, [typeParam]);
 
-  // Navigate to dashboard when wallet is connected
-  useEffect(() => {
-    if (address && !user) {
-      // Wallet connected, navigate to donor dashboard
-      navigate("/give-dashboard");
-    }
-  }, [address, user, navigate]);
-
-  // Redirect if already logged in or wallet connected
+  // Redirect only if user is fully authenticated
+  // (Don't redirect on wallet-only connection - user needs to complete auth)
   if (user) {
     return <Navigate to={from} replace />;
-  }
-
-  if (address && !user) {
-    return <Navigate to="/give-dashboard" replace />;
   }
 
   // LoginHelpers component that provides navigation links to help options
