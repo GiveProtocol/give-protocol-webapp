@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, Navigate, useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { Building2, Users } from "lucide-react";
+import { DonorLogin } from "../components/auth/DonorLogin";
 import { CharityLogin } from "../components/auth/CharityLogin";
 import { ForgotPassword } from "../components/auth/ForgotPassword";
 import { ForgotUsername } from "../components/auth/ForgotUsername";
@@ -11,6 +12,7 @@ import { useWeb3 } from "@/contexts/Web3Context";
 
 type View =
   | "select"
+  | "donor"
   | "charity"
   | "forgotPassword"
   | "forgotUsername";
@@ -40,16 +42,9 @@ const Login: React.FC = () => {
     setView("forgotPassword");
   }, []);
 
-  const handleDonorWalletConnect = useCallback(async () => {
-    try {
-      await connect();
-      // Wallet connected - user can now sign in with traditional auth
-      // They will be redirected to dashboard after successful login
-    } catch (error) {
-      // Error handling is done in Web3Context
-      console.error("Failed to connect wallet:", error);
-    }
-  }, [connect]);
+  const handleDonorView = useCallback(() => {
+    setView("donor");
+  }, []);
 
   const handleCharityView = useCallback(() => {
     setView("charity");
@@ -115,17 +110,14 @@ const Login: React.FC = () => {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Button
-                onClick={handleDonorWalletConnect}
+                onClick={handleDonorView}
                 variant="secondary"
                 className="p-6 h-auto flex flex-col items-center space-y-2"
-                disabled={isConnecting}
               >
                 <Users className="h-8 w-8" />
-                <span className="text-lg font-medium">
-                  {isConnecting ? "Connecting..." : "Donor Login"}
-                </span>
+                <span className="text-lg font-medium">Donor Login</span>
                 <span className="text-sm text-gray-500">
-                  Connect wallet for donors and volunteers
+                  For donors and volunteers
                 </span>
               </Button>
 
@@ -154,6 +146,27 @@ const Login: React.FC = () => {
               </Link>
             </div>
           </div>
+        );
+      case "donor":
+        return (
+          <>
+            <div className="mb-6">
+              <button
+                onClick={handleSelectView}
+                className="text-sm text-gray-600 hover:text-gray-900"
+              >
+                ← Back to selection
+              </button>
+              <h2 className="mt-4 text-2xl font-semibold text-center">
+                Donor Login
+              </h2>
+              <p className="text-center text-sm text-gray-500 mt-1">
+                Sign in to access your giving dashboard
+              </p>
+            </div>
+            <DonorLogin />
+            <LoginHelpers />
+          </>
         );
       case "forgotPassword":
         return <ForgotPassword onBack={handleSelectView} />;
