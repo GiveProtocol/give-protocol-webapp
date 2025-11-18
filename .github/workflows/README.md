@@ -76,6 +76,20 @@ To manually trigger a workflow:
 
 ## Troubleshooting
 
+### Cypress Installation Failures
+**Problem**: `npm ci` fails with "The Cypress App could not be downloaded" or "Response code: 500"
+
+**Solution**: All workflows now skip Cypress binary installation during `npm ci` by setting `CYPRESS_INSTALL_BINARY=0`. This is safe because:
+- Cypress is only needed for E2E tests (`npm run test:e2e`)
+- Unit tests and builds don't require Cypress
+- Cypress binary is cached and installed separately when needed
+
+**Technical Details**:
+- Environment variable `CYPRESS_INSTALL_BINARY=0` prevents automatic Cypress download
+- Cypress binary cache path: `~/.cache/Cypress`
+- Cache key based on `package-lock.json` hash for automatic invalidation
+- For E2E tests, add a separate workflow step to install Cypress explicitly
+
 ### SonarCloud not running?
 1. Check if SONAR_TOKEN is set correctly
 2. Verify project exists in SonarCloud
