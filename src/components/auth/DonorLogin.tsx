@@ -74,6 +74,7 @@ export const DonorLogin: React.FC = () => {
         type="email"
         value={email}
         onChange={handleEmailChange}
+        variant="enhanced"
         required
       />
       <Input
@@ -81,6 +82,7 @@ export const DonorLogin: React.FC = () => {
         type="password"
         value={password}
         onChange={handlePasswordChange}
+        variant="enhanced"
         required
       />
       <Button type="submit" className="w-full" disabled={loading}>

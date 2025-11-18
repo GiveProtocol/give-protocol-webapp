@@ -166,7 +166,7 @@ const Login: React.FC = () => {
               <h2 className="mt-4 text-2xl font-semibold text-center">
                 Donor Login
               </h2>
-              <p className="text-center text-sm text-gray-500 mt-1">
+              <p className="text-center text-sm text-gray-600 mt-1">
                 Sign in to access your giving dashboard
               </p>
             </div>
@@ -191,7 +191,7 @@ const Login: React.FC = () => {
               <h2 className="mt-4 text-2xl font-semibold text-center">
                 Charity Portal Login
               </h2>
-              <p className="text-center text-sm text-gray-500 mt-1">
+              <p className="text-center text-sm text-gray-600 mt-1">
                 Manage your charity profile and donations
               </p>
             </div>
@@ -207,7 +207,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
+      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border border-gray-100">
         <div className="flex justify-center mb-8">
           <Link to="/" className="flex items-center">
             <Logo className="h-12 w-12" />

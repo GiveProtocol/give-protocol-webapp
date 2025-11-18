@@ -86,6 +86,7 @@ export const CharityLogin: React.FC = () => {
         value={email}
         onChange={handleEmailChange}
         error={fieldErrors.email}
+        variant="enhanced"
         required
         aria-required="true"
       />
@@ -97,6 +98,7 @@ export const CharityLogin: React.FC = () => {
         value={password}
         onChange={handlePasswordChange}
         error={fieldErrors.password}
+        variant="enhanced"
         required
         aria-required="true"
       />
