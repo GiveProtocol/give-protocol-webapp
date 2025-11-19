@@ -1,5 +1,5 @@
-import { jest } from '@jest/globals';
-import React from 'react';
+import { jest } from "@jest/globals";
+import React from "react";
 
 /**
  * Common Jest mock configurations
@@ -16,8 +16,8 @@ export const commonMocks = {
     warn: jest.fn(),
   },
   formatDate: jest.fn((date: string) => new Date(date).toLocaleDateString()),
-  shortenAddress: jest.fn((address: string) =>
-    `${address.slice(0, 6)}...${address.slice(-4)}`
+  shortenAddress: jest.fn(
+    (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
   ),
 };
 
@@ -39,8 +39,8 @@ export const createHookMocks = () => ({
   },
   wallet: {
     getInstalledWallets: jest.fn(() => [
-      { name: 'MetaMask', id: 'metamask' },
-      { name: 'WalletConnect', id: 'walletconnect' },
+      { name: "MetaMask", id: "metamask" },
+      { name: "WalletConnect", id: "walletconnect" },
     ]),
     connectWallet: jest.fn(),
   },
@@ -69,30 +69,42 @@ export const createHookMocks = () => ({
  * These are simple mock implementations of common React components
  */
 export const componentMocks = {
-  Button: ({ children, onClick, variant, disabled, className, ...props }: any) => (
-    React.createElement('button', {
-      onClick,
-      disabled,
-      'data-variant': variant,
-      className,
-      ...props,
-    }, children)
-  ),
-  Input: ({ value, onChange, placeholder, className, ...props }: any) => (
-    React.createElement('input', {
+  Button: ({
+    children,
+    onClick,
+    variant,
+    disabled,
+    className,
+    ...props
+  }: any) =>
+    React.createElement(
+      "button",
+      {
+        onClick,
+        disabled,
+        "data-variant": variant,
+        className,
+        ...props,
+      },
+      children,
+    ),
+  Input: ({ value, onChange, placeholder, className, ...props }: any) =>
+    React.createElement("input", {
       value,
       onChange,
       placeholder,
       className,
-      'data-testid': 'mock-input',
+      "data-testid": "mock-input",
       ...props,
-    })
-  ),
-  Card: ({ children, className, ...props }: any) => (
-    React.createElement('div', {
-      className,
-      'data-testid': 'mock-card',
-      ...props,
-    }, children)
-  ),
+    }),
+  Card: ({ children, className, ...props }: any) =>
+    React.createElement(
+      "div",
+      {
+        className,
+        "data-testid": "mock-card",
+        ...props,
+      },
+      children,
+    ),
 };
