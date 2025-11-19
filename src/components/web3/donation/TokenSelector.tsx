@@ -66,71 +66,62 @@ export function TokenSelector({
         aria-expanded={isOpen}
         className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
-        <div className="flex items-center space-x-3">
-          <img
-            src={selectedToken.icon}
-            alt={selectedToken.symbol}
-            className="w-6 h-6 rounded-full"
-          />
-          <div className="text-left">
-            <div className="font-medium text-gray-900">{selectedToken.symbol}</div>
-            {walletBalance !== undefined && (
-              <div className="text-sm text-gray-500">
-                Balance: {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
-                {fiatValue > 0 && (
-                  <span className="text-gray-400">
-                    {" "}
-                    ({formatFiat(fiatValue, selectedCurrency, { decimals: 2 })})
-                  </span>
-                )}
-              </div>
-            )}
-          </div>
+        <img
+          src={selectedToken.icon}
+          alt={selectedToken.symbol}
+          className="w-6 h-6 rounded-full mr-3"
+        />
+        <div className="flex-1 text-left">
+          <div className="font-medium text-gray-900">{selectedToken.symbol}</div>
+          {walletBalance !== undefined && (
+            <div className="text-sm text-gray-500">
+              Balance: {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
+              {fiatValue > 0 && ` (${formatFiat(fiatValue, selectedCurrency, { decimals: 2 })})`}
+            </div>
+          )}
         </div>
         <ChevronDown
           className={cn(
-            "w-5 h-5 text-gray-400 transition-transform",
+            "w-5 h-5 text-gray-400 transition-transform ml-3",
             isOpen && "transform rotate-180"
           )}
         />
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg">
-          <div className="py-2">
-            {MOONBEAM_TOKENS.map((token) => {
-              const price = tokenPrices[token.coingeckoId];
-              const isSelected = token.symbol === selectedToken.symbol;
+        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+          {MOONBEAM_TOKENS.map((token) => {
+            const price = tokenPrices[token.coingeckoId];
+            const isSelected = token.symbol === selectedToken.symbol;
 
-              return (
-                <button
-                  key={token.symbol}
-                  type="button"
-                  data-symbol={token.symbol}
-                  onClick={handleSelect}
-                  className={cn(
-                    "w-full flex items-center space-x-3 px-4 py-3 hover:bg-indigo-50 transition-colors",
-                    isSelected && "bg-indigo-50"
-                  )}
-                >
-                  <img
-                    src={token.icon}
-                    alt={token.symbol}
-                    className="w-6 h-6 rounded-full"
-                  />
-                  <div className="flex-1 text-left">
-                    <div className="font-medium text-gray-900">{token.symbol}</div>
-                    <div className="text-sm text-gray-500">{token.name}</div>
+            return (
+              <button
+                key={token.symbol}
+                type="button"
+                data-symbol={token.symbol}
+                onClick={handleSelect}
+                className={cn(
+                  "w-full flex items-center space-x-3 px-4 py-3 hover:bg-indigo-50 transition-colors",
+                  isSelected && "bg-indigo-50"
+                )}
+              >
+                <img
+                  src={token.icon}
+                  alt={token.symbol}
+                  className="w-6 h-6 rounded-full"
+                />
+                <div className="flex-1 text-left">
+                  <div className="font-medium text-gray-900">{token.symbol}</div>
+                  <div className="text-sm text-gray-500">{token.name}</div>
+                </div>
+                {price !== undefined && (
+                  <div className="text-sm text-gray-600">
+                    {formatFiat(price, selectedCurrency, { decimals: 2 })}
                   </div>
-                  {price !== undefined && (
-                    <div className="text-sm text-gray-600">
-                      {formatFiat(price, selectedCurrency, { decimals: 2 })}
-                    </div>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+                )}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>
