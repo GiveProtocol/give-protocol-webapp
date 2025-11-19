@@ -56,9 +56,9 @@ export function FiatPresets({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+      <div className="block text-sm font-medium text-gray-700" role="heading" aria-level={3}>
         Quick Amounts
-      </label>
+      </div>
       <div className="grid grid-cols-4 gap-2">
         {PRESET_AMOUNTS.map((amount) => (
           <button

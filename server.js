@@ -33,7 +33,7 @@ app.get("/api/coingecko/*", async (req, res) => {
 app.get("/api/exchangerate/*", async (req, res) => {
   try {
     const path = req.params[0];
-    const url = `https://api.exchangerate-api.com/v4/latest/${path}`;
+    const url = "https://api.exchangerate-api.com/v4/latest/" + path;
 
     const response = await fetch(url);
     const data = await response.json();

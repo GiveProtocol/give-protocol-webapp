@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { PriceFeedService } from "./priceFeed";
-import { Logger } from "@/utils/logger";
 
 // Mock the Logger
 jest.mock("@/utils/logger", () => ({

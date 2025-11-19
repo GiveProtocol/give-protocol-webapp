@@ -91,7 +91,7 @@ export function DualAmountInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label className="block text-sm font-medium text-gray-700">
+        <label htmlFor="donation-amount-input" className="block text-sm font-medium text-gray-700">
           Donation Amount
         </label>
         {hasPrice && (
@@ -110,6 +110,7 @@ export function DualAmountInput({
 
       <div className="relative">
         <input
+          id="donation-amount-input"
           type="number"
           value={displayValue}
           onChange={handleInputChange}

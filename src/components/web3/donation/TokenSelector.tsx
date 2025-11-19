@@ -54,13 +54,16 @@ export function TokenSelector({
 
   return (
     <div className="relative">
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label htmlFor="token-selector" className="block text-sm font-medium text-gray-700 mb-2">
         Select Token
       </label>
 
       <button
+        id="token-selector"
         type="button"
         onClick={handleToggle}
+        aria-label="Select donation token"
+        aria-expanded={isOpen}
         className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
       >
         <div className="flex items-center space-x-3">

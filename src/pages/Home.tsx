@@ -210,9 +210,9 @@ const Home: React.FC = () => {
               color: "from-teal-500 to-emerald-500",
               badge: "Coming Soon",
             },
-          ].map((feature, index) => (
+          ].map((feature) => (
             <div
-              key={index}
+              key={feature.title}
               className="group bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl p-8 hover:bg-white/10 hover:border-emerald-500/30 transition-all hover:scale-105 cursor-pointer relative"
             >
               {feature.badge && (
