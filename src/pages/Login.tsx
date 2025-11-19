@@ -30,7 +30,11 @@ const Login: React.FC = () => {
     typeParam === "charity" ? "charity" : "select",
   );
   const { user, userType } = useAuth();
-  const { connect: _connect, isConnecting: _isConnecting, address: _address } = useWeb3();
+  const {
+    connect: _connect,
+    isConnecting: _isConnecting,
+    address: _address,
+  } = useWeb3();
   const _navigate = useNavigate();
   const location = useLocation();
 

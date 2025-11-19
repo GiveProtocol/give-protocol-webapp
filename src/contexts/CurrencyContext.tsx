@@ -1,5 +1,15 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
-import { FiatCurrency, SUPPORTED_CURRENCIES, getCurrencyByCode } from "@/config/tokens";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import {
+  FiatCurrency,
+  SUPPORTED_CURRENCIES,
+  getCurrencyByCode,
+} from "@/config/tokens";
 import { priceFeedService } from "@/services/priceFeed";
 import { Logger } from "@/utils/logger";
 
@@ -13,7 +23,9 @@ interface CurrencyContextType {
   convertFromFiat: (_fiatAmount: number, _tokenCoingeckoId: string) => number;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(undefined);
+const CurrencyContext = createContext<CurrencyContextType | undefined>(
+  undefined,
+);
 
 interface CurrencyProviderProps {
   children: React.ReactNode;
@@ -38,25 +50,29 @@ interface CurrencyProviderProps {
  * }
  * ```
  */
-export function CurrencyProvider({ children }: CurrencyProviderProps): React.ReactElement {
-  const [selectedCurrency, setSelectedCurrencyState] = useState<FiatCurrency>(() => {
-    if (typeof window === "undefined") {
-      return SUPPORTED_CURRENCIES[0]; // USD default
-    }
-
-    const saved = localStorage.getItem("preferredCurrency");
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        const currency = getCurrencyByCode(parsed.code);
-        return currency || SUPPORTED_CURRENCIES[0];
-      } catch {
-        // Invalid JSON, use default
+export function CurrencyProvider({
+  children,
+}: CurrencyProviderProps): React.ReactElement {
+  const [selectedCurrency, setSelectedCurrencyState] = useState<FiatCurrency>(
+    () => {
+      if (typeof window === "undefined") {
+        return SUPPORTED_CURRENCIES[0]; // USD default
       }
-    }
 
-    return SUPPORTED_CURRENCIES[0]; // USD default
-  });
+      const saved = localStorage.getItem("preferredCurrency");
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          const currency = getCurrencyByCode(parsed.code);
+          return currency || SUPPORTED_CURRENCIES[0];
+        } catch {
+          // Invalid JSON, use default
+        }
+      }
+
+      return SUPPORTED_CURRENCIES[0]; // USD default
+    },
+  );
 
   const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
@@ -77,7 +93,10 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
         "tether",
       ];
 
-      const prices = await priceFeedService.getTokenPrices(tokenIds, currencyCode);
+      const prices = await priceFeedService.getTokenPrices(
+        tokenIds,
+        currencyCode,
+      );
 
       setTokenPrices(prices);
 
@@ -129,7 +148,7 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
       }
       return cryptoAmount * price;
     },
-    [tokenPrices]
+    [tokenPrices],
   );
 
   // Convert fiat amount to crypto
@@ -144,7 +163,7 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
       }
       return fiatAmount / price;
     },
-    [tokenPrices]
+    [tokenPrices],
   );
 
   const contextValue = React.useMemo(
@@ -157,7 +176,15 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
       convertToFiat,
       convertFromFiat,
     }),
-    [selectedCurrency, setSelectedCurrency, tokenPrices, isLoading, refreshPrices, convertToFiat, convertFromFiat]
+    [
+      selectedCurrency,
+      setSelectedCurrency,
+      tokenPrices,
+      isLoading,
+      refreshPrices,
+      convertToFiat,
+      convertFromFiat,
+    ],
   );
 
   return (

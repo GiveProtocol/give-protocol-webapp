@@ -26,7 +26,7 @@ export class PriceFeedService {
    */
   async getTokenPrices(
     tokenIds: string[],
-    targetCurrency = "usd"
+    targetCurrency = "usd",
   ): Promise<Record<string, number>> {
     // Check cache validity
     const now = Date.now();
@@ -68,7 +68,10 @@ export class PriceFeedService {
         throw new Error(`CoinGecko API error: ${response.statusText}`);
       }
 
-      const data: Record<string, Record<string, number>> = await response.json();
+      const data: Record<
+        string,
+        Record<string, number>
+      > = await response.json();
 
       const prices: Record<string, number> = {};
 
@@ -87,7 +90,10 @@ export class PriceFeedService {
             timestamp: now,
           };
         } else {
-          Logger.warn("Price feed: Missing price data", { tokenId, targetCurrency });
+          Logger.warn("Price feed: Missing price data", {
+            tokenId,
+            targetCurrency,
+          });
         }
       }
 
@@ -125,7 +131,7 @@ export class PriceFeedService {
    */
   async getTokenPrice(
     tokenId: string,
-    targetCurrency = "usd"
+    targetCurrency = "usd",
   ): Promise<number> {
     const prices = await this.getTokenPrices([tokenId], targetCurrency);
     const price = prices[tokenId];
