@@ -6,6 +6,53 @@ import { TokenConfig, FiatCurrency } from "@/config/tokens";
 import { CurrencyFormatOptions } from "@/types/blockchain";
 
 /**
+ * Format large numbers with K, M, B notation
+ * @param amount Amount to format
+ * @param symbol Currency or token symbol
+ * @param showSymbol Whether to show the symbol
+ * @returns Formatted compact string
+ * @example
+ * ```ts
+ * formatCompact(1234, "$") // "$1.23K"
+ * formatCompact(1234567, "$") // "$1.23M"
+ * formatCompact(1234567890, "$") // "$1.23B"
+ * ```
+ */
+export function formatCompact(
+  amount: number,
+  symbol = "",
+  showSymbol = true
+): string {
+  const absAmount = Math.abs(amount);
+  const sign = amount < 0 ? "-" : "";
+
+  let value: number;
+  let suffix: string;
+
+  if (absAmount >= 1_000_000_000) {
+    value = absAmount / 1_000_000_000;
+    suffix = "B";
+  } else if (absAmount >= 1_000_000) {
+    value = absAmount / 1_000_000;
+    suffix = "M";
+  } else if (absAmount >= 1_000) {
+    value = absAmount / 1_000;
+    suffix = "K";
+  } else {
+    value = absAmount;
+    suffix = "";
+  }
+
+  const formatted = value.toFixed(2).replace(/\.?0+$/, "");
+
+  if (showSymbol && symbol) {
+    return `${sign}${symbol}${formatted}${suffix}`;
+  }
+
+  return `${sign}${formatted}${suffix}`;
+}
+
+/**
  * Format a fiat currency amount with proper localization
  * @param amount Amount to format
  * @param currency Fiat currency configuration
@@ -89,53 +136,6 @@ export function formatCrypto(
   }).format(amount);
 
   return showSymbol ? `${formatted} ${token.symbol}` : formatted;
-}
-
-/**
- * Format large numbers with K, M, B notation
- * @param amount Amount to format
- * @param symbol Currency or token symbol
- * @param showSymbol Whether to show the symbol
- * @returns Formatted compact string
- * @example
- * ```ts
- * formatCompact(1234, "$") // "$1.23K"
- * formatCompact(1234567, "$") // "$1.23M"
- * formatCompact(1234567890, "$") // "$1.23B"
- * ```
- */
-export function formatCompact(
-  amount: number,
-  symbol = "",
-  showSymbol = true
-): string {
-  const absAmount = Math.abs(amount);
-  const sign = amount < 0 ? "-" : "";
-
-  let value: number;
-  let suffix: string;
-
-  if (absAmount >= 1_000_000_000) {
-    value = absAmount / 1_000_000_000;
-    suffix = "B";
-  } else if (absAmount >= 1_000_000) {
-    value = absAmount / 1_000_000;
-    suffix = "M";
-  } else if (absAmount >= 1_000) {
-    value = absAmount / 1_000;
-    suffix = "K";
-  } else {
-    value = absAmount;
-    suffix = "";
-  }
-
-  const formatted = value.toFixed(2).replace(/\.?0+$/, "");
-
-  if (showSymbol && symbol) {
-    return `${sign}${symbol}${formatted}${suffix}`;
-  }
-
-  return `${sign}${formatted}${suffix}`;
 }
 
 /**

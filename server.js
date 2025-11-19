@@ -33,7 +33,7 @@ app.get("/api/coingecko/*", async (req, res) => {
 app.get("/api/exchangerate/*", async (req, res) => {
   try {
     const path = req.params[0];
-    const url = "https://api.exchangerate-api.com/v4/latest/" + path;
+    const url = `https://api.exchangerate-api.com/v4/latest/${path}`;
 
     const response = await fetch(url);
     const data = await response.json();
@@ -46,7 +46,7 @@ app.get("/api/exchangerate/*", async (req, res) => {
 });
 
 // Add Vite or respective production middlewares
-let vite;
+let vite = undefined;
 if (!isProduction) {
   const { createServer } = await import("vite");
   vite = await createServer({
@@ -70,8 +70,8 @@ app.use("*", async (req, res) => {
     // Read theme from cookie (default to 'light')
     const theme = req.cookies.theme || "light";
 
-    let template;
-    let render;
+    let template = "";
+    let render = null;
     if (!isProduction) {
       // Always read fresh template in development
       template = await fs.readFile("./index.html", "utf-8");

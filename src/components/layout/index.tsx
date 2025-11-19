@@ -13,7 +13,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   // Landing page has its own navigation and footer, so render without layout wrapper
   if (isHomePage) {
-    return <>{children}</>;
+    return children;
   }
 
   return (
