@@ -1,3 +1,5 @@
+import { jest } from '@jest/globals';
+import React from 'react';
 
 /**
  * Common Jest mock configurations
@@ -14,7 +16,7 @@ export const commonMocks = {
     warn: jest.fn(),
   },
   formatDate: jest.fn((date: string) => new Date(date).toLocaleDateString()),
-  shortenAddress: jest.fn((address: string) => 
+  shortenAddress: jest.fn((address: string) =>
     `${address.slice(0, 6)}...${address.slice(-4)}`
   ),
 };
@@ -63,6 +65,34 @@ export const createHookMocks = () => ({
 });
 
 /**
- * Note: Component mocks have been moved to mockSetup.ts to eliminate duplication.
- * Use MockButton, MockInput, MockCard from @/test-utils/mockSetup instead.
+ * Component mocks for testing
+ * These are simple mock implementations of common React components
  */
+export const componentMocks = {
+  Button: ({ children, onClick, variant, disabled, className, ...props }: any) => (
+    React.createElement('button', {
+      onClick,
+      disabled,
+      'data-variant': variant,
+      className,
+      ...props,
+    }, children)
+  ),
+  Input: ({ value, onChange, placeholder, className, ...props }: any) => (
+    React.createElement('input', {
+      value,
+      onChange,
+      placeholder,
+      className,
+      'data-testid': 'mock-input',
+      ...props,
+    })
+  ),
+  Card: ({ children, className, ...props }: any) => (
+    React.createElement('div', {
+      className,
+      'data-testid': 'mock-card',
+      ...props,
+    }, children)
+  ),
+};
