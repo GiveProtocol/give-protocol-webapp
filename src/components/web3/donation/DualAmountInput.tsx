@@ -72,7 +72,7 @@ export function DualAmountInput({
         onChange(cryptoAmount);
       }
     },
-    [inputMode, onChange, convertFromFiat, token.coingeckoId]
+    [inputMode, onChange, convertFromFiat, token.coingeckoId],
   );
 
   const handleMaxClick = useCallback(() => {
@@ -91,7 +91,10 @@ export function DualAmountInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label htmlFor="donation-amount-input" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="donation-amount-input"
+          className="block text-sm font-medium text-gray-700"
+        >
           Donation Amount
         </label>
         {hasPrice && (
@@ -102,7 +105,8 @@ export function DualAmountInput({
           >
             <ArrowLeftRight className="w-4 h-4" />
             <span>
-              Switch to {inputMode === "crypto" ? selectedCurrency.code : token.symbol}
+              Switch to{" "}
+              {inputMode === "crypto" ? selectedCurrency.code : token.symbol}
             </span>
           </button>
         )}
@@ -120,7 +124,7 @@ export function DualAmountInput({
           className={cn(
             "w-full px-4 py-3 pr-20 border border-gray-300 rounded-lg",
             "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent",
-            "text-lg font-medium"
+            "text-lg font-medium",
           )}
         />
         <div className="absolute right-0 top-0 h-full flex items-center space-x-2 px-4">

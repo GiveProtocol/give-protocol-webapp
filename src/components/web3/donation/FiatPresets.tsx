@@ -25,11 +25,14 @@ export function FiatPresets({
   selectedToken,
   onAmountSelect,
 }: FiatPresetsProps): React.ReactElement {
-  const { selectedCurrency, tokenPrices, convertFromFiat } = useCurrencyContext();
+  const { selectedCurrency, tokenPrices, convertFromFiat } =
+    useCurrencyContext();
 
   const handlePresetClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      const fiatAmount = Number.parseFloat(e.currentTarget.dataset.amount || "0");
+      const fiatAmount = Number.parseFloat(
+        e.currentTarget.dataset.amount || "0",
+      );
       if (fiatAmount <= 0) return;
 
       const tokenPrice = tokenPrices[selectedToken.coingeckoId];
@@ -37,10 +40,13 @@ export function FiatPresets({
         return;
       }
 
-      const cryptoAmount = convertFromFiat(fiatAmount, selectedToken.coingeckoId);
+      const cryptoAmount = convertFromFiat(
+        fiatAmount,
+        selectedToken.coingeckoId,
+      );
       onAmountSelect(cryptoAmount);
     },
-    [selectedToken.coingeckoId, tokenPrices, convertFromFiat, onAmountSelect]
+    [selectedToken.coingeckoId, tokenPrices, convertFromFiat, onAmountSelect],
   );
 
   const tokenPrice = tokenPrices[selectedToken.coingeckoId];
@@ -56,7 +62,11 @@ export function FiatPresets({
 
   return (
     <div className="space-y-2">
-      <div className="block text-sm font-medium text-gray-700" role="heading" aria-level={3}>
+      <div
+        className="block text-sm font-medium text-gray-700"
+        role="heading"
+        aria-level={3}
+      >
         Quick Amounts
       </div>
       <div className="grid grid-cols-4 gap-2">
@@ -71,7 +81,7 @@ export function FiatPresets({
               "border border-gray-300 bg-white",
               "hover:bg-indigo-50 hover:border-indigo-500",
               "focus:outline-none focus:ring-2 focus:ring-indigo-500",
-              "transition-colors"
+              "transition-colors",
             )}
           >
             {formatFiat(amount, selectedCurrency, { decimals: 0 })}

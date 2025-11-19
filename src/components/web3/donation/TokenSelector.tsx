@@ -45,7 +45,7 @@ export function TokenSelector({
         setIsOpen(false);
       }
     },
-    [onSelectToken]
+    [onSelectToken],
   );
 
   const fiatValue = walletBalance
@@ -54,7 +54,10 @@ export function TokenSelector({
 
   return (
     <div className="relative">
-      <label htmlFor="token-selector" className="block text-sm font-medium text-gray-700 mb-2">
+      <label
+        htmlFor="token-selector"
+        className="block text-sm font-medium text-gray-700 mb-2"
+      >
         Select Token
       </label>
 
@@ -73,10 +76,13 @@ export function TokenSelector({
             className="w-6 h-6 rounded-full"
           />
           <div className="text-left">
-            <div className="font-medium text-gray-900">{selectedToken.symbol}</div>
+            <div className="font-medium text-gray-900">
+              {selectedToken.symbol}
+            </div>
             {walletBalance !== undefined && (
               <div className="text-sm text-gray-500">
-                Balance: {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
+                Balance:{" "}
+                {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
                 {fiatValue > 0 && (
                   <span className="text-gray-400">
                     {" "}
@@ -90,7 +96,7 @@ export function TokenSelector({
         <ChevronDown
           className={cn(
             "w-5 h-5 text-gray-400 transition-transform",
-            isOpen && "transform rotate-180"
+            isOpen && "transform rotate-180",
           )}
         />
       </button>
@@ -110,7 +116,7 @@ export function TokenSelector({
                   onClick={handleSelect}
                   className={cn(
                     "w-full flex items-center space-x-3 px-4 py-3 hover:bg-indigo-50 transition-colors",
-                    isSelected && "bg-indigo-50"
+                    isSelected && "bg-indigo-50",
                   )}
                 >
                   <img
@@ -119,7 +125,9 @@ export function TokenSelector({
                     className="w-6 h-6 rounded-full"
                   />
                   <div className="flex-1 text-left">
-                    <div className="font-medium text-gray-900">{token.symbol}</div>
+                    <div className="font-medium text-gray-900">
+                      {token.symbol}
+                    </div>
                     <div className="text-sm text-gray-500">{token.name}</div>
                   </div>
                   {price !== undefined && (
