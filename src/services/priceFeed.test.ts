@@ -68,6 +68,36 @@ describe("PriceFeedService", () => {
       expect(cachedPrices).toEqual({ moonbeam: 0.5 });
     });
 
+    it("should fetch fresh prices when some tokens are not in cache", async () => {
+      const mockResponse1 = {
+        moonbeam: { usd: 0.5 },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse1,
+      } as Response);
+
+      // First call - cache moonbeam
+      await service.getTokenPrices(["moonbeam"], "usd");
+      expect(global.fetch).toHaveBeenCalledTimes(1);
+
+      const mockResponse2 = {
+        moonbeam: { usd: 0.5 },
+        polkadot: { usd: 7.5 },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse2,
+      } as Response);
+
+      // Second call - request both tokens, polkadot not in cache
+      const prices = await service.getTokenPrices(["moonbeam", "polkadot"], "usd");
+      expect(global.fetch).toHaveBeenCalledTimes(2); // Should fetch again
+      expect(prices).toEqual({ moonbeam: 0.5, polkadot: 7.5 });
+    });
+
     it("should fetch fresh prices when cache is expired", async () => {
       const mockResponse1 = { moonbeam: { usd: 0.5 } };
       const mockResponse2 = { moonbeam: { usd: 0.6 } };
@@ -192,6 +222,23 @@ describe("PriceFeedService", () => {
 
       const price = await service.getTokenPrice("moonbeam", "usd");
       expect(price).toBe(0.5);
+    });
+
+    it("should fetch price with custom currency", async () => {
+      const mockResponse = {
+        moonbeam: { eur: 0.45 },
+      };
+
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockResponse,
+      } as Response);
+
+      const price = await service.getTokenPrice("moonbeam", "eur");
+      expect(price).toBe(0.45);
+      expect(global.fetch as jest.Mock).toHaveBeenCalledWith(
+        "/api/coingecko/simple/price?ids=moonbeam&vs_currencies=eur",
+      );
     });
 
     it("should throw error when price not found", async () => {
