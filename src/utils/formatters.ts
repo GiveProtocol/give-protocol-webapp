@@ -21,7 +21,7 @@ import { CurrencyFormatOptions } from "@/types/blockchain";
 export function formatCompact(
   amount: number,
   symbol = "",
-  showSymbol = true
+  showSymbol = true,
 ): string {
   const absAmount = Math.abs(amount);
   const sign = amount < 0 ? "-" : "";
@@ -68,7 +68,7 @@ export function formatCompact(
 export function formatFiat(
   amount: number,
   currency: Pick<FiatCurrency, "code" | "symbol">,
-  options: CurrencyFormatOptions = {}
+  options: CurrencyFormatOptions = {},
 ): string {
   const { showSymbol = true, decimals = 2, compact = false } = options;
 
@@ -107,7 +107,7 @@ export function formatFiat(
 export function formatCrypto(
   amount: number,
   token: Pick<TokenConfig, "symbol" | "decimals">,
-  options: CurrencyFormatOptions = {}
+  options: CurrencyFormatOptions = {},
 ): string {
   const { showSymbol = true, decimals, compact = false } = options;
 
@@ -195,7 +195,7 @@ export function formatPercentage(value: number, decimals = 2): string {
 export function abbreviateAddress(
   address: string,
   startChars = 6,
-  endChars = 4
+  endChars = 4,
 ): string {
   if (address.length <= startChars + endChars) {
     return address;
