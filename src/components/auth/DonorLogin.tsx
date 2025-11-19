@@ -40,7 +40,8 @@ export const DonorLogin: React.FC = () => {
         await login(email, password, "donor");
         // The login function will handle the redirect to give-dashboard
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to sign in";
+        const message =
+          err instanceof Error ? err.message : "Failed to sign in";
 
         // Check for account type mismatch
         if (message.includes("registered as a charity account")) {
