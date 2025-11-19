@@ -93,7 +93,10 @@ describe("PriceFeedService", () => {
       } as Response);
 
       // Second call - request both tokens, polkadot not in cache
-      const prices = await service.getTokenPrices(["moonbeam", "polkadot"], "usd");
+      const prices = await service.getTokenPrices(
+        ["moonbeam", "polkadot"],
+        "usd",
+      );
       expect(global.fetch).toHaveBeenCalledTimes(2); // Should fetch again
       expect(prices).toEqual({ moonbeam: 0.5, polkadot: 7.5 });
     });
