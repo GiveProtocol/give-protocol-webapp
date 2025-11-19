@@ -45,7 +45,8 @@ export const CharityLogin: React.FC = () => {
         await login(email, password, "charity");
         // The login function will handle the redirect to charity-portal
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to sign in";
+        const message =
+          err instanceof Error ? err.message : "Failed to sign in";
 
         // Check for account type mismatch
         if (message.includes("registered as a donor account")) {
@@ -67,14 +68,21 @@ export const CharityLogin: React.FC = () => {
   );
 
   return (
-    <form onSubmit={handleEmailLogin} className="space-y-4" aria-label="Charity login form">
+    <form
+      onSubmit={handleEmailLogin}
+      className="space-y-4"
+      aria-label="Charity login form"
+    >
       {error && (
         <div
           className="p-3 bg-red-50 text-red-600 rounded-md flex items-start"
           role="alert"
           aria-live="assertive"
         >
-          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" aria-hidden="true" />
+          <AlertCircle
+            className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0"
+            aria-hidden="true"
+          />
           <span>{error}</span>
         </div>
       )}
@@ -102,7 +110,12 @@ export const CharityLogin: React.FC = () => {
         required
         aria-required="true"
       />
-      <Button type="submit" className="w-full" disabled={loading} aria-busy={loading}>
+      <Button
+        type="submit"
+        className="w-full"
+        disabled={loading}
+        aria-busy={loading}
+      >
         {loading ? "Signing in..." : "Sign In"}
       </Button>
     </form>
