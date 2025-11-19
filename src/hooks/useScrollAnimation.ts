@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface ScrollAnimationOptions {
   threshold?: number;
@@ -12,11 +12,7 @@ interface ScrollAnimationOptions {
  * @returns Object containing ref to attach to element and visibility state
  */
 export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
-  const {
-    threshold = 0.1,
-    rootMargin = '0px',
-    triggerOnce = true
-  } = options;
+  const { threshold = 0.1, rootMargin = "0px", triggerOnce = true } = options;
 
   const elementRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
@@ -38,7 +34,7 @@ export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
           setIsVisible(false);
         }
       },
-      { threshold, rootMargin }
+      { threshold, rootMargin },
     );
 
     observer.observe(element);
@@ -56,11 +52,13 @@ export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
  * @returns Current scroll direction ('up' | 'down' | null)
  */
 export const useScrollDirection = () => {
-  const [scrollDirection, setScrollDirection] = useState<'up' | 'down' | null>(null);
+  const [scrollDirection, setScrollDirection] = useState<"up" | "down" | null>(
+    null,
+  );
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
+    if (typeof window === "undefined") {
       return undefined;
     }
 
@@ -68,18 +66,18 @@ export const useScrollDirection = () => {
       const currentScrollY = window.scrollY;
 
       if (currentScrollY > lastScrollY) {
-        setScrollDirection('down');
+        setScrollDirection("down");
       } else if (currentScrollY < lastScrollY) {
-        setScrollDirection('up');
+        setScrollDirection("up");
       }
 
       setLastScrollY(currentScrollY);
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener("scroll", handleScroll, { passive: true });
 
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [lastScrollY]);
 
@@ -99,7 +97,7 @@ export const useSmoothScroll = () => {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -107,7 +105,7 @@ export const useSmoothScroll = () => {
   const scrollToTop = () => {
     window.scrollTo({
       top: 0,
-      behavior: 'smooth'
+      behavior: "smooth",
     });
   };
 
