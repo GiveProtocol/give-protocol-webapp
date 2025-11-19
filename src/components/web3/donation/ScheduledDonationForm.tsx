@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useCurrencyContext } from "@/contexts/CurrencyContext";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
 import { validateAmount } from "@/utils/validation";
 import { useToast } from "@/contexts/ToastContext";
 import { Logger } from "@/utils/logger";
