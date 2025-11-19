@@ -68,8 +68,32 @@ export const createHookMocks = () => ({
  * Component mocks for testing
  * These are simple mock implementations of common React components
  */
+
+interface MockButtonProps {
+  children?: React.ReactNode;
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  variant?: string;
+  disabled?: boolean;
+  className?: string;
+  [key: string]: unknown;
+}
+
+interface MockInputProps {
+  value?: string | number;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder?: string;
+  className?: string;
+  [key: string]: unknown;
+}
+
+interface MockCardProps {
+  children?: React.ReactNode;
+  className?: string;
+  [key: string]: unknown;
+}
+
 export const componentMocks = {
-  Button: ({ children, onClick, variant, disabled, className, ...props }: any) => (
+  Button: ({ children, onClick, variant, disabled, className, ...props }: MockButtonProps) => (
     React.createElement('button', {
       onClick,
       disabled,
@@ -78,7 +102,7 @@ export const componentMocks = {
       ...props,
     }, children)
   ),
-  Input: ({ value, onChange, placeholder, className, ...props }: any) => (
+  Input: ({ value, onChange, placeholder, className, ...props }: MockInputProps) => (
     React.createElement('input', {
       value,
       onChange,
@@ -88,7 +112,7 @@ export const componentMocks = {
       ...props,
     })
   ),
-  Card: ({ children, className, ...props }: any) => (
+  Card: ({ children, className, ...props }: MockCardProps) => (
     React.createElement('div', {
       className,
       'data-testid': 'mock-card',
