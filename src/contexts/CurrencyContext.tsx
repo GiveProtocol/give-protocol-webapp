@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { FiatCurrency, SUPPORTED_CURRENCIES, getCurrencyByCode } from "@/config/tokens";
 import { priceFeedService } from "@/services/priceFeed";
-import { exchangeRateService } from "@/services/exchangeRate";
 import { Logger } from "@/utils/logger";
 
 interface CurrencyContextType {

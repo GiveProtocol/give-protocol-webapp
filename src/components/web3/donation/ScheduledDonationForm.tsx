@@ -8,10 +8,6 @@ import { Logger } from "@/utils/logger";
 import { ethers } from "ethers";
 import { getContractAddress } from "@/config/contracts";
 import { MOONBEAM_TOKENS } from "@/config/tokens";
-import { TokenSelector } from "./TokenSelector";
-import { FiatPresets } from "./FiatPresets";
-import { DualAmountInput } from "./DualAmountInput";
-import { formatCrypto, formatFiat } from "@/utils/formatters";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
 
 // Error type guards for transaction errors
@@ -156,14 +152,14 @@ export function ScheduledDonationForm({
   onClose: _onClose,
 }: ScheduledDonationFormProps) {
   const [amount, setAmount] = useState(0);
-  const [selectedToken, setSelectedToken] = useState(MOONBEAM_TOKENS[0]);
+  const [_selectedToken, _setSelectedToken] = useState(MOONBEAM_TOKENS[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const { provider, address, isConnected, connect } = useWeb3();
   const { showToast: _showToast } = useToast();
-  const { selectedCurrency, convertToFiat } = useCurrencyContext();
+  const { selectedCurrency: _selectedCurrency, convertToFiat: _convertToFiat } = useCurrencyContext();
 
   // Calculate start and end dates for the donation schedule
   const startDate = new Date();
@@ -174,8 +170,8 @@ export function ScheduledDonationForm({
     setAmount(newAmount);
   }, []);
 
-  const handleTokenSelect = useCallback((token: typeof MOONBEAM_TOKENS[0]) => {
-    setSelectedToken(token);
+  const _handleTokenSelect = useCallback((token: typeof MOONBEAM_TOKENS[0]) => {
+    _setSelectedToken(token);
     setAmount(0); // Reset amount when token changes
   }, []);
 

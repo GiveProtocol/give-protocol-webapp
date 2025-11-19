@@ -2,7 +2,7 @@
  * Price feed service for fetching cryptocurrency prices from CoinGecko API
  */
 
-import { PriceCache, TokenPrice } from "@/types/blockchain";
+import type { PriceCache, TokenPrice } from "@/types/blockchain";
 import { Logger } from "@/utils/logger";
 
 // Use local proxy to avoid CORS issues

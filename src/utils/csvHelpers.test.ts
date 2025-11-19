@@ -63,7 +63,7 @@ describe("csvHelpers", () => {
     let createElementSpy: jest.SpyInstance;
     let createObjectURLSpy: jest.SpyInstance;
     let revokeObjectURLSpy: jest.SpyInstance;
-    let appendChildSpy: jest.SpyInstance;
+    let _appendChildSpy: jest.SpyInstance;
     let mockLink: {
       setAttribute: jest.Mock;
       click: jest.Mock;
@@ -85,7 +85,7 @@ describe("csvHelpers", () => {
         .mockReturnValue(mockLink as unknown as HTMLElement);
 
       // Mock document.body.appendChild
-      appendChildSpy = jest
+      _appendChildSpy = jest
         .spyOn(document.body, "appendChild")
         .mockImplementation(() => {
           // Empty mock to prevent actual execution
