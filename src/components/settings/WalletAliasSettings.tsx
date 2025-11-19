@@ -114,14 +114,13 @@ export const WalletAliasSettings: React.FC = () => {
         <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-4 flex items-start">
           <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
           <div>
-              <p className="text-sm font-medium text-amber-900">
-                Authentication Required
-              </p>
-              <p className="text-sm text-amber-700 mt-1">
-                Please sign in to set a wallet alias. Wallet aliases are tied to
-                your account.
-              </p>
-            </div>
+            <p className="text-sm font-medium text-amber-900">
+              Authentication Required
+            </p>
+            <p className="text-sm text-amber-700 mt-1">
+              Please sign in to set a wallet alias. Wallet aliases are tied to
+              your account.
+            </p>
           </div>
         </div>
       </Card>
