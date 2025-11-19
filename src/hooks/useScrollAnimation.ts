@@ -23,7 +23,9 @@ export const useScrollAnimation = (options: ScrollAnimationOptions = {}) => {
 
   useEffect(() => {
     const element = elementRef.current;
-    if (!element) return;
+    if (!element) {
+      return undefined;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -58,7 +60,9 @@ export const useScrollDirection = () => {
   const [lastScrollY, setLastScrollY] = useState(0);
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      return undefined;
+    }
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;

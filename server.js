@@ -46,7 +46,7 @@ app.get("/api/exchangerate/*", async (req, res) => {
 });
 
 // Add Vite or respective production middlewares
-let vite = undefined;
+let vite;
 if (!isProduction) {
   const { createServer } = await import("vite");
   vite = await createServer({
@@ -90,7 +90,7 @@ app.use("*", async (req, res) => {
         ? template.replace('<html lang="en">', '<html lang="en" class="dark">')
         : template;
 
-    const html = htmlWithTheme.replace(`<!--app-html-->`, appHtml);
+    const html = htmlWithTheme.replace("<!--app-html-->", appHtml);
 
     res.status(200).set({ "Content-Type": "text/html" }).send(html);
   } catch (e) {
