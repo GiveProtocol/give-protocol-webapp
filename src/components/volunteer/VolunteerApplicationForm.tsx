@@ -597,7 +597,7 @@ export const VolunteerApplicationForm: React.FC<
                   {formData.skills.map((skill, index) => (
                     <div
                       key={skill}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 px-4 py-2 rounded-full flex items-center gap-2 animate-fadeIn"
+                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-full flex items-center gap-2 animate-fadeIn"
                     >
                       <span className="text-sm">{skill}</span>
                       <button
