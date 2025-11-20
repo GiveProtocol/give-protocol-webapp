@@ -104,7 +104,7 @@ export function validateUrl(url: string): boolean {
  */
 export function validatePhoneNumber(phone: string): boolean {
   // Basic phone validation - can be enhanced for specific formats
-  return /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(phone);
+  return /^\+?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/.test(phone);
 }
 
 /**
