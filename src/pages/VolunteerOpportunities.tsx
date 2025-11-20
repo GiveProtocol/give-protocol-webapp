@@ -10,7 +10,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface Opportunity {
-  id: number;
+  id: string;
   title: string;
   organization: string;
   description: string;
@@ -24,7 +24,7 @@ interface Opportunity {
 
 const SAMPLE_OPPORTUNITIES: Opportunity[] = [
   {
-    id: 1,
+    id: "550e8400-e29b-41d4-a716-446655440001",
     title: "Web Development for Education Platform",
     organization: "Global Education Initiative",
     description:
@@ -38,7 +38,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800",
   },
   {
-    id: 2,
+    id: "550e8400-e29b-41d4-a716-446655440002",
     title: "Environmental Data Analysis",
     organization: "EcoWatch Foundation",
     description:
@@ -52,7 +52,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       "https://images.unsplash.com/photo-1527474305487-b87b222841cc?auto=format&fit=crop&w=800",
   },
   {
-    id: 3,
+    id: "550e8400-e29b-41d4-a716-446655440003",
     title: "Community Health App Development",
     organization: "HealthBridge NGO",
     description:
@@ -66,7 +66,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=800",
   },
   {
-    id: 4,
+    id: "550e8400-e29b-41d4-a716-446655440004",
     title: "Translation Services for Medical Documents",
     organization: "Doctors Without Borders",
     description:
@@ -80,7 +80,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       "https://images.unsplash.com/photo-1532938911079-1b06ac7ceec7?auto=format&fit=crop&w=800",
   },
   {
-    id: 5,
+    id: "550e8400-e29b-41d4-a716-446655440005",
     title: "Disaster Relief Coordination",
     organization: "Global Relief Initiative",
     description:
@@ -94,7 +94,7 @@ const SAMPLE_OPPORTUNITIES: Opportunity[] = [
       "https://images.unsplash.com/photo-1593113598332-cd288d649433?auto=format&fit=crop&w=800",
   },
   {
-    id: 6,
+    id: "550e8400-e29b-41d4-a716-446655440006",
     title: "Educational Content Creation in Japanese",
     organization: "Global Learning Foundation",
     description:
@@ -369,9 +369,9 @@ const VolunteerOpportunities: React.FC = () => {
 
       {showApplicationForm && selectedOpportunity && (
         <VolunteerApplicationForm
-          opportunityId={selectedOpportunity.id.toString()}
+          opportunityId={selectedOpportunity.id}
           opportunityTitle={selectedOpportunity.title}
-          charityId="sample-charity-id"
+          charityId="550e8400-e29b-41d4-a716-446655440000"
           onClose={handleApplicationClose}
           onSuccess={handleApplicationSuccess}
         />

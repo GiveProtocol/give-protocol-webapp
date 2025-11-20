@@ -372,7 +372,7 @@ export const VolunteerApplicationForm: React.FC<
         aria-labelledby="modal-title"
       >
         <div className="bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white p-8 text-center rounded-t-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
           <div className="relative z-10">
             <h1 id="modal-title" className="text-3xl font-light mb-2">
               Volunteer Opportunity Application
@@ -589,50 +589,41 @@ export const VolunteerApplicationForm: React.FC<
                 Skills and Areas of Interest{" "}
                 <span className="text-red-500 text-base">*</span>
               </label>
-              <button
+              <div
                 className="relative border-2 border-gray-200 rounded-xl p-4 bg-gray-50 cursor-text transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full text-left min-h-[100px]"
                 onClick={focusSkillInput}
                 onKeyDown={handleSkillContainerKeyDown}
+                role="button"
+                tabIndex={0}
                 aria-label="Click to add skills"
-                type="button"
               >
-                <div className="flex flex-wrap gap-2 mb-2">
-                  {formData.skills.map((skill, index) => (
-                    <div
-                      key={skill}
-                      className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full flex items-center gap-2 animate-fadeIn"
+                {formData.skills.map((skill, index) => (
+                  <span
+                    key={skill}
+                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full mr-2 mb-2 animate-fadeIn"
+                  >
+                    <span className="text-sm">{skill}</span>
+                    <button
+                      type="button"
+                      onClick={createRemoveSkillHandler(index)}
+                      className="bg-white/20 hover:bg-white/30 rounded-full w-5 h-5 flex items-center justify-center transition-colors"
+                      aria-label={`Remove ${skill}`}
                     >
-                      <span className="text-sm">{skill}</span>
-                      <button
-                        type="button"
-                        onClick={createRemoveSkillHandler(index)}
-                        className="bg-white/20 hover:bg-white/30 rounded-full w-5 h-5 flex items-center justify-center transition-colors"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="relative">
-                  <input
-                    id="skillInput"
-                    ref={tagInputRef}
-                    type="text"
-                    value={currentSkillInput}
-                    onChange={handleSkillInputChange}
-                    onKeyDown={handleSkillInputKeyDown}
-                    className="w-full bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 pt-6"
-                    placeholder="Type a skill and press Enter..."
-                  />
-                  {showSkillPlaceholder && (
-                    <div className="absolute top-0 left-0 text-gray-400 italic pointer-events-none text-sm">
-                      Start typing your skills (e.g., &ldquo;Python
-                      programming&rdquo;, &ldquo;Public speaking&rdquo;,
-                      &ldquo;Grant writing&rdquo;)
-                    </div>
-                  )}
-                </div>
-              </button>
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+                <input
+                  id="skillInput"
+                  ref={tagInputRef}
+                  type="text"
+                  value={currentSkillInput}
+                  onChange={handleSkillInputChange}
+                  onKeyDown={handleSkillInputKeyDown}
+                  className="w-full bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 pt-6"
+                  placeholder={showSkillPlaceholder ? "Start typing your skills (e.g., Python programming, Public speaking, Grant writing)" : "Type a skill and press Enter..."}
+                />
+              </div>
               {validationErrors.skills && (
                 <p className="text-sm text-red-600 mt-1">
                   {validationErrors.skills}
