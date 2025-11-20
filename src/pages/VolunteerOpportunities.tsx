@@ -1,10 +1,12 @@
 import React, { useState, useCallback } from "react";
 import { Search, Award, Clock, Users, Globe } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Card } from "../components/ui/Card";
 import { VolunteerApplicationForm } from "../components/volunteer/VolunteerApplicationForm";
 import { useTranslation } from "@/hooks/useTranslation";
 import { WorkLanguage } from "@/types/volunteer";
 import { useToast } from "@/contexts/ToastContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface Opportunity {
@@ -134,6 +136,8 @@ const VolunteerOpportunities: React.FC = () => {
   const [showApplicationForm, setShowApplicationForm] = useState(false);
   const { t } = useTranslation();
   const { showToast } = useToast();
+  const { user } = useAuth();
+  const navigate = useNavigate();
 
   const filteredOpportunities = SAMPLE_OPPORTUNITIES.filter((opportunity) => {
     const matchesSearch =
@@ -149,9 +153,14 @@ const VolunteerOpportunities: React.FC = () => {
   });
 
   const handleApply = useCallback((opportunity: Opportunity) => {
+    if (!user) {
+      showToast("error", "Please sign in to apply for volunteer opportunities");
+      navigate("/login");
+      return;
+    }
     setSelectedOpportunity(opportunity);
     setShowApplicationForm(true);
-  }, []);
+  }, [user, navigate, showToast]);
 
   const createApplyHandler = useCallback(
     (opportunity: Opportunity) => {
