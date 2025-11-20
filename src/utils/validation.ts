@@ -37,11 +37,11 @@ export function validateAmount(amount: number): boolean {
  */
 export function validateAuthInput(email: string, password: string): void {
   if (!validateEmail(email)) {
-    throw new Error('Please enter a valid email address');
+    throw new Error("Please enter a valid email address");
   }
-  
+
   if (!validatePassword(password)) {
-    throw new Error('Password must be at least 8 characters long');
+    throw new Error("Password must be at least 8 characters long");
   }
 }
 
@@ -52,7 +52,7 @@ export function validateAuthInput(email: string, password: string): void {
  */
 export function sanitizeInput(input: string): string {
   // Remove potentially dangerous characters
-  return input.replace(/[<>'"]/g, '');
+  return input.replace(/[<>'"]/g, "");
 }
 
 /**
@@ -63,14 +63,14 @@ export function sanitizeInput(input: string): string {
  */
 export function validateFileUpload(file: File): void {
   const maxSize = 5 * 1024 * 1024; // 5MB
-  const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
-  
+  const allowedTypes = ["application/pdf", "image/jpeg", "image/png"];
+
   if (file.size > maxSize) {
-    throw new Error('File size must be less than 5MB');
+    throw new Error("File size must be less than 5MB");
   }
-  
+
   if (!allowedTypes.includes(file.type)) {
-    throw new Error('File type must be PDF, JPEG, or PNG');
+    throw new Error("File type must be PDF, JPEG, or PNG");
   }
 }
 
@@ -91,7 +91,7 @@ export function isValidAmount(amount: number): boolean {
 export function validateUrl(url: string): boolean {
   try {
     const parsedUrl = new URL(url);
-    return parsedUrl.protocol === 'https:';
+    return parsedUrl.protocol === "https:";
   } catch (e) {
     return false;
   }
