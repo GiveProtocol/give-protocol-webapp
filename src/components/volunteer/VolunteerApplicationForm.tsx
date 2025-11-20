@@ -349,11 +349,11 @@ export const VolunteerApplicationForm: React.FC<
   );
 
   const inputClasses =
-    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-400 placeholder-gray-400 transition-all duration-200";
+    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none hover:border-gray-400 placeholder-gray-400 transition-all duration-200";
   const textareaClasses =
-    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-400 placeholder-gray-400 transition-all duration-200 resize-vertical min-h-[100px]";
+    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none hover:border-gray-400 placeholder-gray-400 transition-all duration-200 resize-vertical min-h-[100px]";
   const selectClasses =
-    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-400 transition-all duration-200 cursor-pointer";
+    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200 focus:outline-none hover:border-gray-400 transition-all duration-200 cursor-pointer";
 
   return (
     <>
@@ -371,13 +371,16 @@ export const VolunteerApplicationForm: React.FC<
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 text-center rounded-t-2xl">
-          <h1 id="modal-title" className="text-3xl font-light mb-2">
-            Volunteer Opportunity Application
-          </h1>
-          <p className="text-lg opacity-90 pb-2">
-            Help create sustainable impact through verified contributions
-          </p>
+        <div className="bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white p-8 text-center rounded-t-2xl relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"></div>
+          <div className="relative z-10">
+            <h1 id="modal-title" className="text-3xl font-light mb-2">
+              Volunteer Opportunity Application
+            </h1>
+            <p className="text-lg opacity-90 pb-2">
+              Help create sustainable impact through verified contributions
+            </p>
+          </div>
         </div>
 
         <form
@@ -387,7 +390,7 @@ export const VolunteerApplicationForm: React.FC<
           {/* Personal Information Section */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
+              <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 1
               </span>
               Personal Information
@@ -572,7 +575,7 @@ export const VolunteerApplicationForm: React.FC<
           {/* Skills & Interests Section */}
           <div className="mb-8 mt-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
+              <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 2
               </span>
               Skills & Interests
@@ -587,7 +590,7 @@ export const VolunteerApplicationForm: React.FC<
                 <span className="text-red-500 text-base">*</span>
               </label>
               <button
-                className="relative border-2 border-gray-200 rounded-xl p-4 bg-gray-50 cursor-text transition-all duration-200 focus-within:border-indigo-600 focus-within:ring-3 focus-within:ring-indigo-600/10 w-full text-left min-h-[100px]"
+                className="relative border-2 border-gray-200 rounded-xl p-4 bg-gray-50 cursor-text transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full text-left min-h-[100px]"
                 onClick={focusSkillInput}
                 onKeyDown={handleSkillContainerKeyDown}
                 aria-label="Click to add skills"
@@ -597,7 +600,7 @@ export const VolunteerApplicationForm: React.FC<
                   {formData.skills.map((skill, index) => (
                     <div
                       key={skill}
-                      className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-4 py-2 rounded-full flex items-center gap-2 animate-fadeIn"
+                      className="bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full flex items-center gap-2 animate-fadeIn"
                     >
                       <span className="text-sm">{skill}</span>
                       <button
@@ -648,7 +651,7 @@ export const VolunteerApplicationForm: React.FC<
                     aria-label="One-time commitment level"
                     className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                       formData.commitmentType === "one-time"
-                        ? "border-indigo-600 bg-gradient-to-r from-indigo-50 to-purple-50"
+                        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
@@ -675,7 +678,7 @@ export const VolunteerApplicationForm: React.FC<
                     aria-label="Short-term commitment level"
                     className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                       formData.commitmentType === "short-term"
-                        ? "border-indigo-600 bg-gradient-to-r from-indigo-50 to-purple-50"
+                        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
@@ -702,7 +705,7 @@ export const VolunteerApplicationForm: React.FC<
                     aria-label="Long-term commitment level"
                     className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
                       formData.commitmentType === "long-term"
-                        ? "border-indigo-600 bg-gradient-to-r from-indigo-50 to-purple-50"
+                        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50"
                         : "border-gray-200 hover:border-gray-300"
                     }`}
                   >
@@ -755,13 +758,13 @@ export const VolunteerApplicationForm: React.FC<
           {/* Consent & Agreement Section */}
           <div className="mb-8 mt-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
+              <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 3
               </span>
               Consent & Agreement
             </h2>
 
-            <div className="bg-gray-50 rounded-xl p-6 border-l-4 border-indigo-600">
+            <div className="bg-gray-50 rounded-xl p-6 border-l-4 border-emerald-600">
               <h3 className="font-semibold text-gray-900 mb-4">
                 Volunteer Application Consent
               </h3>
@@ -813,7 +816,7 @@ export const VolunteerApplicationForm: React.FC<
                     <span>
                       <a
                         href="mailto:legal@giveprotocol.io"
-                        className="text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+                        className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
                       >
                         legal@giveprotocol.io <Mail className="w-3 h-3" />
                       </a>
@@ -846,7 +849,7 @@ export const VolunteerApplicationForm: React.FC<
                       type="checkbox"
                       checked={formData.essentialProcessing}
                       onChange={handleCheckboxChange("essentialProcessing")}
-                      className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                     />
                     <div className="ml-3">
                       <strong className="font-semibold text-gray-900">
@@ -877,7 +880,7 @@ export const VolunteerApplicationForm: React.FC<
                       type="checkbox"
                       checked={formData.internationalTransfers}
                       onChange={handleCheckboxChange("internationalTransfers")}
-                      className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                      className="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                     />
                     <div className="ml-3">
                       <strong className="font-semibold text-gray-900">
@@ -910,7 +913,7 @@ export const VolunteerApplicationForm: React.FC<
                     type="checkbox"
                     checked={formData.ageConfirmation}
                     onChange={handleCheckboxChange("ageConfirmation")}
-                    className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                   />
                   <div className="ml-3">
                     <strong className="font-semibold text-gray-900">
@@ -936,7 +939,7 @@ export const VolunteerApplicationForm: React.FC<
                     type="checkbox"
                     checked={formData.privacyNotice}
                     onChange={handleCheckboxChange("privacyNotice")}
-                    className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                    className="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                   />
                   <div className="ml-3">
                     <strong className="font-semibold text-gray-900">
@@ -963,7 +966,7 @@ export const VolunteerApplicationForm: React.FC<
             <Button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-full transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+              className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-full transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {loading ? "Submitting..." : "Submit Volunteer Application"}
             </Button>
