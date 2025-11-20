@@ -443,7 +443,8 @@ export const VolunteerApplicationForm: React.FC<
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-800 mb-2"
                 >
-                  Email Address <span className="text-red-500 text-base">*</span>
+                  Email Address{" "}
+                  <span className="text-red-500 text-base">*</span>
                 </label>
                 <input
                   id="email"
@@ -643,7 +644,8 @@ export const VolunteerApplicationForm: React.FC<
             <div className="mb-4">
               <fieldset>
                 <legend className="block text-sm font-medium text-gray-700 mb-2">
-                  Commitment Level <span className="text-red-500 text-base">*</span>
+                  Commitment Level{" "}
+                  <span className="text-red-500 text-base">*</span>
                 </legend>
                 <div className="grid md:grid-cols-3 gap-3">
                   <label
