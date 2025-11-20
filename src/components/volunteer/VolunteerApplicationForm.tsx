@@ -349,55 +349,56 @@ export const VolunteerApplicationForm: React.FC<
   );
 
   const inputClasses =
-    "w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-600 focus:outline-none focus:ring-3 focus:ring-indigo-600/10 transition-all duration-200";
+    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-400 placeholder-gray-400 transition-all duration-200";
   const textareaClasses =
-    "w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-600 focus:outline-none focus:ring-3 focus:ring-indigo-600/10 transition-all duration-200 resize-vertical min-h-[100px]";
+    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-400 placeholder-gray-400 transition-all duration-200 resize-vertical min-h-[100px]";
   const selectClasses =
-    "w-full px-3 py-2 border-2 border-gray-200 rounded-lg focus:border-indigo-600 focus:outline-none focus:ring-3 focus:ring-indigo-600/10 transition-all duration-200 bg-white";
+    "w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 focus:bg-white focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 focus:outline-none hover:border-gray-400 transition-all duration-200 cursor-pointer";
 
   return (
     <>
       <button
-        className="fixed inset-0 bg-black bg-opacity-50 z-50 w-full h-full border-0 p-0 m-0 cursor-default"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 w-full h-full border-0 p-0 m-0 cursor-default transition-opacity duration-200"
         onClick={handleBackdropClick}
         onKeyDown={handleBackdropKeyDown}
         aria-label="Close modal"
         type="button"
       />
       <dialog
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0"
+        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0 transition-all duration-300 ease-out animate-in fade-in zoom-in-95"
+        style={{ boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)" }}
         open
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 p-8 text-center">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-8 text-center rounded-t-2xl">
           <h1 id="modal-title" className="text-3xl font-light mb-2">
             Volunteer Opportunity Application
           </h1>
-          <p className="text-lg opacity-90">
+          <p className="text-lg opacity-90 pb-2">
             Help create sustainable impact through verified contributions
           </p>
         </div>
 
         <form
           onSubmit={handleSubmit}
-          className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]"
+          className="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]"
         >
           {/* Personal Information Section */}
           <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <span className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold mr-3 ring-2 ring-indigo-200">
                 1
-              </span>{" "}
+              </span>
               Personal Information
             </h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
               <div>
                 <label
                   htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
-                  First Name <span className="text-red-500">*</span>
+                  First Name <span className="text-red-500 text-base">*</span>
                 </label>
                 <input
                   id="firstName"
@@ -416,9 +417,9 @@ export const VolunteerApplicationForm: React.FC<
               <div>
                 <label
                   htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
-                  Last Name <span className="text-red-500">*</span>
+                  Last Name <span className="text-red-500 text-base">*</span>
                 </label>
                 <input
                   id="lastName"
@@ -437,9 +438,9 @@ export const VolunteerApplicationForm: React.FC<
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
-                  Email Address <span className="text-red-500">*</span>
+                  Email Address <span className="text-red-500 text-base">*</span>
                 </label>
                 <input
                   id="email"
@@ -458,7 +459,7 @@ export const VolunteerApplicationForm: React.FC<
               <div>
                 <label
                   htmlFor="phoneNumber"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
                   Phone Number
                 </label>
@@ -478,7 +479,7 @@ export const VolunteerApplicationForm: React.FC<
               <div>
                 <label
                   htmlFor="location"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
                   Location/City
                 </label>
@@ -494,7 +495,7 @@ export const VolunteerApplicationForm: React.FC<
               <div>
                 <label
                   htmlFor="timezone"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
                   Time Zone
                 </label>
@@ -539,9 +540,9 @@ export const VolunteerApplicationForm: React.FC<
               <div className="md:col-span-2">
                 <label
                   htmlFor="ageRange"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-800 mb-2"
                 >
-                  Age Range <span className="text-red-500">*</span>
+                  Age Range <span className="text-red-500 text-base">*</span>
                 </label>
                 <select
                   id="ageRange"
@@ -569,11 +570,11 @@ export const VolunteerApplicationForm: React.FC<
           </div>
 
           {/* Skills & Interests Section */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+          <div className="mb-8 mt-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <span className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold mr-3 ring-2 ring-indigo-200">
                 2
-              </span>{" "}
+              </span>
               Skills & Interests
             </h2>
 
@@ -583,7 +584,7 @@ export const VolunteerApplicationForm: React.FC<
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Skills and Areas of Interest{" "}
-                <span className="text-red-500">*</span>
+                <span className="text-red-500 text-base">*</span>
               </label>
               <button
                 className="relative border-2 border-gray-200 rounded-xl p-4 bg-gray-50 cursor-text transition-all duration-200 focus-within:border-indigo-600 focus-within:ring-3 focus-within:ring-indigo-600/10 w-full text-left min-h-[100px]"
@@ -639,7 +640,7 @@ export const VolunteerApplicationForm: React.FC<
             <div className="mb-4">
               <fieldset>
                 <legend className="block text-sm font-medium text-gray-700 mb-2">
-                  Commitment Level <span className="text-red-500">*</span>
+                  Commitment Level <span className="text-red-500 text-base">*</span>
                 </legend>
                 <div className="grid md:grid-cols-3 gap-3">
                   <label
@@ -733,7 +734,7 @@ export const VolunteerApplicationForm: React.FC<
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
                 Tell us about your relevant experience{" "}
-                <span className="text-red-500">*</span>
+                <span className="text-red-500 text-base">*</span>
               </label>
               <textarea
                 id="experience"
@@ -752,11 +753,11 @@ export const VolunteerApplicationForm: React.FC<
           </div>
 
           {/* Consent & Agreement Section */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <span className="w-8 h-8 bg-gradient-to-r from-indigo-600 to-purple-600 text-gray-900 rounded-full flex items-center justify-center text-sm font-bold mr-3">
+          <div className="mb-8 mt-8">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <span className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold mr-3 ring-2 ring-indigo-200">
                 3
-              </span>{" "}
+              </span>
               Consent & Agreement
             </h2>
 
@@ -958,11 +959,11 @@ export const VolunteerApplicationForm: React.FC<
             )}
           </div>
 
-          <div className="border-t border-gray-200 pt-6">
+          <div className="border-t border-gray-200 pt-8 mt-8 pb-4">
             <Button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-gray-900 font-semibold rounded-full transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold rounded-full transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
             >
               {loading ? "Submitting..." : "Submit Volunteer Application"}
             </Button>
