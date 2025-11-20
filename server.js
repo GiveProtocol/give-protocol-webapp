@@ -46,7 +46,7 @@ app.get("/api/exchangerate/*", async (req, res) => {
 });
 
 // Add Vite or respective production middlewares
-let vite;
+let vite = null;
 if (!isProduction) {
   const { createServer } = await import("vite");
   vite = await createServer({
