@@ -387,7 +387,7 @@ export const VolunteerApplicationForm: React.FC<
           {/* Personal Information Section */}
           <div className="mb-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold mr-3 ring-2 ring-indigo-200">
+              <span className="w-7 h-7 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 1
               </span>
               Personal Information
@@ -572,7 +572,7 @@ export const VolunteerApplicationForm: React.FC<
           {/* Skills & Interests Section */}
           <div className="mb-8 mt-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold mr-3 ring-2 ring-indigo-200">
+              <span className="w-7 h-7 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 2
               </span>
               Skills & Interests
@@ -755,7 +755,7 @@ export const VolunteerApplicationForm: React.FC<
           {/* Consent & Agreement Section */}
           <div className="mb-8 mt-8">
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-indigo-100 text-indigo-700 rounded-full flex items-center justify-center text-sm font-bold mr-3 ring-2 ring-indigo-200">
+              <span className="w-7 h-7 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 3
               </span>
               Consent & Agreement
