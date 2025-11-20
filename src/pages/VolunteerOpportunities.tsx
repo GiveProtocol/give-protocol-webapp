@@ -152,15 +152,21 @@ const VolunteerOpportunities: React.FC = () => {
     return matchesSearch && matchesSkill && matchesType && matchesLanguage;
   });
 
-  const handleApply = useCallback((opportunity: Opportunity) => {
-    if (!user) {
-      showToast("error", "Please sign in to apply for volunteer opportunities");
-      navigate("/login");
-      return;
-    }
-    setSelectedOpportunity(opportunity);
-    setShowApplicationForm(true);
-  }, [user, navigate, showToast]);
+  const handleApply = useCallback(
+    (opportunity: Opportunity) => {
+      if (!user) {
+        showToast(
+          "error",
+          "Please sign in to apply for volunteer opportunities",
+        );
+        navigate("/login");
+        return;
+      }
+      setSelectedOpportunity(opportunity);
+      setShowApplicationForm(true);
+    },
+    [user, navigate, showToast],
+  );
 
   const createApplyHandler = useCallback(
     (opportunity: Opportunity) => {
@@ -207,7 +213,6 @@ const VolunteerOpportunities: React.FC = () => {
     },
     [],
   );
-
 
   const formatLanguageName = (language: string): string => {
     return language
@@ -291,63 +296,65 @@ const VolunteerOpportunities: React.FC = () => {
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={200}>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {filteredOpportunities.map((opportunity) => (
-            <Card key={opportunity.id} className="overflow-hidden">
-              <img
-                src={opportunity.image}
-                alt={opportunity.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {opportunity.title}
-                </h3>
-                <p className="text-sm font-medium text-indigo-600 mb-2">
-                  {opportunity.organization}
-                </p>
-                <p className="text-gray-600 mb-4">{opportunity.description}</p>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {filteredOpportunities.map((opportunity) => (
+              <Card key={opportunity.id} className="overflow-hidden">
+                <img
+                  src={opportunity.image}
+                  alt={opportunity.title}
+                  className="w-full h-48 object-cover"
+                />
+                <div className="p-6">
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">
+                    {opportunity.title}
+                  </h3>
+                  <p className="text-sm font-medium text-indigo-600 mb-2">
+                    {opportunity.organization}
+                  </p>
+                  <p className="text-gray-600 mb-4">
+                    {opportunity.description}
+                  </p>
 
-                {/* Flattened opportunity details from 4 to 3 levels */}
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Clock className="h-4 w-4 mr-2" />
-                    {opportunity.commitment}
+                  {/* Flattened opportunity details from 4 to 3 levels */}
+                  <div className="space-y-2 mb-4">
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Clock className="h-4 w-4 mr-2" />
+                      {opportunity.commitment}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Users className="h-4 w-4 mr-2" />
+                      {opportunity.location}
+                    </div>
+                    <div className="flex items-center text-sm text-gray-500">
+                      <Globe className="h-4 w-4 mr-2" />
+                      {t(
+                        `language.${opportunity.workLanguage}`,
+                        formatLanguageName(opportunity.workLanguage),
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {opportunity.skills.map((skill) => (
+                        <span
+                          key={skill}
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                        >
+                          <Award className="h-3 w-3 mr-1" />
+                          {skill}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Users className="h-4 w-4 mr-2" />
-                    {opportunity.location}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Globe className="h-4 w-4 mr-2" />
-                    {t(
-                      `language.${opportunity.workLanguage}`,
-                      formatLanguageName(opportunity.workLanguage),
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {opportunity.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
-                      >
-                        <Award className="h-3 w-3 mr-1" />
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+
+                  <button
+                    onClick={createApplyHandler(opportunity)}
+                    className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                  >
+                    {t("volunteer.applyNow", "Apply Now")}
+                  </button>
                 </div>
-
-                <button
-                  onClick={createApplyHandler(opportunity)}
-                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
-                >
-                  {t("volunteer.applyNow", "Apply Now")}
-                </button>
-              </div>
-            </Card>
-          ))}
-        </div>
+              </Card>
+            ))}
+          </div>
         </ScrollReveal>
 
         {filteredOpportunities.length === 0 && (
