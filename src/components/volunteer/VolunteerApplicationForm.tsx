@@ -392,7 +392,7 @@ export const VolunteerApplicationForm: React.FC<
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 1
-              </span>
+              </span>{' '}
               Personal Information
             </h2>
             <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
@@ -577,7 +577,7 @@ export const VolunteerApplicationForm: React.FC<
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 2
-              </span>
+              </span>{' '}
               Skills & Interests
             </h2>
 
@@ -589,14 +589,7 @@ export const VolunteerApplicationForm: React.FC<
                 Skills and Areas of Interest{" "}
                 <span className="text-red-500 text-base">*</span>
               </label>
-              <div
-                className="relative border-2 border-gray-200 rounded-xl p-4 bg-gray-50 cursor-text transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full text-left min-h-[100px]"
-                onClick={focusSkillInput}
-                onKeyDown={handleSkillContainerKeyDown}
-                role="button"
-                tabIndex={0}
-                aria-label="Click to add skills"
-              >
+              <div className="relative border-2 border-gray-200 rounded-xl p-4 bg-gray-50 transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full min-h-[100px]">
                 {formData.skills.map((skill, index) => (
                   <span
                     key={skill}
@@ -751,7 +744,7 @@ export const VolunteerApplicationForm: React.FC<
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 3
-              </span>
+              </span>{' '}
               Consent & Agreement
             </h2>
 
