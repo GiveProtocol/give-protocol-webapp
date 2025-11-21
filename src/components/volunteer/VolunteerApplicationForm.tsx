@@ -392,7 +392,7 @@ export const VolunteerApplicationForm: React.FC<
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 1
-              </span>{' '}
+              </span>{" "}
               Personal Information
             </h2>
             <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
@@ -443,7 +443,8 @@ export const VolunteerApplicationForm: React.FC<
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-800 mb-2"
                 >
-                  Email Address <span className="text-red-500 text-base">*</span>
+                  Email Address{" "}
+                  <span className="text-red-500 text-base">*</span>
                 </label>
                 <input
                   id="email"
@@ -577,7 +578,7 @@ export const VolunteerApplicationForm: React.FC<
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 2
-              </span>{' '}
+              </span>{" "}
               Skills & Interests
             </h2>
 
@@ -614,7 +615,11 @@ export const VolunteerApplicationForm: React.FC<
                   onChange={handleSkillInputChange}
                   onKeyDown={handleSkillInputKeyDown}
                   className="w-full bg-transparent border-none outline-none text-gray-700 placeholder-gray-500 pt-6"
-                  placeholder={showSkillPlaceholder ? "Start typing your skills (e.g., Python programming, Public speaking, Grant writing)" : "Type a skill and press Enter..."}
+                  placeholder={
+                    showSkillPlaceholder
+                      ? "Start typing your skills (e.g., Python programming, Public speaking, Grant writing)"
+                      : "Type a skill and press Enter..."
+                  }
                 />
               </div>
               {validationErrors.skills && (
@@ -627,7 +632,8 @@ export const VolunteerApplicationForm: React.FC<
             <div className="mb-4">
               <fieldset>
                 <legend className="block text-sm font-medium text-gray-700 mb-2">
-                  Commitment Level <span className="text-red-500 text-base">*</span>
+                  Commitment Level{" "}
+                  <span className="text-red-500 text-base">*</span>
                 </legend>
                 <div className="grid md:grid-cols-3 gap-3">
                   <label
@@ -744,7 +750,7 @@ export const VolunteerApplicationForm: React.FC<
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
               <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
                 3
-              </span>{' '}
+              </span>{" "}
               Consent & Agreement
             </h2>
 
