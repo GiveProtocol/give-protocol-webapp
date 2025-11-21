@@ -47,9 +47,9 @@ interface SecurityHeaders {
  */
 export class SecurityManager {
   private static instance: SecurityManager;
-  private csrf: CSRFProtection;
-  private sanitizer: InputSanitizer;
-  private rateLimiter: RateLimiter;
+  private readonly csrf: CSRFProtection;
+  private readonly sanitizer: InputSanitizer;
+  private readonly rateLimiter: RateLimiter;
   private readonly trustedDomains: string[];
   private readonly securityHeaders: SecurityHeaders;
   private readonly highRiskPatterns: string[];

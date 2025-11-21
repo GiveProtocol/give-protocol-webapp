@@ -22,7 +22,7 @@ export const CharityHeroSection: React.FC<CharityHeroSectionProps> = ({
         alt={title}
         className="w-full h-full object-cover"
       />
-      <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-gray-900">
+      <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-white">
         {verified && (
           <span className="px-3 py-1 bg-green-500 text-gray-900 text-sm font-medium rounded-full self-start mb-2">
             Verified

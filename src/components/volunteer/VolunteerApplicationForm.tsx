@@ -211,10 +211,6 @@ export const VolunteerApplicationForm: React.FC<
     [currentSkillInput, formData.skills.length, addSkill, removeSkill],
   );
 
-  const focusSkillInput = useCallback(() => {
-    tagInputRef.current?.focus();
-  }, []);
-
   // Validation
   const validateForm = useCallback((): boolean => {
     const errors: Record<string, string> = {};
@@ -336,16 +332,6 @@ export const VolunteerApplicationForm: React.FC<
       }
     },
     [loading, onClose],
-  );
-
-  const handleSkillContainerKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        focusSkillInput();
-      }
-    },
-    [focusSkillInput],
   );
 
   const inputClasses =
