@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Editor } from "@/components/ui/Editor";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 import { useProfile } from "@/hooks/useProfile";
 import { supabase } from "@/lib/supabase";
 import {
@@ -10,9 +11,10 @@ import {
   OpportunityType,
   WorkLanguage,
 } from "@/types/volunteer";
+import { MAX_OPPORTUNITIES_PER_CHARITY } from "@/types/charity";
 import { useTranslation } from "@/hooks/useTranslation";
 import { Logger } from "@/utils/logger";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, AlertTriangle } from "lucide-react";
 
 interface OpportunityFormProps {
   onSuccess?: () => void;
@@ -35,6 +37,8 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
     location: "",
     type: OpportunityType.REMOTE,
     workLanguage: WorkLanguage.ENGLISH,
+    imageUrl: "",
+    imagePath: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -42,6 +46,40 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
+  const [activeOpportunityCount, setActiveOpportunityCount] = useState<number>(0);
+  const [checkingLimit, setCheckingLimit] = useState(true);
+
+  // Check how many active opportunities the charity already has
+  useEffect(() => {
+    const checkOpportunityLimit = async () => {
+      if (!profile?.id) {
+        setCheckingLimit(false);
+        return;
+      }
+
+      try {
+        const { count, error: countError } = await supabase
+          .from("volunteer_opportunities")
+          .select("*", { count: "exact", head: true })
+          .eq("charity_id", profile.id)
+          .eq("status", "active");
+
+        if (countError) {
+          Logger.warn("Error checking opportunity count", { error: countError });
+        } else {
+          setActiveOpportunityCount(count ?? 0);
+        }
+      } catch (err) {
+        Logger.warn("Exception checking opportunity count", { error: err });
+      } finally {
+        setCheckingLimit(false);
+      }
+    };
+
+    checkOpportunityLimit();
+  }, [profile?.id]);
+
+  const hasReachedLimit = activeOpportunityCount >= MAX_OPPORTUNITIES_PER_CHARITY;
 
   // Safely strip HTML by removing individual characters that could form HTML
   // This prevents incomplete multi-character sanitization vulnerabilities
@@ -103,6 +141,17 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
     [validationErrors.description],
   );
 
+  const handleImageChange = useCallback(
+    (url: string | null, path: string | null) => {
+      setFormData((prev) => ({
+        ...prev,
+        imageUrl: url ?? "",
+        imagePath: path ?? "",
+      }));
+    },
+    [],
+  );
+
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
@@ -160,6 +209,8 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
             type: formData.type,
             work_language: formData.workLanguage,
             status: "active",
+            image_url: formData.imageUrl || null,
+            image_path: formData.imagePath || null,
           });
 
         if (submitError) throw submitError;
@@ -199,6 +250,32 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
         {t("volunteer.createOpportunity", "Create Volunteer Opportunity")}
       </h2>
 
+      {hasReachedLimit && (
+        <div className="mb-4 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-md flex items-start">
+          <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
+          <div>
+            <p className="font-medium">
+              {t("volunteer.limitReached", "Opportunity Limit Reached")}
+            </p>
+            <p className="text-sm mt-1">
+              {t(
+                "volunteer.limitReachedMessage",
+                `You have reached the maximum of ${MAX_OPPORTUNITIES_PER_CHARITY} active volunteer opportunities. Please close or complete an existing opportunity before creating a new one.`
+              )}
+            </p>
+          </div>
+        </div>
+      )}
+
+      {!hasReachedLimit && !checkingLimit && (
+        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm">
+          {t(
+            "volunteer.opportunityCount",
+            `You have ${activeOpportunityCount} of ${MAX_OPPORTUNITIES_PER_CHARITY} active opportunities.`
+          )}
+        </div>
+      )}
+
       {error && (
         <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md flex items-start">
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
@@ -237,6 +314,17 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
             </p>
           )}
         </div>
+
+        <ImageUpload
+          value={formData.imageUrl}
+          onChange={handleImageChange}
+          folder={`opportunities/${profile?.id ?? "unknown"}`}
+          label={t("volunteer.headerImage", "Header Image")}
+          helpText={t(
+            "volunteer.headerImageHelp",
+            "Upload an image to display at the top of your opportunity listing"
+          )}
+        />
 
         <Input
           label={t("volunteer.skills", "Skills (comma-separated)")}
@@ -336,10 +424,12 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
             </Button>
           )}
 
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading || hasReachedLimit || checkingLimit}>
             {loading
               ? t("common.creating", "Creating...")
-              : t("volunteer.createOpportunity", "Create Opportunity")}
+              : checkingLimit
+                ? t("common.loading", "Loading...")
+                : t("volunteer.createOpportunity", "Create Opportunity")}
           </Button>
         </div>
       </form>
