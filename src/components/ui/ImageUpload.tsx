@@ -154,6 +154,24 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   }, [disabled, uploading]);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        handleClick();
+      }
+    },
+    [handleClick]
+  );
+
+  const handleRemoveClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      handleRemove();
+    },
+    [handleRemove]
+  );
+
   const displayError = externalError || uploadError?.message;
 
   return (
@@ -172,10 +190,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
           ${disabled ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer hover:border-indigo-400"}
           ${displayError ? "border-red-300" : ""}
         `}
+        role="button"
+        tabIndex={disabled ? -1 : 0}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
+        onKeyDown={handleKeyDown}
+        aria-label={label}
+        aria-disabled={disabled}
       >
         <input
           ref={fileInputRef}
@@ -202,10 +225,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             {!uploading && !disabled && (
               <button
                 type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleRemove();
-                }}
+                onClick={handleRemoveClick}
                 className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
                 title="Remove image"
               >
