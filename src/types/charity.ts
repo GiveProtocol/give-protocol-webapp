@@ -121,3 +121,55 @@ export interface CampaignAttachment {
   url: string;
   mimeType: string;
 }
+
+/**
+ * Represents a specific cause/project that a charity is running.
+ * Each charity can have a maximum of 3 active causes at any time.
+ */
+export interface Cause {
+  id: string;
+  name: string;
+  description: string;
+  targetAmount: number;
+  raisedAmount: number;
+  charityId: string;
+  category: string;
+  image: string;
+  impact?: string[];
+  timeline?: string;
+  location?: string;
+  partners?: string[];
+  status?: 'active' | 'completed' | 'paused';
+  createdAt?: Timestamp;
+  updatedAt?: Timestamp;
+}
+
+/**
+ * Extended cause data for the cause detail page template.
+ */
+export interface CauseProfileData extends Cause {
+  impact: string[];
+  timeline: string;
+  location: string;
+  partners: string[];
+}
+
+/** Maximum number of causes a charity can have active at once */
+export const MAX_CAUSES_PER_CHARITY = 3;
+
+/** Maximum number of volunteer opportunities a charity can have active at once */
+export const MAX_OPPORTUNITIES_PER_CHARITY = 3;
+
+/**
+ * Type guard to check if charity has reached cause limit
+ */
+export function hasReachedCauseLimit(activeCauses: number): boolean {
+  return activeCauses >= MAX_CAUSES_PER_CHARITY;
+}
+
+/**
+ * Type guard to check if charity has reached opportunity limit
+ */
+export function hasReachedOpportunityLimit(activeOpportunities: number): boolean {
+  return activeOpportunities >= MAX_OPPORTUNITIES_PER_CHARITY;
+}
