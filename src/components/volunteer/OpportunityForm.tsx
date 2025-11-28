@@ -244,6 +244,16 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
       .join(" ");
   };
 
+  const getSubmitButtonText = (): string => {
+    if (loading) {
+      return t("common.creating", "Creating...");
+    }
+    if (checkingLimit) {
+      return t("common.loading", "Loading...");
+    }
+    return t("volunteer.createOpportunity", "Create Opportunity");
+  };
+
   return (
     <div className="bg-white rounded-lg shadow-md p-6">
       <h2 className="text-xl font-semibold text-gray-900 mb-6">
@@ -425,11 +435,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           )}
 
           <Button type="submit" disabled={loading || hasReachedLimit || checkingLimit}>
-            {loading
-              ? t("common.creating", "Creating...")
-              : checkingLimit
-                ? t("common.loading", "Loading...")
-                : t("volunteer.createOpportunity", "Create Opportunity")}
+            {getSubmitButtonText()}
           </Button>
         </div>
       </form>

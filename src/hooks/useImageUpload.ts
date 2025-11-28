@@ -74,6 +74,19 @@ export function validateImageFile(file: File): ImageUploadError | null {
 }
 
 /**
+ * Generates a cryptographically secure random string
+ * @param length - Length of the random string
+ * @returns Random alphanumeric string
+ */
+function generateSecureRandomString(length: number): string {
+  const array = new Uint8Array(length);
+  crypto.getRandomValues(array);
+  return Array.from(array, (byte) => byte.toString(36).padStart(2, "0"))
+    .join("")
+    .substring(0, length);
+}
+
+/**
  * Generates a unique filename for upload
  * @param originalName - Original filename
  * @param folder - Folder path for organization
@@ -81,7 +94,7 @@ export function validateImageFile(file: File): ImageUploadError | null {
  */
 function generateFilePath(originalName: string, folder: string): string {
   const timestamp = Date.now();
-  const randomString = Math.random().toString(36).substring(2, 8);
+  const randomString = generateSecureRandomString(8);
   const extension = originalName.split(".").pop()?.toLowerCase() || "jpg";
   const sanitizedFolder = folder.replace(/[^a-zA-Z0-9-_/]/g, "");
   return `${sanitizedFolder}/${timestamp}-${randomString}.${extension}`;

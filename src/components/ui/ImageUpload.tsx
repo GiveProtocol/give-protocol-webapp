@@ -1,5 +1,5 @@
 import React, { useCallback, useRef, useState } from "react";
-import { Upload, X, Image as ImageIcon, AlertCircle, Loader2 } from "lucide-react";
+import { Upload, Image as ImageIcon, AlertCircle, Loader2 } from "lucide-react";
 import {
   useImageUpload,
   IMAGE_UPLOAD_CONFIG,
@@ -154,16 +154,6 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     }
   }, [disabled, uploading]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        handleClick();
-      }
-    },
-    [handleClick]
-  );
-
   const handleRemoveClick = useCallback(
     (e: React.MouseEvent) => {
       e.stopPropagation();
@@ -183,22 +173,20 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         </label>
       )}
 
-      <div
+      <button
+        type="button"
         className={`
-          relative border-2 border-dashed rounded-lg transition-colors
+          relative w-full border-2 border-dashed rounded-lg transition-colors text-left
           ${isDragging ? "border-indigo-500 bg-indigo-50" : "border-gray-300"}
           ${disabled ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer hover:border-indigo-400"}
           ${displayError ? "border-red-300" : ""}
         `}
-        role="button"
-        tabIndex={disabled ? -1 : 0}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onClick={handleClick}
-        onKeyDown={handleKeyDown}
+        disabled={disabled}
         aria-label={label}
-        aria-disabled={disabled}
       >
         <input
           ref={fileInputRef}
@@ -223,14 +211,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
               </div>
             )}
             {!uploading && !disabled && (
-              <button
+              <input
                 type="button"
                 onClick={handleRemoveClick}
-                className="absolute top-2 right-2 p-1.5 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                className="absolute top-2 right-2 p-1.5 w-7 h-7 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors cursor-pointer flex items-center justify-center"
                 title="Remove image"
-              >
-                <X className="h-4 w-4" />
-              </button>
+                value="✕"
+                aria-label="Remove image"
+              />
             )}
           </div>
         ) : (
@@ -264,7 +252,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             )}
           </div>
         )}
-      </div>
+      </button>
 
       {displayError && (
         <div className="mt-2 flex items-start text-sm text-red-600">
