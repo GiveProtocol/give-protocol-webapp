@@ -1,23 +1,23 @@
-import { Address, Timestamp, UUID } from './common';
-import { TokenAmount } from './blockchain';
+import { Address, Timestamp, UUID } from "./common";
+import { TokenAmount } from "./blockchain";
 
 export enum CharityStatus {
-  _PENDING = 'pending', // Prefixed with _ as currently unused
-  _ACTIVE = 'active', // Prefixed with _ as currently unused
-  _PAUSED = 'paused', // Prefixed with _ as currently unused
-  _COMPLETED = 'completed', // Prefixed with _ as currently unused
-  _ARCHIVED = 'archived' // Prefixed with _ as currently unused
+  _PENDING = "pending", // Prefixed with _ as currently unused
+  _ACTIVE = "active", // Prefixed with _ as currently unused
+  _PAUSED = "paused", // Prefixed with _ as currently unused
+  _COMPLETED = "completed", // Prefixed with _ as currently unused
+  _ARCHIVED = "archived", // Prefixed with _ as currently unused
 }
 
 export enum CharityCategory {
-  _EDUCATION = 'education', // Prefixed with _ as currently unused
-  _HEALTHCARE = 'healthcare', // Prefixed with _ as currently unused
-  _ENVIRONMENT = 'environment', // Prefixed with _ as currently unused
-  _POVERTY = 'poverty', // Prefixed with _ as currently unused
-  _DISASTER_RELIEF = 'disaster_relief', // Prefixed with _ as currently unused
-  _ANIMAL_WELFARE = 'animal_welfare', // Prefixed with _ as currently unused
-  _ARTS_CULTURE = 'arts_culture', // Prefixed with _ as currently unused
-  _COMMUNITY = 'community' // Prefixed with _ as currently unused
+  _EDUCATION = "education", // Prefixed with _ as currently unused
+  _HEALTHCARE = "healthcare", // Prefixed with _ as currently unused
+  _ENVIRONMENT = "environment", // Prefixed with _ as currently unused
+  _POVERTY = "poverty", // Prefixed with _ as currently unused
+  _DISASTER_RELIEF = "disaster_relief", // Prefixed with _ as currently unused
+  _ANIMAL_WELFARE = "animal_welfare", // Prefixed with _ as currently unused
+  _ARTS_CULTURE = "arts_culture", // Prefixed with _ as currently unused
+  _COMMUNITY = "community", // Prefixed with _ as currently unused
 }
 
 export interface CharityBase {
@@ -35,13 +35,15 @@ export interface CharityMeta {
   logoUrl?: string;
   bannerUrl?: string;
   website?: string;
-  socialLinks: Partial<Record<'twitter' | 'facebook' | 'instagram' | 'linkedin', string>>;
+  socialLinks: Partial<
+    Record<"twitter" | "facebook" | "instagram" | "linkedin", string>
+  >;
   documents: CharityDocument[];
 }
 
 export interface CharityDocument {
   id: UUID;
-  type: 'registration' | 'audit' | 'report';
+  type: "registration" | "audit" | "report";
   url: string;
   verifiedAt?: Timestamp;
 }
@@ -74,7 +76,7 @@ export interface CharityVerification {
 export interface VerificationDocument {
   id: UUID;
   type: string;
-  status: 'pending' | 'verified' | 'rejected';
+  status: "pending" | "verified" | "rejected";
   verifiedAt?: Timestamp;
   verifiedBy?: UUID;
 }
@@ -99,12 +101,12 @@ export interface Campaign {
   updates: CampaignUpdate[];
 }
 
-export type CampaignStatus = 
-  | 'draft'
-  | 'active'
-  | 'paused'
-  | 'completed'
-  | 'cancelled';
+export type CampaignStatus =
+  | "draft"
+  | "active"
+  | "paused"
+  | "completed"
+  | "cancelled";
 
 export interface CampaignUpdate {
   readonly id: UUID;
@@ -117,7 +119,7 @@ export interface CampaignUpdate {
 
 export interface CampaignAttachment {
   id: UUID;
-  type: 'image' | 'document';
+  type: "image" | "document";
   url: string;
   mimeType: string;
 }
@@ -139,7 +141,7 @@ export interface Cause {
   timeline?: string;
   location?: string;
   partners?: string[];
-  status?: 'active' | 'completed' | 'paused';
+  status?: "active" | "completed" | "paused";
   createdAt?: Timestamp;
   updatedAt?: Timestamp;
 }
@@ -170,6 +172,8 @@ export function hasReachedCauseLimit(activeCauses: number): boolean {
 /**
  * Type guard to check if charity has reached opportunity limit
  */
-export function hasReachedOpportunityLimit(activeOpportunities: number): boolean {
+export function hasReachedOpportunityLimit(
+  activeOpportunities: number,
+): boolean {
   return activeOpportunities >= MAX_OPPORTUNITIES_PER_CHARITY;
 }
