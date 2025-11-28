@@ -96,7 +96,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         setPreviewUrl(value ?? null);
       }
     },
-    [folder, uploadImage, onChange, value, clearError]
+    [folder, uploadImage, onChange, value, clearError],
   );
 
   const handleInputChange = useCallback(
@@ -108,7 +108,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       // Reset input so same file can be selected again
       e.target.value = "";
     },
-    [handleFileSelect]
+    [handleFileSelect],
   );
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
@@ -136,7 +136,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         handleFileSelect(file);
       }
     },
-    [disabled, uploading, handleFileSelect]
+    [disabled, uploading, handleFileSelect],
   );
 
   const handleRemove = useCallback(async () => {
@@ -159,7 +159,7 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
       e.stopPropagation();
       handleRemove();
     },
-    [handleRemove]
+    [handleRemove],
   );
 
   const displayError = externalError || uploadError?.message;
@@ -241,11 +241,14 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                   or drag and drop
                 </div>
                 <p className="text-xs text-gray-500">
-                  {IMAGE_UPLOAD_CONFIG.ALLOWED_EXTENSIONS.join(", ").toUpperCase()} up to{" "}
-                  {IMAGE_UPLOAD_CONFIG.MAX_FILE_SIZE_DISPLAY}
+                  {IMAGE_UPLOAD_CONFIG.ALLOWED_EXTENSIONS.join(
+                    ", ",
+                  ).toUpperCase()}{" "}
+                  up to {IMAGE_UPLOAD_CONFIG.MAX_FILE_SIZE_DISPLAY}
                 </p>
                 <p className="text-xs text-gray-400">
-                  Recommended: {IMAGE_UPLOAD_CONFIG.RECOMMENDED_DIMENSIONS.width}x
+                  Recommended:{" "}
+                  {IMAGE_UPLOAD_CONFIG.RECOMMENDED_DIMENSIONS.width}x
                   {IMAGE_UPLOAD_CONFIG.RECOMMENDED_DIMENSIONS.height}px
                 </p>
               </div>
