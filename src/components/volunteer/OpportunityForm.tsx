@@ -46,7 +46,8 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
-  const [activeOpportunityCount, setActiveOpportunityCount] = useState<number>(0);
+  const [activeOpportunityCount, setActiveOpportunityCount] =
+    useState<number>(0);
   const [checkingLimit, setCheckingLimit] = useState(true);
 
   // Check how many active opportunities the charity already has
@@ -65,7 +66,9 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           .eq("status", "active");
 
         if (countError) {
-          Logger.warn("Error checking opportunity count", { error: countError });
+          Logger.warn("Error checking opportunity count", {
+            error: countError,
+          });
         } else {
           setActiveOpportunityCount(count ?? 0);
         }
@@ -79,7 +82,8 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
     checkOpportunityLimit();
   }, [profile?.id]);
 
-  const hasReachedLimit = activeOpportunityCount >= MAX_OPPORTUNITIES_PER_CHARITY;
+  const hasReachedLimit =
+    activeOpportunityCount >= MAX_OPPORTUNITIES_PER_CHARITY;
 
   // Safely strip HTML by removing individual characters that could form HTML
   // This prevents incomplete multi-character sanitization vulnerabilities
@@ -270,7 +274,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
             <p className="text-sm mt-1">
               {t(
                 "volunteer.limitReachedMessage",
-                `You have reached the maximum of ${MAX_OPPORTUNITIES_PER_CHARITY} active volunteer opportunities. Please close or complete an existing opportunity before creating a new one.`
+                `You have reached the maximum of ${MAX_OPPORTUNITIES_PER_CHARITY} active volunteer opportunities. Please close or complete an existing opportunity before creating a new one.`,
               )}
             </p>
           </div>
@@ -281,7 +285,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm">
           {t(
             "volunteer.opportunityCount",
-            `You have ${activeOpportunityCount} of ${MAX_OPPORTUNITIES_PER_CHARITY} active opportunities.`
+            `You have ${activeOpportunityCount} of ${MAX_OPPORTUNITIES_PER_CHARITY} active opportunities.`,
           )}
         </div>
       )}
@@ -332,7 +336,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
           label={t("volunteer.headerImage", "Header Image")}
           helpText={t(
             "volunteer.headerImageHelp",
-            "Upload an image to display at the top of your opportunity listing"
+            "Upload an image to display at the top of your opportunity listing",
           )}
         />
 
@@ -434,7 +438,10 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
             </Button>
           )}
 
-          <Button type="submit" disabled={loading || hasReachedLimit || checkingLimit}>
+          <Button
+            type="submit"
+            disabled={loading || hasReachedLimit || checkingLimit}
+          >
             {getSubmitButtonText()}
           </Button>
         </div>

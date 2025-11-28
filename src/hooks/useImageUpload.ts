@@ -24,7 +24,8 @@ export const IMAGE_UPLOAD_CONFIG = {
   BUCKET_NAME: "opportunity-images",
 };
 
-export type AllowedImageType = (typeof IMAGE_UPLOAD_CONFIG.ALLOWED_TYPES)[number];
+export type AllowedImageType =
+  (typeof IMAGE_UPLOAD_CONFIG.ALLOWED_TYPES)[number];
 
 export interface ImageUploadResult {
   url: string;
@@ -40,7 +41,10 @@ export interface UseImageUploadReturn {
   uploading: boolean;
   progress: number;
   error: ImageUploadError | null;
-  uploadImage: (_file: File, _folder: string) => Promise<ImageUploadResult | null>;
+  uploadImage: (
+    _file: File,
+    _folder: string,
+  ) => Promise<ImageUploadResult | null>;
   deleteImage: (_path: string) => Promise<boolean>;
   validateFile: (_file: File) => ImageUploadError | null;
   clearError: () => void;
@@ -213,7 +217,7 @@ export function useImageUpload(): UseImageUploadReturn {
         setUploading(false);
       }
     },
-    []
+    [],
   );
 
   const deleteImage = useCallback(async (path: string): Promise<boolean> => {
