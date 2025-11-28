@@ -14,11 +14,17 @@ import {
   X,
   ChevronUp,
   ChevronDown,
+  MapPin,
+  Globe,
+  Trash2,
+  Edit,
 } from "lucide-react";
+import { MAX_OPPORTUNITIES_PER_CHARITY, MAX_CAUSES_PER_CHARITY } from "@/types/charity";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
+import { Target } from "lucide-react";
 import { formatDate } from "@/utils/date";
 import { useTranslation } from "@/hooks/useTranslation";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
@@ -83,11 +89,38 @@ interface VolunteerHours {
   description: string;
 }
 
+interface CharityOpportunity {
+  id: string;
+  title: string;
+  description: string;
+  skills: string[];
+  commitment: string;
+  location: string;
+  type: string;
+  work_language: string;
+  status: string;
+  created_at: string;
+}
+
+interface CharityCause {
+  id: string;
+  name: string;
+  description: string;
+  target_amount: number;
+  raised_amount: number;
+  category: string;
+  image_url: string | null;
+  location: string;
+  timeline: string | null;
+  status: string;
+  created_at: string;
+}
+
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const [activeTab, setActiveTab] = useState<
-    "transactions" | "volunteers" | "applications" | "opportunities"
+    "transactions" | "volunteers" | "applications" | "opportunities" | "causes"
   >("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
@@ -104,12 +137,14 @@ export const CharityPortal: React.FC = () => {
     activeVolunteers: 0,
   });
 
-  // State for transactions, applications, and hours
+  // State for transactions, applications, hours, and opportunities
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [pendingApplications, setPendingApplications] = useState<
     VolunteerApplication[]
   >([]);
   const [pendingHours, setPendingHours] = useState<VolunteerHours[]>([]);
+  const [opportunities, setOpportunities] = useState<CharityOpportunity[]>([]);
+  const [causes, setCauses] = useState<CharityCause[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -393,6 +428,48 @@ export const CharityPortal: React.FC = () => {
     }
   }, []);
 
+  // Helper function to fetch volunteer opportunities
+  const fetchOpportunities = useCallback(async (charityId: string) => {
+    try {
+      const { data, error: fetchError } = await supabase
+        .from("volunteer_opportunities")
+        .select("*")
+        .eq("charity_id", charityId)
+        .order("created_at", { ascending: false });
+
+      if (fetchError) {
+        Logger.warn("Error fetching opportunities:", { error: fetchError });
+        return [];
+      }
+
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      Logger.warn("Exception fetching opportunities:", { error: err });
+      return [];
+    }
+  }, []);
+
+  // Helper function to fetch causes
+  const fetchCauses = useCallback(async (charityId: string) => {
+    try {
+      const { data, error: fetchError } = await supabase
+        .from("causes")
+        .select("*")
+        .eq("charity_id", charityId)
+        .order("created_at", { ascending: false });
+
+      if (fetchError) {
+        Logger.warn("Error fetching causes:", { error: fetchError });
+        return [];
+      }
+
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      Logger.warn("Exception fetching causes:", { error: err });
+      return [];
+    }
+  }, []);
+
   const fetchCharityData = useCallback(async () => {
     if (!profile?.id) return;
 
@@ -408,16 +485,20 @@ export const CharityPortal: React.FC = () => {
       setCharityStats(stats);
 
       // Fetch detailed data in parallel
-      const [formattedTransactions, applicationsList, formattedHours] =
+      const [formattedTransactions, applicationsList, formattedHours, opportunitiesList, causesList] =
         await Promise.all([
           fetchTransactions(profile.id),
           fetchVolunteerApplications(profile.id),
           fetchPendingHours(profile.id),
+          fetchOpportunities(profile.id),
+          fetchCauses(profile.id),
         ]);
 
       setTransactions(formattedTransactions);
       setPendingApplications(applicationsList);
       setPendingHours(formattedHours);
+      setOpportunities(opportunitiesList);
+      setCauses(causesList);
 
       Logger.info("Successfully fetched all charity data");
     } catch (err) {
@@ -441,6 +522,8 @@ export const CharityPortal: React.FC = () => {
     fetchTransactions,
     fetchVolunteerApplications,
     fetchPendingHours,
+    fetchOpportunities,
+    fetchCauses,
   ]);
 
   useEffect(() => {
@@ -468,6 +551,10 @@ export const CharityPortal: React.FC = () => {
 
   const handleOpportunitiesTab = useCallback(() => {
     setActiveTab("opportunities");
+  }, []);
+
+  const handleCausesTab = useCallback(() => {
+    setActiveTab("causes");
   }, []);
 
   const handleShowExportModal = useCallback(() => {
@@ -707,6 +794,16 @@ export const CharityPortal: React.FC = () => {
               }`}
             >
               {t("volunteer.opportunities")}
+            </button>
+            <button
+              onClick={handleCausesTab}
+              className={`py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === "causes"
+                  ? "border-indigo-500 text-indigo-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
+              }`}
+            >
+              {t("cause.causes", "Causes")}
             </button>
           </nav>
         </div>
@@ -956,24 +1053,211 @@ export const CharityPortal: React.FC = () => {
       {activeTab === "opportunities" && (
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              {t("volunteer.opportunities", "Volunteer Opportunities")}
-            </h2>
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                {t("volunteer.opportunities", "Volunteer Opportunities")}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {opportunities.filter((o) => o.status === "active").length} of {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
+              </p>
+            </div>
             <Link to="/charity-portal/create-opportunity">
-              <Button className="flex items-center">
+              <Button
+                className="flex items-center"
+                disabled={opportunities.filter((o) => o.status === "active").length >= MAX_OPPORTUNITIES_PER_CHARITY}
+              >
                 <Plus className="h-4 w-4 mr-2" />
                 {t("volunteer.createNew", "Create New")}
               </Button>
             </Link>
           </div>
-          <div className="bg-white rounded-lg shadow-md p-6">
-            <div className="text-center py-8 text-gray-500">
-              {t(
-                "volunteer.noOpportunitiesYet",
-                'No opportunities created yet. Click "Create New" to get started.',
-              )}
+
+          {opportunities.length > 0 ? (
+            <div className="space-y-4">
+              {opportunities.map((opportunity) => (
+                <Card key={opportunity.id} className="p-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-grow">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {opportunity.title}
+                        </h3>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                            opportunity.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : opportunity.status === "filled"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {opportunity.status.charAt(0).toUpperCase() + opportunity.status.slice(1)}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {opportunity.description.replace(/[<>]/g, "")}
+                      </p>
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                        <span className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {opportunity.location}
+                        </span>
+                        <span className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {opportunity.commitment}
+                        </span>
+                        <span className="flex items-center">
+                          <Globe className="h-4 w-4 mr-1" />
+                          {opportunity.type}
+                        </span>
+                      </div>
+                      {opportunity.skills && opportunity.skills.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-3">
+                          {opportunity.skills.slice(0, 5).map((skill) => (
+                            <span
+                              key={skill}
+                              className="px-2 py-0.5 text-xs bg-indigo-100 text-indigo-700 rounded-full"
+                            >
+                              {skill}
+                            </span>
+                          ))}
+                          {opportunity.skills.length > 5 && (
+                            <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
+                              +{opportunity.skills.length - 5} more
+                            </span>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                      <Button variant="ghost" className="p-2" title="Edit">
+                        <Edit className="h-4 w-4 text-gray-500" />
+                      </Button>
+                      <Button variant="ghost" className="p-2" title="Delete">
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
             </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="text-center py-8 text-gray-500">
+                {t(
+                  "volunteer.noOpportunitiesYet",
+                  'No opportunities created yet. Click "Create New" to get started.',
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Causes Tab */}
+      {activeTab === "causes" && (
+        <div className="mb-8">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900">
+                {t("cause.causes", "Causes")}
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                {causes.filter((c) => c.status === "active").length} of {MAX_CAUSES_PER_CHARITY} active causes
+              </p>
+            </div>
+            <Link to="/charity-portal/create-cause">
+              <Button
+                className="flex items-center"
+                disabled={causes.filter((c) => c.status === "active").length >= MAX_CAUSES_PER_CHARITY}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                {t("cause.createNew", "Create New")}
+              </Button>
+            </Link>
           </div>
+
+          {causes.length > 0 ? (
+            <div className="space-y-4">
+              {causes.map((cause) => (
+                <Card key={cause.id} className="p-6">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-grow">
+                      <div className="flex items-center gap-2 mb-2">
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {cause.name}
+                        </h3>
+                        <span
+                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                            cause.status === "active"
+                              ? "bg-green-100 text-green-800"
+                              : cause.status === "completed"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-gray-100 text-gray-800"
+                          }`}
+                        >
+                          {cause.status.charAt(0).toUpperCase() + cause.status.slice(1)}
+                        </span>
+                      </div>
+                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                        {cause.description}
+                      </p>
+                      <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
+                        <span className="flex items-center">
+                          <MapPin className="h-4 w-4 mr-1" />
+                          {cause.location}
+                        </span>
+                        <span className="flex items-center">
+                          <Target className="h-4 w-4 mr-1" />
+                          {cause.category}
+                        </span>
+                        {cause.timeline && (
+                          <span className="flex items-center">
+                            <Clock className="h-4 w-4 mr-1" />
+                            {cause.timeline}
+                          </span>
+                        )}
+                      </div>
+                      {/* Funding Progress */}
+                      <div className="mt-2">
+                        <div className="flex justify-between text-sm mb-1">
+                          <span className="text-gray-500">Funding Progress</span>
+                          <span className="font-medium">
+                            <CurrencyDisplay amount={cause.raised_amount} /> / <CurrencyDisplay amount={cause.target_amount} />
+                          </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div
+                            className="bg-indigo-600 h-2 rounded-full"
+                            style={{
+                              width: `${Math.min((cause.raised_amount / cause.target_amount) * 100, 100)}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 ml-4">
+                      <Button variant="ghost" className="p-2" title="Edit">
+                        <Edit className="h-4 w-4 text-gray-500" />
+                      </Button>
+                      <Button variant="ghost" className="p-2" title="Delete">
+                        <Trash2 className="h-4 w-4 text-red-500" />
+                      </Button>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white rounded-lg shadow-md p-6">
+              <div className="text-center py-8 text-gray-500">
+                {t(
+                  "cause.noCausesYet",
+                  'No causes created yet. Click "Create New" to get started.',
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

@@ -43,6 +43,7 @@ const CharityPortal = lazy(() => import("@/pages/CharityPortal"));
 const CreateOpportunity = lazy(
   () => import("@/pages/charity/CreateOpportunity"),
 );
+const CreateCause = lazy(() => import("@/pages/charity/CreateCause"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 const VerifyContribution = lazy(
   () => import("@/pages/volunteer/VerifyContribution"),
@@ -54,6 +55,10 @@ const Documentation = lazy(() => import("@/pages/Documentation"));
 
 // Admin routes
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
+const CharityRegistration = lazy(() => import("@/pages/admin/CharityRegistration"));
+const CharityDiagnostics = lazy(() => import("@/pages/admin/CharityDiagnostics"));
+const TokenManagement = lazy(() => import("@/pages/admin/TokenManagement"));
+const SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
 // Lazy load cause pages
 const CleanWaterInitiative = lazy(
@@ -108,6 +113,36 @@ export function AppRoutes() {
         />
 
         {/* Admin Routes */}
+        <Route
+          path="/admin/charity-registration"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <CharityRegistration />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
+        <Route
+          path="/admin/charity-diagnostics"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <CharityDiagnostics />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
+        <Route
+          path="/admin/token-management"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <TokenManagement />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
         <Route
           path="/admin/*"
           element={
@@ -252,6 +287,18 @@ export function AppRoutes() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/charity-portal/create-cause"
+          element={
+            <ProtectedRoute requiredRoles={["charity"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <CreateCause />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
 
         {/* Donor Routes */}
         <Route
@@ -297,13 +344,11 @@ export function AppRoutes() {
         <Route
           path="/give-dashboard/*"
           element={
-            <ProtectedRoute requireWallet>
-              <RouteTransition>
-                <Suspense fallback={<LoadingFallback />}>
-                  <GiveDashboard />
-                </Suspense>
-              </RouteTransition>
-            </ProtectedRoute>
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <GiveDashboard />
+              </Suspense>
+            </RouteTransition>
           }
         />
         <Route
