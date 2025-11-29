@@ -251,17 +251,17 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
       {hasReachedLimit && (
         <div className="mb-4 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-md flex items-start">
           <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
-          <div>
-            <p className="font-medium">
+          <p>
+            <span className="font-medium block">
               {t("cause.limitReached", "Cause Limit Reached")}
-            </p>
-            <p className="text-sm mt-1">
+            </span>
+            <span className="text-sm mt-1 block">
               {t(
                 "cause.limitReachedMessage",
                 `You have reached the maximum of ${MAX_CAUSES_PER_CHARITY} active causes. Please complete or pause an existing cause before creating a new one.`
               )}
-            </p>
-          </div>
+            </span>
+          </p>
         </div>
       )}
 

@@ -18,13 +18,13 @@ import {
   Globe,
   Trash2,
   Edit,
+  Target,
 } from "lucide-react";
 import { MAX_OPPORTUNITIES_PER_CHARITY, MAX_CAUSES_PER_CHARITY } from "@/types/charity";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
-import { Target } from "lucide-react";
 import { formatDate } from "@/utils/date";
 import { useTranslation } from "@/hooks/useTranslation";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
@@ -1075,68 +1075,64 @@ export const CharityPortal: React.FC = () => {
           {opportunities.length > 0 ? (
             <div className="space-y-4">
               {opportunities.map((opportunity) => (
-                <Card key={opportunity.id} className="p-6">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-grow">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {opportunity.title}
-                        </h3>
-                        <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                            opportunity.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : opportunity.status === "filled"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {opportunity.status.charAt(0).toUpperCase() + opportunity.status.slice(1)}
-                        </span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {opportunity.description.replace(/[<>]/g, "")}
-                      </p>
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                        <span className="flex items-center">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {opportunity.location}
-                        </span>
-                        <span className="flex items-center">
-                          <Clock className="h-4 w-4 mr-1" />
-                          {opportunity.commitment}
-                        </span>
-                        <span className="flex items-center">
-                          <Globe className="h-4 w-4 mr-1" />
-                          {opportunity.type}
-                        </span>
-                      </div>
-                      {opportunity.skills && opportunity.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mt-3">
-                          {opportunity.skills.slice(0, 5).map((skill) => (
-                            <span
-                              key={skill}
-                              className="px-2 py-0.5 text-xs bg-indigo-100 text-indigo-700 rounded-full"
-                            >
-                              {skill}
-                            </span>
-                          ))}
-                          {opportunity.skills.length > 5 && (
-                            <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
-                              +{opportunity.skills.length - 5} more
-                            </span>
-                          )}
-                        </div>
-                      )}
+                <Card key={opportunity.id} className="p-6 flex justify-between items-start">
+                  <div className="flex-grow">
+                    <h3 className="text-lg font-semibold text-gray-900 inline-flex items-center gap-2 mb-2">
+                      {opportunity.title}
+                      <span
+                        className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                          opportunity.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : opportunity.status === "filled"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {opportunity.status.charAt(0).toUpperCase() + opportunity.status.slice(1)}
+                      </span>
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {opportunity.description.replace(/[<>]/g, "")}
+                    </p>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                      <span className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {opportunity.location}
+                      </span>
+                      <span className="flex items-center">
+                        <Clock className="h-4 w-4 mr-1" />
+                        {opportunity.commitment}
+                      </span>
+                      <span className="flex items-center">
+                        <Globe className="h-4 w-4 mr-1" />
+                        {opportunity.type}
+                      </span>
                     </div>
-                    <div className="flex gap-2 ml-4">
-                      <Button variant="ghost" className="p-2" title="Edit">
-                        <Edit className="h-4 w-4 text-gray-500" />
-                      </Button>
-                      <Button variant="ghost" className="p-2" title="Delete">
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
+                    {opportunity.skills && opportunity.skills.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-3">
+                        {opportunity.skills.slice(0, 5).map((skill) => (
+                          <span
+                            key={skill}
+                            className="px-2 py-0.5 text-xs bg-indigo-100 text-indigo-700 rounded-full"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {opportunity.skills.length > 5 && (
+                          <span className="px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
+                            +{opportunity.skills.length - 5} more
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 ml-4">
+                    <Button variant="ghost" className="p-2" title="Edit">
+                      <Edit className="h-4 w-4 text-gray-500" />
+                    </Button>
+                    <Button variant="ghost" className="p-2" title="Delete">
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
                   </div>
                 </Card>
               ))}
@@ -1180,70 +1176,65 @@ export const CharityPortal: React.FC = () => {
           {causes.length > 0 ? (
             <div className="space-y-4">
               {causes.map((cause) => (
-                <Card key={cause.id} className="p-6">
-                  <div className="flex justify-between items-start">
-                    <div className="flex-grow">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-lg font-semibold text-gray-900">
-                          {cause.name}
-                        </h3>
-                        <span
-                          className={`px-2 py-0.5 text-xs font-medium rounded-full ${
-                            cause.status === "active"
-                              ? "bg-green-100 text-green-800"
-                              : cause.status === "completed"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-gray-100 text-gray-800"
-                          }`}
-                        >
-                          {cause.status.charAt(0).toUpperCase() + cause.status.slice(1)}
+                <Card key={cause.id} className="p-6 flex justify-between items-start">
+                  <div className="flex-grow">
+                    <h3 className="text-lg font-semibold text-gray-900 inline-flex items-center gap-2 mb-2">
+                      {cause.name}
+                      <span
+                        className={`px-2 py-0.5 text-xs font-medium rounded-full ${
+                          cause.status === "active"
+                            ? "bg-green-100 text-green-800"
+                            : cause.status === "completed"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {cause.status.charAt(0).toUpperCase() + cause.status.slice(1)}
+                      </span>
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                      {cause.description}
+                    </p>
+                    <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
+                      <span className="flex items-center">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {cause.location}
+                      </span>
+                      <span className="flex items-center">
+                        <Target className="h-4 w-4 mr-1" />
+                        {cause.category}
+                      </span>
+                      {cause.timeline && (
+                        <span className="flex items-center">
+                          <Clock className="h-4 w-4 mr-1" />
+                          {cause.timeline}
                         </span>
-                      </div>
-                      <p className="text-gray-600 text-sm mb-3 line-clamp-2">
-                        {cause.description}
+                      )}
+                    </div>
+                    <div className="mt-2">
+                      <p className="flex justify-between text-sm mb-1">
+                        <span className="text-gray-500">Funding Progress</span>
+                        <span className="font-medium">
+                          <CurrencyDisplay amount={cause.raised_amount} /> / <CurrencyDisplay amount={cause.target_amount} />
+                        </span>
                       </p>
-                      <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
-                        <span className="flex items-center">
-                          <MapPin className="h-4 w-4 mr-1" />
-                          {cause.location}
-                        </span>
-                        <span className="flex items-center">
-                          <Target className="h-4 w-4 mr-1" />
-                          {cause.category}
-                        </span>
-                        {cause.timeline && (
-                          <span className="flex items-center">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {cause.timeline}
-                          </span>
-                        )}
-                      </div>
-                      {/* Funding Progress */}
-                      <div className="mt-2">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="text-gray-500">Funding Progress</span>
-                          <span className="font-medium">
-                            <CurrencyDisplay amount={cause.raised_amount} /> / <CurrencyDisplay amount={cause.target_amount} />
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                          <div
-                            className="bg-indigo-600 h-2 rounded-full"
-                            style={{
-                              width: `${Math.min((cause.raised_amount / cause.target_amount) * 100, 100)}%`,
-                            }}
-                          />
-                        </div>
+                      <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div
+                          className="bg-indigo-600 h-2 rounded-full"
+                          style={{
+                            width: `${Math.min((cause.raised_amount / cause.target_amount) * 100, 100)}%`,
+                          }}
+                        />
                       </div>
                     </div>
-                    <div className="flex gap-2 ml-4">
-                      <Button variant="ghost" className="p-2" title="Edit">
-                        <Edit className="h-4 w-4 text-gray-500" />
-                      </Button>
-                      <Button variant="ghost" className="p-2" title="Delete">
-                        <Trash2 className="h-4 w-4 text-red-500" />
-                      </Button>
-                    </div>
+                  </div>
+                  <div className="flex gap-2 ml-4">
+                    <Button variant="ghost" className="p-2" title="Edit">
+                      <Edit className="h-4 w-4 text-gray-500" />
+                    </Button>
+                    <Button variant="ghost" className="p-2" title="Delete">
+                      <Trash2 className="h-4 w-4 text-red-500" />
+                    </Button>
                   </div>
                 </Card>
               ))}
