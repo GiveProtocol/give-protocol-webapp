@@ -20,7 +20,10 @@ import {
   Edit,
   Target,
 } from "lucide-react";
-import { MAX_OPPORTUNITIES_PER_CHARITY, MAX_CAUSES_PER_CHARITY } from "@/types/charity";
+import {
+  MAX_OPPORTUNITIES_PER_CHARITY,
+  MAX_CAUSES_PER_CHARITY,
+} from "@/types/charity";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Transaction } from "@/types/contribution";
@@ -485,14 +488,19 @@ export const CharityPortal: React.FC = () => {
       setCharityStats(stats);
 
       // Fetch detailed data in parallel
-      const [formattedTransactions, applicationsList, formattedHours, opportunitiesList, causesList] =
-        await Promise.all([
-          fetchTransactions(profile.id),
-          fetchVolunteerApplications(profile.id),
-          fetchPendingHours(profile.id),
-          fetchOpportunities(profile.id),
-          fetchCauses(profile.id),
-        ]);
+      const [
+        formattedTransactions,
+        applicationsList,
+        formattedHours,
+        opportunitiesList,
+        causesList,
+      ] = await Promise.all([
+        fetchTransactions(profile.id),
+        fetchVolunteerApplications(profile.id),
+        fetchPendingHours(profile.id),
+        fetchOpportunities(profile.id),
+        fetchCauses(profile.id),
+      ]);
 
       setTransactions(formattedTransactions);
       setPendingApplications(applicationsList);
@@ -829,105 +837,102 @@ export const CharityPortal: React.FC = () => {
             <table className="min-w-full divide-y divide-gray-200 overflow-x-auto">
               <thead className="bg-gray-50">
                 <tr>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
-                      onClick={handleSortByDate}
-                    >
-                      {t("contributions.date")}
-                      {getSortIcon("date")}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
-                      onClick={handleSortByType}
-                    >
-                      {t("contributions.type")}
-                      {getSortIcon("type")}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
-                      onClick={handleSortByOrganization}
-                    >
-                      {t("donor.volunteer", "Donor/Volunteer")}
-                      {getSortIcon("organization")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("contributions.details")}
-                    </th>
-                    <th
-                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
-                      onClick={handleSortByStatus}
-                    >
-                      {t("contributions.status")}
-                      {getSortIcon("status")}
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      {t("contributions.verification")}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {sortedTransactions().map((transaction) => (
-                    <tr key={transaction.id}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {formatDate(transaction.timestamp, true)}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
+                    onClick={handleSortByDate}
+                  >
+                    {t("contributions.date")}
+                    {getSortIcon("date")}
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
+                    onClick={handleSortByType}
+                  >
+                    {t("contributions.type")}
+                    {getSortIcon("type")}
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
+                    onClick={handleSortByOrganization}
+                  >
+                    {t("donor.volunteer", "Donor/Volunteer")}
+                    {getSortIcon("organization")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("contributions.details")}
+                  </th>
+                  <th
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none flex items-center space-x-1"
+                    onClick={handleSortByStatus}
+                  >
+                    {t("contributions.status")}
+                    {getSortIcon("status")}
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t("contributions.verification")}
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {sortedTransactions().map((transaction) => (
+                  <tr key={transaction.id}>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {formatDate(transaction.timestamp, true)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {t(
+                        `contribution.type.${transaction.purpose.toLowerCase().replace(" ", "")}`,
+                        transaction.purpose,
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      {transaction.metadata?.organization ||
+                        transaction.metadata?.donor ||
+                        t("donor.anonymous", "Anonymous")}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <span>
+                        {transaction.amount} {transaction.cryptoType} (
+                        <CurrencyDisplay amount={transaction.fiatValue || 0} />)
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          transaction.status === "completed"
+                            ? "bg-green-100 text-green-800"
+                            : transaction.status === "pending"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : "bg-red-100 text-red-800"
+                        }`}
+                      >
                         {t(
-                          `contribution.type.${transaction.purpose.toLowerCase().replace(" ", "")}`,
-                          transaction.purpose,
+                          `status.${transaction.status}`,
+                          transaction.status.charAt(0).toUpperCase() +
+                            transaction.status.slice(1),
                         )}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {transaction.metadata?.organization ||
-                          transaction.metadata?.donor ||
-                          t("donor.anonymous", "Anonymous")}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        <span>
-                          {transaction.amount} {transaction.cryptoType} (
-                          <CurrencyDisplay
-                            amount={transaction.fiatValue || 0}
-                          />
-                          )
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            transaction.status === "completed"
-                              ? "bg-green-100 text-green-800"
-                              : transaction.status === "pending"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-red-100 text-red-800"
-                          }`}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      {transaction.hash ? (
+                        <a
+                          href={`https://moonscan.io/tx/${transaction.hash}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-indigo-600 hover:text-indigo-900 flex items-center"
                         >
-                          {t(
-                            `status.${transaction.status}`,
-                            transaction.status.charAt(0).toUpperCase() +
-                              transaction.status.slice(1),
-                          )}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {transaction.hash ? (
-                          <a
-                            href={`https://moonscan.io/tx/${transaction.hash}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-indigo-600 hover:text-indigo-900 flex items-center"
-                          >
-                            <span className="truncate max-w-[100px]">
-                              {transaction.hash.substring(0, 10)}...
-                            </span>
-                            <ExternalLink className="h-3 w-3 ml-1" />
-                          </a>
-                        ) : (
-                          t("common.notAvailable", "N/A")
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                          <span className="truncate max-w-[100px]">
+                            {transaction.hash.substring(0, 10)}...
+                          </span>
+                          <ExternalLink className="h-3 w-3 ml-1" />
+                        </a>
+                      ) : (
+                        t("common.notAvailable", "N/A")
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
             </table>
           ) : (
             <div className="text-center py-8 text-gray-500">
@@ -1058,13 +1063,17 @@ export const CharityPortal: React.FC = () => {
                 {t("volunteer.opportunities", "Volunteer Opportunities")}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                {opportunities.filter((o) => o.status === "active").length} of {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
+                {opportunities.filter((o) => o.status === "active").length} of{" "}
+                {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
               </p>
             </div>
             <Link to="/charity-portal/create-opportunity">
               <Button
                 className="flex items-center"
-                disabled={opportunities.filter((o) => o.status === "active").length >= MAX_OPPORTUNITIES_PER_CHARITY}
+                disabled={
+                  opportunities.filter((o) => o.status === "active").length >=
+                  MAX_OPPORTUNITIES_PER_CHARITY
+                }
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {t("volunteer.createNew", "Create New")}
@@ -1075,7 +1084,10 @@ export const CharityPortal: React.FC = () => {
           {opportunities.length > 0 ? (
             <div className="space-y-4">
               {opportunities.map((opportunity) => (
-                <Card key={opportunity.id} className="p-6 flex justify-between items-start">
+                <Card
+                  key={opportunity.id}
+                  className="p-6 flex justify-between items-start"
+                >
                   <div className="flex-grow">
                     <h3 className="text-lg font-semibold text-gray-900 inline-flex items-center gap-2 mb-2">
                       {opportunity.title}
@@ -1088,7 +1100,8 @@ export const CharityPortal: React.FC = () => {
                               : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {opportunity.status.charAt(0).toUpperCase() + opportunity.status.slice(1)}
+                        {opportunity.status.charAt(0).toUpperCase() +
+                          opportunity.status.slice(1)}
                       </span>
                     </h3>
                     <p className="text-gray-600 text-sm mb-3 line-clamp-2">
@@ -1159,13 +1172,17 @@ export const CharityPortal: React.FC = () => {
                 {t("cause.causes", "Causes")}
               </h2>
               <p className="text-sm text-gray-500 mt-1">
-                {causes.filter((c) => c.status === "active").length} of {MAX_CAUSES_PER_CHARITY} active causes
+                {causes.filter((c) => c.status === "active").length} of{" "}
+                {MAX_CAUSES_PER_CHARITY} active causes
               </p>
             </div>
             <Link to="/charity-portal/create-cause">
               <Button
                 className="flex items-center"
-                disabled={causes.filter((c) => c.status === "active").length >= MAX_CAUSES_PER_CHARITY}
+                disabled={
+                  causes.filter((c) => c.status === "active").length >=
+                  MAX_CAUSES_PER_CHARITY
+                }
               >
                 <Plus className="h-4 w-4 mr-2" />
                 {t("cause.createNew", "Create New")}
@@ -1178,7 +1195,9 @@ export const CharityPortal: React.FC = () => {
               {causes.map((cause) => (
                 <Card key={cause.id} className="p-6">
                   <header className="flex items-center gap-2 mb-2">
-                    <h3 className="text-lg font-semibold text-gray-900">{cause.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">
+                      {cause.name}
+                    </h3>
                     <span
                       className={`px-2 py-0.5 text-xs font-medium rounded-full ${
                         cause.status === "active"
@@ -1188,7 +1207,8 @@ export const CharityPortal: React.FC = () => {
                             : "bg-gray-100 text-gray-800"
                       }`}
                     >
-                      {cause.status.charAt(0).toUpperCase() + cause.status.slice(1)}
+                      {cause.status.charAt(0).toUpperCase() +
+                        cause.status.slice(1)}
                     </span>
                     <span className="ml-auto flex gap-2">
                       <Button variant="ghost" className="p-2" title="Edit">
@@ -1199,7 +1219,9 @@ export const CharityPortal: React.FC = () => {
                       </Button>
                     </span>
                   </header>
-                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">{cause.description}</p>
+                  <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+                    {cause.description}
+                  </p>
                   <p className="flex flex-wrap gap-4 text-sm text-gray-500 mb-3">
                     <span className="flex items-center">
                       <MapPin className="h-4 w-4 mr-1" />
@@ -1219,7 +1241,8 @@ export const CharityPortal: React.FC = () => {
                   <p className="flex justify-between text-sm mb-1">
                     <span className="text-gray-500">Funding Progress</span>
                     <span className="font-medium">
-                      <CurrencyDisplay amount={cause.raised_amount} /> / <CurrencyDisplay amount={cause.target_amount} />
+                      <CurrencyDisplay amount={cause.raised_amount} /> /{" "}
+                      <CurrencyDisplay amount={cause.target_amount} />
                     </span>
                   </p>
                   <div className="w-full bg-gray-200 rounded-full h-2">
