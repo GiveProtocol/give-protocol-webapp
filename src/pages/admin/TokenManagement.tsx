@@ -24,29 +24,39 @@ const TokenManagement: React.FC = () => {
         <div className="mb-6 p-4 bg-gray-50 rounded-xl max-w-2xl">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Contract Owner</span>
+              <span className="text-sm font-medium text-gray-700">
+                Contract Owner
+              </span>
               <code className="text-xs bg-white px-2 py-1 rounded border">
                 {owner}
               </code>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Your Address</span>
+              <span className="text-sm font-medium text-gray-700">
+                Your Address
+              </span>
               <code className="text-xs bg-white px-2 py-1 rounded border">
                 {address || "Not connected"}
               </code>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-700">Owner Status</span>
+              <span className="text-sm font-medium text-gray-700">
+                Owner Status
+              </span>
               <div className="flex items-center gap-2">
                 {isOwner ? (
                   <>
                     <CheckCircle2 className="w-5 h-5 text-green-600" />
-                    <span className="text-sm font-semibold text-green-700">You are the owner</span>
+                    <span className="text-sm font-semibold text-green-700">
+                      You are the owner
+                    </span>
                   </>
                 ) : (
                   <>
                     <XCircle className="w-5 h-5 text-red-600" />
-                    <span className="text-sm font-semibold text-red-700">Not the owner</span>
+                    <span className="text-sm font-semibold text-red-700">
+                      Not the owner
+                    </span>
                   </>
                 )}
               </div>
@@ -64,8 +74,9 @@ const TokenManagement: React.FC = () => {
                 Not Authorized
               </h3>
               <p className="text-sm text-red-800">
-                You are not the contract owner. Only the contract owner can add tokens.
-                Please connect with the wallet that deployed the contract.
+                You are not the contract owner. Only the contract owner can add
+                tokens. Please connect with the wallet that deployed the
+                contract.
               </p>
             </div>
           </div>
@@ -80,9 +91,17 @@ const TokenManagement: React.FC = () => {
         </h3>
         <ul className="list-disc list-inside space-y-2 text-sm text-yellow-800">
           <li>Only the contract owner can add accepted tokens</li>
-          <li>Tokens must be whitelisted before they can be used for donations</li>
-          <li>Use the zero address (0x0000...0000) to accept native DEV/GLMR tokens</li>
-          <li>Once added, tokens cannot be removed without calling removeAcceptedToken</li>
+          <li>
+            Tokens must be whitelisted before they can be used for donations
+          </li>
+          <li>
+            Use the zero address (0x0000...0000) to accept native DEV/GLMR
+            tokens
+          </li>
+          <li>
+            Once added, tokens cannot be removed without calling
+            removeAcceptedToken
+          </li>
         </ul>
       </div>
     </div>

@@ -42,13 +42,17 @@ export const AddTokenForm: React.FC = () => {
         }
         const normalizedAddress = getAddress(tokenAddress);
 
-        Logger.info("Adding accepted token", { tokenAddress: normalizedAddress });
+        Logger.info("Adding accepted token", {
+          tokenAddress: normalizedAddress,
+        });
 
         const addTokenFunction = contract.getFunction("addAcceptedToken");
         const tx = await addTokenFunction(normalizedAddress);
         const receipt = await tx.wait();
 
-        setSuccessMessage(`Token added successfully! Transaction: ${receipt.hash}`);
+        setSuccessMessage(
+          `Token added successfully! Transaction: ${receipt.hash}`,
+        );
         setTokenAddress("");
 
         Logger.info("Token added successfully", {
@@ -56,13 +60,16 @@ export const AddTokenForm: React.FC = () => {
           txHash: receipt.hash,
         });
       } catch (err) {
-        let message = err instanceof Error ? err.message : "Failed to add token";
+        let message =
+          err instanceof Error ? err.message : "Failed to add token";
 
         // Provide more helpful error messages
         if (message.includes("require(false)")) {
-          message = "Token may already be added, or you're not the contract owner. Check the diagnostics page.";
+          message =
+            "Token may already be added, or you're not the contract owner. Check the diagnostics page.";
         } else if (message.includes("Ownable")) {
-          message = "Only the contract owner can add tokens. Please connect with the owner wallet.";
+          message =
+            "Only the contract owner can add tokens. Please connect with the owner wallet.";
         }
 
         setError(message);
@@ -71,7 +78,7 @@ export const AddTokenForm: React.FC = () => {
         setLoading(false);
       }
     },
-    [contract, tokenAddress]
+    [contract, tokenAddress],
   );
 
   if (!isConnected) {
@@ -94,7 +101,8 @@ export const AddTokenForm: React.FC = () => {
         Add Accepted Token
       </h2>
       <p className="text-sm text-gray-600 mb-6">
-        Add a token to the whitelist so it can be used for donations. Only the contract owner can add tokens.
+        Add a token to the whitelist so it can be used for donations. Only the
+        contract owner can add tokens.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-4">

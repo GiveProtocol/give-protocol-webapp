@@ -16,7 +16,10 @@ interface CharityInfo {
  * @param tokenAddress The token address to query (use ZeroAddress for native token)
  * @returns Charity information including registration status and balances
  */
-export function useCharityInfo(charityAddress: string | null, tokenAddress: string = ZeroAddress) {
+export function useCharityInfo(
+  charityAddress: string | null,
+  tokenAddress: string = ZeroAddress,
+) {
   const { contract } = useContract("donation");
   const [charityInfo, setCharityInfo] = useState<CharityInfo | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -45,7 +48,10 @@ export function useCharityInfo(charityAddress: string | null, tokenAddress: stri
         const normalizedToken = getAddress(tokenAddress);
 
         const getCharityInfoFunction = contract.getFunction("getCharityInfo");
-        const info = await getCharityInfoFunction(normalizedCharity, normalizedToken);
+        const info = await getCharityInfoFunction(
+          normalizedCharity,
+          normalizedToken,
+        );
 
         setCharityInfo({
           isRegistered: info.isRegistered,
@@ -60,7 +66,11 @@ export function useCharityInfo(charityAddress: string | null, tokenAddress: stri
           isRegistered: info.isRegistered,
         });
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to fetch charity info"));
+        setError(
+          err instanceof Error
+            ? err
+            : new Error("Failed to fetch charity info"),
+        );
         Logger.error("Failed to fetch charity info", { error: err });
       } finally {
         setIsLoading(false);

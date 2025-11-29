@@ -31,15 +31,25 @@ export function useContractOwner() {
         const ownerAddress = await ownerFunction();
 
         setOwner(ownerAddress);
-        setIsOwner(address ? ownerAddress.toLowerCase() === address.toLowerCase() : false);
+        setIsOwner(
+          address
+            ? ownerAddress.toLowerCase() === address.toLowerCase()
+            : false,
+        );
 
         Logger.info("Contract owner fetched", {
           owner: ownerAddress,
           currentAddress: address,
-          isOwner: address ? ownerAddress.toLowerCase() === address.toLowerCase() : false,
+          isOwner: address
+            ? ownerAddress.toLowerCase() === address.toLowerCase()
+            : false,
         });
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to fetch contract owner"));
+        setError(
+          err instanceof Error
+            ? err
+            : new Error("Failed to fetch contract owner"),
+        );
         Logger.error("Failed to fetch contract owner", { error: err });
       } finally {
         setIsLoading(false);

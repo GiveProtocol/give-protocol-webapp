@@ -34,20 +34,26 @@ export function useMultiTokenBalance(tokens: TokenConfig[]) {
         try {
           if (token.isNative) {
             const balanceWei = await provider.getBalance(address);
-            const balanceFormatted = Number.parseFloat(ethers.formatEther(balanceWei));
+            const balanceFormatted = Number.parseFloat(
+              ethers.formatEther(balanceWei),
+            );
             return { symbol: token.symbol, balance: balanceFormatted };
           }
-          const contract = new ethers.Contract(token.address, ERC20_ABI, provider);
+          const contract = new ethers.Contract(
+            token.address,
+            ERC20_ABI,
+            provider,
+          );
           const balanceRaw = await contract.balanceOf(address);
           const decimals = await contract.decimals();
           const balanceFormatted = Number.parseFloat(
-            ethers.formatUnits(balanceRaw, decimals)
+            ethers.formatUnits(balanceRaw, decimals),
           );
           return { symbol: token.symbol, balance: balanceFormatted };
         } catch (tokenError) {
           Logger.error("Failed to fetch balance for token", {
             token: token.symbol,
-            error: tokenError
+            error: tokenError,
           });
           return { symbol: token.symbol, balance: 0 };
         }
@@ -62,7 +68,9 @@ export function useMultiTokenBalance(tokens: TokenConfig[]) {
 
       setBalances(balanceMap);
     } catch (err) {
-      setError(err instanceof Error ? err : new Error("Failed to fetch balances"));
+      setError(
+        err instanceof Error ? err : new Error("Failed to fetch balances"),
+      );
       setBalances({});
       Logger.error("Failed to fetch multi-token balances", { error: err });
     } finally {
