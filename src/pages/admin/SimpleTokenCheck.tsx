@@ -40,7 +40,9 @@ const SimpleTokenCheck: React.FC = () => {
 
       setResult({ isAccepted });
     } catch (err) {
-      setResult({ error: err instanceof Error ? err.message : "Failed to check token" });
+      setResult({
+        error: err instanceof Error ? err.message : "Failed to check token",
+      });
     } finally {
       setLoading(false);
     }
@@ -60,10 +62,12 @@ const SimpleTokenCheck: React.FC = () => {
       const owner = await ownerFunction();
 
       setResult({
-        error: `Contract owner: ${owner}\nYour address: ${address}\nMatch: ${owner.toLowerCase() === address?.toLowerCase()}`
+        error: `Contract owner: ${owner}\nYour address: ${address}\nMatch: ${owner.toLowerCase() === address?.toLowerCase()}`,
       });
     } catch (err) {
-      setResult({ error: err instanceof Error ? err.message : "Failed to check owner" });
+      setResult({
+        error: err instanceof Error ? err.message : "Failed to check owner",
+      });
     } finally {
       setLoading(false);
     }
@@ -76,7 +80,9 @@ const SimpleTokenCheck: React.FC = () => {
           <h1 className="text-2xl font-semibold text-gray-900 mb-4">
             Simple Contract Check
           </h1>
-          <p className="mb-4 text-gray-600">Connect your wallet to check contract state</p>
+          <p className="mb-4 text-gray-600">
+            Connect your wallet to check contract state
+          </p>
           <Button onClick={connect}>Connect Wallet</Button>
         </div>
       </div>
@@ -86,18 +92,22 @@ const SimpleTokenCheck: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Simple Contract Check</h1>
-        <p className="mt-2 text-gray-600">
-          Direct contract state inspection
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Simple Contract Check
+        </h1>
+        <p className="mt-2 text-gray-600">Direct contract state inspection</p>
       </div>
 
       <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label
+            htmlFor="tokenAddress"
+            className="block text-sm font-medium text-gray-700 mb-2"
+          >
             Token Address
           </label>
           <input
+            id="tokenAddress"
             type="text"
             value={tokenAddress}
             onChange={(e) => setTokenAddress(e.target.value)}
@@ -117,7 +127,12 @@ const SimpleTokenCheck: React.FC = () => {
           <Button onClick={checkToken} disabled={loading} fullWidth>
             {loading ? "Checking..." : "Check if Token Accepted"}
           </Button>
-          <Button onClick={checkOwner} disabled={loading} variant="secondary" fullWidth>
+          <Button
+            onClick={checkOwner}
+            disabled={loading}
+            variant="secondary"
+            fullWidth
+          >
             Check Owner
           </Button>
         </div>
@@ -131,16 +146,20 @@ const SimpleTokenCheck: React.FC = () => {
 
         {result.error && (
           <div className="p-4 bg-gray-50 border-2 border-gray-200 rounded-xl">
-            <p className="text-sm font-mono whitespace-pre-wrap">{result.error}</p>
+            <p className="text-sm font-mono whitespace-pre-wrap">
+              {result.error}
+            </p>
           </div>
         )}
 
         {result.isAccepted !== undefined && (
-          <div className={`flex items-center gap-2 p-4 border-2 rounded-xl ${
-            result.isAccepted
-              ? "bg-green-50 border-green-200 text-green-700"
-              : "bg-red-50 border-red-200 text-red-700"
-          }`}>
+          <div
+            className={`flex items-center gap-2 p-4 border-2 rounded-xl ${
+              result.isAccepted
+                ? "bg-green-50 border-green-200 text-green-700"
+                : "bg-red-50 border-red-200 text-red-700"
+            }`}
+          >
             {result.isAccepted ? (
               <>
                 <CheckCircle2 className="w-5 h-5" />
@@ -150,8 +169,12 @@ const SimpleTokenCheck: React.FC = () => {
               <>
                 <XCircle className="w-5 h-5" />
                 <div>
-                  <p className="text-sm font-medium">❌ Token is NOT accepted</p>
-                  <p className="text-sm mt-1">You need to call addAcceptedToken({tokenAddress})</p>
+                  <p className="text-sm font-medium">
+                    ❌ Token is NOT accepted
+                  </p>
+                  <p className="text-sm mt-1">
+                    You need to call addAcceptedToken({tokenAddress})
+                  </p>
                 </div>
               </>
             )}
