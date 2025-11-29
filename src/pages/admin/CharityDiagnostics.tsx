@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { useCharityInfo } from "@/hooks/web3/useCharityInfo";
 import { useAcceptedTokens } from "@/hooks/web3/useAcceptedTokens";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -15,6 +15,24 @@ const CharityDiagnostics: React.FC = () => {
   const { isConnected, connect } = useWeb3();
   const { charityInfo, isLoading, error } = useCharityInfo(charityAddress, tokenAddress);
   const { isAccepted, isLoading: isLoadingToken, error: tokenError } = useAcceptedTokens(tokenAddress);
+
+  const handleCharityAddressChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setCharityAddress(e.target.value);
+    },
+    []
+  );
+
+  const handleTokenAddressChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTokenAddress(e.target.value);
+    },
+    []
+  );
+
+  const handleUseNativeToken = useCallback(() => {
+    setTokenAddress(ZeroAddress);
+  }, []);
 
   if (!isConnected) {
     return (
@@ -51,7 +69,7 @@ const CharityDiagnostics: React.FC = () => {
             id="charity-address"
             type="text"
             value={charityAddress}
-            onChange={(e) => setCharityAddress(e.target.value)}
+            onChange={handleCharityAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
@@ -68,13 +86,13 @@ const CharityDiagnostics: React.FC = () => {
             id="token-address"
             type="text"
             value={tokenAddress}
-            onChange={(e) => setTokenAddress(e.target.value)}
+            onChange={handleTokenAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
           <button
             type="button"
-            onClick={() => setTokenAddress(ZeroAddress)}
+            onClick={handleUseNativeToken}
             className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
           >
             Use native token (DEV)
