@@ -94,10 +94,11 @@ const SimpleTokenCheck: React.FC = () => {
 
       <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl space-y-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label htmlFor="tokenAddress" className="block text-sm font-medium text-gray-700 mb-2">
             Token Address
           </label>
           <input
+            id="tokenAddress"
             type="text"
             value={tokenAddress}
             onChange={(e) => setTokenAddress(e.target.value)}
