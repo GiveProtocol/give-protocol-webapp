@@ -28,7 +28,7 @@ export const CreateCause: React.FC = () => {
         <p className="mt-2 text-gray-600">
           {t(
             "cause.createCauseDescription",
-            "Create a new cause to raise funds for a specific project or initiative."
+            "Create a new cause to raise funds for a specific project or initiative.",
           )}
         </p>
       </div>
