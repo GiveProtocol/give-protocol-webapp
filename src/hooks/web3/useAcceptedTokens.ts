@@ -42,7 +42,11 @@ export function useAcceptedTokens(tokenAddress: string = ZeroAddress) {
           isAccepted: accepted,
         });
       } catch (err) {
-        setError(err instanceof Error ? err : new Error("Failed to check token acceptance"));
+        setError(
+          err instanceof Error
+            ? err
+            : new Error("Failed to check token acceptance"),
+        );
         Logger.error("Failed to check token acceptance", { error: err });
       } finally {
         setIsLoading(false);

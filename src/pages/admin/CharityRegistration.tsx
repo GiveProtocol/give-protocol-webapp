@@ -32,19 +32,25 @@ const CharityRegistration: React.FC = () => {
           Important Notes
         </h3>
         <ul className="list-disc list-inside space-y-2 text-sm text-yellow-800">
-          <li>Only the contract owner can register charities and set token prices</li>
+          <li>
+            Only the contract owner can register charities and set token prices
+          </li>
           <li>
             For scheduled donations to work, you must: (1) Add charity to
             distribution contract, (2) Set token price in distribution contract
           </li>
           <li>Register in the donation contract for one-time donations</li>
-          <li>Add to the distribution contract for scheduled monthly donations</li>
+          <li>
+            Add to the distribution contract for scheduled monthly donations
+          </li>
           <li>
             Set token prices in the distribution contract to enable tokens for
             scheduled donations
           </li>
           <li>Update token prices regularly to reflect market conditions</li>
-          <li>On mainnet, this will be part of the charity onboarding process</li>
+          <li>
+            On mainnet, this will be part of the charity onboarding process
+          </li>
         </ul>
       </div>
     </div>

@@ -22,7 +22,7 @@ interface UseTokenBalanceResult {
  * @returns Object containing balance, loading state, error, and refetch function
  */
 export function useTokenBalance(
-  token: TokenConfig | null
+  token: TokenConfig | null,
 ): UseTokenBalanceResult {
   const { provider, address, isConnected } = useWeb3();
   const [balance, setBalance] = useState<number | undefined>(undefined);
@@ -43,7 +43,7 @@ export function useTokenBalance(
         // Fetch native token (GLMR/DEV) balance
         const balanceWei = await provider.getBalance(address);
         const balanceFormatted = Number.parseFloat(
-          ethers.formatEther(balanceWei)
+          ethers.formatEther(balanceWei),
         );
         setBalance(balanceFormatted);
       } else {
@@ -51,12 +51,12 @@ export function useTokenBalance(
         const contract = new ethers.Contract(
           token.address,
           ERC20_ABI,
-          provider
+          provider,
         );
         const balanceRaw = await contract.balanceOf(address);
         const decimals = await contract.decimals();
         const balanceFormatted = Number.parseFloat(
-          ethers.formatUnits(balanceRaw, decimals)
+          ethers.formatUnits(balanceRaw, decimals),
         );
         setBalance(balanceFormatted);
       }
@@ -74,7 +74,7 @@ export function useTokenBalance(
         error: errorMessage,
       });
       setError(
-        err instanceof Error ? err : new Error("Failed to fetch balance")
+        err instanceof Error ? err : new Error("Failed to fetch balance"),
       );
       setBalance(undefined);
     } finally {

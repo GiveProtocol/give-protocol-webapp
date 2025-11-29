@@ -25,13 +25,15 @@ export const RegisterCharityForm: React.FC = () => {
 
       try {
         const txHash = await registerCharity(charityAddress.trim());
-        setSuccessMessage(`Charity registered successfully! Transaction: ${txHash}`);
+        setSuccessMessage(
+          `Charity registered successfully! Transaction: ${txHash}`,
+        );
         setCharityAddress("");
       } catch (err) {
         // Error is already handled by the hook
       }
     },
-    [charityAddress, registerCharity]
+    [charityAddress, registerCharity],
   );
 
   if (!isConnected) {
@@ -87,7 +89,8 @@ export const RegisterCharityForm: React.FC = () => {
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
           <p className="mt-2 text-sm text-gray-500">
-            Enter the Ethereum address that will receive donations for this charity
+            Enter the Ethereum address that will receive donations for this
+            charity
           </p>
         </div>
 
@@ -113,7 +116,9 @@ export const RegisterCharityForm: React.FC = () => {
         </code>
         <button
           type="button"
-          onClick={() => setCharityAddress("0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75")}
+          onClick={() =>
+            setCharityAddress("0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75")
+          }
           className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
         >
           Click to use this address
