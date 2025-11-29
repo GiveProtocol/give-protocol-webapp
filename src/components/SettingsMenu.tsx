@@ -6,6 +6,8 @@ import {
   Currency,
   Theme,
 } from "@/contexts/SettingsContext";
+import { useCurrencyContext } from "@/contexts/CurrencyContext";
+import { getCurrencyByCode } from "@/config/tokens";
 import { cn } from "@/utils/cn";
 import { useTranslation } from "@/hooks/useTranslation";
 
@@ -21,6 +23,7 @@ export const SettingsMenu: React.FC = () => {
     languageOptions,
     currencyOptions,
   } = useSettings();
+  const { setSelectedCurrency } = useCurrencyContext();
   const { t } = useTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -69,8 +72,13 @@ export const SettingsMenu: React.FC = () => {
   const handleCurrencyChange = useCallback(
     (newCurrency: Currency) => {
       setCurrency(newCurrency);
+      // Also update the CurrencyContext so the donate card updates
+      const fiatCurrency = getCurrencyByCode(newCurrency);
+      if (fiatCurrency) {
+        setSelectedCurrency(fiatCurrency);
+      }
     },
-    [setCurrency],
+    [setCurrency, setSelectedCurrency],
   );
 
   const handleThemeChange = useCallback(

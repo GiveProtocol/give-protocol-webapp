@@ -109,6 +109,11 @@ export function DualAmountInput({
       </div>
 
       <div className="relative">
+        <div className="absolute left-4 top-0 h-full flex items-center pointer-events-none">
+          <span className="text-lg font-semibold text-gray-400">
+            {inputMode === "crypto" ? token.symbol : selectedCurrency.symbol}
+          </span>
+        </div>
         <input
           id="donation-amount-input"
           type="number"
@@ -118,20 +123,24 @@ export function DualAmountInput({
           min="0"
           step="any"
           className={cn(
-            "w-full px-4 py-3 pr-20 border border-gray-300 rounded-lg",
-            "focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent",
-            "text-lg font-medium"
+            "w-full py-4 border-2 rounded-xl transition-all duration-200",
+            "focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500",
+            "text-lg font-semibold",
+            inputMode === "crypto" ? "pl-16 pr-24" : "pl-12 pr-24",
+            value > 0 && maxBalance !== undefined && value > maxBalance
+              ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
+              : "border-gray-300"
           )}
         />
-        <div className="absolute right-0 top-0 h-full flex items-center space-x-2 px-4">
-          <span className="text-sm font-medium text-gray-600">
-            {inputMode === "crypto" ? token.symbol : selectedCurrency.symbol}
+        <div className="absolute right-3 top-0 h-full flex items-center space-x-2">
+          <span className="text-sm font-medium text-gray-500">
+            {inputMode === "crypto" ? token.symbol : selectedCurrency.code}
           </span>
           {maxBalance !== undefined && (
             <button
               type="button"
               onClick={handleMaxClick}
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 uppercase"
+              className="px-3 py-1 text-xs font-bold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 rounded-md uppercase transition-all duration-200 hover:shadow-md"
             >
               Max
             </button>
@@ -139,18 +148,38 @@ export function DualAmountInput({
         </div>
       </div>
 
-      {hasPrice && value > 0 && (
-        <div className="text-sm text-gray-500">
-          {inputMode === "crypto" ? (
-            <span>
-              ≈ {selectedCurrency.symbol}
-              {fiatEquivalent.toFixed(2)} {selectedCurrency.code}
+      <div className="flex items-center justify-between text-sm">
+        {maxBalance !== undefined && (
+          <div className="text-gray-600">
+            <span className="font-medium">Balance:</span>
+            {' '}
+            <span className={cn(
+              "font-semibold",
+              value > maxBalance ? "text-red-600" : "text-gray-900"
+            )}>
+              {maxBalance.toFixed(6)} {token.symbol}
             </span>
-          ) : (
-            <span>
-              ≈ {value.toFixed(6)} {token.symbol}
-            </span>
-          )}
+          </div>
+        )}
+        {hasPrice && value > 0 && (
+          <div className="text-gray-500">
+            {inputMode === "crypto" ? (
+              <span>
+                ≈ {selectedCurrency.symbol}
+                {fiatEquivalent.toFixed(2)} {selectedCurrency.code}
+              </span>
+            ) : (
+              <span>
+                ≈ {value.toFixed(6)} {token.symbol}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+
+      {value > 0 && maxBalance !== undefined && value > maxBalance && (
+        <div className="text-sm text-red-600 font-medium">
+          Insufficient balance. Maximum available: {maxBalance.toFixed(6)} {token.symbol}
         </div>
       )}
 

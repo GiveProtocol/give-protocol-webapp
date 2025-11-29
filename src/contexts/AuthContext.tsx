@@ -335,17 +335,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         );
       }
 
-      // Determine redirect path based on actual user type (not login type)
-      let redirectPath = "/give-dashboard"; // Default for donor
-
-      if (userType === "admin") {
-        redirectPath = "/admin";
-      } else if (userType === "charity") {
-        redirectPath = "/charity-portal";
-      }
-
-      // Redirect to the appropriate dashboard on current domain
-      window.location.href = `${window.location.origin}${redirectPath}`;
+      // Don't redirect here - let the Login component handle it via <Navigate>
+      // The auth state will update, triggering the redirect in Login.tsx
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to sign in";
       showToast("error", "Authentication Error", message);

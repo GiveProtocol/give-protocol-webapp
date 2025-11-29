@@ -111,16 +111,16 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const getActivityIcon = (type: string) => {
+  const getActivityLabel = (type: string) => {
     switch (type) {
       case 'donation':
-        return '💰';
+        return 'Donation';
       case 'registration':
-        return '📝';
+        return 'Registration';
       case 'verification':
-        return '✅';
+        return 'Verification';
       default:
-        return '📊';
+        return 'Activity';
     }
   };
 
@@ -167,36 +167,24 @@ const AdminDashboard: React.FC = () => {
 
       {/* Stats Overview - Flattened from 4 to 3 levels */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="p-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">Total Users</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
-          </div>
-          <div className="text-2xl">👥</div>
+        <Card className="p-6">
+          <p className="text-sm font-medium text-gray-600">Total Users</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.totalUsers.toLocaleString()}</p>
         </Card>
 
-        <Card className="p-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">Total Donations</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalDonations}</p>
-          </div>
-          <div className="text-2xl">💰</div>
+        <Card className="p-6">
+          <p className="text-sm font-medium text-gray-600">Total Donations</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.totalDonations}</p>
         </Card>
 
-        <Card className="p-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">Verified Charities</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalCharities}</p>
-          </div>
-          <div className="text-2xl">🏛️</div>
+        <Card className="p-6">
+          <p className="text-sm font-medium text-gray-600">Verified Charities</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.totalCharities}</p>
         </Card>
 
-        <Card className="p-6 flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-gray-600">Active Volunteers</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalVolunteers}</p>
-          </div>
-          <div className="text-2xl">🤝</div>
+        <Card className="p-6">
+          <p className="text-sm font-medium text-gray-600">Active Volunteers</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.totalVolunteers}</p>
         </Card>
       </div>
 
@@ -205,8 +193,10 @@ const AdminDashboard: React.FC = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
         {stats.recentActivity.map((activity) => (
           <div key={activity.id} className="flex items-center justify-between p-4 mb-4 border rounded-lg">
-            <span className="text-2xl mr-4">{getActivityIcon(activity.type)}</span>
             <div className="flex-1">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-xs font-semibold text-gray-500 uppercase">{getActivityLabel(activity.type)}</span>
+              </div>
               <p className="font-medium text-gray-900">{activity.description}</p>
               <p className="text-sm text-gray-500">{formatRelativeTime(activity.timestamp)}</p>
             </div>
@@ -222,19 +212,16 @@ const AdminDashboard: React.FC = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="text-2xl block mb-2">📊</span>
             <span className="font-medium block mb-1">View Reports</span>
             <span className="text-sm text-gray-500 block">Generate detailed analytics</span>
           </button>
-          
+
           <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="text-2xl block mb-2">🏛️</span>
             <span className="font-medium block mb-1">Manage Charities</span>
             <span className="text-sm text-gray-500 block">Review and approve organizations</span>
           </button>
-          
+
           <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="text-2xl block mb-2">⚙️</span>
             <span className="font-medium block mb-1">System Settings</span>
             <span className="text-sm text-gray-500 block">Configure platform parameters</span>
           </button>

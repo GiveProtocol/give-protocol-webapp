@@ -50,6 +50,7 @@ function hasErrorMessage(error: unknown, message: string): boolean {
 
 interface Web3ContextType {
   provider: ethers.Provider | null;
+  signer: ethers.Signer | null;
   address: string | null;
   chainId: number | null;
   isConnected: boolean;
@@ -81,6 +82,7 @@ const MOONBASE_CHAIN_INFO = {
  */
 export function Web3Provider({ children }: { children: React.ReactNode }) {
   const [provider, setProvider] = useState<ethers.Provider | null>(null);
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [address, setAddress] = useState<string | null>(null);
   const [chainId, setChainId] = useState<number | null>(null);
   const [isConnecting, setIsConnecting] = useState(false);
@@ -95,8 +97,10 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       // User disconnected their wallet
       setAddress(null);
       setProvider(null);
+      setSigner(null);
       setChainId(null);
-      Logger.info("Wallet disconnected");
+      setCurrentWalletProvider(null);
+      Logger.info("Wallet disconnected via accountsChanged event");
     } else {
       setAddress(accounts[0]);
       Logger.info("Account changed", { address: accounts[0] });
@@ -124,9 +128,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
           });
           if (accounts.length > 0) {
             const provider = new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
             const network = await provider.getNetwork();
 
             setProvider(provider);
+            setSigner(signer);
             setAddress(accounts[0]);
             setChainId(Number(network.chainId));
             Logger.info("Restored existing connection", {
@@ -137,6 +143,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         } catch (err: unknown) {
           // Clear any existing connection state
           setProvider(null);
+          setSigner(null);
           setAddress(null);
           setChainId(null);
 
@@ -164,6 +171,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
     const handleDisconnect = () => {
       setProvider(null);
+      setSigner(null);
       setAddress(null);
       setChainId(null);
       setCurrentWalletProvider(null);
@@ -181,6 +189,40 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       walletProvider.removeListener?.("disconnect", handleDisconnect);
     };
   }, [handleAccountsChanged, handleChainChanged, currentWalletProvider]);
+
+  // Poll for account changes as a fallback (some wallets don't fire events reliably)
+  useEffect(() => {
+    // Only poll if we think we're connected
+    if (!address) return;
+
+    const checkConnection = async () => {
+      const walletProvider = currentWalletProvider || window.ethereum;
+      if (!walletProvider || typeof walletProvider.request !== "function") return;
+
+      try {
+        const accounts = await walletProvider.request({
+          method: "eth_accounts",
+        });
+        if (accounts.length === 0 && address) {
+          // Wallet was disconnected externally
+          Logger.info("Wallet disconnected (detected via polling)");
+          setAddress(null);
+          setProvider(null);
+          setSigner(null);
+          setChainId(null);
+          setCurrentWalletProvider(null);
+        }
+      } catch (err) {
+        // Ignore errors during polling
+        Logger.warn("Error polling wallet connection", { error: err });
+      }
+    };
+
+    // Check every 2 seconds
+    const intervalId = setInterval(checkConnection, 2000);
+
+    return () => clearInterval(intervalId);
+  }, [address, currentWalletProvider]);
 
   const switchChain = useCallback(
     async (targetChainId: number) => {
@@ -246,6 +288,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
         // Create Web3 provider
         const provider = new ethers.BrowserProvider(walletProvider);
+        const signer = await provider.getSigner();
 
         // Get connected chain ID
         const network = await provider.getNetwork();
@@ -253,6 +296,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
         // Set provider first so it's available for chain switching
         setProvider(provider);
+        setSigner(signer);
         setCurrentWalletProvider(walletProvider);
 
         // Switch to Moonbase Alpha if on wrong network
@@ -308,6 +352,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     try {
       // Clear state immediately
       setProvider(null);
+      setSigner(null);
       setAddress(null);
       setChainId(null);
       setError(null);
@@ -352,6 +397,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const contextValue = React.useMemo(
     () => ({
       provider,
+      signer,
       address,
       chainId,
       isConnected: Boolean(address),
@@ -361,7 +407,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       error,
       switchChain,
     }),
-    [provider, address, chainId, isConnecting, connect, disconnect, error, switchChain]
+    [provider, signer, address, chainId, isConnecting, connect, disconnect, error, switchChain]
   );
 
   return (

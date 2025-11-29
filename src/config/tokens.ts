@@ -37,9 +37,18 @@ export interface FiatCurrency {
  */
 export const MOONBEAM_TOKENS: TokenConfig[] = [
   {
+    symbol: "DEV",
+    name: "Moonbase Alpha DEV",
+    address: "0x0000000000000000000000000000000000000000", // Native token
+    decimals: 18,
+    coingeckoId: "moonbeam", // Using GLMR price as proxy since DEV is testnet token
+    icon: "https://assets.coingecko.com/coins/images/22459/small/glmr.png",
+    isNative: true,
+  },
+  {
     symbol: "GLMR",
     name: "Glimmer",
-    address: "0x0000000000000000000000000000000000000000", // Native token
+    address: "0x0000000000000000000000000000000000000000", // Native token (for mainnet)
     decimals: 18,
     coingeckoId: "moonbeam",
     icon: "https://assets.coingecko.com/coins/images/22459/small/glmr.png",

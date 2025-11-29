@@ -8,11 +8,24 @@ import { useWeb3 } from "@/contexts/Web3Context";
  * @component RegisterCharityForm
  * @description Allows contract owner to register charity addresses so they can receive donations
  */
+const TEST_CHARITY_ADDRESS = "0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75";
+
 export const RegisterCharityForm: React.FC = () => {
   const [charityAddress, setCharityAddress] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { registerCharity, loading, error } = useCharityRegistration();
   const { isConnected, connect } = useWeb3();
+
+  const handleCharityAddressChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setCharityAddress(e.target.value);
+    },
+    []
+  );
+
+  const handleUseTestAddress = useCallback(() => {
+    setCharityAddress(TEST_CHARITY_ADDRESS);
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -84,7 +97,7 @@ export const RegisterCharityForm: React.FC = () => {
             id="charity-address"
             type="text"
             value={charityAddress}
-            onChange={(e) => setCharityAddress(e.target.value)}
+            onChange={handleCharityAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
@@ -112,13 +125,11 @@ export const RegisterCharityForm: React.FC = () => {
           For testing on Moonbase Alpha, use:
         </p>
         <code className="block p-2 bg-white rounded text-xs break-all border border-blue-200">
-          0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75
+          {TEST_CHARITY_ADDRESS}
         </code>
         <button
           type="button"
-          onClick={() =>
-            setCharityAddress("0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75")
-          }
+          onClick={handleUseTestAddress}
           className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
         >
           Click to use this address

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useContract } from "./useContract";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { parseEther } from "ethers";
+import { parseEther, getAddress, isAddress } from "ethers";
 import { Logger } from "@/utils/logger";
 import { trackTransaction } from "@/lib/sentry";
 
@@ -100,33 +100,60 @@ export function useDonation() {
       setLoading(true);
       setError(null);
 
+      // Log the address for debugging
+      Logger.info("Validating charity address", { charityAddress, type: typeof charityAddress });
+
+      // Validate and normalize the charity address to prevent ENS resolution
+      if (!charityAddress || typeof charityAddress !== 'string') {
+        throw new Error(`Invalid charity address: ${charityAddress}`);
+      }
+
+      if (!isAddress(charityAddress)) {
+        throw new Error(`Invalid charity address format: ${charityAddress}`);
+      }
+      const normalizedCharityAddress = getAddress(charityAddress);
+
       const parsedAmount = parseEther(amount);
 
-      if (type === DonationType.NATIVE) {
-        // For both direct and equity pool donations (currently using same method)
-        if (poolType === PoolType._DIRECT || poolType === PoolType._EQUITY) {
-          // In ethers v6, we need to use the contract.getFunction method
-          const donateFunction = contract.getFunction("donate");
-          const tx = await donateFunction(charityAddress, {
-            value: parsedAmount,
-          });
-          await tx.wait();
-        }
-
-        Logger.info("Donation successful", {
-          amount,
-          charity: charityAddress,
-          type: "native",
-          poolType,
-        });
-
-        // Mark transaction as successful
-        transaction.finish("ok");
-      } else {
-        // For token donations, we would need to implement this
-        // based on the contract's token donation functionality
-        throw new Error("Token donations not yet implemented");
+      // The DurationDonation contract uses processDonation() for both native and ERC20
+      // For now, we'll throw an error for native donations since the contract doesn't support them
+      // TODO: Add native token support to the contract or use a wrapper
+      if (type === DonationType._NATIVE) {
+        throw new Error("Native token donations not yet supported. Please use ERC20 tokens.");
       }
+
+      // For ERC20 token donations using processDonation
+      if (!_tokenAddress) {
+        throw new Error("Token address is required for token donations");
+      }
+
+      // Validate token address
+      if (!isAddress(_tokenAddress)) {
+        throw new Error("Invalid token address format");
+      }
+      const normalizedTokenAddress = getAddress(_tokenAddress);
+
+      // Call processDonation(charity, token, charityAmount, platformTip)
+      // For now, platformTip is 0 (no tip)
+      const processDonationFunction = contract.getFunction("processDonation");
+      const tx = await processDonationFunction(
+        normalizedCharityAddress,
+        normalizedTokenAddress,
+        parsedAmount,
+        0 // platformTip = 0 for now
+      );
+      await tx.wait();
+
+      Logger.info("Token donation successful", {
+        amount,
+        charity: charityAddress,
+        tokenAddress: _tokenAddress,
+        type: "token",
+        poolType,
+      });
+
+      // Mark transaction as successful
+      transaction.finish("ok");
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to process donation";

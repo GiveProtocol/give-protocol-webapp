@@ -1,22 +1,22 @@
 import React from "react";
-import { useParams, Link } from "react-router-dom";
-import { DonationButton } from "@/components/web3/donation/DonationButton";
-import { ScheduledDonationButton } from "@/components/web3/donation/ScheduledDonationButton";
-import { formatCurrency } from "@/utils/money";
+import { useParams } from "react-router-dom";
+import {
+  CharityPageTemplate,
+  CharityProfileData,
+} from "@/components/charity/CharityPageTemplate";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
-interface CharityStats {
-  totalDonated: number;
-  donorCount: number;
-  projectsCompleted: number;
-}
-
+/**
+ * Dynamic charity detail page with scroll animations.
+ * Currently uses sample data - should be replaced with actual API call.
+ */
 const CharityDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
 
-  // Sample data - replace with actual API call
-  const charity = {
-    id,
+  // Sample data - replace with actual API call using the id parameter
+  const charityData: CharityProfileData = {
+    id: id ?? "unknown",
+    walletAddress: "0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75",
     name: "Ocean Conservation Alliance",
     description:
       "Protecting marine ecosystems and promoting sustainable ocean practices through innovative conservation programs, research initiatives, and community engagement.",
@@ -29,7 +29,7 @@ const CharityDetail: React.FC = () => {
       totalDonated: 750000,
       donorCount: 1250,
       projectsCompleted: 15,
-    } as CharityStats,
+    },
     mission:
       "Our mission is to protect and restore ocean ecosystems through science-based conservation actions, policy advocacy, and public education.",
     impact: [
@@ -41,97 +41,9 @@ const CharityDetail: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="animate-fade-in-up relative h-80 rounded-xl overflow-hidden mb-6">
-        <img
-          src={charity.image}
-          alt={charity.name}
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-8 text-gray-900">
-          <span className="px-3 py-1 bg-green-500 text-gray-900 text-sm font-medium rounded-full mb-2 inline-block">Verified</span>
-          <span className="ml-3 text-sm opacity-90">{charity.country}</span>
-          <h1 className="text-4xl font-bold mb-2 mt-2">{charity.name}</h1>
-          <p className="text-lg opacity-90">{charity.description}</p>
-        </div>
-      </div>
-
-      <ScrollReveal direction="up" delay={100}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Impact Statistics
-            </h2>
-            <dl className="grid grid-cols-3 gap-4 text-center">
-              <dt className="text-sm text-gray-500">Total Donated
-                <dd className="text-xl font-bold text-gray-900 mt-1">
-                  {formatCurrency(charity.stats.totalDonated)}
-                </dd>
-              </dt>
-              <dt className="text-sm text-gray-500">Donors
-                <dd className="text-xl font-bold text-gray-900 mt-1">
-                  {charity.stats.donorCount}
-                </dd>
-              </dt>
-              <dt className="text-sm text-gray-500">Projects
-                <dd className="text-xl font-bold text-gray-900 mt-1">
-                  {charity.stats.projectsCompleted}
-                </dd>
-              </dt>
-            </dl>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Giving Options
-            </h2>
-            <div className="space-y-4">
-              <DonationButton
-                charityName={charity.name}
-                charityAddress={charity.id}
-                buttonText="Give Once"
-              />
-              <ScheduledDonationButton
-                charityName={charity.name}
-                charityAddress={charity.id}
-                buttonText="Give Monthly"
-              />
-              <Link
-                to="/docs/giving-options"
-                className="block text-sm text-indigo-600 hover:text-indigo-800 mt-2 text-center"
-              >
-                Learn about the difference in giving options →
-              </Link>
-            </div>
-        </div>
-      </div>
-      </ScrollReveal>
-
-      <ScrollReveal direction="up" delay={200}>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Our Mission
-          </h2>
-          <p className="text-gray-600">{charity.mission}</p>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Impact Highlights
-          </h2>
-          <ul className="space-y-2">
-            {charity.impact.map((item) => (
-              <li key={item} className="flex items-center text-gray-600">
-                <span className="w-2 h-2 bg-green-500 rounded-full mr-3" />
-                {item}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-      </ScrollReveal>
-    </div>
+    <ScrollReveal direction="up" delay={100}>
+      <CharityPageTemplate charity={charityData} />
+    </ScrollReveal>
   );
 };
 

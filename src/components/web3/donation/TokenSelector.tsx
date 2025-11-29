@@ -2,13 +2,15 @@ import React, { useState, useCallback } from "react";
 import { TokenConfig, MOONBEAM_TOKENS } from "@/config/tokens";
 import { useCurrencyContext } from "@/contexts/CurrencyContext";
 import { formatCrypto, formatFiat } from "@/utils/formatters";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { useMultiTokenBalance } from "@/hooks/web3/useMultiTokenBalance";
 
 interface TokenSelectorProps {
   selectedToken: TokenConfig;
   onSelectToken: (_token: TokenConfig) => void;
   walletBalance?: number;
+  isLoadingBalance?: boolean;
 }
 
 /**
@@ -26,9 +28,11 @@ export function TokenSelector({
   selectedToken,
   onSelectToken,
   walletBalance,
+  isLoadingBalance = false,
 }: TokenSelectorProps): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const { selectedCurrency, tokenPrices, convertToFiat } = useCurrencyContext();
+  const { balances, isLoading: isLoadingAllBalances } = useMultiTokenBalance(MOONBEAM_TOKENS);
 
   const handleToggle = useCallback(() => {
     setIsOpen(!isOpen);
@@ -78,14 +82,19 @@ export function TokenSelector({
           <div className="font-medium text-gray-900">
             {selectedToken.symbol}
           </div>
-          {walletBalance !== undefined && (
+          {isLoadingBalance ? (
+            <div className="flex items-center gap-1 text-sm text-gray-500">
+              <Loader2 className="w-3 h-3 animate-spin" />
+              <span>Loading balance...</span>
+            </div>
+          ) : walletBalance !== undefined ? (
             <div className="text-sm text-gray-500">
               Balance:{" "}
               {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
               {fiatValue > 0 &&
                 ` (${formatFiat(fiatValue, selectedCurrency, { decimals: 2 })})`}
             </div>
-          )}
+          ) : null}
         </div>
         <ChevronDown
           className={cn(
@@ -96,10 +105,14 @@ export function TokenSelector({
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2">
+        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 max-h-96 overflow-y-auto">
           {MOONBEAM_TOKENS.map((token) => {
             const price = tokenPrices[token.coingeckoId];
             const isSelected = token.symbol === selectedToken.symbol;
+            const tokenBalance = balances[token.symbol];
+            const tokenFiatValue = tokenBalance !== undefined
+              ? convertToFiat(tokenBalance, token.coingeckoId)
+              : 0;
 
             return (
               <button
@@ -115,16 +128,27 @@ export function TokenSelector({
                 <img
                   src={token.icon}
                   alt={token.symbol}
-                  className="w-6 h-6 rounded-full"
+                  className="w-6 h-6 rounded-full flex-shrink-0"
                 />
-                <div className="flex-1 text-left">
+                <div className="flex-1 text-left min-w-0">
                   <div className="font-medium text-gray-900">
                     {token.symbol}
                   </div>
-                  <div className="text-sm text-gray-500">{token.name}</div>
+                  <div className="text-sm text-gray-500 truncate">{token.name}</div>
+                  {isLoadingAllBalances ? (
+                    <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span>Loading...</span>
+                    </div>
+                  ) : tokenBalance !== undefined ? (
+                    <div className="text-xs text-gray-600 mt-0.5">
+                      Balance: {formatCrypto(tokenBalance, token, { decimals: 4 })}
+                      {tokenFiatValue > 0 && ` (${formatFiat(tokenFiatValue, selectedCurrency, { decimals: 2 })})`}
+                    </div>
+                  ) : null}
                 </div>
                 {price !== undefined && (
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 flex-shrink-0">
                     {formatFiat(price, selectedCurrency, { decimals: 2 })}
                   </div>
                 )}

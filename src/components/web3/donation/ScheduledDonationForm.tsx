@@ -9,6 +9,11 @@ import { Logger } from "@/utils/logger";
 import { ethers } from "ethers";
 import { getContractAddress } from "@/config/contracts";
 import { MOONBEAM_TOKENS } from "@/config/tokens";
+import { TokenSelector } from "./TokenSelector";
+import { DualAmountInput } from "./DualAmountInput";
+import { FiatPresets } from "./FiatPresets";
+import { useTokenBalance } from "@/hooks/web3/useTokenBalance";
+import { Loader2, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
 
 // Error type guards for transaction errors
@@ -41,12 +46,17 @@ function isUserRejection(error: unknown): boolean {
 }
 import { formatDate } from "@/utils/date";
 
+// Minimum donation amount in USD to prevent dust donations
+const MINIMUM_DONATION_USD = 10;
+
 interface SuccessMessageProps {
   amount: number;
   charityName: string;
   transactionHash: string | null;
   onClose: () => void;
   tokenSymbol: string;
+  numberOfMonths: number;
+  transactionFee?: string;
 }
 
 /**
@@ -62,81 +72,120 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
   transactionHash,
   onClose,
   tokenSymbol,
+  numberOfMonths,
+  transactionFee,
 }) => {
   const startDate = new Date();
   const endDate = new Date();
-  endDate.setMonth(endDate.getMonth() + 12);
-  const monthlyAmount = amount / 12;
+  endDate.setMonth(endDate.getMonth() + numberOfMonths);
+  const monthlyAmount = amount / numberOfMonths;
 
   return (
-    <div className="space-y-4">
-      <div className="bg-green-50 p-4 rounded-md border border-green-200 flex items-start">
-        <svg
-          className="h-5 w-5 text-green-400 flex-shrink-0 mr-3"
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 20 20"
-          fill="currentColor"
-        >
-          <path
-            fillRule="evenodd"
-            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <div>
-          <h3 className="text-sm font-medium text-green-800">
-            Monthly donation scheduled successfully!
+    <div className="space-y-6">
+      {/* Success Header */}
+      <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 text-green-700 rounded-xl shadow-sm animate-fadeIn">
+        <div className="flex-shrink-0">
+          <CheckCircle className="h-8 w-8 text-green-500" />
+        </div>
+        <div className="flex-1">
+          <h3 className="text-base font-bold text-green-900 mb-1">
+            Recurring Donation Scheduled!
           </h3>
-          <p className="mt-2 text-sm text-green-700">
-            Your donation of {amount.toFixed(4)} {tokenSymbol} has been
-            scheduled.
+          <p className="text-sm text-green-700">
+            Your commitment has been secured on the blockchain.
           </p>
         </div>
       </div>
 
-      <div className="bg-white p-4 rounded-md border border-gray-200">
-        <h4 className="text-sm font-medium text-gray-900 mb-2">
-          Schedule Details:
-        </h4>
-        <div className="space-y-2 text-sm text-gray-600">
+      {/* Important Commitment Notice */}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-indigo-200 shadow-sm">
+        <div className="flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
           <div>
-            <span className="font-medium">Total Amount:</span>{" "}
-            {amount.toFixed(4)} {tokenSymbol}
-          </div>
-          <div>
-            <span className="font-medium">Monthly Payment:</span>{" "}
-            {monthlyAmount.toFixed(4)} {tokenSymbol}
-          </div>
-          <div>
-            <span className="font-medium">Start Date:</span>{" "}
-            {formatDate(startDate.toISOString())}
-          </div>
-          <div>
-            <span className="font-medium">End Date:</span>{" "}
-            {formatDate(endDate.toISOString())}
-          </div>
-          <div>
-            <span className="font-medium">Recipient:</span> {charityName}
+            <h4 className="text-sm font-bold text-indigo-900 mb-2">Important Notice</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">
+              To immediately secure your full <span className="font-bold text-indigo-900">{amount.toFixed(4)} {tokenSymbol}</span> commitment,
+              the total amount has been reserved today and will be automatically distributed to{" "}
+              <span className="font-bold text-indigo-900">{charityName}</span> in equal installments over the next{" "}
+              <span className="font-bold text-indigo-900">{numberOfMonths} months</span>.
+            </p>
           </div>
         </div>
       </div>
 
+      {/* Transaction Recap */}
+      <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-5 rounded-xl border-2 border-gray-200 shadow-sm">
+        <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+          <svg className="w-5 h-5 mr-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Transaction Recap
+        </h4>
+        <div className="space-y-2.5 text-sm">
+          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+            <span className="text-gray-600 font-medium">Total Amount Reserved:</span>
+            <span className="font-bold text-gray-900 text-base">
+              {amount.toFixed(6)} {tokenSymbol}
+            </span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+            <span className="text-gray-600 font-medium">Monthly Distribution:</span>
+            <span className="font-bold text-indigo-900">
+              {monthlyAmount.toFixed(6)} {tokenSymbol}
+            </span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+            <span className="text-gray-600 font-medium">Number of Payments:</span>
+            <span className="font-semibold text-gray-900">{numberOfMonths} months</span>
+          </div>
+          {transactionFee && (
+            <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+              <span className="text-gray-600 font-medium">Transaction Fee:</span>
+              <span className="font-medium text-gray-900">{transactionFee}</span>
+            </div>
+          )}
+          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+            <span className="text-gray-600 font-medium">Distribution Starts:</span>
+            <span className="font-medium text-gray-900">
+              {formatDate(startDate.toISOString())}
+            </span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
+            <span className="text-gray-600 font-medium">Distribution Ends:</span>
+            <span className="font-medium text-gray-900">
+              {formatDate(endDate.toISOString())}
+            </span>
+          </div>
+          <div className="flex justify-between items-center p-3 bg-indigo-50 rounded-lg border border-indigo-200">
+            <span className="text-indigo-700 font-semibold">Beneficiary:</span>
+            <span className="font-bold text-indigo-900">{charityName}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Transaction Hash */}
       {transactionHash && (
-        <div className="bg-gray-50 p-4 rounded-md border border-gray-200">
-          <p className="text-xs text-gray-500 mb-1">Transaction Hash:</p>
-          <a
-            href={`https://moonbase.moonscan.io/tx/${transactionHash}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-xs font-mono text-indigo-600 hover:text-indigo-800 break-all"
-          >
+        <div className="bg-gradient-to-br from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-semibold text-gray-700">Transaction Hash:</p>
+            <a
+              href={`https://moonbase.moonscan.io/tx/${transactionHash}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+            >
+              View on Explorer
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
+          <p className="text-xs font-mono text-gray-600 break-all bg-white p-2 rounded border border-gray-200">
             {transactionHash}
-          </a>
+          </p>
         </div>
       )}
 
-      <Button onClick={onClose} className="w-full">
-        Close
+      <Button onClick={onClose} fullWidth size="lg" className="font-bold shadow-lg bg-green-600 hover:bg-green-700">
+        Complete
       </Button>
     </div>
   );
@@ -177,32 +226,40 @@ export function ScheduledDonationForm({
   onClose: _onClose,
 }: ScheduledDonationFormProps) {
   const [amount, setAmount] = useState(0);
-  const [_selectedToken, _setSelectedToken] = useState(MOONBEAM_TOKENS[0]);
+  const [selectedToken, setSelectedToken] = useState(MOONBEAM_TOKENS[0]);
+  const [numberOfMonths, setNumberOfMonths] = useState(12);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
+  const [transactionFee, setTransactionFee] = useState<string | null>(null);
   const { provider, address, isConnected, connect } = useWeb3();
   const { showToast: _showToast } = useToast();
-  const { selectedCurrency: _selectedCurrency, convertToFiat: _convertToFiat } =
-    useCurrencyContext();
+  const { balance, isLoading: isLoadingBalance } = useTokenBalance(selectedToken);
+  const { convertToFiat, tokenPrices } = useCurrencyContext();
 
   // Calculate start and end dates for the donation schedule
   const startDate = new Date();
   const endDate = new Date();
-  endDate.setMonth(endDate.getMonth() + 12);
+  endDate.setMonth(endDate.getMonth() + numberOfMonths);
 
   const handleAmountChange = useCallback((newAmount: number) => {
     setAmount(newAmount);
   }, []);
 
-  const _handleTokenSelect = useCallback(
-    (token: (typeof MOONBEAM_TOKENS)[0]) => {
-      _setSelectedToken(token);
+  const handleTokenSelect = useCallback(
+    (token: typeof MOONBEAM_TOKENS[0]) => {
+      setSelectedToken(token);
       setAmount(0); // Reset amount when token changes
     },
     [],
   );
+
+  const handleMonthsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    const months = value === '' ? 1 : Number.parseInt(value, 10);
+    setNumberOfMonths(Math.max(1, Math.min(60, months))); // Limit between 1-60 months
+  }, []);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -216,6 +273,27 @@ export function ScheduledDonationForm({
 
       if (amount <= 0) {
         setError("Please enter an amount greater than 0");
+        return;
+      }
+
+      // Check minimum donation threshold ($10 USD equivalent)
+      // TEMPORARILY DISABLED FOR TESTING
+      // const tokenPrice = tokenPrices[selectedToken.coingeckoId];
+      // if (tokenPrice) {
+      //   const fiatValue = convertToFiat(amount, selectedToken.coingeckoId);
+      //   if (fiatValue < MINIMUM_DONATION_USD) {
+      //     setError(
+      //       `Minimum donation is $${MINIMUM_DONATION_USD} USD. Current value: $${fiatValue.toFixed(2)} USD. Please increase your donation amount.`
+      //     );
+      //     return;
+      //   }
+      // }
+
+      // Check for sufficient balance
+      if (balance !== undefined && amount > balance) {
+        setError(
+          `Insufficient balance. You have ${balance.toFixed(6)} ${selectedToken.symbol} but need ${amount.toFixed(6)} ${selectedToken.symbol}.`
+        );
         return;
       }
 
@@ -253,7 +331,7 @@ export function ScheduledDonationForm({
           signer,
         );
 
-        const parsedAmount = ethers.parseEther(amount);
+        const parsedAmount = ethers.parseEther(amount.toString());
 
         try {
           const approveTx = await tokenContract.approve(
@@ -271,16 +349,42 @@ export function ScheduledDonationForm({
           throw approveError;
         }
 
-        // Create the scheduled donation
+        // Get current token price from CurrencyContext
+        const tokenPrice = tokenPrices[selectedToken.coingeckoId];
+        if (!tokenPrice) {
+          throw new Error("Unable to fetch current token price. Please try again.");
+        }
+
+        // Convert price to 8 decimals for the contract (USD with 8 decimals)
+        const tokenPriceWith8Decimals = Math.floor(tokenPrice * 10 ** 8);
+
+        Logger.info("Creating scheduled donation", {
+          charity: charityAddress,
+          amount,
+          numberOfMonths,
+          tokenPrice,
+          tokenPriceWith8Decimals,
+        });
+
+        // Create the scheduled donation with new parameters
         try {
           const tx = await distributionContract.createSchedule(
             charityAddress,
             tokenAddress,
             parsedAmount,
+            numberOfMonths,
+            tokenPriceWith8Decimals.toString(),
           );
 
           const receipt = await tx.wait();
           setTransactionHash(receipt.hash);
+
+          // Calculate transaction fee
+          const gasUsed = receipt.gasUsed;
+          const gasPrice = receipt.gasPrice || receipt.effectiveGasPrice;
+          const fee = ethers.formatEther(gasUsed * gasPrice);
+          setTransactionFee(`${Number.parseFloat(fee).toFixed(6)} GLMR`);
+
           setShowConfirmation(true);
 
           Logger.info("Scheduled donation created", {
@@ -288,6 +392,7 @@ export function ScheduledDonationForm({
             amount,
             token: tokenAddress,
             txHash: receipt.hash,
+            transactionFee: fee,
           });
         } catch (txError: unknown) {
           // Check if user rejected the transaction
@@ -310,13 +415,14 @@ export function ScheduledDonationForm({
         setLoading(false);
       }
     },
-    [amount, charityAddress, isConnected, provider, address, connect],
+    [amount, charityAddress, isConnected, provider, address, connect, balance, selectedToken, tokenPrices, convertToFiat],
   );
 
   const handleConfirmationClose = useCallback(() => {
-    setAmount("");
+    setAmount(0);
     setShowConfirmation(false);
     setTransactionHash(null);
+    setTransactionFee(null);
     onSuccess?.();
   }, [onSuccess]);
 
@@ -327,6 +433,9 @@ export function ScheduledDonationForm({
         charityName={charityName}
         transactionHash={transactionHash}
         onClose={handleConfirmationClose}
+        tokenSymbol={selectedToken.symbol}
+        numberOfMonths={numberOfMonths}
+        transactionFee={transactionFee}
       />
     );
   }
@@ -343,43 +452,113 @@ export function ScheduledDonationForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="p-3 bg-red-50 text-red-600 rounded-md">{error}</div>
+        <div className="flex items-center gap-2 p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl animate-fadeIn">
+          <svg
+            className="h-5 w-5 flex-shrink-0 text-red-400"
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill="currentColor"
+          >
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+              clipRule="evenodd"
+            />
+          </svg>
+          <p className="text-sm font-medium">{error}</p>
+        </div>
       )}
 
-      <div>
-        <p className="text-sm text-gray-600 mb-4">
-          Schedule a monthly donation to {charityName}. The total amount will be
-          divided into 12 equal monthly payments.
+      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 rounded-xl border border-indigo-100">
+        <p className="text-sm text-gray-700 leading-relaxed">
+          Schedule recurring donations to <span className="font-semibold text-indigo-900">{charityName}</span>.
+          The total amount will be divided into equal monthly payments.
         </p>
       </div>
 
-      <Input
-        label="Total Amount (for 12 months)"
-        type="number"
-        min="0"
-        step="0.01"
-        value={amount}
-        onChange={handleAmountChange}
-        required
-        helperText="This amount will be divided into 12 equal monthly payments"
+      <TokenSelector
+        selectedToken={selectedToken}
+        onSelectToken={handleTokenSelect}
+        walletBalance={balance}
+        isLoadingBalance={isLoadingBalance}
       />
 
-      <div className="bg-blue-50 p-3 rounded-md mb-2">
-        <p className="text-sm text-blue-700">
-          <span className="font-medium">Monthly payment:</span>{" "}
-          {amount ? (Number.parseFloat(amount) / 12).toFixed(2) : "0.00"} tokens
-        </p>
-        <p className="text-sm text-blue-700 mt-1">
-          <span className="font-medium">Schedule period:</span>{" "}
-          {formatDate(startDate.toISOString())} to{" "}
-          {formatDate(endDate.toISOString())}
-        </p>
+      <FiatPresets
+        selectedToken={selectedToken}
+        onAmountSelect={handleAmountChange}
+      />
+
+      <DualAmountInput
+        token={selectedToken}
+        value={amount}
+        onChange={handleAmountChange}
+        maxBalance={balance}
+      />
+
+      <div className="space-y-2">
+        <Input
+          label="Number of Months"
+          type="number"
+          min="1"
+          max="60"
+          step="1"
+          value={numberOfMonths}
+          onChange={handleMonthsChange}
+          required
+          variant="enhanced"
+          className="text-lg font-semibold"
+          helperText="Choose how many months to spread your donation (1-60 months)"
+        />
       </div>
 
-      <Button type="submit" disabled={loading || !amount} className="w-full">
-        {loading ? "Processing..." : "Schedule Monthly Donation"}
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-blue-100 shadow-sm">
+        <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+          <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          Schedule Preview
+        </h4>
+        <div className="space-y-2.5 text-sm">
+          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+            <span className="text-gray-600">Monthly payment:</span>
+            <span className="font-bold text-indigo-900">
+              {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"} {selectedToken.symbol}
+            </span>
+          </div>
+          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+            <span className="text-gray-600">Total payments:</span>
+            <span className="font-semibold text-gray-900">{numberOfMonths} months</span>
+          </div>
+          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
+            <span className="text-gray-600">Schedule period:</span>
+            <span className="font-medium text-gray-700 text-xs">
+              {formatDate(startDate.toISOString())} to {formatDate(endDate.toISOString())}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Minimum Donation Info */}
+      {amount > 0 && tokenPrices[selectedToken.coingeckoId] && (
+        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
+          <p className="text-xs text-amber-800">
+            <span className="font-semibold">Minimum donation:</span> ${MINIMUM_DONATION_USD} USD to prevent dust transactions
+          </p>
+        </div>
+      )}
+
+      <Button
+        type="submit"
+        disabled={loading || !amount || isLoadingBalance || (balance !== undefined && amount > balance)}
+        fullWidth
+        size="lg"
+        icon={loading ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined}
+        className="font-bold text-lg shadow-xl hover:shadow-2xl"
+      >
+        {loading ? "Processing..." : "Schedule Recurring Donation"}
       </Button>
     </form>
   );

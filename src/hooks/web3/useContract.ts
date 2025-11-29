@@ -38,7 +38,7 @@ export function useContract(
   contractType: ContractType,
   config: ContractConfig = DEFAULT_CONFIG,
 ) {
-  const { provider, chainId } = useWeb3();
+  const { provider, signer, chainId } = useWeb3();
   const [contract, setContract] = useState<Contract | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [retryCount, setRetryCount] = useState(0);
@@ -69,11 +69,12 @@ export function useContract(
         throw new Error(`Invalid ABI for ${contractType} contract`);
       }
 
-      // Create contract instance with proper typing
+      // Create contract instance with signer for write operations, fallback to provider for read-only
+      const contractRunner = signer || provider;
       const contract = new Contract(
         address,
         abi as ContractInterface,
-        provider,
+        contractRunner,
       );
 
       // Check if contract is deployed - but don't throw if not in development
@@ -128,7 +129,7 @@ export function useContract(
         }, delay);
       }
     }
-  }, [provider, chainId, contractType, config, retryCount]);
+  }, [provider, signer, chainId, contractType, config, retryCount]);
 
   useEffect(() => {
     initializeContract();
