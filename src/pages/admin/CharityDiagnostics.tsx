@@ -10,11 +10,20 @@ import { Loader2, CheckCircle2, XCircle, AlertCircle } from "lucide-react";
  * Diagnostic page for checking charity registration and token acceptance status
  */
 const CharityDiagnostics: React.FC = () => {
-  const [charityAddress, setCharityAddress] = useState("0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75");
+  const [charityAddress, setCharityAddress] = useState(
+    "0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75",
+  );
   const [tokenAddress, setTokenAddress] = useState(ZeroAddress);
   const { isConnected, connect } = useWeb3();
-  const { charityInfo, isLoading, error } = useCharityInfo(charityAddress, tokenAddress);
-  const { isAccepted, isLoading: isLoadingToken, error: tokenError } = useAcceptedTokens(tokenAddress);
+  const { charityInfo, isLoading, error } = useCharityInfo(
+    charityAddress,
+    tokenAddress,
+  );
+  const {
+    isAccepted,
+    isLoading: isLoadingToken,
+    error: tokenError,
+  } = useAcceptedTokens(tokenAddress);
 
   if (!isConnected) {
     return (
@@ -23,7 +32,9 @@ const CharityDiagnostics: React.FC = () => {
           <h2 className="text-2xl font-semibold text-gray-900 mb-4">
             Charity Diagnostics
           </h2>
-          <p className="mb-4 text-gray-600">Connect your wallet to check charity status</p>
+          <p className="mb-4 text-gray-600">
+            Connect your wallet to check charity status
+          </p>
           <Button onClick={connect}>Connect Wallet</Button>
         </div>
       </div>
@@ -33,7 +44,9 @@ const CharityDiagnostics: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Charity Diagnostics</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Charity Diagnostics
+        </h1>
         <p className="mt-2 text-gray-600">
           Check charity registration and balance information
         </p>
@@ -84,7 +97,9 @@ const CharityDiagnostics: React.FC = () => {
         {(error || tokenError) && (
           <div className="flex items-center gap-2 p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl">
             <AlertCircle className="w-5 h-5 flex-shrink-0" />
-            <p className="text-sm font-medium">{error?.message || tokenError?.message}</p>
+            <p className="text-sm font-medium">
+              {error?.message || tokenError?.message}
+            </p>
           </div>
         )}
 
@@ -99,57 +114,75 @@ const CharityDiagnostics: React.FC = () => {
           <div className="space-y-4">
             <div className="p-4 bg-gray-50 rounded-xl space-y-3">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Charity Registration</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Charity Registration
+                </span>
                 <div className="flex items-center gap-2">
                   {charityInfo.isRegistered ? (
                     <>
                       <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">Registered</span>
+                      <span className="text-sm font-semibold text-green-700">
+                        Registered
+                      </span>
                     </>
                   ) : (
                     <>
                       <XCircle className="w-5 h-5 text-red-600" />
-                      <span className="text-sm font-semibold text-red-700">Not Registered</span>
+                      <span className="text-sm font-semibold text-red-700">
+                        Not Registered
+                      </span>
                     </>
                   )}
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Token Acceptance</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Token Acceptance
+                </span>
                 <div className="flex items-center gap-2">
                   {isAccepted === null ? (
                     <span className="text-sm text-gray-500">Unknown</span>
                   ) : isAccepted ? (
                     <>
                       <CheckCircle2 className="w-5 h-5 text-green-600" />
-                      <span className="text-sm font-semibold text-green-700">Accepted</span>
+                      <span className="text-sm font-semibold text-green-700">
+                        Accepted
+                      </span>
                     </>
                   ) : (
                     <>
                       <XCircle className="w-5 h-5 text-red-600" />
-                      <span className="text-sm font-semibold text-red-700">Not Accepted</span>
+                      <span className="text-sm font-semibold text-red-700">
+                        Not Accepted
+                      </span>
                     </>
                   )}
                 </div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Wallet Address</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Wallet Address
+                </span>
                 <code className="text-xs bg-white px-2 py-1 rounded border">
                   {charityInfo.walletAddress}
                 </code>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Total Received</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Total Received
+                </span>
                 <span className="text-sm font-semibold text-gray-900">
                   {formatEther(charityInfo.totalReceived)} DEV
                 </span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-700">Available Balance</span>
+                <span className="text-sm font-medium text-gray-700">
+                  Available Balance
+                </span>
                 <span className="text-sm font-semibold text-gray-900">
                   {formatEther(charityInfo.availableBalance)} DEV
                 </span>
@@ -180,11 +213,16 @@ const CharityDiagnostics: React.FC = () => {
                   ⚠️ Token Not Accepted - This is Why Donations Fail!
                 </h4>
                 <p className="text-sm text-red-800 mb-2">
-                  The token at <code className="bg-white px-1 rounded">{tokenAddress}</code> is not
-                  in the contract&apos;s accepted tokens list. This is causing the &quot;require(false)&quot; error.
+                  The token at{" "}
+                  <code className="bg-white px-1 rounded">{tokenAddress}</code>{" "}
+                  is not in the contract&apos;s accepted tokens list. This is
+                  causing the &quot;require(false)&quot; error.
                 </p>
                 <p className="text-sm text-red-800 font-semibold">
-                  Solution: The contract owner needs to call <code className="bg-white px-1 rounded">addAcceptedToken({tokenAddress})</code>
+                  Solution: The contract owner needs to call{" "}
+                  <code className="bg-white px-1 rounded">
+                    addAcceptedToken({tokenAddress})
+                  </code>
                 </p>
               </div>
             )}

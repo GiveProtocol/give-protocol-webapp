@@ -55,8 +55,12 @@ const Documentation = lazy(() => import("@/pages/Documentation"));
 
 // Admin routes
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
-const CharityRegistration = lazy(() => import("@/pages/admin/CharityRegistration"));
-const CharityDiagnostics = lazy(() => import("@/pages/admin/CharityDiagnostics"));
+const CharityRegistration = lazy(
+  () => import("@/pages/admin/CharityRegistration"),
+);
+const CharityDiagnostics = lazy(
+  () => import("@/pages/admin/CharityDiagnostics"),
+);
 const TokenManagement = lazy(() => import("@/pages/admin/TokenManagement"));
 const _SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
