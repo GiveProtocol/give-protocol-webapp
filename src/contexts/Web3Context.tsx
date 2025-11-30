@@ -199,7 +199,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
     const checkConnection = async () => {
       const walletProvider = currentWalletProvider || window.ethereum;
-      if (!walletProvider || typeof walletProvider.request !== "function") return;
+      if (!walletProvider || typeof walletProvider.request !== "function")
+        return;
 
       try {
         const accounts = await walletProvider.request({
@@ -409,13 +410,21 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       error,
       switchChain,
     }),
-    [provider, signer, address, chainId, isConnecting, connect, disconnect, error, switchChain]
+    [
+      provider,
+      signer,
+      address,
+      chainId,
+      isConnecting,
+      connect,
+      disconnect,
+      error,
+      switchChain,
+    ],
   );
 
   return (
-    <Web3Context.Provider value={contextValue}>
-      {children}
-    </Web3Context.Provider>
+    <Web3Context.Provider value={contextValue}>{children}</Web3Context.Provider>
   );
 }
 

@@ -101,10 +101,13 @@ export function useDonation() {
       setError(null);
 
       // Log the address for debugging
-      Logger.info("Validating charity address", { charityAddress, type: typeof charityAddress });
+      Logger.info("Validating charity address", {
+        charityAddress,
+        type: typeof charityAddress,
+      });
 
       // Validate and normalize the charity address to prevent ENS resolution
-      if (!charityAddress || typeof charityAddress !== 'string') {
+      if (!charityAddress || typeof charityAddress !== "string") {
         throw new Error(`Invalid charity address: ${charityAddress}`);
       }
 
@@ -118,7 +121,9 @@ export function useDonation() {
       // The DurationDonation contract uses processDonation() for both native and ERC20
       // Native token support requires contract updates or a wrapper contract
       if (type === DonationType._NATIVE) {
-        throw new Error("Native token donations not yet supported. Please use ERC20 tokens.");
+        throw new Error(
+          "Native token donations not yet supported. Please use ERC20 tokens.",
+        );
       }
 
       // For ERC20 token donations using processDonation
@@ -139,7 +144,7 @@ export function useDonation() {
         normalizedCharityAddress,
         normalizedTokenAddress,
         parsedAmount,
-        0 // platformTip = 0 for now
+        0, // platformTip = 0 for now
       );
       await tx.wait();
 
