@@ -25,12 +25,15 @@ export function FiatPresets({
   selectedToken,
   onAmountSelect,
 }: FiatPresetsProps): React.ReactElement {
-  const { selectedCurrency, tokenPrices, convertFromFiat } = useCurrencyContext();
+  const { selectedCurrency, tokenPrices, convertFromFiat } =
+    useCurrencyContext();
   const [selectedAmount, setSelectedAmount] = useState<number | null>(null);
 
   const handlePresetClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      const fiatAmount = Number.parseFloat(e.currentTarget.dataset.amount || "0");
+      const fiatAmount = Number.parseFloat(
+        e.currentTarget.dataset.amount || "0",
+      );
       if (fiatAmount <= 0) return;
 
       const tokenPrice = tokenPrices[selectedToken.coingeckoId];
@@ -39,10 +42,13 @@ export function FiatPresets({
       }
 
       setSelectedAmount(fiatAmount);
-      const cryptoAmount = convertFromFiat(fiatAmount, selectedToken.coingeckoId);
+      const cryptoAmount = convertFromFiat(
+        fiatAmount,
+        selectedToken.coingeckoId,
+      );
       onAmountSelect(cryptoAmount);
     },
-    [selectedToken.coingeckoId, tokenPrices, convertFromFiat, onAmountSelect]
+    [selectedToken.coingeckoId, tokenPrices, convertFromFiat, onAmountSelect],
   );
 
   const tokenPrice = tokenPrices[selectedToken.coingeckoId];
@@ -58,7 +64,11 @@ export function FiatPresets({
 
   return (
     <div className="space-y-2">
-      <div className="block text-sm font-medium text-gray-700" role="heading" aria-level={3}>
+      <div
+        className="block text-sm font-medium text-gray-700"
+        role="heading"
+        aria-level={3}
+      >
         Quick Amounts
       </div>
       <div className="grid grid-cols-4 gap-3">
@@ -77,7 +87,7 @@ export function FiatPresets({
                 "active:scale-95 transform",
                 isSelected
                   ? "bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-600 text-white shadow-lg"
-                  : "bg-white border-gray-300 text-gray-700 hover:border-indigo-500 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:shadow-md focus:ring-indigo-500"
+                  : "bg-white border-gray-300 text-gray-700 hover:border-indigo-500 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 hover:shadow-md focus:ring-indigo-500",
               )}
             >
               {formatFiat(amount, selectedCurrency, { decimals: 0 })}

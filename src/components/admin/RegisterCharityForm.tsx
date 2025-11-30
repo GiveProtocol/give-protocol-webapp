@@ -20,7 +20,7 @@ export const RegisterCharityForm: React.FC = () => {
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setCharityAddress(e.target.value);
     },
-    []
+    [],
   );
 
   const handleUseTestAddress = useCallback(() => {

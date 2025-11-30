@@ -186,7 +186,8 @@ export const VolunteerOpportunityTemplate: React.FC<
             <p className="text-gray-600">
               Join {opportunity.organization} and make a difference with your
               skills. This {formatType(opportunity.type).toLowerCase()} position
-              requires a {formatCommitment(opportunity.commitment).toLowerCase()}{" "}
+              requires a{" "}
+              {formatCommitment(opportunity.commitment).toLowerCase()}{" "}
               commitment.
             </p>
             {opportunity.contactEmail && (

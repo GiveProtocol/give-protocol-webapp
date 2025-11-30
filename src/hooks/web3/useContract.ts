@@ -119,8 +119,7 @@ export function useContract(
         setTimeout(() => {
           const fallbackRPCs = DEFAULT_CONFIG.fallbackRPCs ?? [];
           const fallbackRPC =
-            config.fallbackRPCs?.[retryCount] ||
-            fallbackRPCs[retryCount];
+            config.fallbackRPCs?.[retryCount] || fallbackRPCs[retryCount];
           if (fallbackRPC && provider) {
             // Note: This approach needs to be updated as provider.url is not directly accessible in ethers v6
             // This is a placeholder for the actual implementation

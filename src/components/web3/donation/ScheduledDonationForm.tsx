@@ -13,7 +13,12 @@ import { TokenSelector } from "./TokenSelector";
 import { DualAmountInput } from "./DualAmountInput";
 import { FiatPresets } from "./FiatPresets";
 import { useTokenBalance } from "@/hooks/web3/useTokenBalance";
-import { Loader2, ExternalLink, CheckCircle, AlertTriangle } from "lucide-react";
+import {
+  Loader2,
+  ExternalLink,
+  CheckCircle,
+  AlertTriangle,
+} from "lucide-react";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
 
 // Error type guards for transaction errors
@@ -102,12 +107,22 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
         <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-sm font-bold text-indigo-900 mb-2">Important Notice</h4>
+            <h4 className="text-sm font-bold text-indigo-900 mb-2">
+              Important Notice
+            </h4>
             <p className="text-sm text-gray-700 leading-relaxed">
-              To immediately secure your full <span className="font-bold text-indigo-900">{amount.toFixed(4)} {tokenSymbol}</span> commitment,
-              the total amount has been reserved today and will be automatically distributed to{" "}
-              <span className="font-bold text-indigo-900">{charityName}</span> in equal installments over the next{" "}
-              <span className="font-bold text-indigo-900">{numberOfMonths} months</span>.
+              To immediately secure your full{" "}
+              <span className="font-bold text-indigo-900">
+                {amount.toFixed(4)} {tokenSymbol}
+              </span>{" "}
+              commitment, the total amount has been reserved today and will be
+              automatically distributed to{" "}
+              <span className="font-bold text-indigo-900">{charityName}</span>{" "}
+              in equal installments over the next{" "}
+              <span className="font-bold text-indigo-900">
+                {numberOfMonths} months
+              </span>
+              .
             </p>
           </div>
         </div>
@@ -116,42 +131,68 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
       {/* Transaction Recap */}
       <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-5 rounded-xl border-2 border-gray-200 shadow-sm">
         <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
-          <svg className="w-5 h-5 mr-2 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <svg
+            className="w-5 h-5 mr-2 text-gray-700"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
           </svg>
           Transaction Recap
         </h4>
         <div className="space-y-2.5 text-sm">
           <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">Total Amount Reserved:</span>
+            <span className="text-gray-600 font-medium">
+              Total Amount Reserved:
+            </span>
             <span className="font-bold text-gray-900 text-base">
               {amount.toFixed(6)} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">Monthly Distribution:</span>
+            <span className="text-gray-600 font-medium">
+              Monthly Distribution:
+            </span>
             <span className="font-bold text-indigo-900">
               {monthlyAmount.toFixed(6)} {tokenSymbol}
             </span>
           </div>
           <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">Number of Payments:</span>
-            <span className="font-semibold text-gray-900">{numberOfMonths} months</span>
+            <span className="text-gray-600 font-medium">
+              Number of Payments:
+            </span>
+            <span className="font-semibold text-gray-900">
+              {numberOfMonths} months
+            </span>
           </div>
           {transactionFee && (
             <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-              <span className="text-gray-600 font-medium">Transaction Fee:</span>
-              <span className="font-medium text-gray-900">{transactionFee}</span>
+              <span className="text-gray-600 font-medium">
+                Transaction Fee:
+              </span>
+              <span className="font-medium text-gray-900">
+                {transactionFee}
+              </span>
             </div>
           )}
           <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">Distribution Starts:</span>
+            <span className="text-gray-600 font-medium">
+              Distribution Starts:
+            </span>
             <span className="font-medium text-gray-900">
               {formatDate(startDate.toISOString())}
             </span>
           </div>
           <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">Distribution Ends:</span>
+            <span className="text-gray-600 font-medium">
+              Distribution Ends:
+            </span>
             <span className="font-medium text-gray-900">
               {formatDate(endDate.toISOString())}
             </span>
@@ -167,7 +208,9 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
       {transactionHash && (
         <div className="bg-gradient-to-br from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-200">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-gray-700">Transaction Hash:</p>
+            <p className="text-xs font-semibold text-gray-700">
+              Transaction Hash:
+            </p>
             <a
               href={`https://moonbase.moonscan.io/tx/${transactionHash}`}
               target="_blank"
@@ -184,7 +227,12 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
         </div>
       )}
 
-      <Button onClick={onClose} fullWidth size="lg" className="font-bold shadow-lg bg-green-600 hover:bg-green-700">
+      <Button
+        onClick={onClose}
+        fullWidth
+        size="lg"
+        className="font-bold shadow-lg bg-green-600 hover:bg-green-700"
+      >
         Complete
       </Button>
     </div>
@@ -235,7 +283,8 @@ export function ScheduledDonationForm({
   const [transactionFee, setTransactionFee] = useState<string | null>(null);
   const { provider, address, isConnected, connect } = useWeb3();
   const { showToast: _showToast } = useToast();
-  const { balance, isLoading: isLoadingBalance } = useTokenBalance(selectedToken);
+  const { balance, isLoading: isLoadingBalance } =
+    useTokenBalance(selectedToken);
   const { convertToFiat, tokenPrices } = useCurrencyContext();
 
   // Calculate start and end dates for the donation schedule
@@ -248,18 +297,21 @@ export function ScheduledDonationForm({
   }, []);
 
   const handleTokenSelect = useCallback(
-    (token: typeof MOONBEAM_TOKENS[0]) => {
+    (token: (typeof MOONBEAM_TOKENS)[0]) => {
       setSelectedToken(token);
       setAmount(0); // Reset amount when token changes
     },
     [],
   );
 
-  const handleMonthsChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const months = value === '' ? 1 : Number.parseInt(value, 10);
-    setNumberOfMonths(Math.max(1, Math.min(60, months))); // Limit between 1-60 months
-  }, []);
+  const handleMonthsChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      const months = value === "" ? 1 : Number.parseInt(value, 10);
+      setNumberOfMonths(Math.max(1, Math.min(60, months))); // Limit between 1-60 months
+    },
+    [],
+  );
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -292,7 +344,7 @@ export function ScheduledDonationForm({
       // Check for sufficient balance
       if (balance !== undefined && amount > balance) {
         setError(
-          `Insufficient balance. You have ${balance.toFixed(6)} ${selectedToken.symbol} but need ${amount.toFixed(6)} ${selectedToken.symbol}.`
+          `Insufficient balance. You have ${balance.toFixed(6)} ${selectedToken.symbol} but need ${amount.toFixed(6)} ${selectedToken.symbol}.`,
         );
         return;
       }
@@ -352,7 +404,9 @@ export function ScheduledDonationForm({
         // Get current token price from CurrencyContext
         const tokenPrice = tokenPrices[selectedToken.coingeckoId];
         if (!tokenPrice) {
-          throw new Error("Unable to fetch current token price. Please try again.");
+          throw new Error(
+            "Unable to fetch current token price. Please try again.",
+          );
         }
 
         // Convert price to 8 decimals for the contract (USD with 8 decimals)
@@ -415,7 +469,18 @@ export function ScheduledDonationForm({
         setLoading(false);
       }
     },
-    [amount, charityAddress, isConnected, provider, address, connect, balance, selectedToken, tokenPrices, convertToFiat],
+    [
+      amount,
+      charityAddress,
+      isConnected,
+      provider,
+      address,
+      connect,
+      balance,
+      selectedToken,
+      tokenPrices,
+      convertToFiat,
+    ],
   );
 
   const handleConfirmationClose = useCallback(() => {
@@ -473,7 +538,8 @@ export function ScheduledDonationForm({
 
       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 rounded-xl border border-indigo-100">
         <p className="text-sm text-gray-700 leading-relaxed">
-          Schedule recurring donations to <span className="font-semibold text-indigo-900">{charityName}</span>.
+          Schedule recurring donations to{" "}
+          <span className="font-semibold text-indigo-900">{charityName}</span>.
           The total amount will be divided into equal monthly payments.
         </p>
       </div>
@@ -515,8 +581,18 @@ export function ScheduledDonationForm({
 
       <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-blue-100 shadow-sm">
         <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
-          <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <svg
+            className="w-5 h-5 mr-2 text-indigo-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+            />
           </svg>
           Schedule Preview
         </h4>
@@ -524,17 +600,21 @@ export function ScheduledDonationForm({
           <div className="flex justify-between items-center p-2 bg-white rounded-lg">
             <span className="text-gray-600">Monthly payment:</span>
             <span className="font-bold text-indigo-900">
-              {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"} {selectedToken.symbol}
+              {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"}{" "}
+              {selectedToken.symbol}
             </span>
           </div>
           <div className="flex justify-between items-center p-2 bg-white rounded-lg">
             <span className="text-gray-600">Total payments:</span>
-            <span className="font-semibold text-gray-900">{numberOfMonths} months</span>
+            <span className="font-semibold text-gray-900">
+              {numberOfMonths} months
+            </span>
           </div>
           <div className="flex justify-between items-center p-2 bg-white rounded-lg">
             <span className="text-gray-600">Schedule period:</span>
             <span className="font-medium text-gray-700 text-xs">
-              {formatDate(startDate.toISOString())} to {formatDate(endDate.toISOString())}
+              {formatDate(startDate.toISOString())} to{" "}
+              {formatDate(endDate.toISOString())}
             </span>
           </div>
         </div>
@@ -545,17 +625,25 @@ export function ScheduledDonationForm({
         <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
           <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
           <p className="text-xs text-amber-800">
-            <span className="font-semibold">Minimum donation:</span> ${MINIMUM_DONATION_USD} USD to prevent dust transactions
+            <span className="font-semibold">Minimum donation:</span> $
+            {MINIMUM_DONATION_USD} USD to prevent dust transactions
           </p>
         </div>
       )}
 
       <Button
         type="submit"
-        disabled={loading || !amount || isLoadingBalance || (balance !== undefined && amount > balance)}
+        disabled={
+          loading ||
+          !amount ||
+          isLoadingBalance ||
+          (balance !== undefined && amount > balance)
+        }
         fullWidth
         size="lg"
-        icon={loading ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined}
+        icon={
+          loading ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined
+        }
         className="font-bold text-lg shadow-xl hover:shadow-2xl"
       >
         {loading ? "Processing..." : "Schedule Recurring Donation"}

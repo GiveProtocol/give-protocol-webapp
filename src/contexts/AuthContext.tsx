@@ -571,13 +571,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       register,
       sendUsernameReminder,
     }),
-    [state, login, loginWithGoogle, logout, resetPassword, refreshSession, register, sendUsernameReminder]
+    [
+      state,
+      login,
+      loginWithGoogle,
+      logout,
+      resetPassword,
+      refreshSession,
+      register,
+      sendUsernameReminder,
+    ],
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 

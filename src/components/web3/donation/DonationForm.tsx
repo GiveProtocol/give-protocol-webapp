@@ -40,16 +40,20 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
   const { isConnected, connect } = useWeb3();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const { balance, isLoading: isLoadingBalance } = useTokenBalance(selectedToken);
+  const { balance, isLoading: isLoadingBalance } =
+    useTokenBalance(selectedToken);
 
   const handleAmountChange = useCallback((newAmount: number) => {
     setAmount(newAmount);
   }, []);
 
-  const handleTokenSelect = useCallback((token: typeof MOONBEAM_TOKENS[0]) => {
-    setSelectedToken(token);
-    setAmount(0); // Reset amount when token changes
-  }, []);
+  const handleTokenSelect = useCallback(
+    (token: (typeof MOONBEAM_TOKENS)[0]) => {
+      setSelectedToken(token);
+      setAmount(0); // Reset amount when token changes
+    },
+    [],
+  );
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -73,7 +77,9 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
 
       // Validate balance
       if (balance !== undefined && amount > balance) {
-        setError(`Insufficient balance. You only have ${balance.toFixed(6)} ${selectedToken.symbol} available.`);
+        setError(
+          `Insufficient balance. You only have ${balance.toFixed(6)} ${selectedToken.symbol} available.`,
+        );
         return;
       }
 
@@ -86,10 +92,14 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
           charityAddress,
           amount: amount.toString(),
           type: donationType,
-          _tokenAddress: selectedToken.isNative ? undefined : selectedToken.address,
+          _tokenAddress: selectedToken.isNative
+            ? undefined
+            : selectedToken.address,
         });
 
-        setSuccessMessage(`Successfully donated ${amount} ${selectedToken.symbol}!`);
+        setSuccessMessage(
+          `Successfully donated ${amount} ${selectedToken.symbol}!`,
+        );
         setAmount(0);
 
         setTimeout(() => {
@@ -157,13 +167,26 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
 
       <Button
         type="submit"
-        disabled={loading || amount <= 0 || isLoadingBalance || (balance !== undefined && amount > balance)}
+        disabled={
+          loading ||
+          amount <= 0 ||
+          isLoadingBalance ||
+          (balance !== undefined && amount > balance)
+        }
         fullWidth
         size="lg"
-        icon={loading ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined}
+        icon={
+          loading ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined
+        }
         className="font-bold text-lg shadow-xl hover:shadow-2xl"
       >
-        {loading ? "Processing Donation..." : successMessage ? "Donation Successful!" : isLoadingBalance ? "Loading Balance..." : "Donate Now"}
+        {loading
+          ? "Processing Donation..."
+          : successMessage
+            ? "Donation Successful!"
+            : isLoadingBalance
+              ? "Loading Balance..."
+              : "Donate Now"}
       </Button>
     </form>
   );

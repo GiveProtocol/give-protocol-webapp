@@ -1,7 +1,5 @@
 import React from "react";
-import {
-  CausePageTemplate,
-} from "@/components/charity/CausePageTemplate";
+import { CausePageTemplate } from "@/components/charity/CausePageTemplate";
 import { CauseProfileData } from "@/types/charity";
 
 const causeData: CauseProfileData = {
