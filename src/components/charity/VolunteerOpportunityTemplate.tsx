@@ -121,7 +121,7 @@ export const VolunteerOpportunityTemplate: React.FC<
   VolunteerOpportunityTemplateProps
 > = ({ opportunity, onApply }) => {
   return (
-    <>
+    <div>
       <HeroSection
         image={opportunity.image}
         title={opportunity.title}
@@ -132,7 +132,7 @@ export const VolunteerOpportunityTemplate: React.FC<
         </span>
       </HeroSection>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
             <h2 className="text-xl font-semibold text-gray-900">
@@ -256,8 +256,8 @@ export const VolunteerOpportunityTemplate: React.FC<
             </div>
           </div>
         )}
-      </div>
-    </>
+      </main>
+    </div>
   );
 };
 

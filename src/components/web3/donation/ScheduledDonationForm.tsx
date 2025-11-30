@@ -84,10 +84,8 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
     <div className="space-y-6">
       {/* Success Header */}
       <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 text-green-700 rounded-xl shadow-sm animate-fadeIn">
-        <div className="flex-shrink-0">
-          <CheckCircle className="h-8 w-8 text-green-500" />
-        </div>
-        <div className="flex-1">
+        <CheckCircle className="h-8 w-8 text-green-500 flex-shrink-0" />
+        <div>
           <h3 className="text-base font-bold text-green-900 mb-1">
             Recurring Donation Scheduled!
           </h3>
@@ -541,7 +539,7 @@ export function ScheduledDonationForm({
       </div>
 
       {/* Minimum Donation Info */}
-      {amount > 0 && tokenPrices[selectedToken.coingeckoId] && (
+      {amount > 0 && tokenPrices[selectedToken.coingeckoId] !== undefined && (
         <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
           <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
           <p className="text-xs text-amber-800">

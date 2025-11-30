@@ -193,7 +193,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   // Poll for account changes as a fallback (some wallets don't fire events reliably)
   useEffect(() => {
     // Only poll if we think we're connected
-    if (!address) return;
+    if (!address) {
+      return undefined;
+    }
 
     const checkConnection = async () => {
       const walletProvider = currentWalletProvider || window.ethereum;

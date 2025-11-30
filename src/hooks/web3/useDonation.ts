@@ -116,8 +116,7 @@ export function useDonation() {
       const parsedAmount = parseEther(amount);
 
       // The DurationDonation contract uses processDonation() for both native and ERC20
-      // For now, we'll throw an error for native donations since the contract doesn't support them
-      // TODO: Add native token support to the contract or use a wrapper
+      // Native token support requires contract updates or a wrapper contract
       if (type === DonationType._NATIVE) {
         throw new Error("Native token donations not yet supported. Please use ERC20 tokens.");
       }

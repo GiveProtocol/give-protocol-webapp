@@ -80,7 +80,7 @@ export const CharityPageTemplate: React.FC<CharityPageTemplateProps> = ({
   charity,
 }) => {
   return (
-    <>
+    <div>
       <CharityHeroSection
         image={charity.image}
         title={charity.name}
@@ -89,7 +89,7 @@ export const CharityPageTemplate: React.FC<CharityPageTemplateProps> = ({
         verified={charity.verified}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">
@@ -166,8 +166,8 @@ export const CharityPageTemplate: React.FC<CharityPageTemplateProps> = ({
             </ul>
           </div>
         </div>
-      </div>
-    </>
+      </main>
+    </div>
   );
 };
 

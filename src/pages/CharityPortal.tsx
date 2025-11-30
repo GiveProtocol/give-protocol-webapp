@@ -762,35 +762,33 @@ export const CharityPortal: React.FC = () => {
   const pendingHoursCount = pendingHours.length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">
-                {profile?.display_name || t("charity.dashboard", "Charity Dashboard")}
-              </h1>
-              <p className="mt-1 text-gray-600">
-                {t("charity.subtitle", "Manage your charity dashboard")}
-              </p>
-            </div>
-            <div className="mt-4 md:mt-0 flex flex-wrap gap-3">
-              <Link to="/charity-portal/create-opportunity">
-                <Button variant="secondary" className="flex items-center gap-2">
-                  <Plus className="h-4 w-4" />
-                  {t("volunteer.createOpportunity", "Create Opportunity")}
-                </Button>
-              </Link>
-              <Link to="/charity-portal/create-cause">
-                <Button variant="secondary" className="flex items-center gap-2">
-                  <Heart className="h-4 w-4" />
-                  {t("cause.createCause", "Create Cause")}
-                </Button>
-              </Link>
-            </div>
+        <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">
+              {profile?.display_name || t("charity.dashboard", "Charity Dashboard")}
+            </h1>
+            <p className="mt-1 text-gray-600">
+              {t("charity.subtitle", "Manage your charity dashboard")}
+            </p>
           </div>
-        </div>
+          <nav className="mt-4 md:mt-0 flex flex-wrap gap-3">
+            <Link to="/charity-portal/create-opportunity">
+              <Button variant="secondary" className="flex items-center gap-2">
+                <Plus className="h-4 w-4" />
+                {t("volunteer.createOpportunity", "Create Opportunity")}
+              </Button>
+            </Link>
+            <Link to="/charity-portal/create-cause">
+              <Button variant="secondary" className="flex items-center gap-2">
+                <Heart className="h-4 w-4" />
+                {t("cause.createCause", "Create Cause")}
+              </Button>
+            </Link>
+          </nav>
+        </header>
 
         {/* Stats Row with Last Updated */}
         <div className="flex items-center justify-between mb-4">
@@ -1507,7 +1505,7 @@ export const CharityPortal: React.FC = () => {
           />
         )}
       </div>
-    </div>
+    </main>
   );
 };
 
