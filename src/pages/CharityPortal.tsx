@@ -28,7 +28,10 @@ import {
   FileText,
   Share2,
 } from "lucide-react";
-import { MAX_OPPORTUNITIES_PER_CHARITY, MAX_CAUSES_PER_CHARITY } from "@/types/charity";
+import {
+  MAX_OPPORTUNITIES_PER_CHARITY,
+  MAX_CAUSES_PER_CHARITY,
+} from "@/types/charity";
 import { Button } from "@/components/ui/Button";
 import { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
@@ -491,14 +494,19 @@ export const CharityPortal: React.FC = () => {
       setCharityStats(stats);
 
       // Fetch detailed data in parallel
-      const [formattedTransactions, applicationsList, formattedHours, opportunitiesList, causesList] =
-        await Promise.all([
-          fetchTransactions(profile.id),
-          fetchVolunteerApplications(profile.id),
-          fetchPendingHours(profile.id),
-          fetchOpportunities(profile.id),
-          fetchCauses(profile.id),
-        ]);
+      const [
+        formattedTransactions,
+        applicationsList,
+        formattedHours,
+        opportunitiesList,
+        causesList,
+      ] = await Promise.all([
+        fetchTransactions(profile.id),
+        fetchVolunteerApplications(profile.id),
+        fetchPendingHours(profile.id),
+        fetchOpportunities(profile.id),
+        fetchCauses(profile.id),
+      ]);
 
       setTransactions(formattedTransactions);
       setPendingApplications(applicationsList);
@@ -694,7 +702,10 @@ export const CharityPortal: React.FC = () => {
           {/* Skeleton Stats */}
           <div className="grid gap-6 mb-8 grid-cols-2 lg:grid-cols-4">
             {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-xl p-6 shadow-md animate-pulse">
+              <div
+                key={i}
+                className="bg-white rounded-xl p-6 shadow-md animate-pulse"
+              >
                 <div className="flex items-center">
                   <div className="h-14 w-14 bg-gray-200 rounded-full" />
                   <div className="ml-4 flex-1">
@@ -768,7 +779,8 @@ export const CharityPortal: React.FC = () => {
         <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">
-              {profile?.display_name || t("charity.dashboard", "Charity Dashboard")}
+              {profile?.display_name ||
+                t("charity.dashboard", "Charity Dashboard")}
             </h1>
             <p className="mt-1 text-gray-600">
               {t("charity.subtitle", "Manage your charity dashboard")}
@@ -797,7 +809,10 @@ export const CharityPortal: React.FC = () => {
           </h2>
           <div className="flex items-center gap-3 text-sm text-gray-500">
             {lastUpdated && (
-              <span>{t("dashboard.lastUpdated", "Last updated")}: {formatLastUpdated()}</span>
+              <span>
+                {t("dashboard.lastUpdated", "Last updated")}:{" "}
+                {formatLastUpdated()}
+              </span>
             )}
             <button
               onClick={handleRefresh}
@@ -1046,7 +1061,10 @@ export const CharityPortal: React.FC = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {sortedTransactions().map((transaction) => (
-                      <tr key={transaction.id} className="hover:bg-gray-50 transition-colors">
+                      <tr
+                        key={transaction.id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                           {formatDate(transaction.timestamp, true)}
                         </td>
@@ -1066,7 +1084,11 @@ export const CharityPortal: React.FC = () => {
                             {transaction.amount} {transaction.cryptoType}
                           </span>
                           <span className="text-gray-500 ml-1">
-                            (<CurrencyDisplay amount={transaction.fiatValue || 0} />)
+                            (
+                            <CurrencyDisplay
+                              amount={transaction.fiatValue || 0}
+                            />
+                            )
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
@@ -1119,10 +1141,13 @@ export const CharityPortal: React.FC = () => {
                 <p className="text-gray-500 mb-6 max-w-sm mx-auto">
                   {t(
                     "transactions.noTransactionsDescription",
-                    "Your donation history will appear here once you receive contributions."
+                    "Your donation history will appear here once you receive contributions.",
                   )}
                 </p>
-                <Button variant="secondary" className="inline-flex items-center gap-2">
+                <Button
+                  variant="secondary"
+                  className="inline-flex items-center gap-2"
+                >
                   <Share2 className="h-4 w-4" />
                   {t("transactions.shareDonationPage", "Share donation page")}
                 </Button>
@@ -1139,7 +1164,10 @@ export const CharityPortal: React.FC = () => {
                 <h2 className="text-xl font-semibold text-gray-900">
                   {t("volunteer.pendingHours", "Pending Volunteer Hours")}
                 </h2>
-                <Button variant="secondary" className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition-all">
+                <Button
+                  variant="secondary"
+                  className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition-all"
+                >
                   <Download className="h-4 w-4 text-indigo-600" />
                   {t("contributions.export")}
                 </Button>
@@ -1158,7 +1186,9 @@ export const CharityPortal: React.FC = () => {
                       </h3>
                       <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
                         <Clock className="h-4 w-4 text-purple-500" />
-                        <span className="font-medium">{hours.hours} {t("volunteer.hours")}</span>
+                        <span className="font-medium">
+                          {hours.hours} {t("volunteer.hours")}
+                        </span>
                         <span className="text-gray-400">|</span>
                         {formatDate(hours.date_performed)}
                       </p>
@@ -1173,7 +1203,10 @@ export const CharityPortal: React.FC = () => {
                         <CheckCircle className="h-4 w-4" />
                         {t("volunteer.verify")}
                       </Button>
-                      <Button variant="secondary" className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        className="flex items-center gap-2"
+                      >
                         <X className="h-4 w-4" />
                         {t("volunteer.reject")}
                       </Button>
@@ -1191,7 +1224,7 @@ export const CharityPortal: React.FC = () => {
                   <p className="text-gray-500 max-w-sm mx-auto">
                     {t(
                       "volunteer.noPendingHours",
-                      "No pending volunteer hours to verify."
+                      "No pending volunteer hours to verify.",
                     )}
                   </p>
                 </div>
@@ -1222,7 +1255,10 @@ export const CharityPortal: React.FC = () => {
                       <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
                         <Briefcase className="h-4 w-4 text-indigo-500" />
                         {t("volunteer.appliedFor")}:{" "}
-                        <span className="font-medium">{application.opportunity?.title || "Unknown Opportunity"}</span>
+                        <span className="font-medium">
+                          {application.opportunity?.title ||
+                            "Unknown Opportunity"}
+                        </span>
                       </p>
                     </div>
                     <div className="flex gap-2 ml-4">
@@ -1230,7 +1266,10 @@ export const CharityPortal: React.FC = () => {
                         <CheckCircle className="h-4 w-4" />
                         {t("volunteer.accept")}
                       </Button>
-                      <Button variant="secondary" className="flex items-center gap-2">
+                      <Button
+                        variant="secondary"
+                        className="flex items-center gap-2"
+                      >
                         <X className="h-4 w-4" />
                         {t("volunteer.reject")}
                       </Button>
@@ -1248,7 +1287,7 @@ export const CharityPortal: React.FC = () => {
                   <p className="text-gray-500 max-w-sm mx-auto">
                     {t(
                       "volunteer.noPendingApplications",
-                      "No pending applications to review."
+                      "No pending applications to review.",
                     )}
                   </p>
                 </div>
@@ -1266,13 +1305,17 @@ export const CharityPortal: React.FC = () => {
                   {t("volunteer.opportunities", "Volunteer Opportunities")}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  {opportunities.filter((o) => o.status === "active").length} of {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
+                  {opportunities.filter((o) => o.status === "active").length} of{" "}
+                  {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
                 </p>
               </div>
               <Link to="/charity-portal/create-opportunity">
                 <Button
                   className="flex items-center gap-2"
-                  disabled={opportunities.filter((o) => o.status === "active").length >= MAX_OPPORTUNITIES_PER_CHARITY}
+                  disabled={
+                    opportunities.filter((o) => o.status === "active").length >=
+                    MAX_OPPORTUNITIES_PER_CHARITY
+                  }
                 >
                   <Plus className="h-4 w-4" />
                   {t("volunteer.createNew", "Create New")}
@@ -1283,7 +1326,10 @@ export const CharityPortal: React.FC = () => {
             {opportunities.length > 0 ? (
               <div className="space-y-4">
                 {opportunities.map((opportunity) => (
-                  <div key={opportunity.id} className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                  <div
+                    key={opportunity.id}
+                    className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+                  >
                     <header className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="text-lg font-semibold text-gray-900">
@@ -1298,14 +1344,23 @@ export const CharityPortal: React.FC = () => {
                                 : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {opportunity.status.charAt(0).toUpperCase() + opportunity.status.slice(1)}
+                          {opportunity.status.charAt(0).toUpperCase() +
+                            opportunity.status.slice(1)}
                         </span>
                       </div>
                       <div className="flex gap-1">
-                        <Button variant="ghost" className="p-2 hover:bg-gray-100 rounded-lg" title="Edit">
+                        <Button
+                          variant="ghost"
+                          className="p-2 hover:bg-gray-100 rounded-lg"
+                          title="Edit"
+                        >
                           <Edit className="h-4 w-4 text-gray-500" />
                         </Button>
-                        <Button variant="ghost" className="p-2 hover:bg-red-50 rounded-lg" title="Delete">
+                        <Button
+                          variant="ghost"
+                          className="p-2 hover:bg-red-50 rounded-lg"
+                          title="Delete"
+                        >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
                       </div>
@@ -1354,12 +1409,15 @@ export const CharityPortal: React.FC = () => {
                     <Briefcase className="h-8 w-8 text-indigo-400" />
                   </div>
                   <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("volunteer.noOpportunitiesTitle", "No opportunities yet")}
+                    {t(
+                      "volunteer.noOpportunitiesTitle",
+                      "No opportunities yet",
+                    )}
                   </h3>
                   <p className="text-gray-500 mb-6 max-w-sm mx-auto">
                     {t(
                       "volunteer.noOpportunitiesYet",
-                      "Create your first volunteer opportunity to start recruiting helpers."
+                      "Create your first volunteer opportunity to start recruiting helpers.",
                     )}
                   </p>
                   <Link to="/charity-portal/create-opportunity">
@@ -1383,13 +1441,17 @@ export const CharityPortal: React.FC = () => {
                   {t("cause.causes", "Causes")}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  {causes.filter((c) => c.status === "active").length} of {MAX_CAUSES_PER_CHARITY} active causes
+                  {causes.filter((c) => c.status === "active").length} of{" "}
+                  {MAX_CAUSES_PER_CHARITY} active causes
                 </p>
               </div>
               <Link to="/charity-portal/create-cause">
                 <Button
                   className="flex items-center gap-2"
-                  disabled={causes.filter((c) => c.status === "active").length >= MAX_CAUSES_PER_CHARITY}
+                  disabled={
+                    causes.filter((c) => c.status === "active").length >=
+                    MAX_CAUSES_PER_CHARITY
+                  }
                 >
                   <Plus className="h-4 w-4" />
                   {t("cause.createNew", "Create New")}
@@ -1400,10 +1462,15 @@ export const CharityPortal: React.FC = () => {
             {causes.length > 0 ? (
               <div className="space-y-4">
                 {causes.map((cause) => (
-                  <div key={cause.id} className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow">
+                  <div
+                    key={cause.id}
+                    className="bg-white rounded-xl shadow-md border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+                  >
                     <header className="flex items-start justify-between gap-4 mb-3">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className="text-lg font-semibold text-gray-900">{cause.name}</h3>
+                        <h3 className="text-lg font-semibold text-gray-900">
+                          {cause.name}
+                        </h3>
                         <span
                           className={`px-2.5 py-1 text-xs font-medium rounded-full ${
                             cause.status === "active"
@@ -1413,19 +1480,30 @@ export const CharityPortal: React.FC = () => {
                                 : "bg-gray-100 text-gray-800"
                           }`}
                         >
-                          {cause.status.charAt(0).toUpperCase() + cause.status.slice(1)}
+                          {cause.status.charAt(0).toUpperCase() +
+                            cause.status.slice(1)}
                         </span>
                       </div>
                       <div className="flex gap-1">
-                        <Button variant="ghost" className="p-2 hover:bg-gray-100 rounded-lg" title="Edit">
+                        <Button
+                          variant="ghost"
+                          className="p-2 hover:bg-gray-100 rounded-lg"
+                          title="Edit"
+                        >
                           <Edit className="h-4 w-4 text-gray-500" />
                         </Button>
-                        <Button variant="ghost" className="p-2 hover:bg-red-50 rounded-lg" title="Delete">
+                        <Button
+                          variant="ghost"
+                          className="p-2 hover:bg-red-50 rounded-lg"
+                          title="Delete"
+                        >
                           <Trash2 className="h-4 w-4 text-red-500" />
                         </Button>
                       </div>
                     </header>
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">{cause.description}</p>
+                    <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                      {cause.description}
+                    </p>
                     <div className="flex flex-wrap gap-4 text-sm text-gray-500 mb-4">
                       <span className="flex items-center gap-1">
                         <MapPin className="h-4 w-4 text-gray-400" />
@@ -1445,9 +1523,14 @@ export const CharityPortal: React.FC = () => {
                     {/* Funding Progress */}
                     <div className="bg-gray-50 rounded-lg p-4">
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-gray-600 font-medium">Funding Progress</span>
+                        <span className="text-gray-600 font-medium">
+                          Funding Progress
+                        </span>
                         <span className="font-semibold text-gray-900">
-                          {Math.round((cause.raised_amount / cause.target_amount) * 100)}%
+                          {Math.round(
+                            (cause.raised_amount / cause.target_amount) * 100,
+                          )}
+                          %
                         </span>
                       </div>
                       <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
@@ -1460,7 +1543,8 @@ export const CharityPortal: React.FC = () => {
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-gray-500">
-                          <CurrencyDisplay amount={cause.raised_amount} /> raised
+                          <CurrencyDisplay amount={cause.raised_amount} />{" "}
+                          raised
                         </span>
                         <span className="text-gray-500">
                           Goal: <CurrencyDisplay amount={cause.target_amount} />
@@ -1482,7 +1566,7 @@ export const CharityPortal: React.FC = () => {
                   <p className="text-gray-500 mb-6 max-w-sm mx-auto">
                     {t(
                       "cause.noCausesYet",
-                      "Create your first cause to start fundraising for specific projects."
+                      "Create your first cause to start fundraising for specific projects.",
                     )}
                   </p>
                   <Link to="/charity-portal/create-cause">
