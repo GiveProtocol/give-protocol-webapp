@@ -9,6 +9,27 @@ import { ethers } from "ethers";
 import { Logger } from "@/utils/logger";
 import { CHAIN_IDS } from "@/config/contracts";
 
+// EIP-1193 Provider interface
+interface EIP1193Provider {
+  request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>;
+  on?: (_event: string, _handler: (..._args: unknown[]) => void) => void;
+  removeListener?: (_event: string, _handler: (..._args: unknown[]) => void) => void;
+  disconnect?: () => Promise<void>;
+}
+
+/**
+ * Type guard to check if a provider is EIP-1193 compliant
+ * @param provider - The provider to check
+ * @returns True if the provider has a request method
+ */
+function isEIP1193Provider(provider: unknown): provider is EIP1193Provider {
+  return (
+    typeof provider === "object" &&
+    provider !== null &&
+    typeof (provider as EIP1193Provider).request === "function"
+  );
+}
+
 // Error type guards for Web3 errors
 interface WalletError {
   code?: number;
@@ -276,6 +297,19 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         throw error;
       }
 
+      // Validate that the provider has the required request method (EIP-1193)
+      if (!isEIP1193Provider(walletProvider)) {
+        const error = new Error(
+          "Wallet provider is not EIP-1193 compliant. Please try refreshing the page.",
+        );
+        Logger.error("Invalid wallet provider", {
+          hasRequest: typeof (walletProvider as { request?: unknown }).request,
+          providerType: typeof walletProvider,
+        });
+        setError(error);
+        throw error;
+      }
+
       try {
         setIsConnecting(true);
         setError(null);
@@ -283,7 +317,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         // Request account access
         const accounts = await walletProvider.request({
           method: "eth_requestAccounts",
-        });
+        }) as string[];
 
         if (!accounts || accounts.length === 0) {
           throw new Error("No accounts found");
