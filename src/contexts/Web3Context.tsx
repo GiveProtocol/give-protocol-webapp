@@ -13,7 +13,10 @@ import { CHAIN_IDS } from "@/config/contracts";
 interface EIP1193Provider {
   request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>;
   on?: (_event: string, _handler: (..._args: unknown[]) => void) => void;
-  removeListener?: (_event: string, _handler: (..._args: unknown[]) => void) => void;
+  removeListener?: (
+    _event: string,
+    _handler: (..._args: unknown[]) => void,
+  ) => void;
   disconnect?: () => Promise<void>;
 }
 
@@ -315,9 +318,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         setError(null);
 
         // Request account access
-        const accounts = await walletProvider.request({
+        const accounts = (await walletProvider.request({
           method: "eth_requestAccounts",
-        }) as string[];
+        })) as string[];
 
         if (!accounts || accounts.length === 0) {
           throw new Error("No accounts found");
