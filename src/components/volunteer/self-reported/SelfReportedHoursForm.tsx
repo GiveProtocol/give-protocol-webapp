@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import {
   SelfReportedHoursInput,
   ActivityType,
@@ -20,10 +19,7 @@ import {
   Calendar,
   MapPin,
   Building2,
-  FileText,
   ChevronDown,
-  Minus,
-  Plus,
   Check,
 } from 'lucide-react';
 
@@ -97,7 +93,7 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: name === 'hours' ? Number.parseFloat(value) : value }));
+    setFormData((prev) => ({ ...prev, [name]: name === 'hours' ? Number.parseFloat(value) || 0 : value }));
     if (errors[name]) {
       setErrors((prev) => {
         const next = { ...prev };
@@ -106,20 +102,6 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
       });
     }
   }, [errors]);
-
-  const handleHoursIncrement = useCallback(() => {
-    setFormData((prev) => ({
-      ...prev,
-      hours: Math.min(MAX_HOURS_PER_RECORD, prev.hours + 0.5),
-    }));
-  }, []);
-
-  const handleHoursDecrement = useCallback(() => {
-    setFormData((prev) => ({
-      ...prev,
-      hours: Math.max(MIN_HOURS_PER_RECORD, prev.hours - 0.5),
-    }));
-  }, []);
 
   const handleActivityTypeSelect = useCallback((type: ActivityType) => {
     setFormData((prev) => ({ ...prev, activityType: type }));
@@ -208,36 +190,42 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
 
   const today = new Date().toISOString().split('T')[0];
   const charCount = formData.description.length;
-  const charsNeeded = MIN_DESCRIPTION_LENGTH - charCount;
+
+  // Common input classes for consistency
+  const inputBaseClasses = 'h-11 w-full rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent';
+  const inputWithIconClasses = `${inputBaseClasses} pl-10 pr-4`;
+  const inputWithSuffixClasses = `${inputBaseClasses} pl-10 pr-12`;
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {/* Section 1: When & Where */}
-        <div className="p-5 space-y-4">
-          <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">When & Where</h4>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 overflow-hidden">
+        <div className="p-8 space-y-8">
+          {/* Date, Hours, Location Row */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             {/* Activity Date */}
             <div>
-              <label htmlFor="activityDate" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
-                <Calendar className="w-4 h-4 text-gray-400" />
+              <label htmlFor="activityDate" className="block text-sm font-medium text-gray-700 mb-2">
                 Date <span className="text-red-500">*</span>
               </label>
-              <Input
-                id="activityDate"
-                type="date"
-                name="activityDate"
-                value={formData.activityDate}
-                onChange={handleInputChange}
-                max={today}
-                required
-                error={errors.activityDate}
-                className="focus:ring-emerald-500 focus:border-emerald-500"
-              />
-              {/* Date validation warnings */}
+              <div className="relative">
+                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <input
+                  id="activityDate"
+                  type="date"
+                  name="activityDate"
+                  value={formData.activityDate}
+                  onChange={handleInputChange}
+                  max={today}
+                  required
+                  className={`${inputWithIconClasses} ${errors.activityDate ? 'border-red-300 focus:ring-red-500' : ''}`}
+                />
+              </div>
+              {errors.activityDate && (
+                <p className="mt-1.5 text-xs text-red-600">{errors.activityDate}</p>
+              )}
               {showExpirationWarning && (
                 <p className="mt-1.5 text-xs text-amber-600 flex items-center gap-1">
-                  <Clock className="h-3.5 w-3.5" />
+                  <Clock className="h-3 w-3" />
                   Only {daysInfo.daysLeft} days left to request validation
                 </p>
               )}
@@ -248,21 +236,13 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
               )}
             </div>
 
-            {/* Hours with stepper */}
+            {/* Hours */}
             <div>
-              <label htmlFor="hours" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
-                <Clock className="w-4 h-4 text-gray-400" />
+              <label htmlFor="hours" className="block text-sm font-medium text-gray-700 mb-2">
                 Hours <span className="text-red-500">*</span>
               </label>
-              <div className="flex items-center">
-                <button
-                  type="button"
-                  onClick={handleHoursDecrement}
-                  disabled={formData.hours <= MIN_HOURS_PER_RECORD}
-                  className="px-3 py-2 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <Minus className="w-4 h-4" />
-                </button>
+              <div className="relative">
+                <Clock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
                 <input
                   id="hours"
                   type="number"
@@ -273,74 +253,68 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                   max={MAX_HOURS_PER_RECORD}
                   step={0.5}
                   required
-                  className="w-16 text-center border-gray-300 border-y py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:z-10"
+                  className={`${inputWithSuffixClasses} ${errors.hours ? 'border-red-300 focus:ring-red-500' : ''}`}
                 />
-                <button
-                  type="button"
-                  onClick={handleHoursIncrement}
-                  disabled={formData.hours >= MAX_HOURS_PER_RECORD}
-                  className="px-3 py-2 border border-l-0 border-gray-300 rounded-r-lg bg-gray-50 hover:bg-gray-100 text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                >
-                  <Plus className="w-4 h-4" />
-                </button>
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
+                  hrs
+                </span>
               </div>
-              <p className="mt-1 text-xs text-gray-500">{MIN_HOURS_PER_RECORD} – {MAX_HOURS_PER_RECORD} hours</p>
-              {errors.hours && <p className="mt-1 text-xs text-red-600">{errors.hours}</p>}
+              {errors.hours && (
+                <p className="mt-1.5 text-xs text-red-600">{errors.hours}</p>
+              )}
             </div>
 
             {/* Location */}
             <div>
-              <label htmlFor="location" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
-                <MapPin className="w-4 h-4 text-gray-400" />
-                Location <span className="text-gray-400 font-normal text-xs">(optional)</span>
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
+                Location <span className="text-gray-400 font-normal">(optional)</span>
               </label>
-              <Input
-                id="location"
-                name="location"
-                value={formData.location || ''}
-                onChange={handleInputChange}
-                placeholder="City or Remote"
-                className="focus:ring-emerald-500 focus:border-emerald-500"
-              />
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                <input
+                  id="location"
+                  name="location"
+                  value={formData.location || ''}
+                  onChange={handleInputChange}
+                  placeholder="City or Remote"
+                  className={inputWithIconClasses}
+                />
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Section 2: What */}
-        <div className="p-5 bg-gray-50/50 border-t border-gray-100 space-y-4">
-          <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">What</h4>
-
-          {/* Activity Type - Custom Dropdown */}
+          {/* Activity Type Dropdown */}
           <div ref={dropdownRef} className="relative">
-            <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
-              <FileText className="w-4 h-4 text-gray-400" />
+            <label className="block text-sm font-medium text-gray-700 mb-2">
               Activity Type <span className="text-red-500">*</span>
             </label>
             <button
               type="button"
               onClick={() => setActivityDropdownOpen(!activityDropdownOpen)}
-              className="w-full flex items-center justify-between px-3 py-2.5 text-left border border-gray-300 rounded-lg bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors"
+              className="w-full h-auto min-h-[2.75rem] flex items-center justify-between px-4 py-3 text-left rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent"
             >
-              <div className="min-w-0">
-                <span className="block text-sm font-medium text-gray-900 truncate">
+              <div className="min-w-0 flex-1">
+                <span className="block text-sm font-medium text-gray-900">
                   {ACTIVITY_TYPE_LABELS[formData.activityType]}
                 </span>
-                <span className="block text-xs text-gray-500 truncate">
+                <span className="block text-xs text-gray-500 mt-0.5">
                   {ACTIVITY_TYPE_DESCRIPTIONS[formData.activityType]}
                 </span>
               </div>
-              <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-2 transition-transform ${activityDropdownOpen ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-3 transition-transform duration-200 ${activityDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {activityDropdownOpen && (
-              <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-72 overflow-auto">
+              <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto">
                 {Object.values(ActivityType).map((type) => (
                   <button
                     key={type}
                     type="button"
                     onClick={() => handleActivityTypeSelect(type)}
-                    className={`w-full px-4 py-3 text-left hover:bg-emerald-50 transition-colors flex items-start gap-3 ${
-                      formData.activityType === type ? 'bg-emerald-50' : ''
+                    className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
+                      formData.activityType === type
+                        ? 'bg-emerald-50'
+                        : 'hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex-1 min-w-0">
@@ -362,55 +336,63 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-1.5">
+            <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-2">
               Description <span className="text-red-500">*</span>
             </label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleInputChange}
-              rows={4}
-              className={`block w-full border rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors ${
-                errors.description ? 'border-red-300' : 'border-gray-300'
-              }`}
-              required
-              minLength={MIN_DESCRIPTION_LENGTH}
-              maxLength={MAX_DESCRIPTION_LENGTH}
-              placeholder="Describe the activities you performed..."
-            />
-            <div className="mt-1.5 text-xs text-right">
-              {charCount < MIN_DESCRIPTION_LENGTH ? (
-                <span className="text-amber-600">{charsNeeded} more characters needed</span>
-              ) : (
-                <span className="text-gray-500">{charCount}/{MAX_DESCRIPTION_LENGTH}</span>
-              )}
+            <div className="relative">
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                rows={4}
+                className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent ${
+                  errors.description ? 'border-red-300' : 'border-gray-200'
+                }`}
+                required
+                minLength={MIN_DESCRIPTION_LENGTH}
+                maxLength={MAX_DESCRIPTION_LENGTH}
+                placeholder="Describe the activities you performed..."
+              />
+              {/* Character counter inside textarea */}
+              <span className={`absolute bottom-3 right-3 text-xs pointer-events-none transition-colors ${
+                charCount < MIN_DESCRIPTION_LENGTH
+                  ? 'text-amber-500'
+                  : charCount > MAX_DESCRIPTION_LENGTH - 50
+                    ? 'text-amber-500'
+                    : 'text-gray-400'
+              }`}>
+                {charCount}/{MAX_DESCRIPTION_LENGTH}
+              </span>
             </div>
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+              <p className="mt-1.5 text-xs text-red-600">{errors.description}</p>
+            )}
+            {charCount < MIN_DESCRIPTION_LENGTH && charCount > 0 && (
+              <p className="mt-1.5 text-xs text-gray-500">
+                {MIN_DESCRIPTION_LENGTH - charCount} more characters needed
+              </p>
             )}
           </div>
-        </div>
 
-        {/* Section 3: Who */}
-        <div className="p-5 border-t border-gray-100 space-y-4">
-          <h4 className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Who</h4>
-
+          {/* Organization Selection */}
           <div>
-            <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 mb-3">
-              <Building2 className="w-4 h-4 text-gray-400" />
-              Organization <span className="text-red-500">*</span>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              <span className="flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-gray-400" />
+                Organization <span className="text-red-500">*</span>
+              </span>
             </label>
 
             {/* Segmented Control */}
-            <div className="inline-flex rounded-lg border border-gray-300 p-1 bg-gray-50 mb-4">
+            <div className="inline-flex rounded-lg bg-gray-100 p-1 mb-4">
               <button
                 type="button"
                 onClick={() => handleOrgModeChange('verified')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   orgMode === 'verified'
-                    ? 'bg-white text-emerald-700 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 Platform Organization
@@ -418,10 +400,10 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
               <button
                 type="button"
                 onClick={() => handleOrgModeChange('other')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
                   orgMode === 'other'
-                    ? 'bg-white text-emerald-700 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-800'
+                    ? 'bg-white text-gray-900 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 Not Listed
@@ -434,36 +416,41 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                 error={errors.organization}
               />
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
                 <div>
-                  <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-2">
                     Organization Name <span className="text-red-500">*</span>
                   </label>
-                  <Input
-                    id="organizationName"
-                    name="organizationName"
-                    value={formData.organizationName || ''}
-                    onChange={handleInputChange}
-                    placeholder="Enter organization name"
-                    error={errors.organizationName}
-                    required
-                    className="focus:ring-emerald-500 focus:border-emerald-500"
-                  />
+                  <div className="relative">
+                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+                    <input
+                      id="organizationName"
+                      name="organizationName"
+                      value={formData.organizationName || ''}
+                      onChange={handleInputChange}
+                      placeholder="Enter organization name"
+                      required
+                      className={`${inputWithIconClasses} ${errors.organizationName ? 'border-red-300 focus:ring-red-500' : ''}`}
+                    />
+                  </div>
+                  {errors.organizationName && (
+                    <p className="mt-1.5 text-xs text-red-600">{errors.organizationName}</p>
+                  )}
                 </div>
                 <div>
-                  <label htmlFor="organizationContactEmail" className="block text-sm font-medium text-gray-700 mb-1">
-                    Contact Email <span className="text-gray-400 font-normal text-xs">(optional)</span>
+                  <label htmlFor="organizationContactEmail" className="block text-sm font-medium text-gray-700 mb-2">
+                    Contact Email <span className="text-gray-400 font-normal">(optional)</span>
                   </label>
-                  <Input
+                  <input
                     id="organizationContactEmail"
                     type="email"
                     name="organizationContactEmail"
                     value={formData.organizationContactEmail || ''}
                     onChange={handleInputChange}
                     placeholder="org@example.com"
-                    className="focus:ring-emerald-500 focus:border-emerald-500"
+                    className={inputBaseClasses}
                   />
-                  <p className="mt-1.5 text-xs text-gray-500">
+                  <p className="mt-2 text-xs text-gray-500">
                     We may reach out to help onboard this organization
                   </p>
                 </div>
@@ -474,40 +461,40 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
           {/* Validation Status Preview */}
           <div className="pt-2">
             {orgMode === 'verified' && (formData.organizationId || selectedOrgName) && !daysInfo.isExpired && (
-              <p className="text-sm text-gray-600 flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600 bg-amber-50 rounded-lg px-4 py-3">
                 <span className="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0"></span>
                 This record will be submitted for validation{selectedOrgName ? ` to ${selectedOrgName}` : ''}
-              </p>
+              </div>
             )}
             {orgMode === 'verified' && daysInfo.isExpired && (
-              <p className="text-sm text-red-600 flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">
                 <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                 Validation period has expired for this date
-              </p>
+              </div>
             )}
             {orgMode === 'other' && (
-              <p className="text-sm text-gray-500 flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-4 py-3">
                 <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0"></span>
                 This record will be saved as unvalidated
-              </p>
+              </div>
             )}
           </div>
         </div>
 
         {/* Form Actions */}
-        <div className="flex items-center justify-end gap-3 px-5 py-4 border-t border-gray-100 bg-gray-50/30">
+        <div className="flex items-center justify-end gap-4 px-8 py-5 bg-gray-50/50 border-t border-gray-100">
           <button
             type="button"
             onClick={onCancel}
             disabled={submitting || isLoading}
-            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 transition-colors disabled:opacity-50"
+            className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
           <Button
             type="submit"
             disabled={submitting || isLoading || (daysInfo.isExpired && orgMode === 'verified')}
-            className="bg-emerald-600 hover:bg-emerald-700 focus:ring-emerald-500"
+            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting || isLoading ? (
               <span className="flex items-center gap-2">
