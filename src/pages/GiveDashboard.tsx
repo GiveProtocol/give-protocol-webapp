@@ -12,6 +12,7 @@ import {
   Settings,
   ChevronUp,
   ChevronDown,
+  ClipboardList,
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -22,6 +23,7 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 import { WalletAliasSettings } from "@/components/settings/WalletAliasSettings";
 import { ScheduledDonations } from "@/components/donor/ScheduledDonations";
+import { SelfReportedHoursDashboard } from "@/components/volunteer/self-reported";
 
 type View =
   | "select"
@@ -41,6 +43,7 @@ export const GiveDashboard: React.FC = () => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [showWalletSettings, setShowWalletSettings] = useState(false);
   const [showScheduledDonations, setShowScheduledDonations] = useState(false);
+  const [showVolunteerHours, setShowVolunteerHours] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: "date" | "type" | "status" | "organization" | null;
     direction: "asc" | "desc";
@@ -289,6 +292,10 @@ export const GiveDashboard: React.FC = () => {
     setShowWalletSettings(!showWalletSettings);
   }, [showWalletSettings]);
 
+  const toggleVolunteerHours = useCallback(() => {
+    setShowVolunteerHours(!showVolunteerHours);
+  }, [showVolunteerHours]);
+
   const handleAdminRedirect = useCallback(() => {
     window.location.href = `${window.location.origin}/admin`;
   }, []);
@@ -452,6 +459,14 @@ export const GiveDashboard: React.FC = () => {
         <div className="flex space-x-3 flex-shrink-0">
           <Button
             variant="secondary"
+            onClick={toggleVolunteerHours}
+            className="flex items-center"
+          >
+            <ClipboardList className="h-4 w-4 mr-2" />
+            {showVolunteerHours ? "Hide" : "Log"} Volunteer Hours
+          </Button>
+          <Button
+            variant="secondary"
             onClick={toggleScheduledDonations}
             className="flex items-center"
           >
@@ -478,6 +493,12 @@ export const GiveDashboard: React.FC = () => {
       {showScheduledDonations && (
         <div className="mb-8">
           <ScheduledDonations />
+        </div>
+      )}
+
+      {showVolunteerHours && (
+        <div className="mb-8">
+          <SelfReportedHoursDashboard onToggle={toggleVolunteerHours} />
         </div>
       )}
 

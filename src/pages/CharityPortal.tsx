@@ -32,6 +32,7 @@ import {
   MAX_OPPORTUNITIES_PER_CHARITY,
   MAX_CAUSES_PER_CHARITY,
 } from "@/types/charity";
+import { ValidationQueueDashboard } from "@/components/charity/validation";
 import { Button } from "@/components/ui/Button";
 import { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
@@ -129,7 +130,7 @@ export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const [activeTab, setActiveTab] = useState<
-    "transactions" | "volunteers" | "applications" | "opportunities" | "causes"
+    "transactions" | "volunteers" | "applications" | "opportunities" | "causes" | "validation"
   >("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
@@ -584,6 +585,10 @@ export const CharityPortal: React.FC = () => {
     setActiveTab("causes");
   }, []);
 
+  const handleValidationTab = useCallback(() => {
+    setActiveTab("validation");
+  }, []);
+
   const handleShowExportModal = useCallback(() => {
     setShowExportModal(true);
   }, []);
@@ -989,6 +994,17 @@ export const CharityPortal: React.FC = () => {
               >
                 <Heart className="h-4 w-4" />
                 {t("cause.causes", "Causes")}
+              </button>
+              <button
+                onClick={handleValidationTab}
+                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  activeTab === "validation"
+                    ? "bg-white text-indigo-700 shadow-sm"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                }`}
+              >
+                <CheckCircle className="h-4 w-4" />
+                Validation Queue
               </button>
             </nav>
           </div>
@@ -1578,6 +1594,13 @@ export const CharityPortal: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Validation Queue */}
+        {activeTab === "validation" && profile?.id && (
+          <div className="bg-white rounded-xl shadow-md border border-gray-200 mb-8 p-6">
+            <ValidationQueueDashboard organizationId={profile.id} />
           </div>
         )}
 
