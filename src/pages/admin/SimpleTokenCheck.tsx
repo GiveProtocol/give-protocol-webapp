@@ -3,7 +3,7 @@ import { useContract } from "@/hooks/web3/useContract";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Button } from "@/components/ui/Button";
 import { ZeroAddress, getAddress, isAddress } from "ethers";
-import { CheckCircle2, XCircle, AlertCircle, Loader2 } from "lucide-react";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 /**
  * Simple diagnostic page to check contract state directly

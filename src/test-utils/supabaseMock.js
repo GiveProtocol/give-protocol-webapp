@@ -105,7 +105,7 @@ export const supabase = {
 // Export helpers for tests
 export const supabaseHelpers = {
   getCurrentUser: jest.fn().mockResolvedValue(null),
-  signOut: jest.fn().mockResolvedValue(undefined),
+  signOut: jest.fn().mockResolvedValue(),
   refreshSession: jest.fn().mockResolvedValue({ session: null, user: null }),
   handleError: jest.fn(),
   testConnection: jest.fn().mockResolvedValue(true),

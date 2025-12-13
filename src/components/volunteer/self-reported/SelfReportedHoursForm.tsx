@@ -63,12 +63,12 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
 
   return (
     <div ref={dropdownRef} className="relative">
-      <label id="activityTypeLabel" className="block text-sm font-medium text-gray-700 mb-2">
+      <label htmlFor="activityTypeButton" className="block text-sm font-medium text-gray-700 mb-2">
         Activity Type <span className="text-red-500">*</span>
       </label>
       <button
+        id="activityTypeButton"
         type="button"
-        aria-labelledby="activityTypeLabel"
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         onClick={onToggle}
@@ -86,7 +86,7 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div role="listbox" aria-labelledby="activityTypeLabel" className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto">
+        <div role="listbox" aria-labelledby="activityTypeButton" className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto">
           {Object.values(ActivityType).map((type) => (
             <button
               key={type}
@@ -346,9 +346,8 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
     setFormData((prev) => ({ ...prev, [name]: name === 'hours' ? Number.parseFloat(value) || 0 : value }));
     if (errors[name]) {
       setErrors((prev) => {
-        const next = { ...prev };
-        delete next[name];
-        return next;
+        const { [name]: _, ...rest } = prev;
+        return rest;
       });
     }
   }, [errors]);
@@ -376,9 +375,8 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
     }
     if (errors.organization) {
       setErrors((prev) => {
-        const next = { ...prev };
-        delete next.organization;
-        return next;
+        const { organization: _, ...rest } = prev;
+        return rest;
       });
     }
   }, [errors]);
