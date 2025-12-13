@@ -56,7 +56,8 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
   onSelect,
   dropdownRef,
 }) => {
-  const handleSelect = useCallback((type: ActivityType) => {
+  const handleOptionClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const type = e.currentTarget.dataset.type as ActivityType;
     onSelect(type);
   }, [onSelect]);
 
@@ -92,7 +93,8 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
               type="button"
               role="option"
               aria-selected={value === type}
-              onClick={() => handleSelect(type)}
+              data-type={type}
+              onClick={handleOptionClick}
               className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
                 value === type ? 'bg-emerald-50' : 'hover:bg-gray-50'
               }`}

@@ -103,7 +103,8 @@ describe('selfReportedHoursService', () => {
         description: 'This is a test description that meets the minimum character requirement for validation purposes.',
       };
 
-      await expect(createSelfReportedHours('user-1', input as any)).rejects.toThrow(
+      // Intentionally omitting organizationName/organizationId to test validation
+      await expect(createSelfReportedHours('user-1', input as Omit<typeof input, 'organizationName' | 'organizationId'>)).rejects.toThrow(
         'Either organization ID or organization name is required'
       );
     });

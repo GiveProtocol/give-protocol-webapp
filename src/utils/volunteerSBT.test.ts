@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
-import { setMockResult, resetMockState } from '@/test-utils/supabaseMock';
+import { resetMockState } from '@/test-utils/supabaseMock';
 import { ValidationStatus, ActivityType } from '@/types/selfReportedHours';
 import {
   VOLUNTEER_SBT_ABI,
