@@ -24,6 +24,8 @@ export default {
     }]
   },
   moduleNameMapper: {
+    '(.*)/config/env(\\.ts)?$': '<rootDir>/src/test-utils/envMock.js',
+    '(.*)/lib/supabase(\\.ts)?$': '<rootDir>/src/test-utils/supabaseMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/test-utils/styleMock.js',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/src/test-utils/fileMock.js',

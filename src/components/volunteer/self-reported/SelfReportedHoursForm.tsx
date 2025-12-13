@@ -33,6 +33,254 @@ interface SelfReportedHoursFormProps {
 
 type OrgMode = 'verified' | 'other';
 
+// Common input classes for consistency
+const INPUT_BASE_CLASSES = 'h-11 w-full rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent';
+const INPUT_WITH_ICON_CLASSES = `${INPUT_BASE_CLASSES} pl-10 pr-4`;
+const INPUT_WITH_SUFFIX_CLASSES = `${INPUT_BASE_CLASSES} pl-10 pr-12`;
+
+/**
+ * Activity type dropdown sub-component
+ */
+interface ActivityTypeDropdownProps {
+  value: ActivityType;
+  isOpen: boolean;
+  onToggle: () => void;
+  onSelect: (type: ActivityType) => void;
+  dropdownRef: React.RefObject<HTMLDivElement>;
+}
+
+const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
+  value,
+  isOpen,
+  onToggle,
+  onSelect,
+  dropdownRef,
+}) => {
+  const handleSelect = useCallback((type: ActivityType) => {
+    onSelect(type);
+  }, [onSelect]);
+
+  return (
+    <div ref={dropdownRef} className="relative">
+      <label id="activityTypeLabel" className="block text-sm font-medium text-gray-700 mb-2">
+        Activity Type <span className="text-red-500">*</span>
+      </label>
+      <button
+        type="button"
+        aria-labelledby="activityTypeLabel"
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        onClick={onToggle}
+        className="w-full h-auto min-h-[2.75rem] flex items-center justify-between px-4 py-3 text-left rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent"
+      >
+        <div className="min-w-0 flex-1">
+          <span className="block text-sm font-medium text-gray-900">
+            {ACTIVITY_TYPE_LABELS[value]}
+          </span>
+          <span className="block text-xs text-gray-500 mt-0.5">
+            {ACTIVITY_TYPE_DESCRIPTIONS[value]}
+          </span>
+        </div>
+        <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+      </button>
+
+      {isOpen && (
+        <div role="listbox" aria-labelledby="activityTypeLabel" className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto">
+          {Object.values(ActivityType).map((type) => (
+            <button
+              key={type}
+              type="button"
+              role="option"
+              aria-selected={value === type}
+              onClick={() => handleSelect(type)}
+              className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
+                value === type ? 'bg-emerald-50' : 'hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex-1 min-w-0">
+                <span className="block text-sm font-medium text-gray-900">
+                  {ACTIVITY_TYPE_LABELS[type]}
+                </span>
+                <span className="block text-xs text-gray-500 mt-0.5">
+                  {ACTIVITY_TYPE_DESCRIPTIONS[type]}
+                </span>
+              </div>
+              {value === type && (
+                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/**
+ * Organization selection sub-component
+ */
+interface OrganizationSelectorProps {
+  orgMode: OrgMode;
+  organizationName: string;
+  organizationContactEmail: string;
+  errors: Record<string, string>;
+  onModeChange: (mode: OrgMode) => void;
+  onOrgSelect: (org: { id: string; name: string } | null) => void;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
+  orgMode,
+  organizationName,
+  organizationContactEmail,
+  errors,
+  onModeChange,
+  onOrgSelect,
+  onInputChange,
+}) => {
+  const handleVerifiedClick = useCallback(() => {
+    onModeChange('verified');
+  }, [onModeChange]);
+
+  const handleOtherClick = useCallback(() => {
+    onModeChange('other');
+  }, [onModeChange]);
+
+  return (
+    <fieldset>
+      <legend className="block text-sm font-medium text-gray-700 mb-3">
+        <span className="flex items-center gap-2">
+          <Building2 className="w-4 h-4 text-gray-400" />
+          Organization <span className="text-red-500">*</span>
+        </span>
+      </legend>
+
+      {/* Segmented Control */}
+      <div className="inline-flex rounded-lg bg-gray-100 p-1 mb-4" role="radiogroup" aria-label="Organization type">
+        <button
+          type="button"
+          role="radio"
+          aria-checked={orgMode === 'verified'}
+          onClick={handleVerifiedClick}
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+            orgMode === 'verified'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Platform Organization
+        </button>
+        <button
+          type="button"
+          role="radio"
+          aria-checked={orgMode === 'other'}
+          onClick={handleOtherClick}
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+            orgMode === 'other'
+              ? 'bg-white text-gray-900 shadow-sm'
+              : 'text-gray-600 hover:text-gray-900'
+          }`}
+        >
+          Not Listed
+        </button>
+      </div>
+
+      {orgMode === 'verified' ? (
+        <OrganizationAutocomplete
+          onSelect={onOrgSelect}
+          error={errors.organization}
+        />
+      ) : (
+        <div className="space-y-4">
+          <div>
+            <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-2">
+              Organization Name <span className="text-red-500">*</span>
+            </label>
+            <div className="relative">
+              <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+              <input
+                id="organizationName"
+                name="organizationName"
+                value={organizationName}
+                onChange={onInputChange}
+                placeholder="Enter organization name"
+                required
+                className={`${INPUT_WITH_ICON_CLASSES} ${errors.organizationName ? 'border-red-300 focus:ring-red-500' : ''}`}
+              />
+            </div>
+            {errors.organizationName && (
+              <p className="mt-1.5 text-xs text-red-600">{errors.organizationName}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="organizationContactEmail" className="block text-sm font-medium text-gray-700 mb-2">
+              Contact Email <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input
+              id="organizationContactEmail"
+              type="email"
+              name="organizationContactEmail"
+              value={organizationContactEmail}
+              onChange={onInputChange}
+              placeholder="org@example.com"
+              className={INPUT_BASE_CLASSES}
+            />
+            <p className="mt-2 text-xs text-gray-500">
+              We may reach out to help onboard this organization
+            </p>
+          </div>
+        </div>
+      )}
+    </fieldset>
+  );
+};
+
+/**
+ * Validation status preview sub-component
+ */
+interface ValidationPreviewProps {
+  orgMode: OrgMode;
+  hasOrganization: boolean;
+  selectedOrgName: string | null;
+  isExpired: boolean;
+}
+
+const ValidationPreview: React.FC<ValidationPreviewProps> = ({
+  orgMode,
+  hasOrganization,
+  selectedOrgName,
+  isExpired,
+}) => {
+  if (orgMode === 'verified' && hasOrganization && !isExpired) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-gray-600 bg-amber-50 rounded-lg px-4 py-3">
+        <span className="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0"></span>
+        This record will be submitted for validation{selectedOrgName ? ` to ${selectedOrgName}` : ''}
+      </div>
+    );
+  }
+
+  if (orgMode === 'verified' && isExpired) {
+    return (
+      <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">
+        <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+        Validation period has expired for this date
+      </div>
+    );
+  }
+
+  if (orgMode === 'other') {
+    return (
+      <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-4 py-3">
+        <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0"></span>
+        This record will be saved as unvalidated
+      </div>
+    );
+  }
+
+  return null;
+};
+
 /**
  * Form component for creating or editing self-reported volunteer hours
  * @param props - Component props
@@ -191,10 +439,16 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
   const today = new Date().toISOString().split('T')[0];
   const charCount = formData.description.length;
 
-  // Common input classes for consistency
-  const inputBaseClasses = 'h-11 w-full rounded-lg border border-gray-200 bg-white text-sm text-gray-900 placeholder-gray-400 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent';
-  const inputWithIconClasses = `${inputBaseClasses} pl-10 pr-4`;
-  const inputWithSuffixClasses = `${inputBaseClasses} pl-10 pr-12`;
+  const toggleDropdown = useCallback(() => {
+    setActivityDropdownOpen(prev => !prev);
+  }, []);
+
+  // Character count status for description field
+  const charCountStatus = useMemo(() => {
+    if (charCount < MIN_DESCRIPTION_LENGTH) return 'text-amber-500';
+    if (charCount > MAX_DESCRIPTION_LENGTH - 50) return 'text-amber-500';
+    return 'text-gray-400';
+  }, [charCount]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -217,10 +471,10 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                   onChange={handleInputChange}
                   max={today}
                   required
-                  className={`${inputWithIconClasses} ${errors.activityDate ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`${INPUT_WITH_ICON_CLASSES} ${errors.activityDate ? 'border-red-300 focus:ring-red-500' : ''}`}
                 />
               </div>
-              {errors.activityDate && (
+              {errors.activityDate !== undefined && (
                 <p className="mt-1.5 text-xs text-red-600">{errors.activityDate}</p>
               )}
               {showExpirationWarning && (
@@ -253,13 +507,13 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                   max={MAX_HOURS_PER_RECORD}
                   step={0.5}
                   required
-                  className={`${inputWithSuffixClasses} ${errors.hours ? 'border-red-300 focus:ring-red-500' : ''}`}
+                  className={`${INPUT_WITH_SUFFIX_CLASSES} ${errors.hours ? 'border-red-300 focus:ring-red-500' : ''}`}
                 />
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-gray-400 pointer-events-none">
                   hrs
                 </span>
               </div>
-              {errors.hours && (
+              {errors.hours !== undefined && (
                 <p className="mt-1.5 text-xs text-red-600">{errors.hours}</p>
               )}
             </div>
@@ -274,65 +528,23 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                 <input
                   id="location"
                   name="location"
-                  value={formData.location || ''}
+                  value={formData.location ?? ''}
                   onChange={handleInputChange}
                   placeholder="City or Remote"
-                  className={inputWithIconClasses}
+                  className={INPUT_WITH_ICON_CLASSES}
                 />
               </div>
             </div>
           </div>
 
           {/* Activity Type Dropdown */}
-          <div ref={dropdownRef} className="relative">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Activity Type <span className="text-red-500">*</span>
-            </label>
-            <button
-              type="button"
-              onClick={() => setActivityDropdownOpen(!activityDropdownOpen)}
-              className="w-full h-auto min-h-[2.75rem] flex items-center justify-between px-4 py-3 text-left rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent"
-            >
-              <div className="min-w-0 flex-1">
-                <span className="block text-sm font-medium text-gray-900">
-                  {ACTIVITY_TYPE_LABELS[formData.activityType]}
-                </span>
-                <span className="block text-xs text-gray-500 mt-0.5">
-                  {ACTIVITY_TYPE_DESCRIPTIONS[formData.activityType]}
-                </span>
-              </div>
-              <ChevronDown className={`w-5 h-5 text-gray-400 flex-shrink-0 ml-3 transition-transform duration-200 ${activityDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {activityDropdownOpen && (
-              <div className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto">
-                {Object.values(ActivityType).map((type) => (
-                  <button
-                    key={type}
-                    type="button"
-                    onClick={() => handleActivityTypeSelect(type)}
-                    className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
-                      formData.activityType === type
-                        ? 'bg-emerald-50'
-                        : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex-1 min-w-0">
-                      <span className="block text-sm font-medium text-gray-900">
-                        {ACTIVITY_TYPE_LABELS[type]}
-                      </span>
-                      <span className="block text-xs text-gray-500 mt-0.5">
-                        {ACTIVITY_TYPE_DESCRIPTIONS[type]}
-                      </span>
-                    </div>
-                    {formData.activityType === type && (
-                      <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+          <ActivityTypeDropdown
+            value={formData.activityType}
+            isOpen={activityDropdownOpen}
+            onToggle={toggleDropdown}
+            onSelect={handleActivityTypeSelect}
+            dropdownRef={dropdownRef}
+          />
 
           {/* Description */}
           <div>
@@ -347,7 +559,7 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                 onChange={handleInputChange}
                 rows={4}
                 className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent ${
-                  errors.description ? 'border-red-300' : 'border-gray-200'
+                  errors.description !== undefined ? 'border-red-300' : 'border-gray-200'
                 }`}
                 required
                 minLength={MIN_DESCRIPTION_LENGTH}
@@ -355,17 +567,11 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
                 placeholder="Describe the activities you performed..."
               />
               {/* Character counter inside textarea */}
-              <span className={`absolute bottom-3 right-3 text-xs pointer-events-none transition-colors ${
-                charCount < MIN_DESCRIPTION_LENGTH
-                  ? 'text-amber-500'
-                  : charCount > MAX_DESCRIPTION_LENGTH - 50
-                    ? 'text-amber-500'
-                    : 'text-gray-400'
-              }`}>
+              <span className={`absolute bottom-3 right-3 text-xs pointer-events-none transition-colors ${charCountStatus}`}>
                 {charCount}/{MAX_DESCRIPTION_LENGTH}
               </span>
             </div>
-            {errors.description && (
+            {errors.description !== undefined && (
               <p className="mt-1.5 text-xs text-red-600">{errors.description}</p>
             )}
             {charCount < MIN_DESCRIPTION_LENGTH && charCount > 0 && (
@@ -376,108 +582,24 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
           </div>
 
           {/* Organization Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              <span className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-gray-400" />
-                Organization <span className="text-red-500">*</span>
-              </span>
-            </label>
-
-            {/* Segmented Control */}
-            <div className="inline-flex rounded-lg bg-gray-100 p-1 mb-4">
-              <button
-                type="button"
-                onClick={() => handleOrgModeChange('verified')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  orgMode === 'verified'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Platform Organization
-              </button>
-              <button
-                type="button"
-                onClick={() => handleOrgModeChange('other')}
-                className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                  orgMode === 'other'
-                    ? 'bg-white text-gray-900 shadow-sm'
-                    : 'text-gray-600 hover:text-gray-900'
-                }`}
-              >
-                Not Listed
-              </button>
-            </div>
-
-            {orgMode === 'verified' ? (
-              <OrganizationAutocomplete
-                onSelect={handleOrganizationSelect}
-                error={errors.organization}
-              />
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="organizationName" className="block text-sm font-medium text-gray-700 mb-2">
-                    Organization Name <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <Building2 className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-                    <input
-                      id="organizationName"
-                      name="organizationName"
-                      value={formData.organizationName || ''}
-                      onChange={handleInputChange}
-                      placeholder="Enter organization name"
-                      required
-                      className={`${inputWithIconClasses} ${errors.organizationName ? 'border-red-300 focus:ring-red-500' : ''}`}
-                    />
-                  </div>
-                  {errors.organizationName && (
-                    <p className="mt-1.5 text-xs text-red-600">{errors.organizationName}</p>
-                  )}
-                </div>
-                <div>
-                  <label htmlFor="organizationContactEmail" className="block text-sm font-medium text-gray-700 mb-2">
-                    Contact Email <span className="text-gray-400 font-normal">(optional)</span>
-                  </label>
-                  <input
-                    id="organizationContactEmail"
-                    type="email"
-                    name="organizationContactEmail"
-                    value={formData.organizationContactEmail || ''}
-                    onChange={handleInputChange}
-                    placeholder="org@example.com"
-                    className={inputBaseClasses}
-                  />
-                  <p className="mt-2 text-xs text-gray-500">
-                    We may reach out to help onboard this organization
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+          <OrganizationSelector
+            orgMode={orgMode}
+            organizationName={formData.organizationName ?? ''}
+            organizationContactEmail={formData.organizationContactEmail ?? ''}
+            errors={errors}
+            onModeChange={handleOrgModeChange}
+            onOrgSelect={handleOrganizationSelect}
+            onInputChange={handleInputChange}
+          />
 
           {/* Validation Status Preview */}
           <div className="pt-2">
-            {orgMode === 'verified' && (formData.organizationId || selectedOrgName) && !daysInfo.isExpired && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 bg-amber-50 rounded-lg px-4 py-3">
-                <span className="w-2 h-2 bg-amber-400 rounded-full flex-shrink-0"></span>
-                This record will be submitted for validation{selectedOrgName ? ` to ${selectedOrgName}` : ''}
-              </div>
-            )}
-            {orgMode === 'verified' && daysInfo.isExpired && (
-              <div className="flex items-center gap-2 text-sm text-red-600 bg-red-50 rounded-lg px-4 py-3">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                Validation period has expired for this date
-              </div>
-            )}
-            {orgMode === 'other' && (
-              <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-4 py-3">
-                <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0"></span>
-                This record will be saved as unvalidated
-              </div>
-            )}
+            <ValidationPreview
+              orgMode={orgMode}
+              hasOrganization={Boolean(formData.organizationId) || Boolean(selectedOrgName)}
+              selectedOrgName={selectedOrgName}
+              isExpired={daysInfo.isExpired}
+            />
           </div>
         </div>
 
