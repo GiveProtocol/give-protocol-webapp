@@ -293,7 +293,7 @@ describe('selfReportedHoursService', () => {
     it('should throw error when record not found', async () => {
       setMockResult('self_reported_hours', { data: null, error: { message: 'Not found' } });
 
-      await expect(requestValidation('nonexistent', 'user-1')).rejects.toThrow(
+      await expect(requestValidation('nonexistent', 'user-1', 'org-1')).rejects.toThrow(
         'Record not found'
       );
     });
@@ -314,9 +314,246 @@ describe('selfReportedHoursService', () => {
       };
       setMockResult('self_reported_hours', { data: mockRecord, error: null });
 
-      await expect(requestValidation('record-1', 'user-1')).rejects.toThrow(
+      await expect(requestValidation('record-1', 'user-1', 'org-1')).rejects.toThrow(
         'Record is already validated'
       );
+    });
+
+    it('should throw error when access denied', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'other-user',
+        validation_status: ValidationStatus.UNVALIDATED,
+        activity_date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(requestValidation('record-1', 'user-1', 'org-1')).rejects.toThrow(
+        'Access denied'
+      );
+    });
+
+    it('should throw error when validation window expired', async () => {
+      const now = new Date();
+      const expiredDate = new Date(Date.now() - 100 * 24 * 60 * 60 * 1000);
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.UNVALIDATED,
+        activity_date: expiredDate.toISOString().split('T')[0],
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(requestValidation('record-1', 'user-1', 'org-1')).rejects.toThrow(
+        'Validation window has expired'
+      );
+    });
+
+    it('should throw error when already pending', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.PENDING,
+        activity_date: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(requestValidation('record-1', 'user-1', 'org-1')).rejects.toThrow(
+        'Validation request already pending'
+      );
+    });
+  });
+
+  describe('createSelfReportedHours - additional cases', () => {
+    it('should throw error for description too long', async () => {
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const longDescription = 'x'.repeat(600);
+      const input = {
+        activityDate: yesterday.toISOString().split('T')[0],
+        hours: 4,
+        activityType: ActivityType.DIRECT_SERVICE,
+        description: longDescription,
+        organizationName: 'Test Org',
+      };
+
+      await expect(createSelfReportedHours('user-1', input)).rejects.toThrow(
+        'Description cannot exceed'
+      );
+    });
+
+    it('should throw error when both organization ID and name specified', async () => {
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const input = {
+        activityDate: yesterday.toISOString().split('T')[0],
+        hours: 4,
+        activityType: ActivityType.DIRECT_SERVICE,
+        description: 'This is a test description that meets the minimum character requirement for validation purposes.',
+        organizationId: 'org-1',
+        organizationName: 'Test Org',
+      };
+
+      await expect(createSelfReportedHours('user-1', input)).rejects.toThrow(
+        'Cannot specify both organization ID and organization name'
+      );
+    });
+  });
+
+  describe('updateSelfReportedHours - additional cases', () => {
+    it('should throw error when access denied', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'other-user',
+        validation_status: ValidationStatus.UNVALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(
+        updateSelfReportedHours('record-1', 'user-1', { hours: 5 })
+      ).rejects.toThrow('Access denied');
+    });
+
+    it('should throw error for validated records', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.VALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(
+        updateSelfReportedHours('record-1', 'user-1', { hours: 5 })
+      ).rejects.toThrow('Cannot edit validated records');
+    });
+
+    it('should throw error for future activity date', async () => {
+      const now = new Date();
+      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.UNVALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(
+        updateSelfReportedHours('record-1', 'user-1', { activityDate: tomorrow.toISOString().split('T')[0] })
+      ).rejects.toThrow('Activity date cannot be in the future');
+    });
+
+    it('should throw error for invalid hours', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.UNVALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(
+        updateSelfReportedHours('record-1', 'user-1', { hours: 30 })
+      ).rejects.toThrow('Hours must be between');
+    });
+
+    it('should throw error for description too short', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.UNVALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(
+        updateSelfReportedHours('record-1', 'user-1', { description: 'Too short' })
+      ).rejects.toThrow('Description must be at least');
+    });
+
+    it('should throw error for description too long', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        validation_status: ValidationStatus.UNVALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(
+        updateSelfReportedHours('record-1', 'user-1', { description: 'x'.repeat(600) })
+      ).rejects.toThrow('Description cannot exceed');
+    });
+  });
+
+  describe('deleteSelfReportedHours - additional cases', () => {
+    it('should throw error when access denied', async () => {
+      const now = new Date();
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'other-user',
+        validation_status: ValidationStatus.UNVALIDATED,
+        created_at: now.toISOString(),
+        updated_at: now.toISOString(),
+      };
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      await expect(deleteSelfReportedHours('record-1', 'user-1')).rejects.toThrow(
+        'Access denied'
+      );
+    });
+  });
+
+  describe('getVolunteerHoursStats - detailed', () => {
+    it('should calculate stats correctly for multiple statuses', async () => {
+      const mockData = [
+        { hours: 4, validation_status: ValidationStatus.VALIDATED },
+        { hours: 3, validation_status: ValidationStatus.VALIDATED },
+        { hours: 2, validation_status: ValidationStatus.PENDING },
+        { hours: 1, validation_status: ValidationStatus.REJECTED },
+        { hours: 5, validation_status: ValidationStatus.UNVALIDATED },
+        { hours: 6, validation_status: ValidationStatus.EXPIRED },
+      ];
+      setMockResult('self_reported_hours', { data: mockData, error: null });
+
+      const result = await getVolunteerHoursStats('user-1');
+
+      expect(result.totalValidatedHours).toBe(7);
+      expect(result.totalPendingHours).toBe(2);
+      expect(result.totalRejectedHours).toBe(1);
+      expect(result.totalUnvalidatedHours).toBe(5);
+      expect(result.totalExpiredHours).toBe(6);
+      expect(result.recordCount).toBe(6);
+      expect(result.recordsByStatus[ValidationStatus.VALIDATED]).toBe(2);
+      expect(result.recordsByStatus[ValidationStatus.PENDING]).toBe(1);
+    });
+
+    it('should return empty stats when no data', async () => {
+      setMockResult('self_reported_hours', { data: [], error: null });
+
+      const result = await getVolunteerHoursStats('user-1');
+
+      expect(result.recordCount).toBe(0);
+      expect(result.totalValidatedHours).toBe(0);
     });
   });
 });
