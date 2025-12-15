@@ -87,6 +87,12 @@ export const ValidationResponseModal: React.FC<ValidationResponseModalProps> = (
     }
   }, [onClose]);
 
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  }, [onClose]);
+
   if (!isOpen) return null;
 
   const activityTypeLabel = ACTIVITY_TYPE_LABELS[item.activityType] || 'Unknown';
@@ -95,11 +101,15 @@ export const ValidationResponseModal: React.FC<ValidationResponseModalProps> = (
     <div
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
+      onKeyDown={handleKeyDown}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="validation-modal-title"
     >
       <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
+          <h2 id="validation-modal-title" className="text-xl font-semibold text-gray-900">
             {mode === 'reject' ? 'Reject Validation Request' : 'Review Validation Request'}
           </h2>
           <button
