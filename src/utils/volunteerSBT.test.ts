@@ -193,5 +193,142 @@ describe('volunteerSBT', () => {
       const result = await getVolunteerSBTs('0x1234');
       expect(Array.isArray(result)).toBe(true);
     });
+
+    it('should return empty array on database error', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('self_reported_hours', { data: null, error: { message: 'DB Error' } });
+
+      const result = await getVolunteerSBTs('user-1');
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('error handling', () => {
+    it('getOnChainVolunteerHours should return 0 when wallet not found', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('wallet_aliases', { data: null, error: null });
+
+      const result = await getOnChainVolunteerHours('0xnonexistent');
+      expect(result).toBe(0);
+    });
+
+    it('getOnChainVolunteerHours should return 0 when wallet lookup fails', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('wallet_aliases', { data: null, error: { message: 'DB Error' } });
+
+      const result = await getOnChainVolunteerHours('0x1234');
+      expect(result).toBe(0);
+    });
+
+    it('getOnChainVolunteerHours should return 0 when profile not found', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('wallet_aliases', { data: { user_id: 'user-1' }, error: null });
+      setMockResult('profiles', { data: null, error: null });
+
+      const result = await getOnChainVolunteerHours('0x1234');
+      expect(result).toBe(0);
+    });
+
+    it('getOnChainVolunteerHours should return 0 on hours fetch error', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('wallet_aliases', { data: { user_id: 'user-1' }, error: null });
+      setMockResult('profiles', { data: { id: 'profile-1' }, error: null });
+      setMockResult('self_reported_hours', { data: null, error: { message: 'DB Error' } });
+
+      const result = await getOnChainVolunteerHours('0x1234');
+      expect(result).toBe(0);
+    });
+
+    it('verifySBTByHash should return false on database error', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('self_reported_hours', { data: null, error: { message: 'DB Error' } });
+
+      const result = await verifySBTByHash('0xinvalidhash');
+      expect(result).toBe(false);
+    });
+
+    it('verifySBTByHash should return false when no matching record', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('self_reported_hours', { data: null, error: null });
+
+      const result = await verifySBTByHash('0xnonexistent');
+      expect(result).toBe(false);
+    });
+
+    it('verifySBTByHash should return true when valid SBT exists', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('self_reported_hours', {
+        data: { id: 'hours-1', sbt_token_id: 12345 },
+        error: null
+      });
+
+      const result = await verifySBTByHash('0xvalidhash');
+      expect(result).toBe(true);
+    });
+
+    it('batchMintVolunteerHoursSBT should handle errors in individual mints', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      // Set up to fail profile lookup
+      setMockResult('profiles', { data: null, error: { message: 'Profile not found' } });
+
+      const records = [
+        {
+          volunteerId: 'user-1',
+          hoursRecord: {
+            id: 'hours-1',
+            volunteerId: 'user-1',
+            activityDate: '2024-01-15',
+            hours: 4,
+            activityType: ActivityType.DIRECT_SERVICE,
+            description: 'Test',
+            organizationName: 'Test Org',
+            validationStatus: ValidationStatus.VALIDATED,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+          },
+        },
+      ];
+
+      // Should still return results (mock returns simulated data on error)
+      const result = await batchMintVolunteerHoursSBT(records);
+      expect(Array.isArray(result)).toBe(true);
+    });
+
+    it('getVolunteerSBTs should map data correctly', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      const mockData = [
+        {
+          sbt_token_id: 123,
+          hours: 5,
+          activity_date: '2024-01-15',
+          verification_hash: '0xhash123',
+          organization_name: 'Test Org',
+          validated_at: '2024-01-16T10:00:00Z',
+        },
+      ];
+      setMockResult('self_reported_hours', { data: mockData, error: null });
+
+      const result = await getVolunteerSBTs('user-1');
+
+      expect(result).toHaveLength(1);
+      expect(result[0].tokenId).toBe(123);
+      expect(result[0].hours).toBe(5);
+      expect(result[0].activityDate).toBe('2024-01-15');
+      expect(result[0].verificationHash).toBe('0xhash123');
+      expect(result[0].organizationName).toBe('Test Org');
+    });
+
+    it('getOnChainVolunteerHours should sum hours correctly', async () => {
+      const { setMockResult } = await import('@/test-utils/supabaseMock');
+      setMockResult('wallet_aliases', { data: { user_id: 'user-1' }, error: null });
+      setMockResult('profiles', { data: { id: 'profile-1' }, error: null });
+      setMockResult('self_reported_hours', {
+        data: [{ hours: 4 }, { hours: 3 }, { hours: 5 }],
+        error: null
+      });
+
+      const result = await getOnChainVolunteerHours('0x1234');
+      expect(result).toBe(12);
+    });
   });
 });
