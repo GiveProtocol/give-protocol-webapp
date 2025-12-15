@@ -28,94 +28,48 @@ export const resetMockState = () => {
 };
 
 // Create chainable query builder with configurable results
+// Returns a Promise with chain methods attached (not a plain object with 'then')
 const createQueryBuilder = (tableName) => {
   // Get the result for this table or use default
   const getResult = () =>
     mockState.fromResults.get(tableName) || mockState.defaultResult;
 
-  const builder = {
-    select: jest.fn(function () {
-      return this;
-    }),
-    insert: jest.fn(function () {
-      return this;
-    }),
-    update: jest.fn(function () {
-      return this;
-    }),
-    delete: jest.fn(function () {
-      return this;
-    }),
-    upsert: jest.fn(function () {
-      return this;
-    }),
-    eq: jest.fn(function () {
-      return this;
-    }),
-    neq: jest.fn(function () {
-      return this;
-    }),
-    gt: jest.fn(function () {
-      return this;
-    }),
-    gte: jest.fn(function () {
-      return this;
-    }),
-    lt: jest.fn(function () {
-      return this;
-    }),
-    lte: jest.fn(function () {
-      return this;
-    }),
-    like: jest.fn(function () {
-      return this;
-    }),
-    ilike: jest.fn(function () {
-      return this;
-    }),
-    is: jest.fn(function () {
-      return this;
-    }),
-    in: jest.fn(function () {
-      return this;
-    }),
-    or: jest.fn(function () {
-      return this;
-    }),
-    and: jest.fn(function () {
-      return this;
-    }),
-    not: jest.fn(function () {
-      return this;
-    }),
-    contains: jest.fn(function () {
-      return this;
-    }),
-    containedBy: jest.fn(function () {
-      return this;
-    }),
-    range: jest.fn(function () {
-      return this;
-    }),
-    order: jest.fn(function () {
-      return this;
-    }),
-    limit: jest.fn(function () {
-      return this;
-    }),
-    offset: jest.fn(function () {
-      return this;
-    }),
-    single: jest.fn(() => Promise.resolve(getResult())),
-    maybeSingle: jest.fn(() => Promise.resolve(getResult())),
-    // Make the builder thenable for await - always resolve, let caller check for error
-    then: (resolve) => {
-      resolve(getResult());
-    },
-    catch: () => {
-      // No-op - errors are returned in result, not thrown
-    },
-  };
+  // Create a deferred Promise that resolves to the result
+  // Using queueMicrotask ensures all chain methods are called before resolution
+  const builder = new Promise((resolve) => {
+    queueMicrotask(() => resolve(getResult()));
+  });
+
+  // Attach chainable methods to the Promise
+  // Each method returns `builder` to allow chaining
+  builder.select = jest.fn(() => builder);
+  builder.insert = jest.fn(() => builder);
+  builder.update = jest.fn(() => builder);
+  builder.delete = jest.fn(() => builder);
+  builder.upsert = jest.fn(() => builder);
+  builder.eq = jest.fn(() => builder);
+  builder.neq = jest.fn(() => builder);
+  builder.gt = jest.fn(() => builder);
+  builder.gte = jest.fn(() => builder);
+  builder.lt = jest.fn(() => builder);
+  builder.lte = jest.fn(() => builder);
+  builder.like = jest.fn(() => builder);
+  builder.ilike = jest.fn(() => builder);
+  builder.is = jest.fn(() => builder);
+  builder.in = jest.fn(() => builder);
+  builder.or = jest.fn(() => builder);
+  builder.and = jest.fn(() => builder);
+  builder.not = jest.fn(() => builder);
+  builder.contains = jest.fn(() => builder);
+  builder.containedBy = jest.fn(() => builder);
+  builder.range = jest.fn(() => builder);
+  builder.order = jest.fn(() => builder);
+  builder.limit = jest.fn(() => builder);
+  builder.offset = jest.fn(() => builder);
+
+  // Terminal methods that return fresh Promises
+  builder.single = jest.fn(() => Promise.resolve(getResult()));
+  builder.maybeSingle = jest.fn(() => Promise.resolve(getResult()));
 
   return builder;
 };
