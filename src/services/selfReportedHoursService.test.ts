@@ -606,162 +606,176 @@ describe("selfReportedHoursService", () => {
     });
   });
 
-  describe('createSelfReportedHours - with organizationId', () => {
-    it('should set PENDING status for recent activity with organizationId', async () => {
+  describe("createSelfReportedHours - with organizationId", () => {
+    it("should set PENDING status for recent activity with organizationId", async () => {
       const now = new Date();
       const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
       const mockRecord = {
-        id: 'record-1',
-        volunteer_id: 'user-1',
-        activity_date: yesterday.toISOString().split('T')[0],
+        id: "record-1",
+        volunteer_id: "user-1",
+        activity_date: yesterday.toISOString().split("T")[0],
         hours: 4,
         activity_type: ActivityType.DIRECT_SERVICE,
-        description: 'This is a test description that meets the minimum character requirement for validation purposes.',
-        organization_id: 'org-1',
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organization_id: "org-1",
         validation_status: ValidationStatus.PENDING,
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
-      setMockResult('self_reported_hours', { data: mockRecord, error: null });
-      setMockResult('validation_requests', { data: { id: 'request-1' }, error: null });
+      setMockResult("self_reported_hours", { data: mockRecord, error: null });
+      setMockResult("validation_requests", {
+        data: { id: "request-1" },
+        error: null,
+      });
 
       const input = {
-        activityDate: yesterday.toISOString().split('T')[0],
+        activityDate: yesterday.toISOString().split("T")[0],
         hours: 4,
         activityType: ActivityType.DIRECT_SERVICE,
-        description: 'This is a test description that meets the minimum character requirement for validation purposes.',
-        organizationId: 'org-1',
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organizationId: "org-1",
       };
 
-      const result = await createSelfReportedHours('user-1', input);
+      const result = await createSelfReportedHours("user-1", input);
 
-      expect(result.id).toBe('record-1');
+      expect(result.id).toBe("record-1");
     });
 
-    it('should set EXPIRED status for old activity with organizationId', async () => {
+    it("should set EXPIRED status for old activity with organizationId", async () => {
       const now = new Date();
       const oldDate = new Date(now.getTime() - 100 * 24 * 60 * 60 * 1000);
       const mockRecord = {
-        id: 'record-1',
-        volunteer_id: 'user-1',
-        activity_date: oldDate.toISOString().split('T')[0],
+        id: "record-1",
+        volunteer_id: "user-1",
+        activity_date: oldDate.toISOString().split("T")[0],
         hours: 4,
         activity_type: ActivityType.DIRECT_SERVICE,
-        description: 'This is a test description that meets the minimum character requirement for validation purposes.',
-        organization_id: 'org-1',
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organization_id: "org-1",
         validation_status: ValidationStatus.EXPIRED,
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
-      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+      setMockResult("self_reported_hours", { data: mockRecord, error: null });
 
       const input = {
-        activityDate: oldDate.toISOString().split('T')[0],
+        activityDate: oldDate.toISOString().split("T")[0],
         hours: 4,
         activityType: ActivityType.DIRECT_SERVICE,
-        description: 'This is a test description that meets the minimum character requirement for validation purposes.',
-        organizationId: 'org-1',
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organizationId: "org-1",
       };
 
-      const result = await createSelfReportedHours('user-1', input);
+      const result = await createSelfReportedHours("user-1", input);
 
-      expect(result.id).toBe('record-1');
+      expect(result.id).toBe("record-1");
     });
 
-    it('should throw on database error during create', async () => {
+    it("should throw on database error during create", async () => {
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
-      setMockResult('self_reported_hours', { data: null, error: { message: 'DB Error' } });
+      setMockResult("self_reported_hours", {
+        data: null,
+        error: { message: "DB Error" },
+      });
 
       const input = {
-        activityDate: yesterday.toISOString().split('T')[0],
+        activityDate: yesterday.toISOString().split("T")[0],
         hours: 4,
         activityType: ActivityType.DIRECT_SERVICE,
-        description: 'This is a test description that meets the minimum character requirement for validation purposes.',
-        organizationName: 'Test Org',
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organizationName: "Test Org",
       };
 
-      await expect(createSelfReportedHours('user-1', input)).rejects.toThrow(
-        'Failed to create record'
+      await expect(createSelfReportedHours("user-1", input)).rejects.toThrow(
+        "Failed to create record",
       );
     });
   });
 
-  describe('getVolunteerSelfReportedHours - with filters', () => {
-    it('should apply status filter', async () => {
+  describe("getVolunteerSelfReportedHours - with filters", () => {
+    it("should apply status filter", async () => {
       const now = new Date();
       const mockData = [
         {
-          id: 'record-1',
-          volunteer_id: 'user-1',
-          activity_date: '2024-01-15',
+          id: "record-1",
+          volunteer_id: "user-1",
+          activity_date: "2024-01-15",
           hours: 4,
           activity_type: ActivityType.DIRECT_SERVICE,
-          description: 'Test',
+          description: "Test",
           validation_status: ValidationStatus.VALIDATED,
           created_at: now.toISOString(),
           updated_at: now.toISOString(),
           organization: null,
         },
       ];
-      setMockResult('self_reported_hours', { data: mockData, error: null });
+      setMockResult("self_reported_hours", { data: mockData, error: null });
 
-      const result = await getVolunteerSelfReportedHours('user-1', {
+      const result = await getVolunteerSelfReportedHours("user-1", {
         status: ValidationStatus.VALIDATED,
       });
 
       expect(result).toHaveLength(1);
     });
 
-    it('should apply organizationId filter', async () => {
+    it("should apply organizationId filter", async () => {
       const now = new Date();
       const mockData = [];
-      setMockResult('self_reported_hours', { data: mockData, error: null });
+      setMockResult("self_reported_hours", { data: mockData, error: null });
 
-      const result = await getVolunteerSelfReportedHours('user-1', {
-        organizationId: 'org-1',
+      const result = await getVolunteerSelfReportedHours("user-1", {
+        organizationId: "org-1",
       });
 
       expect(result).toEqual([]);
     });
 
-    it('should apply activityType filter', async () => {
-      setMockResult('self_reported_hours', { data: [], error: null });
+    it("should apply activityType filter", async () => {
+      setMockResult("self_reported_hours", { data: [], error: null });
 
-      const result = await getVolunteerSelfReportedHours('user-1', {
+      const result = await getVolunteerSelfReportedHours("user-1", {
         activityType: ActivityType.DIRECT_SERVICE,
       });
 
       expect(result).toEqual([]);
     });
 
-    it('should apply date range filters', async () => {
-      setMockResult('self_reported_hours', { data: [], error: null });
+    it("should apply date range filters", async () => {
+      setMockResult("self_reported_hours", { data: [], error: null });
 
-      const result = await getVolunteerSelfReportedHours('user-1', {
-        dateFrom: '2024-01-01',
-        dateTo: '2024-12-31',
+      const result = await getVolunteerSelfReportedHours("user-1", {
+        dateFrom: "2024-01-01",
+        dateTo: "2024-12-31",
       });
 
       expect(result).toEqual([]);
     });
   });
 
-  describe('getSelfReportedHoursById - error cases', () => {
-    it('should throw on non-PGRST116 database error', async () => {
-      setMockResult('self_reported_hours', { data: null, error: { code: 'OTHER', message: 'DB Error' } });
+  describe("getSelfReportedHoursById - error cases", () => {
+    it("should throw on non-PGRST116 database error", async () => {
+      setMockResult("self_reported_hours", {
+        data: null,
+        error: { code: "OTHER", message: "DB Error" },
+      });
 
-      await expect(getSelfReportedHoursById('record-1', 'user-1')).rejects.toThrow(
-        'Failed to fetch record'
-      );
+      await expect(
+        getSelfReportedHoursById("record-1", "user-1"),
+      ).rejects.toThrow("Failed to fetch record");
     });
   });
 
-  describe('updateSelfReportedHours - more fields', () => {
-    it('should update activityType', async () => {
+  describe("updateSelfReportedHours - more fields", () => {
+    it("should update activityType", async () => {
       const now = new Date();
       const mockExisting = {
-        id: 'record-1',
-        volunteer_id: 'user-1',
+        id: "record-1",
+        volunteer_id: "user-1",
         validation_status: ValidationStatus.UNVALIDATED,
       };
       const mockUpdated = {
@@ -770,42 +784,42 @@ describe("selfReportedHoursService", () => {
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
-      setMockResult('self_reported_hours', { data: mockUpdated, error: null });
+      setMockResult("self_reported_hours", { data: mockUpdated, error: null });
 
-      const result = await updateSelfReportedHours('record-1', 'user-1', {
+      const result = await updateSelfReportedHours("record-1", "user-1", {
         activityType: ActivityType.EVENT_SUPPORT,
       });
 
       expect(result).toBeDefined();
     });
 
-    it('should update location', async () => {
+    it("should update location", async () => {
       const now = new Date();
       const mockExisting = {
-        id: 'record-1',
-        volunteer_id: 'user-1',
+        id: "record-1",
+        volunteer_id: "user-1",
         validation_status: ValidationStatus.UNVALIDATED,
       };
       const mockUpdated = {
         ...mockExisting,
-        location: 'New York',
+        location: "New York",
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
-      setMockResult('self_reported_hours', { data: mockUpdated, error: null });
+      setMockResult("self_reported_hours", { data: mockUpdated, error: null });
 
-      const result = await updateSelfReportedHours('record-1', 'user-1', {
-        location: 'New York',
+      const result = await updateSelfReportedHours("record-1", "user-1", {
+        location: "New York",
       });
 
       expect(result).toBeDefined();
     });
 
-    it('should clear location when empty string', async () => {
+    it("should clear location when empty string", async () => {
       const now = new Date();
       const mockExisting = {
-        id: 'record-1',
-        volunteer_id: 'user-1',
+        id: "record-1",
+        volunteer_id: "user-1",
         validation_status: ValidationStatus.UNVALIDATED,
       };
       const mockUpdated = {
@@ -814,31 +828,34 @@ describe("selfReportedHoursService", () => {
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
-      setMockResult('self_reported_hours', { data: mockUpdated, error: null });
+      setMockResult("self_reported_hours", { data: mockUpdated, error: null });
 
-      const result = await updateSelfReportedHours('record-1', 'user-1', {
-        location: '',
+      const result = await updateSelfReportedHours("record-1", "user-1", {
+        location: "",
       });
 
       expect(result).toBeDefined();
     });
   });
 
-  describe('requestValidation - success path', () => {
-    it('should successfully create validation request', async () => {
+  describe("requestValidation - success path", () => {
+    it("should successfully create validation request", async () => {
       const now = new Date();
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const mockRecord = {
-        id: 'record-1',
-        volunteer_id: 'user-1',
+        id: "record-1",
+        volunteer_id: "user-1",
         validation_status: ValidationStatus.UNVALIDATED,
-        activity_date: yesterday.toISOString().split('T')[0],
+        activity_date: yesterday.toISOString().split("T")[0],
       };
-      setMockResult('self_reported_hours', { data: mockRecord, error: null });
-      setMockResult('validation_requests', { data: { id: 'request-1' }, error: null });
+      setMockResult("self_reported_hours", { data: mockRecord, error: null });
+      setMockResult("validation_requests", {
+        data: { id: "request-1" },
+        error: null,
+      });
 
       await expect(
-        requestValidation('record-1', 'user-1', 'org-1')
+        requestValidation("record-1", "user-1", "org-1"),
       ).resolves.not.toThrow();
     });
   });
