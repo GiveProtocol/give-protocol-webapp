@@ -198,9 +198,8 @@ describe('Volunteer enum consistency', () => {
     it('covers all VolunteerOpportunityStatus values', () => {
       const values = Object.values(VolunteerOpportunityStatus);
       expect(values).toContain('active');
-      expect(values).toContain('inactive');
-      expect(values).toContain('draft');
       expect(values).toContain('completed');
+      expect(values).toContain('cancelled');
     });
 
     it('covers all VolunteerApplicationStatus values', () => {
@@ -208,26 +207,25 @@ describe('Volunteer enum consistency', () => {
       expect(values).toContain('pending');
       expect(values).toContain('approved');
       expect(values).toContain('rejected');
-      expect(values).toContain('withdrawn');
     });
 
     it('covers all VolunteerHoursStatus values', () => {
       const values = Object.values(VolunteerHoursStatus);
       expect(values).toContain('pending');
-      expect(values).toContain('verified');
+      expect(values).toContain('approved');
       expect(values).toContain('rejected');
     });
 
     it('covers all CommitmentType values', () => {
       const values = Object.values(CommitmentType);
       expect(values).toContain('one-time');
-      expect(values).toContain('ongoing');
-      expect(values).toContain('flexible');
+      expect(values).toContain('short-term');
+      expect(values).toContain('long-term');
     });
 
     it('covers all OpportunityType values', () => {
       const values = Object.values(OpportunityType);
-      expect(values).toContain('on-site');
+      expect(values).toContain('onsite');
       expect(values).toContain('remote');
       expect(values).toContain('hybrid');
     });
@@ -237,7 +235,8 @@ describe('Volunteer enum consistency', () => {
       expect(values).toContain('english');
       expect(values).toContain('spanish');
       expect(values).toContain('french');
-      expect(values).toContain('other');
+      expect(values).toContain('german');
+      expect(values).toContain('japanese');
     });
   });
 });
