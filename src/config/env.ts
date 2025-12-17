@@ -10,11 +10,11 @@ const parseStringArray = (value: string | string[]): string[] => {
 // Helper to get environment variable with fallback to process.env for test environments
 const getEnv = (key: string): string | undefined => {
   // Check if import.meta.env is available (Vite runtime)
-  if (typeof import.meta !== 'undefined' && import.meta.env) {
+  if (typeof import.meta !== "undefined" && import.meta.env) {
     return import.meta.env[key];
   }
   // Fallback to process.env for test environments
-  if (typeof process !== 'undefined' && process.env) {
+  if (typeof process !== "undefined" && process.env) {
     return process.env[key];
   }
   return undefined;
@@ -23,43 +23,48 @@ const getEnv = (key: string): string | undefined => {
 // Create and validate environment configuration
 export const ENV = {
   // Required variables
-  SUPABASE_URL: getEnv('VITE_SUPABASE_URL'),
-  SUPABASE_ANON_KEY: getEnv('VITE_SUPABASE_ANON_KEY'),
-  APP_DOMAIN: getEnv('VITE_APP_DOMAIN') || "localhost",
+  SUPABASE_URL: getEnv("VITE_SUPABASE_URL"),
+  SUPABASE_ANON_KEY: getEnv("VITE_SUPABASE_ANON_KEY"),
+  APP_DOMAIN: getEnv("VITE_APP_DOMAIN") || "localhost",
 
   // Contract addresses
-  DONATION_CONTRACT_ADDRESS: getEnv('VITE_DONATION_CONTRACT_ADDRESS'),
-  TOKEN_CONTRACT_ADDRESS: getEnv('VITE_TOKEN_CONTRACT_ADDRESS'),
-  VERIFICATION_CONTRACT_ADDRESS: getEnv('VITE_VERIFICATION_CONTRACT_ADDRESS'),
-  DISTRIBUTION_CONTRACT_ADDRESS: getEnv('VITE_DISTRIBUTION_CONTRACT_ADDRESS'),
-  PORTFOLIO_FUNDS_CONTRACT_ADDRESS: getEnv('VITE_PORTFOLIO_FUNDS_CONTRACT_ADDRESS'),
+  DONATION_CONTRACT_ADDRESS: getEnv("VITE_DONATION_CONTRACT_ADDRESS"),
+  TOKEN_CONTRACT_ADDRESS: getEnv("VITE_TOKEN_CONTRACT_ADDRESS"),
+  VERIFICATION_CONTRACT_ADDRESS: getEnv("VITE_VERIFICATION_CONTRACT_ADDRESS"),
+  DISTRIBUTION_CONTRACT_ADDRESS: getEnv("VITE_DISTRIBUTION_CONTRACT_ADDRESS"),
+  PORTFOLIO_FUNDS_CONTRACT_ADDRESS: getEnv(
+    "VITE_PORTFOLIO_FUNDS_CONTRACT_ADDRESS",
+  ),
 
   // Optional variables with defaults
-  NETWORK: getEnv('VITE_NETWORK') || "moonbase",
-  NETWORK_ENDPOINT: getEnv('VITE_NETWORK_ENDPOINT') || "wss://wss.api.moonbase.moonbeam.network",
+  NETWORK: getEnv("VITE_NETWORK") || "moonbase",
+  NETWORK_ENDPOINT:
+    getEnv("VITE_NETWORK_ENDPOINT") ||
+    "wss://wss.api.moonbase.moonbeam.network",
 
   // Feature flags
-  ENABLE_GOOGLE_AUTH: getEnv('VITE_ENABLE_GOOGLE_AUTH') === "true",
-  ENABLE_MAGIC_LINKS: getEnv('VITE_ENABLE_MAGIC_LINKS') === "true",
+  ENABLE_GOOGLE_AUTH: getEnv("VITE_ENABLE_GOOGLE_AUTH") === "true",
+  ENABLE_MAGIC_LINKS: getEnv("VITE_ENABLE_MAGIC_LINKS") === "true",
 
   // Security settings
-  MAX_LOGIN_ATTEMPTS: Number(getEnv('VITE_MAX_LOGIN_ATTEMPTS') || 5),
-  LOGIN_COOLDOWN_MINUTES: Number(getEnv('VITE_LOGIN_COOLDOWN_MINUTES') || 15),
+  MAX_LOGIN_ATTEMPTS: Number(getEnv("VITE_MAX_LOGIN_ATTEMPTS") || 5),
+  LOGIN_COOLDOWN_MINUTES: Number(getEnv("VITE_LOGIN_COOLDOWN_MINUTES") || 15),
 
   // Performance settings
-  CACHE_TTL_MINUTES: Number(getEnv('VITE_CACHE_TTL_MINUTES') || 5),
-  API_TIMEOUT_MS: Number(getEnv('VITE_API_TIMEOUT_MS') || 10000),
+  CACHE_TTL_MINUTES: Number(getEnv("VITE_CACHE_TTL_MINUTES") || 5),
+  API_TIMEOUT_MS: Number(getEnv("VITE_API_TIMEOUT_MS") || 10000),
 
   // Analytics settings
-  ENABLE_ANALYTICS: getEnv('VITE_ENABLE_ANALYTICS') === "true",
-  ANALYTICS_SAMPLE_RATE: Number(getEnv('VITE_ANALYTICS_SAMPLE_RATE') || 0.1),
+  ENABLE_ANALYTICS: getEnv("VITE_ENABLE_ANALYTICS") === "true",
+  ANALYTICS_SAMPLE_RATE: Number(getEnv("VITE_ANALYTICS_SAMPLE_RATE") || 0.1),
 
   // Monitoring settings
-  MONITORING_API_KEY: getEnv('VITE_MONITORING_API_KEY') || "",
-  MONITORING_APP_ID: getEnv('VITE_MONITORING_APP_ID') || "",
-  MONITORING_ENVIRONMENT: getEnv('VITE_MONITORING_ENVIRONMENT') || "development",
+  MONITORING_API_KEY: getEnv("VITE_MONITORING_API_KEY") || "",
+  MONITORING_APP_ID: getEnv("VITE_MONITORING_APP_ID") || "",
+  MONITORING_ENVIRONMENT:
+    getEnv("VITE_MONITORING_ENVIRONMENT") || "development",
   MONITORING_ENABLED_MONITORS: parseStringArray(
-    getEnv('VITE_MONITORING_ENABLED_MONITORS') ||
+    getEnv("VITE_MONITORING_ENABLED_MONITORS") ||
       "webVital,error,resource,navigation,paint,api,custom,userAction",
   ),
 } as const;

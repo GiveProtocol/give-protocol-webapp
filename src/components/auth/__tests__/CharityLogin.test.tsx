@@ -1,8 +1,8 @@
-import React from 'react';
-import { jest } from '@jest/globals';
+import React from "react";
+import { jest } from "@jest/globals";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { CharityLogin } from "../CharityLogin";
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter } from "react-router-dom";
 
 const mockLogin = jest.fn();
 const mockDisconnect = jest.fn();
@@ -28,7 +28,7 @@ const renderCharityLogin = () => {
   return render(
     <MemoryRouter>
       <CharityLogin />
-    </MemoryRouter>
+    </MemoryRouter>,
   );
 };
 
@@ -40,7 +40,9 @@ describe("CharityLogin", () => {
   it("renders login form", () => {
     renderCharityLogin();
     expect(screen.getAllByDisplayValue("")).toHaveLength(2); // Email and password inputs
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign in/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/email/i)).toBeInTheDocument(); // Email label
     expect(screen.getByText(/password/i)).toBeInTheDocument(); // Password label
   });
@@ -49,12 +51,16 @@ describe("CharityLogin", () => {
     renderCharityLogin();
 
     const inputs = screen.getAllByDisplayValue("");
-    const emailInput = inputs.find(input => input.getAttribute('type') === 'email');
-    const passwordInput = inputs.find(input => input.getAttribute('type') === 'password');
+    const emailInput = inputs.find(
+      (input) => input.getAttribute("type") === "email",
+    );
+    const passwordInput = inputs.find(
+      (input) => input.getAttribute("type") === "password",
+    );
 
     // Ensure inputs are found before using them
     if (!emailInput || !passwordInput) {
-      throw new Error('Email or password input not found in the form');
+      throw new Error("Email or password input not found in the form");
     }
 
     fireEvent.change(emailInput, {

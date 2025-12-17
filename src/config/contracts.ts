@@ -82,8 +82,9 @@ export function getContractAddress(
   const address = addresses[contractName];
   if (!address) {
     // For development/test environments, return a dummy address
-    const isDev = typeof import.meta !== 'undefined' && import.meta.env?.DEV;
-    const isTest = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+    const isDev = typeof import.meta !== "undefined" && import.meta.env?.DEV;
+    const isTest =
+      typeof process !== "undefined" && process.env?.NODE_ENV === "test";
     if (isDev || isTest) {
       // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
       return "0x1234567890123456789012345678901234567890";

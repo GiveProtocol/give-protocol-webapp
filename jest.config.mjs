@@ -1,68 +1,74 @@
 export default {
-  preset: 'ts-jest/presets/default-esm',
-  testEnvironment: 'jsdom',
-  extensionsToTreatAsEsm: ['.ts', '.tsx'],
-  roots: ['<rootDir>/src'],
+  preset: "ts-jest/presets/default-esm",
+  testEnvironment: "jsdom",
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
+  roots: ["<rootDir>/src"],
   testMatch: [
-    '**/__tests__/**/*.+(ts|tsx|js)',
-    '**/?(*.)+(spec|test).+(ts|tsx|js)'
+    "**/__tests__/**/*.+(ts|tsx|js)",
+    "**/?(*.)+(spec|test).+(ts|tsx|js)",
   ],
   transform: {
-    '^.+\\.(ts|tsx)$': ['ts-jest', {
-      useESM: true,
-      tsconfig: {
-        jsx: 'react',
-        esModuleInterop: true,
-        allowSyntheticDefaultImports: true,
-        isolatedModules: true,
-        module: 'ESNext',
-        target: 'ESNext'
-      }
-    }],
-    '^.+\\.(js|jsx|mjs)$': ['babel-jest', {
-      configFile: './babel.config.cjs'
-    }]
+    "^.+\\.(ts|tsx)$": [
+      "ts-jest",
+      {
+        useESM: true,
+        tsconfig: {
+          jsx: "react",
+          esModuleInterop: true,
+          allowSyntheticDefaultImports: true,
+          isolatedModules: true,
+          module: "ESNext",
+          target: "ESNext",
+        },
+      },
+    ],
+    "^.+\\.(js|jsx|mjs)$": [
+      "babel-jest",
+      {
+        configFile: "./babel.config.cjs",
+      },
+    ],
   },
   moduleNameMapper: {
-    '^@/config/env$': '<rootDir>/src/test-utils/envMock.js',
-    '^@/lib/supabase$': '<rootDir>/src/test-utils/supabaseMock.js',
-    '(.*)/config/env(\\.ts)?$': '<rootDir>/src/test-utils/envMock.js',
-    '(.*)/lib/supabase(\\.ts)?$': '<rootDir>/src/test-utils/supabaseMock.js',
-    '^@/(.*)$': '<rootDir>/src/$1',
-    '\\.(css|less|scss|sass)$': '<rootDir>/src/test-utils/styleMock.js',
-    '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/src/test-utils/fileMock.js',
-    '^(\\.{1,2}/.*)\\.js$': '$1',
-    '^isows$': '<rootDir>/src/test-utils/isowsMock.js'
+    "^@/config/env$": "<rootDir>/src/test-utils/envMock.js",
+    "^@/lib/supabase$": "<rootDir>/src/test-utils/supabaseMock.js",
+    "(.*)/config/env(\\.ts)?$": "<rootDir>/src/test-utils/envMock.js",
+    "(.*)/lib/supabase(\\.ts)?$": "<rootDir>/src/test-utils/supabaseMock.js",
+    "^@/(.*)$": "<rootDir>/src/$1",
+    "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",
+    "\\.(jpg|jpeg|png|gif|svg)$": "<rootDir>/src/test-utils/fileMock.js",
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+    "^isows$": "<rootDir>/src/test-utils/isowsMock.js",
   },
-  setupFiles: ['<rootDir>/src/test-utils/jest.env-setup.js'],
-  setupFilesAfterEnv: ['<rootDir>/src/test-utils/jest.setup.ts'],
+  setupFiles: ["<rootDir>/src/test-utils/jest.env-setup.js"],
+  setupFilesAfterEnv: ["<rootDir>/src/test-utils/jest.setup.ts"],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.d.ts',
-    '!src/**/index.ts',
-    '!src/test-utils/**/*',
-    '!src/**/__tests__/**/*',
-    '!src/**/*.test.{ts,tsx}',
-    '!src/**/*.stories.tsx',
-    '!src/types/**/*',
-    '!src/mocks/**/*'
+    "src/**/*.{ts,tsx}",
+    "!src/**/*.d.ts",
+    "!src/**/index.ts",
+    "!src/test-utils/**/*",
+    "!src/**/__tests__/**/*",
+    "!src/**/*.test.{ts,tsx}",
+    "!src/**/*.stories.tsx",
+    "!src/types/**/*",
+    "!src/mocks/**/*",
   ],
-  coverageReporters: ['text', 'lcov', 'json', 'html'],
-  coverageDirectory: 'coverage',
+  coverageReporters: ["text", "lcov", "json", "html"],
+  coverageDirectory: "coverage",
   coverageThreshold: {
     global: {
       branches: 80,
       functions: 80,
       lines: 80,
-      statements: 80
-    }
+      statements: 80,
+    },
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node', 'mjs'],
-  testPathIgnorePatterns: ['/node_modules/', '/test/', '/dist/', '/build/'],
+  moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node", "mjs"],
+  testPathIgnorePatterns: ["/node_modules/", "/test/", "/dist/", "/build/"],
   transformIgnorePatterns: [
-    'node_modules/(?!(@supabase|@tanstack|lucide-react|viem|ethers|buffer|fp-ts|isows)/)'
+    "node_modules/(?!(@supabase|@tanstack|lucide-react|viem|ethers|buffer|fp-ts|isows)/)",
   ],
   testEnvironmentOptions: {
-    customExportConditions: ['node', 'node-addons']
-  }
+    customExportConditions: ["node", "node-addons"],
+  },
 };
