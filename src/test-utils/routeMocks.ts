@@ -2,6 +2,7 @@
  * Shared route mock utilities to reduce duplication across test files
  */
 
+import { jest } from '@jest/globals';
 import React from 'react';
 
 /**

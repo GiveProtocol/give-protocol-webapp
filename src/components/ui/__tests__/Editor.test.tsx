@@ -1,46 +1,50 @@
-import _React from 'react';
+import React from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Editor } from '../Editor';
 
-// Import mocked functions for type safety
-import { useEditor } from '@tiptap/react';
+// Create mock functions at module level
+const mockRun = jest.fn();
+const mockIsActive = jest.fn(() => false);
+const mockGetHTML = jest.fn(() => '<p>Test content</p>');
+const mockChain = jest.fn(() => ({
+  focus: jest.fn(() => ({
+    toggleBold: jest.fn(() => ({ run: mockRun })),
+    toggleItalic: jest.fn(() => ({ run: mockRun })),
+    toggleHeading: jest.fn(() => ({ run: mockRun })),
+    toggleBulletList: jest.fn(() => ({ run: mockRun })),
+    toggleOrderedList: jest.fn(() => ({ run: mockRun })),
+    setLink: jest.fn(() => ({ run: mockRun })),
+    undo: jest.fn(() => ({ run: mockRun })),
+    redo: jest.fn(() => ({ run: mockRun }))
+  }))
+}));
+
+const createMockEditor = () => ({
+  chain: mockChain,
+  isActive: mockIsActive,
+  getHTML: mockGetHTML
+});
+
+let mockEditorInstance: ReturnType<typeof createMockEditor> | null = createMockEditor();
 
 // Mock TipTap editor
 jest.mock('@tiptap/react', () => ({
-  useEditor: jest.fn(() => ({
-    chain: () => ({
-      focus: () => ({
-        toggleBold: () => ({ run: jest.fn() }),
-        toggleItalic: () => ({ run: jest.fn() }),
-        toggleHeading: () => ({ run: jest.fn() }),
-        toggleBulletList: () => ({ run: jest.fn() }),
-        toggleOrderedList: () => ({ run: jest.fn() }),
-        setLink: () => ({ run: jest.fn() }),
-        undo: () => ({ run: jest.fn() }),
-        redo: () => ({ run: jest.fn() })
-      })
-    }),
-    isActive: jest.fn(() => false),
-    getHTML: jest.fn(() => '<p>Test content</p>')
-  })),
-  EditorContent: ({ className }: { className?: string }) => (
-    <div className={className} data-testid="editor-content">
-      Editor Content
-    </div>
+  useEditor: () => mockEditorInstance,
+  EditorContent: ({ editor, className }: { editor: unknown; className?: string }) => (
+    editor ? <div className={className} data-testid="editor-content">Editor Content</div> : null
   )
 }));
 
-jest.mock('@tiptap/starter-kit', () => ({}));
-jest.mock('@tiptap/extension-link', () => ({
-  configure: () => ({})
+jest.mock('@tiptap/starter-kit', () => ({
+  default: {}
 }));
 
-// Mock window.prompt
-Object.defineProperty(window, 'prompt', {
-  writable: true,
-  value: jest.fn()
-});
+jest.mock('@tiptap/extension-link', () => ({
+  default: {
+    configure: () => ({})
+  }
+}));
 
 describe('Editor Component', () => {
   const defaultProps = {
@@ -50,11 +54,12 @@ describe('Editor Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    mockEditorInstance = createMockEditor();
   });
 
   it('renders editor with toolbar buttons', () => {
     render(<Editor {...defaultProps} />);
-    
+
     expect(screen.getByTitle('Bold')).toBeInTheDocument();
     expect(screen.getByTitle('Italic')).toBeInTheDocument();
     expect(screen.getByTitle('Heading 1')).toBeInTheDocument();
@@ -68,98 +73,58 @@ describe('Editor Component', () => {
 
   it('renders editor content area', () => {
     render(<Editor {...defaultProps} />);
-    
+
     expect(screen.getByTestId('editor-content')).toBeInTheDocument();
   });
 
   it('handles bold button click', () => {
-    const mockEditor = {
-      chain: () => ({
-        focus: () => ({
-          toggleBold: () => ({ run: jest.fn() })
-        })
-      }),
-      isActive: jest.fn(() => false),
-      getHTML: jest.fn(() => '<p>Test content</p>')
-    };
-
-    const useEditorMock = useEditor as jest.Mock;
-    useEditorMock.mockReturnValue(mockEditor);
-
     render(<Editor {...defaultProps} />);
-    
+
     const boldButton = screen.getByTitle('Bold');
     fireEvent.click(boldButton);
-    
-    // Verify the button was clicked (editor chain should be called)
+
     expect(boldButton).toBeInTheDocument();
   });
 
-  it('handles link button click with URL prompt', () => {
-    const mockPrompt = window.prompt as jest.Mock;
-    mockPrompt.mockReturnValue('https://example.com');
-
-    const mockEditor = {
-      chain: () => ({
-        focus: () => ({
-          setLink: () => ({ run: jest.fn() })
-        })
-      }),
-      isActive: jest.fn(() => false),
-      getHTML: jest.fn(() => '<p>Test content</p>')
-    };
-
-    const useEditorMock = useEditor as jest.Mock;
-    useEditorMock.mockReturnValue(mockEditor);
-
+  it('handles link button click and shows modal', () => {
     render(<Editor {...defaultProps} />);
-    
+
     const linkButton = screen.getByTitle('Add Link');
     fireEvent.click(linkButton);
-    
-    expect(mockPrompt).toHaveBeenCalledWith('Enter URL');
+
+    // The link modal should appear
+    expect(screen.getByText('Add Link')).toBeInTheDocument();
+    expect(screen.getByPlaceholderText('https://example.com')).toBeInTheDocument();
   });
 
-  it('does not add link when prompt is cancelled', () => {
-    const mockPrompt = window.prompt as jest.Mock;
-    mockPrompt.mockReturnValue(null);
-
-    const mockRun = jest.fn();
-    const mockEditor = {
-      chain: () => ({
-        focus: () => ({
-          setLink: () => ({ run: mockRun })
-        })
-      }),
-      isActive: jest.fn(() => false),
-      getHTML: jest.fn(() => '<p>Test content</p>')
-    };
-
-    const useEditorMock = useEditor as jest.Mock;
-    useEditorMock.mockReturnValue(mockEditor);
-
+  it('closes link modal when cancel is clicked', () => {
     render(<Editor {...defaultProps} />);
-    
+
+    // Open modal
     const linkButton = screen.getByTitle('Add Link');
     fireEvent.click(linkButton);
-    
-    expect(mockPrompt).toHaveBeenCalledWith('Enter URL');
-    expect(mockRun).not.toHaveBeenCalled();
+
+    // Click cancel
+    const cancelButton = screen.getByRole('button', { name: 'Cancel' });
+    fireEvent.click(cancelButton);
+
+    // Modal should be closed (no URL input visible)
+    expect(screen.queryByPlaceholderText('https://example.com')).not.toBeInTheDocument();
   });
 
   it('returns null when editor is not initialized', () => {
-    const useEditorMock = useEditor as jest.Mock;
-    useEditorMock.mockReturnValue(null);
+    mockEditorInstance = null;
 
     const { container } = render(<Editor {...defaultProps} />);
-    
+
     expect(container.firstChild).toBeNull();
   });
 
   it('applies custom className', () => {
     render(<Editor {...defaultProps} className="custom-class" />);
-    
-    const editorContainer = screen.getByTestId('editor-content').closest('.custom-class');
-    expect(editorContainer).toBeInTheDocument();
+
+    // The container div should have the custom class
+    const container = document.querySelector('.custom-class');
+    expect(container).toBeInTheDocument();
   });
 });

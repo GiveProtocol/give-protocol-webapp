@@ -24,6 +24,8 @@ export default {
     }]
   },
   moduleNameMapper: {
+    '^@/config/env$': '<rootDir>/src/test-utils/envMock.js',
+    '^@/lib/supabase$': '<rootDir>/src/test-utils/supabaseMock.js',
     '(.*)/config/env(\\.ts)?$': '<rootDir>/src/test-utils/envMock.js',
     '(.*)/lib/supabase(\\.ts)?$': '<rootDir>/src/test-utils/supabaseMock.js',
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -32,6 +34,7 @@ export default {
     '^(\\.{1,2}/.*)\\.js$': '$1',
     '^isows$': '<rootDir>/src/test-utils/isowsMock.js'
   },
+  setupFiles: ['<rootDir>/src/test-utils/jest.env-setup.js'],
   setupFilesAfterEnv: ['<rootDir>/src/test-utils/jest.setup.ts'],
   collectCoverageFrom: [
     'src/**/*.{ts,tsx}',

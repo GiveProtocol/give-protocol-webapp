@@ -1,4 +1,4 @@
-import _React from 'react';
+import React from 'react';
 import type { ReactElement } from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
