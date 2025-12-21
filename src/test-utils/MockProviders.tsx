@@ -134,6 +134,19 @@ interface AllProvidersProps {
 }
 
 /**
+ * Helper to compose multiple providers without deep JSX nesting
+ */
+const composeProviders = (
+  providers: Array<[React.Provider<unknown>, unknown]>,
+  children: React.ReactNode
+): React.ReactElement => {
+  return providers.reduceRight(
+    (acc, [Provider, value]) => React.createElement(Provider, { value }, acc),
+    children as React.ReactElement
+  );
+};
+
+/**
  * Comprehensive test wrapper that includes all app providers
  * Use this for component tests that need full context support
  */
@@ -158,21 +171,21 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
   const Router = initialEntries ? MemoryRouter : BrowserRouter;
   const routerProps = initialEntries ? { initialEntries } : {};
 
+  const routerContent = React.createElement(Router, routerProps, children);
+
+  const contextProviders: Array<[React.Provider<unknown>, unknown]> = [
+    [MockSettingsContext.Provider as React.Provider<unknown>, settingsValue],
+    [MockToastContext.Provider as React.Provider<unknown>, toastValue],
+    [MockAuthContext.Provider as React.Provider<unknown>, authValue],
+    [MockWeb3Context.Provider as React.Provider<unknown>, web3Value],
+    [MockCurrencyContext.Provider as React.Provider<unknown>, currencyValue],
+  ];
+
+  const wrappedContent = composeProviders(contextProviders, routerContent);
+
   return (
     <QueryClientProvider client={client}>
-      <MockSettingsContext.Provider value={settingsValue}>
-        <MockToastContext.Provider value={toastValue}>
-          <MockAuthContext.Provider value={authValue}>
-            <MockWeb3Context.Provider value={web3Value}>
-              <MockCurrencyContext.Provider value={currencyValue}>
-                <Router {...routerProps}>
-                  {children}
-                </Router>
-              </MockCurrencyContext.Provider>
-            </MockWeb3Context.Provider>
-          </MockAuthContext.Provider>
-        </MockToastContext.Provider>
-      </MockSettingsContext.Provider>
+      {wrappedContent}
     </QueryClientProvider>
   );
 };

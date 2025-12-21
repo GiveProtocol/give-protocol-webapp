@@ -11,9 +11,9 @@ const mockValue = {
   isConnected: false,
   isConnecting: false,
   error: null,
-  connect: async () => {},
-  disconnect: async () => {},
-  switchChain: async () => {},
+  connect: async () => { /* no-op mock for testing */ },
+  disconnect: async () => { /* no-op mock for testing */ },
+  switchChain: async () => { /* no-op mock for testing */ },
 };
 
 const Web3Context = createContext(mockValue);

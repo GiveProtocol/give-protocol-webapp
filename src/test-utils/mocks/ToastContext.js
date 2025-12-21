@@ -4,7 +4,7 @@
 import React, { createContext, useContext } from 'react';
 
 const mockValue = {
-  showToast: () => {},
+  showToast: () => { /* no-op mock for testing */ },
 };
 
 export const ToastContext = createContext(mockValue);

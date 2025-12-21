@@ -3,11 +3,11 @@
  */
 export const useSettings = () => ({
   language: 'en',
-  setLanguage: () => {},
+  setLanguage: () => { /* no-op mock for testing */ },
   currency: 'USD',
-  setCurrency: () => {},
+  setCurrency: () => { /* no-op mock for testing */ },
   theme: 'light',
-  setTheme: () => {},
+  setTheme: () => { /* no-op mock for testing */ },
   languageOptions: [{ value: 'en', label: 'English' }],
   currencyOptions: [{ value: 'USD', label: 'US Dollar', symbol: '$' }],
 });

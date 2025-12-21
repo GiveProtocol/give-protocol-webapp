@@ -1,5 +1,5 @@
 import { render, RenderOptions, RenderResult } from '@testing-library/react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { BrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 import {
