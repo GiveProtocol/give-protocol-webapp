@@ -1,23 +1,28 @@
 /**
  * Mock implementation of SettingsContext for testing
  */
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext } from "react";
 
 const mockValue = {
-  language: 'en',
-  setLanguage: () => { /* no-op mock for testing */ },
-  currency: 'USD',
-  setCurrency: () => { /* no-op mock for testing */ },
-  theme: 'light',
-  setTheme: () => { /* no-op mock for testing */ },
-  languageOptions: [{ value: 'en', label: 'English' }],
-  currencyOptions: [{ value: 'USD', label: 'US Dollar', symbol: '$' }],
+  language: "en",
+  setLanguage: () => {
+    /* no-op mock for testing */
+  },
+  currency: "USD",
+  setCurrency: () => {
+    /* no-op mock for testing */
+  },
+  theme: "light",
+  setTheme: () => {
+    /* no-op mock for testing */
+  },
+  languageOptions: [{ value: "en", label: "English" }],
+  currencyOptions: [{ value: "USD", label: "US Dollar", symbol: "$" }],
 };
 
 const SettingsContext = createContext(mockValue);
 
 export const useSettings = () => useContext(SettingsContext);
 
-export const SettingsProvider = ({ children }) => (
-  React.createElement(SettingsContext.Provider, { value: mockValue }, children)
-);
+export const SettingsProvider = ({ children }) =>
+  React.createElement(SettingsContext.Provider, { value: mockValue }, children);

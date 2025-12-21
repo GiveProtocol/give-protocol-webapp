@@ -1,7 +1,7 @@
-import { render, RenderOptions, RenderResult } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React from 'react';
+import { render, RenderOptions, RenderResult } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React from "react";
 import {
   AllProviders,
   createTestQueryClient,
@@ -10,7 +10,7 @@ import {
   mockAuthContextValue,
   mockWeb3ContextValue,
   mockCurrencyContextValue,
-} from './MockProviders';
+} from "./MockProviders";
 
 // Re-export mock values for convenience
 export {
@@ -20,7 +20,7 @@ export {
   mockAuthContextValue,
   mockWeb3ContextValue,
   mockCurrencyContextValue,
-} from './MockProviders';
+} from "./MockProviders";
 
 // Re-export mock hook creators
 export {
@@ -29,15 +29,16 @@ export {
   createMockUseAuth,
   createMockUseWeb3,
   createMockUseCurrency,
-} from './MockProviders';
+} from "./MockProviders";
 
 /**
  * Wrapper component for routing in tests
  * @param props - Component props containing children
  * @returns BrowserRouter wrapper element
  */
-export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
-  React.createElement(BrowserRouter, {}, children);
+export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => React.createElement(BrowserRouter, {}, children);
 
 /**
  * Wrapper component that includes QueryClient and Router for tests
@@ -52,7 +53,7 @@ export const TestProvidersWrapper: React.FC<{
   return React.createElement(
     QueryClientProvider,
     { client },
-    React.createElement(BrowserRouter, {}, children)
+    React.createElement(BrowserRouter, {}, children),
   );
 };
 
@@ -73,7 +74,7 @@ export const renderWithRouter = (component: React.ReactElement) => {
  */
 export const renderWithProviders = (
   component: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'> & { queryClient?: QueryClient }
+  options?: Omit<RenderOptions, "wrapper"> & { queryClient?: QueryClient },
 ) => {
   const { queryClient, ...renderOptions } = options || {};
   const testQueryClient = queryClient || createTestQueryClient();
@@ -82,7 +83,7 @@ export const renderWithProviders = (
     React.createElement(
       QueryClientProvider,
       { client: testQueryClient },
-      React.createElement(BrowserRouter, {}, children)
+      React.createElement(BrowserRouter, {}, children),
     );
 
   return {
@@ -94,7 +95,10 @@ export const renderWithProviders = (
 /**
  * Options for renderWithAllProviders
  */
-export interface RenderWithAllProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
+export interface RenderWithAllProvidersOptions extends Omit<
+  RenderOptions,
+  "wrapper"
+> {
   settings?: Partial<typeof mockSettingsContextValue>;
   toast?: Partial<typeof mockToastContextValue>;
   auth?: Partial<typeof mockAuthContextValue>;
@@ -113,7 +117,7 @@ export interface RenderWithAllProvidersOptions extends Omit<RenderOptions, 'wrap
  */
 export const renderWithAllProviders = (
   component: React.ReactElement,
-  options: RenderWithAllProvidersOptions = {}
+  options: RenderWithAllProvidersOptions = {},
 ): RenderResult & { queryClient: QueryClient } => {
   const {
     settings,
@@ -129,15 +133,19 @@ export const renderWithAllProviders = (
   const testQueryClient = queryClient || createTestQueryClient();
 
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
-    React.createElement(AllProviders, {
-      settings,
-      toast,
-      auth,
-      web3,
-      currency,
-      queryClient: testQueryClient,
-      initialEntries,
-    }, children);
+    React.createElement(
+      AllProviders,
+      {
+        settings,
+        toast,
+        auth,
+        web3,
+        currency,
+        queryClient: testQueryClient,
+        initialEntries,
+      },
+      children,
+    );
 
   return {
     ...render(component, { wrapper: Wrapper, ...renderOptions }),
@@ -151,18 +159,22 @@ export const renderWithAllProviders = (
  * @param hash - Transaction hash for the link
  */
 export const expectBlockchainLink = (element: HTMLElement, hash: string) => {
-  expect(element).toHaveAttribute('href', `https://moonbase.moonscan.io/tx/${hash}`);
-  expect(element).toHaveAttribute('target', '_blank');
-  expect(element).toHaveAttribute('rel', 'noopener noreferrer');
+  expect(element).toHaveAttribute(
+    "href",
+    `https://moonbase.moonscan.io/tx/${hash}`,
+  );
+  expect(element).toHaveAttribute("target", "_blank");
+  expect(element).toHaveAttribute("rel", "noopener noreferrer");
 };
 
 /**
  * Standard validation error messages for tests
  */
 export const validationErrors = {
-  emptyAlias: 'Alias cannot be empty',
-  aliasLength: 'Alias must be between 3 and 20 characters',
-  invalidCharacters: 'Alias can only contain letters, numbers, underscores, and hyphens',
+  emptyAlias: "Alias cannot be empty",
+  aliasLength: "Alias must be between 3 and 20 characters",
+  invalidCharacters:
+    "Alias can only contain letters, numbers, underscores, and hyphens",
 };
 
 /**
@@ -170,11 +182,11 @@ export const validationErrors = {
  */
 export const cssClasses = {
   card: {
-    default: ['bg-white', 'border', 'border-gray-200', 'rounded-lg', 'p-4'],
-    success: ['bg-green-50', 'border', 'border-green-200', 'rounded-lg', 'p-4'],
-    error: ['p-3', 'bg-red-50', 'text-red-700', 'text-sm', 'rounded-md'],
+    default: ["bg-white", "border", "border-gray-200", "rounded-lg", "p-4"],
+    success: ["bg-green-50", "border", "border-green-200", "rounded-lg", "p-4"],
+    error: ["p-3", "bg-red-50", "text-red-700", "text-sm", "rounded-md"],
   },
   button: {
-    primary: ['flex', 'items-center'],
+    primary: ["flex", "items-center"],
   },
 };
