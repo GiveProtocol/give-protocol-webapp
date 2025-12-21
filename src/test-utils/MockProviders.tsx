@@ -3,10 +3,10 @@
  * This file provides lightweight mock implementations of all app contexts
  */
 
-import React, { createContext } from 'react';
-import { BrowserRouter, MemoryRouter } from 'react-router-dom';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { jest } from '@jest/globals';
+import React, { createContext } from "react";
+import { BrowserRouter, MemoryRouter } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { jest } from "@jest/globals";
 
 // ============================================================================
 // Mock Context Values
@@ -16,14 +16,14 @@ import { jest } from '@jest/globals';
  * Default mock values for SettingsContext
  */
 export const mockSettingsContextValue = {
-  language: 'en' as const,
+  language: "en" as const,
   setLanguage: jest.fn(),
-  currency: 'USD' as const,
+  currency: "USD" as const,
   setCurrency: jest.fn(),
-  theme: 'light' as const,
+  theme: "light" as const,
   setTheme: jest.fn(),
-  languageOptions: [{ value: 'en', label: 'English' }],
-  currencyOptions: [{ value: 'USD', label: 'US Dollar', symbol: '$' }],
+  languageOptions: [{ value: "en", label: "English" }],
+  currencyOptions: [{ value: "USD", label: "US Dollar", symbol: "$" }],
 };
 
 /**
@@ -70,7 +70,12 @@ export const mockWeb3ContextValue = {
  * Default mock values for CurrencyContext
  */
 export const mockCurrencyContextValue = {
-  selectedCurrency: { code: 'USD', symbol: '$', name: 'US Dollar', coingeckoId: 'usd' },
+  selectedCurrency: {
+    code: "USD",
+    symbol: "$",
+    name: "US Dollar",
+    coingeckoId: "usd",
+  },
   setSelectedCurrency: jest.fn(),
   tokenPrices: {},
   isLoading: false,
@@ -105,18 +110,19 @@ export const MockCurrencyProvider = MockCurrencyContext.Provider;
  * Creates a new QueryClient configured for testing
  * Disables retries and caching for predictable test behavior
  */
-export const createTestQueryClient = () => new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      gcTime: 0,
-      staleTime: 0,
+export const createTestQueryClient = () =>
+  new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+        gcTime: 0,
+        staleTime: 0,
+      },
+      mutations: {
+        retry: false,
+      },
     },
-    mutations: {
-      retry: false,
-    },
-  },
-});
+  });
 
 // ============================================================================
 // Test Wrapper Components
@@ -165,9 +171,7 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
           <MockAuthContext.Provider value={authValue}>
             <MockWeb3Context.Provider value={web3Value}>
               <MockCurrencyContext.Provider value={currencyValue}>
-                <Router {...routerProps}>
-                  {children}
-                </Router>
+                <Router {...routerProps}>{children}</Router>
               </MockCurrencyContext.Provider>
             </MockWeb3Context.Provider>
           </MockAuthContext.Provider>
@@ -180,27 +184,37 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
 /**
  * Hook replacement exports - these can be used to mock the actual hooks
  */
-export const createMockUseSettings = (overrides = {}) => () => ({
-  ...mockSettingsContextValue,
-  ...overrides,
-});
+export const createMockUseSettings =
+  (overrides = {}) =>
+  () => ({
+    ...mockSettingsContextValue,
+    ...overrides,
+  });
 
-export const createMockUseToast = (overrides = {}) => () => ({
-  ...mockToastContextValue,
-  ...overrides,
-});
+export const createMockUseToast =
+  (overrides = {}) =>
+  () => ({
+    ...mockToastContextValue,
+    ...overrides,
+  });
 
-export const createMockUseAuth = (overrides = {}) => () => ({
-  ...mockAuthContextValue,
-  ...overrides,
-});
+export const createMockUseAuth =
+  (overrides = {}) =>
+  () => ({
+    ...mockAuthContextValue,
+    ...overrides,
+  });
 
-export const createMockUseWeb3 = (overrides = {}) => () => ({
-  ...mockWeb3ContextValue,
-  ...overrides,
-});
+export const createMockUseWeb3 =
+  (overrides = {}) =>
+  () => ({
+    ...mockWeb3ContextValue,
+    ...overrides,
+  });
 
-export const createMockUseCurrency = (overrides = {}) => () => ({
-  ...mockCurrencyContextValue,
-  ...overrides,
-});
+export const createMockUseCurrency =
+  (overrides = {}) =>
+  () => ({
+    ...mockCurrencyContextValue,
+    ...overrides,
+  });

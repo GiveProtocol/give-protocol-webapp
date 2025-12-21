@@ -1,7 +1,7 @@
 /**
  * Mock implementation of Web3Context for testing
  */
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext } from "react";
 
 const mockValue = {
   provider: null,
@@ -20,6 +20,5 @@ const Web3Context = createContext(mockValue);
 
 export const useWeb3 = () => useContext(Web3Context);
 
-export const Web3Provider = ({ children }) => (
-  React.createElement(Web3Context.Provider, { value: mockValue }, children)
-);
+export const Web3Provider = ({ children }) =>
+  React.createElement(Web3Context.Provider, { value: mockValue }, children);

@@ -2,8 +2,13 @@
  * Shared Supabase mock utilities to reduce duplication across test files
  */
 
-import { jest } from '@jest/globals';
-import type { MockSupabaseQuery, MockSupabaseOverrides, MockCharity, MockDonation } from './types';
+import { jest } from "@jest/globals";
+import type {
+  MockSupabaseQuery,
+  MockSupabaseOverrides,
+  MockCharity,
+  MockDonation,
+} from "./types";
 
 /**
  * Creates a mock Supabase query response object
@@ -12,11 +17,11 @@ import type { MockSupabaseQuery, MockSupabaseOverrides, MockCharity, MockDonatio
  * @returns Mock query response object matching Supabase's response format
  */
 export const createMockSupabaseQuery = <T = unknown>(
-  data: T[] | T | null = [], 
-  error: { message: string } | null = null
+  data: T[] | T | null = [],
+  error: { message: string } | null = null,
 ): MockSupabaseQuery<T> => ({
   data,
-  error
+  error,
 });
 
 /**
@@ -29,7 +34,7 @@ const createSelectEqChain = (overrides: MockSupabaseOverrides) => ({
   in: jest.fn(() => ({
     order: jest.fn(() => Promise.resolve(createMockSupabaseQuery([], null))),
   })),
-  ...overrides.selectEq
+  ...overrides.selectEq,
 });
 
 /**
@@ -39,7 +44,7 @@ const createSelectChain = (overrides: MockSupabaseOverrides) => ({
   eq: jest.fn(() => createSelectEqChain(overrides)),
   order: jest.fn(() => Promise.resolve(createMockSupabaseQuery([], null))),
   single: jest.fn(() => Promise.resolve(createMockSupabaseQuery(null, null))),
-  ...overrides.select
+  ...overrides.select,
 });
 
 /**
@@ -48,7 +53,7 @@ const createSelectChain = (overrides: MockSupabaseOverrides) => ({
 const createInsertChain = (overrides: MockSupabaseOverrides) => ({
   select: jest.fn(() => Promise.resolve(createMockSupabaseQuery([], null))),
   single: jest.fn(() => Promise.resolve(createMockSupabaseQuery(null, null))),
-  ...overrides.insert
+  ...overrides.insert,
 });
 
 /**
@@ -57,9 +62,9 @@ const createInsertChain = (overrides: MockSupabaseOverrides) => ({
 const createUpdateChain = (overrides: MockSupabaseOverrides) => ({
   eq: jest.fn(() => ({
     select: jest.fn(() => Promise.resolve(createMockSupabaseQuery([], null))),
-    ...overrides.updateEq
+    ...overrides.updateEq,
   })),
-  ...overrides.update
+  ...overrides.update,
 });
 
 /**
@@ -68,10 +73,11 @@ const createUpdateChain = (overrides: MockSupabaseOverrides) => ({
 const createDeleteChain = (overrides: MockSupabaseOverrides) => ({
   eq: jest.fn(() => ({
     ...Promise.resolve(createMockSupabaseQuery([], null)),
-    then: (resolve: (value: unknown) => unknown) => resolve(createMockSupabaseQuery([], null)),
-    ...overrides.deleteEq
+    then: (resolve: (value: unknown) => unknown) =>
+      resolve(createMockSupabaseQuery([], null)),
+    ...overrides.deleteEq,
   })),
-  ...overrides.delete
+  ...overrides.delete,
 });
 
 /**
@@ -82,7 +88,7 @@ const createTableOperations = (overrides: MockSupabaseOverrides) => ({
   insert: jest.fn(() => createInsertChain(overrides)),
   update: jest.fn(() => createUpdateChain(overrides)),
   delete: jest.fn(() => createDeleteChain(overrides)),
-  ...overrides.from
+  ...overrides.from,
 });
 
 /**
@@ -90,9 +96,11 @@ const createTableOperations = (overrides: MockSupabaseOverrides) => ({
  * @param overrides - Optional overrides for specific Supabase methods
  * @returns Mock Supabase client object with jest functions
  */
-export const createMockSupabaseClient = (overrides: MockSupabaseOverrides = {}) => ({
+export const createMockSupabaseClient = (
+  overrides: MockSupabaseOverrides = {},
+) => ({
   from: jest.fn(() => createTableOperations(overrides)),
-  ...overrides.client
+  ...overrides.client,
 });
 
 /**
@@ -100,58 +108,58 @@ export const createMockSupabaseClient = (overrides: MockSupabaseOverrides = {}) 
  * @param customData - Optional custom data responses for different tables
  */
 export const setupSupabaseMocks = (customData?: MockSupabaseOverrides) => {
-  jest.mock('@/lib/supabase', () => ({
-    supabase: createMockSupabaseClient(customData)
+  jest.mock("@/lib/supabase", () => ({
+    supabase: createMockSupabaseClient(customData),
   }));
 };
 
 export const mockCharityData: MockCharity[] = [
   {
-    id: 'charity-1',
-    name: 'Test Charity 1',
-    description: 'A test charity',
-    category: 'education',
-    country: 'US',
+    id: "charity-1",
+    name: "Test Charity 1",
+    description: "A test charity",
+    category: "education",
+    country: "US",
     verified: true,
-    created_at: '2024-01-01T00:00:00Z'
+    created_at: "2024-01-01T00:00:00Z",
   },
   {
-    id: 'charity-2', 
-    name: 'Test Charity 2',
-    description: 'Another test charity',
-    category: 'healthcare',
-    country: 'CA',
+    id: "charity-2",
+    name: "Test Charity 2",
+    description: "Another test charity",
+    category: "healthcare",
+    country: "CA",
     verified: false,
-    created_at: '2024-01-02T00:00:00Z'
-  }
+    created_at: "2024-01-02T00:00:00Z",
+  },
 ];
 
 export const mockDonationData: MockDonation[] = [
   {
-    id: 'donation-1',
-    amount: '100.00',
-    donor_id: 'donor-1',
-    charity_id: 'charity-1',
-    status: 'completed',
-    created_at: '2024-01-01T00:00:00Z'
+    id: "donation-1",
+    amount: "100.00",
+    donor_id: "donor-1",
+    charity_id: "charity-1",
+    status: "completed",
+    created_at: "2024-01-01T00:00:00Z",
   },
   {
-    id: 'donation-2',
-    amount: '250.00', 
-    donor_id: 'donor-2',
-    charity_id: 'charity-2',
-    status: 'pending',
-    created_at: '2024-01-02T00:00:00Z'
-  }
+    id: "donation-2",
+    amount: "250.00",
+    donor_id: "donor-2",
+    charity_id: "charity-2",
+    status: "pending",
+    created_at: "2024-01-02T00:00:00Z",
+  },
 ];
 
 export const mockVolunteerData = [
   {
-    id: 'volunteer-1',
-    user_id: 'user-1',
-    charity_id: 'charity-1',
+    id: "volunteer-1",
+    user_id: "user-1",
+    charity_id: "charity-1",
     hours: 10,
-    status: 'verified',
-    created_at: '2024-01-01T00:00:00Z'
-  }
+    status: "verified",
+    created_at: "2024-01-01T00:00:00Z",
+  },
 ];

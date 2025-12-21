@@ -8,7 +8,9 @@ export const getEnv = () => {
   // For Vite environments where import.meta is available, we'll try to access it
   // This avoids Jest parsing import.meta at compile time by using dynamic property access
   try {
-    const globalImport = globalThis as unknown as { import?: { meta?: { env?: unknown } } };
+    const globalImport = globalThis as unknown as {
+      import?: { meta?: { env?: unknown } };
+    };
     if (globalImport.import?.meta?.env) {
       return globalImport.import.meta.env;
     }
