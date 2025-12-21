@@ -24,10 +24,12 @@ export default {
     }]
   },
   moduleNameMapper: {
+    // Config and library mocks
     '^@/config/env$': '<rootDir>/src/test-utils/envMock.js',
     '^@/lib/supabase$': '<rootDir>/src/test-utils/supabaseMock.js',
     '(.*)/config/env(\\.ts)?$': '<rootDir>/src/test-utils/envMock.js',
     '(.*)/lib/supabase(\\.ts)?$': '<rootDir>/src/test-utils/supabaseMock.js',
+    // Generic path mapping
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/test-utils/styleMock.js',
     '\\.(jpg|jpeg|png|gif|svg)$': '<rootDir>/src/test-utils/fileMock.js',

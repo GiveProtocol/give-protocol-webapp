@@ -1,14 +1,60 @@
-import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { render, RenderOptions, RenderResult } from '@testing-library/react';
+import { BrowserRouter, MemoryRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
+import {
+  AllProviders,
+  createTestQueryClient,
+  mockSettingsContextValue,
+  mockToastContextValue,
+  mockAuthContextValue,
+  mockWeb3ContextValue,
+  mockCurrencyContextValue,
+} from './MockProviders';
+
+// Re-export mock values for convenience
+export {
+  createTestQueryClient,
+  mockSettingsContextValue,
+  mockToastContextValue,
+  mockAuthContextValue,
+  mockWeb3ContextValue,
+  mockCurrencyContextValue,
+} from './MockProviders';
+
+// Re-export mock hook creators
+export {
+  createMockUseSettings,
+  createMockUseToast,
+  createMockUseAuth,
+  createMockUseWeb3,
+  createMockUseCurrency,
+} from './MockProviders';
 
 /**
  * Wrapper component for routing in tests
  * @param props - Component props containing children
  * @returns BrowserRouter wrapper element
  */
-export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => 
+export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   React.createElement(BrowserRouter, {}, children);
+
+/**
+ * Wrapper component that includes QueryClient and Router for tests
+ * @param props - Component props containing children and optional queryClient
+ * @returns Wrapped component with QueryClient and Router context
+ */
+export const TestProvidersWrapper: React.FC<{
+  children: React.ReactNode;
+  queryClient?: QueryClient;
+}> = ({ children, queryClient }) => {
+  const client = queryClient || createTestQueryClient();
+  return React.createElement(
+    QueryClientProvider,
+    { client },
+    React.createElement(BrowserRouter, {}, children)
+  );
+};
 
 /**
  * Helper function to render components with router wrapper
@@ -17,6 +63,86 @@ export const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children 
  */
 export const renderWithRouter = (component: React.ReactElement) => {
   return render(React.createElement(TestWrapper, {}, component));
+};
+
+/**
+ * Helper function to render components with QueryClient and router wrapper
+ * @param component - React component to render
+ * @param options - Optional render options including custom queryClient
+ * @returns Rendered component with QueryClient and router context
+ */
+export const renderWithProviders = (
+  component: React.ReactElement,
+  options?: Omit<RenderOptions, 'wrapper'> & { queryClient?: QueryClient }
+) => {
+  const { queryClient, ...renderOptions } = options || {};
+  const testQueryClient = queryClient || createTestQueryClient();
+
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
+    React.createElement(
+      QueryClientProvider,
+      { client: testQueryClient },
+      React.createElement(BrowserRouter, {}, children)
+    );
+
+  return {
+    ...render(component, { wrapper: Wrapper, ...renderOptions }),
+    queryClient: testQueryClient,
+  };
+};
+
+/**
+ * Options for renderWithAllProviders
+ */
+export interface RenderWithAllProvidersOptions extends Omit<RenderOptions, 'wrapper'> {
+  settings?: Partial<typeof mockSettingsContextValue>;
+  toast?: Partial<typeof mockToastContextValue>;
+  auth?: Partial<typeof mockAuthContextValue>;
+  web3?: Partial<typeof mockWeb3ContextValue>;
+  currency?: Partial<typeof mockCurrencyContextValue>;
+  queryClient?: QueryClient;
+  initialEntries?: string[];
+}
+
+/**
+ * Comprehensive render function that wraps components with all app providers
+ * Use this for component tests that need full context support
+ * @param component - React component to render
+ * @param options - Provider overrides and render options
+ * @returns Rendered component with all contexts and queryClient reference
+ */
+export const renderWithAllProviders = (
+  component: React.ReactElement,
+  options: RenderWithAllProvidersOptions = {}
+): RenderResult & { queryClient: QueryClient } => {
+  const {
+    settings,
+    toast,
+    auth,
+    web3,
+    currency,
+    queryClient,
+    initialEntries,
+    ...renderOptions
+  } = options;
+
+  const testQueryClient = queryClient || createTestQueryClient();
+
+  const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) =>
+    React.createElement(AllProviders, {
+      settings,
+      toast,
+      auth,
+      web3,
+      currency,
+      queryClient: testQueryClient,
+      initialEntries,
+    }, children);
+
+  return {
+    ...render(component, { wrapper: Wrapper, ...renderOptions }),
+    queryClient: testQueryClient,
+  };
 };
 
 /**

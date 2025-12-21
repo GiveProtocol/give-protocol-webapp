@@ -66,8 +66,12 @@ const createUpdateChain = (overrides: MockSupabaseOverrides) => ({
  * Creates the delete chain for table operations
  */
 const createDeleteChain = (overrides: MockSupabaseOverrides) => ({
-  eq: jest.fn(() => Promise.resolve(createMockSupabaseQuery([], null))),
-  ...overrides.deleteEq
+  eq: jest.fn(() => ({
+    ...Promise.resolve(createMockSupabaseQuery([], null)),
+    then: (resolve: (value: unknown) => unknown) => resolve(createMockSupabaseQuery([], null)),
+    ...overrides.deleteEq
+  })),
+  ...overrides.delete
 });
 
 /**

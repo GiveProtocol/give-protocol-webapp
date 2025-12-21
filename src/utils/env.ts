@@ -18,11 +18,14 @@ export const getEnv = () => {
 
   // Fallback to process.env for Node/Jest environments
   if (typeof process !== "undefined" && process.env) {
+    const mode = process.env.NODE_ENV || "development";
     return {
-      PROD: process.env.NODE_ENV === "production",
-      DEV: process.env.NODE_ENV === "development",
-      MODE: process.env.NODE_ENV || "development",
+      PROD: mode === "production",
+      DEV: mode === "development",
+      MODE: mode,
       VITE_MONITORING_ENDPOINT: process.env.VITE_MONITORING_ENDPOINT,
+      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL,
+      VITE_NETWORK: process.env.VITE_NETWORK,
     };
   }
 
