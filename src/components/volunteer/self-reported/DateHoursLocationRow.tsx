@@ -20,7 +20,9 @@ interface DateHoursLocationRowProps {
   daysLeft?: number;
   isExpired: boolean;
   onInputChange: (
-    _event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+    _event: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => void;
 }
 

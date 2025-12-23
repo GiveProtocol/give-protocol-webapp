@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/lib/supabase";
 import {
   ValidationRequest,
   ValidationResponseInput,
@@ -7,24 +7,28 @@ import {
   RejectionReason,
   SelfReportedHours,
   VALIDATION_WINDOW_DAYS,
-} from '@/types/selfReportedHours';
-import { generateVerificationHash } from '@/utils/volunteer';
-import { Logger } from '@/utils/logger';
+} from "@/types/selfReportedHours";
+import { generateVerificationHash } from "@/utils/volunteer";
+import { Logger } from "@/utils/logger";
 
 /**
  * Maps database row to ValidationRequest interface
  * @param row - Database row object
  * @returns ValidationRequest object
  */
-function mapRowToValidationRequest(row: Record<string, unknown>): ValidationRequest {
+function mapRowToValidationRequest(
+  row: Record<string, unknown>,
+): ValidationRequest {
   return {
     id: row.id as string,
     selfReportedHoursId: row.self_reported_hours_id as string,
     organizationId: row.organization_id as string,
     volunteerId: row.volunteer_id as string,
-    status: row.status as ValidationRequest['status'],
+    status: row.status as ValidationRequest["status"],
     expiresAt: new Date(row.expires_at as string).getTime(),
-    respondedAt: row.responded_at ? new Date(row.responded_at as string).getTime() : undefined,
+    respondedAt: row.responded_at
+      ? new Date(row.responded_at as string).getTime()
+      : undefined,
     respondedBy: row.responded_by as string | undefined,
     rejectionReason: row.rejection_reason as RejectionReason | undefined,
     rejectionNotes: row.rejection_notes as string | undefined,
@@ -40,23 +44,30 @@ function mapRowToValidationRequest(row: Record<string, unknown>): ValidationRequ
  * @param row - Database row object
  * @returns SelfReportedHours object
  */
-function mapRowToSelfReportedHours(row: Record<string, unknown>): SelfReportedHours {
+function mapRowToSelfReportedHours(
+  row: Record<string, unknown>,
+): SelfReportedHours {
   return {
     id: row.id as string,
     volunteerId: row.volunteer_id as string,
     activityDate: row.activity_date as string,
     hours: Number(row.hours),
-    activityType: row.activity_type as SelfReportedHours['activityType'],
+    activityType: row.activity_type as SelfReportedHours["activityType"],
     description: row.description as string,
     location: row.location as string | undefined,
     organizationId: row.organization_id as string | undefined,
     organizationName: row.organization_name as string | undefined,
-    organizationContactEmail: row.organization_contact_email as string | undefined,
+    organizationContactEmail: row.organization_contact_email as
+      | string
+      | undefined,
     validationStatus: row.validation_status as ValidationStatus,
     validationRequestId: row.validation_request_id as string | undefined,
-    validatedAt: row.validated_at ? new Date(row.validated_at as string).getTime() : undefined,
+    validatedAt: row.validated_at
+      ? new Date(row.validated_at as string).getTime()
+      : undefined,
     validatedBy: row.validated_by as string | undefined,
-    rejectionReason: row.rejection_reason as SelfReportedHours['rejectionReason'],
+    rejectionReason:
+      row.rejection_reason as SelfReportedHours["rejectionReason"],
     rejectionNotes: row.rejection_notes as string | undefined,
     sbtTokenId: row.sbt_token_id as number | undefined,
     blockchainTxHash: row.blockchain_tx_hash as string | undefined,
@@ -72,21 +83,23 @@ function mapRowToSelfReportedHours(row: Record<string, unknown>): SelfReportedHo
  * @returns Array of validation queue items
  */
 export async function getOrganizationValidationQueue(
-  organizationId: string
+  organizationId: string,
 ): Promise<ValidationQueueItem[]> {
   // First, fetch validation requests with self_reported_hours
   const { data, error } = await supabase
-    .from('validation_requests')
-    .select(`
+    .from("validation_requests")
+    .select(
+      `
       *,
       self_reported_hours:self_reported_hours_id (*)
-    `)
-    .eq('organization_id', organizationId)
-    .eq('status', 'pending')
-    .order('created_at', { ascending: true });
+    `,
+    )
+    .eq("organization_id", organizationId)
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
 
   if (error) {
-    Logger.error('Error fetching validation queue', { error, organizationId });
+    Logger.error("Error fetching validation queue", { error, organizationId });
     throw new Error(`Failed to fetch validation queue: ${error.message}`);
   }
 
@@ -97,13 +110,11 @@ export async function getOrganizationValidationQueue(
   // Fetch volunteer profiles separately
   const volunteerIds = [...new Set(data.map((row) => row.volunteer_id))];
   const { data: profiles } = await supabase
-    .from('profiles')
-    .select('user_id, display_name, email')
-    .in('user_id', volunteerIds);
+    .from("profiles")
+    .select("user_id, display_name, email")
+    .in("user_id", volunteerIds);
 
-  const profileMap = new Map(
-    (profiles || []).map((p) => [p.user_id, p])
-  );
+  const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
 
   const now = new Date().getTime();
 
@@ -112,13 +123,15 @@ export async function getOrganizationValidationQueue(
     const hoursData = row.self_reported_hours as Record<string, unknown>;
     const volunteerProfile = profileMap.get(row.volunteer_id);
 
-    const daysUntilExpiration = Math.ceil((request.expiresAt - now) / (1000 * 60 * 60 * 24));
+    const daysUntilExpiration = Math.ceil(
+      (request.expiresAt - now) / (1000 * 60 * 60 * 24),
+    );
 
     return {
       requestId: request.id,
       selfReportedHours: mapRowToSelfReportedHours(hoursData),
-      volunteerName: volunteerProfile?.display_name || 'Anonymous Volunteer',
-      volunteerEmail: volunteerProfile?.email || '',
+      volunteerName: volunteerProfile?.display_name || "Anonymous Volunteer",
+      volunteerEmail: volunteerProfile?.email || "",
       daysUntilExpiration: Math.max(0, daysUntilExpiration),
       isResubmission: request.isResubmission,
     };
@@ -131,16 +144,19 @@ export async function getOrganizationValidationQueue(
  * @returns Number of pending requests
  */
 export async function getValidationQueueCount(
-  organizationId: string
+  organizationId: string,
 ): Promise<number> {
   const { count, error } = await supabase
-    .from('validation_requests')
-    .select('id', { count: 'exact', head: true })
-    .eq('organization_id', organizationId)
-    .eq('status', 'pending');
+    .from("validation_requests")
+    .select("id", { count: "exact", head: true })
+    .eq("organization_id", organizationId)
+    .eq("status", "pending");
 
   if (error) {
-    Logger.error('Error fetching validation queue count', { error, organizationId });
+    Logger.error("Error fetching validation queue count", {
+      error,
+      organizationId,
+    });
     return 0;
   }
 
@@ -154,30 +170,33 @@ export async function getValidationQueueCount(
  */
 export async function processValidationResponse(
   input: ValidationResponseInput,
-  respondedBy: string
+  respondedBy: string,
 ): Promise<void> {
   // Get the request
   const { data: request, error: requestError } = await supabase
-    .from('validation_requests')
-    .select('self_reported_hours_id, status, organization_id')
-    .eq('id', input.requestId)
+    .from("validation_requests")
+    .select("self_reported_hours_id, status, organization_id")
+    .eq("id", input.requestId)
     .single();
 
   if (requestError) {
-    Logger.error('Error fetching validation request', { error: requestError, requestId: input.requestId });
-    throw new Error('Validation request not found');
+    Logger.error("Error fetching validation request", {
+      error: requestError,
+      requestId: input.requestId,
+    });
+    throw new Error("Validation request not found");
   }
 
-  if (request.status !== 'pending') {
-    throw new Error('This request has already been processed');
+  if (request.status !== "pending") {
+    throw new Error("This request has already been processed");
   }
 
-  const newStatus = input.approved ? 'approved' : 'rejected';
+  const newStatus = input.approved ? "approved" : "rejected";
   const now = new Date().toISOString();
 
   // Update the validation request
   const { error: updateRequestError } = await supabase
-    .from('validation_requests')
+    .from("validation_requests")
     .update({
       status: newStatus,
       responded_at: now,
@@ -185,16 +204,21 @@ export async function processValidationResponse(
       rejection_reason: input.rejectionReason || null,
       rejection_notes: input.rejectionNotes || null,
     })
-    .eq('id', input.requestId);
+    .eq("id", input.requestId);
 
   if (updateRequestError) {
-    Logger.error('Error updating validation request', { error: updateRequestError, requestId: input.requestId });
+    Logger.error("Error updating validation request", {
+      error: updateRequestError,
+      requestId: input.requestId,
+    });
     throw new Error(`Failed to update request: ${updateRequestError.message}`);
   }
 
   // Build update for hours record
   const hoursUpdate: Record<string, unknown> = {
-    validation_status: input.approved ? ValidationStatus.VALIDATED : ValidationStatus.REJECTED,
+    validation_status: input.approved
+      ? ValidationStatus.VALIDATED
+      : ValidationStatus.REJECTED,
     rejection_reason: input.rejectionReason || null,
     rejection_notes: input.rejectionNotes || null,
   };
@@ -205,9 +229,9 @@ export async function processValidationResponse(
 
     // Generate verification hash for validated records
     const { data: hoursData } = await supabase
-      .from('self_reported_hours')
-      .select('*')
-      .eq('id', request.self_reported_hours_id)
+      .from("self_reported_hours")
+      .select("*")
+      .eq("id", request.self_reported_hours_id)
       .single();
 
     if (hoursData) {
@@ -225,13 +249,18 @@ export async function processValidationResponse(
 
   // Update the hours record
   const { error: updateHoursError } = await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .update(hoursUpdate)
-    .eq('id', request.self_reported_hours_id);
+    .eq("id", request.self_reported_hours_id);
 
   if (updateHoursError) {
-    Logger.error('Error updating hours record', { error: updateHoursError, hoursId: request.self_reported_hours_id });
-    throw new Error(`Failed to update hours record: ${updateHoursError.message}`);
+    Logger.error("Error updating hours record", {
+      error: updateHoursError,
+      hoursId: request.self_reported_hours_id,
+    });
+    throw new Error(
+      `Failed to update hours record: ${updateHoursError.message}`,
+    );
   }
 }
 
@@ -243,7 +272,7 @@ export async function processValidationResponse(
  */
 export async function batchApproveRequests(
   requestIds: string[],
-  respondedBy: string
+  respondedBy: string,
 ): Promise<{ success: string[]; failed: string[] }> {
   const results = { success: [] as string[], failed: [] as string[] };
 
@@ -251,11 +280,11 @@ export async function batchApproveRequests(
     try {
       await processValidationResponse(
         { requestId, approved: true },
-        respondedBy
+        respondedBy,
       );
       results.success.push(requestId);
     } catch (error) {
-      Logger.error('Batch approve failed for request', {
+      Logger.error("Batch approve failed for request", {
         requestId,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -278,7 +307,7 @@ export async function batchRejectRequests(
   requestIds: string[],
   respondedBy: string,
   rejectionReason: RejectionReason,
-  rejectionNotes?: string
+  rejectionNotes?: string,
 ): Promise<{ success: string[]; failed: string[] }> {
   const results = { success: [] as string[], failed: [] as string[] };
 
@@ -286,11 +315,11 @@ export async function batchRejectRequests(
     try {
       await processValidationResponse(
         { requestId, approved: false, rejectionReason, rejectionNotes },
-        respondedBy
+        respondedBy,
       );
       results.success.push(requestId);
     } catch (error) {
-      Logger.error('Batch reject failed for request', {
+      Logger.error("Batch reject failed for request", {
         requestId,
         error: error instanceof Error ? error.message : String(error),
       });
@@ -308,32 +337,32 @@ export async function batchRejectRequests(
  */
 export async function cancelValidationRequest(
   requestId: string,
-  volunteerId: string
+  volunteerId: string,
 ): Promise<void> {
   // Get the request
   const { data: request, error: requestError } = await supabase
-    .from('validation_requests')
-    .select('volunteer_id, self_reported_hours_id, status')
-    .eq('id', requestId)
+    .from("validation_requests")
+    .select("volunteer_id, self_reported_hours_id, status")
+    .eq("id", requestId)
     .single();
 
   if (requestError) {
-    throw new Error('Request not found');
+    throw new Error("Request not found");
   }
 
   if (request.volunteer_id !== volunteerId) {
-    throw new Error('Access denied');
+    throw new Error("Access denied");
   }
 
-  if (request.status !== 'pending') {
-    throw new Error('Can only cancel pending requests');
+  if (request.status !== "pending") {
+    throw new Error("Can only cancel pending requests");
   }
 
   // Update request status
   const { error: updateRequestError } = await supabase
-    .from('validation_requests')
-    .update({ status: 'cancelled' })
-    .eq('id', requestId);
+    .from("validation_requests")
+    .update({ status: "cancelled" })
+    .eq("id", requestId);
 
   if (updateRequestError) {
     throw new Error(`Failed to cancel request: ${updateRequestError.message}`);
@@ -341,15 +370,17 @@ export async function cancelValidationRequest(
 
   // Update hours record
   const { error: updateHoursError } = await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .update({
       validation_status: ValidationStatus.UNVALIDATED,
       validation_request_id: null,
     })
-    .eq('id', request.self_reported_hours_id);
+    .eq("id", request.self_reported_hours_id);
 
   if (updateHoursError) {
-    Logger.warn('Failed to update hours after cancellation', { error: updateHoursError });
+    Logger.warn("Failed to update hours after cancellation", {
+      error: updateHoursError,
+    });
   }
 }
 
@@ -360,31 +391,33 @@ export async function cancelValidationRequest(
  */
 export async function resubmitValidationRequest(
   originalRequestId: string,
-  volunteerId: string
+  volunteerId: string,
 ): Promise<string> {
   // Get the original request
   const { data: originalRequest, error: requestError } = await supabase
-    .from('validation_requests')
-    .select('*, self_reported_hours:self_reported_hours_id (activity_date)')
-    .eq('id', originalRequestId)
+    .from("validation_requests")
+    .select("*, self_reported_hours:self_reported_hours_id (activity_date)")
+    .eq("id", originalRequestId)
     .single();
 
   if (requestError) {
-    throw new Error('Original request not found');
+    throw new Error("Original request not found");
   }
 
   if (originalRequest.volunteer_id !== volunteerId) {
-    throw new Error('Access denied');
+    throw new Error("Access denied");
   }
 
-  if (originalRequest.status !== 'rejected') {
-    throw new Error('Can only resubmit rejected requests');
+  if (originalRequest.status !== "rejected") {
+    throw new Error("Can only resubmit rejected requests");
   }
 
   // Check if validation window is still open
-  const hoursData = originalRequest.self_reported_hours as { activity_date: string } | null;
+  const hoursData = originalRequest.self_reported_hours as {
+    activity_date: string;
+  } | null;
   if (!hoursData) {
-    throw new Error('Hours record not found');
+    throw new Error("Hours record not found");
   }
 
   const activityDate = new Date(hoursData.activity_date);
@@ -392,12 +425,12 @@ export async function resubmitValidationRequest(
   expiresAt.setDate(expiresAt.getDate() + VALIDATION_WINDOW_DAYS);
 
   if (expiresAt < new Date()) {
-    throw new Error('Validation window has expired');
+    throw new Error("Validation window has expired");
   }
 
   // Create new request as resubmission
   const { data: newRequest, error: insertError } = await supabase
-    .from('validation_requests')
+    .from("validation_requests")
     .insert({
       self_reported_hours_id: originalRequest.self_reported_hours_id,
       organization_id: originalRequest.organization_id,
@@ -406,7 +439,7 @@ export async function resubmitValidationRequest(
       is_resubmission: true,
       original_request_id: originalRequestId,
     })
-    .select('id')
+    .select("id")
     .single();
 
   if (insertError) {
@@ -415,14 +448,14 @@ export async function resubmitValidationRequest(
 
   // Update hours record
   await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .update({
       validation_status: ValidationStatus.PENDING,
       validation_request_id: newRequest.id,
       rejection_reason: null,
       rejection_notes: null,
     })
-    .eq('id', originalRequest.self_reported_hours_id);
+    .eq("id", originalRequest.self_reported_hours_id);
 
   return newRequest.id;
 }
@@ -435,17 +468,20 @@ export async function resubmitValidationRequest(
  */
 export async function getValidationHistory(
   selfReportedHoursId: string,
-  volunteerId: string
+  volunteerId: string,
 ): Promise<ValidationRequest[]> {
   const { data, error } = await supabase
-    .from('validation_requests')
-    .select('*')
-    .eq('self_reported_hours_id', selfReportedHoursId)
-    .eq('volunteer_id', volunteerId)
-    .order('created_at', { ascending: false });
+    .from("validation_requests")
+    .select("*")
+    .eq("self_reported_hours_id", selfReportedHoursId)
+    .eq("volunteer_id", volunteerId)
+    .order("created_at", { ascending: false });
 
   if (error) {
-    Logger.error('Error fetching validation history', { error, selfReportedHoursId });
+    Logger.error("Error fetching validation history", {
+      error,
+      selfReportedHoursId,
+    });
     throw new Error(`Failed to fetch history: ${error.message}`);
   }
 

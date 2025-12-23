@@ -48,7 +48,9 @@ function validateHours(hours: number): string | undefined {
  * @param description - The description text
  * @returns Error message or undefined
  */
-function validateDescription(description: string | undefined): string | undefined {
+function validateDescription(
+  description: string | undefined,
+): string | undefined {
   if (!description || description.length < MIN_DESCRIPTION_LENGTH) {
     return `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`;
   }

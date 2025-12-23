@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useEffect, useState } from 'react';
-import { useOrganizationSearch } from '@/hooks/useOrganizationSearch';
-import { OrganizationSearchResult } from '@/types/selfReportedHours';
-import { Search, X, Building2, Loader2 } from 'lucide-react';
+import React, { useCallback, useRef, useEffect, useState } from "react";
+import { useOrganizationSearch } from "@/hooks/useOrganizationSearch";
+import { OrganizationSearchResult } from "@/types/selfReportedHours";
+import { Search, X, Building2, Loader2 } from "lucide-react";
 
 interface OrganizationAutocompleteProps {
   onSelect: (org: OrganizationSearchResult | null) => void;
@@ -15,12 +15,9 @@ interface OrganizationAutocompleteProps {
  * @param props - Component props
  * @returns JSX element
  */
-export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> = ({
-  onSelect,
-  initialValue,
-  error,
-  disabled = false,
-}) => {
+export const OrganizationAutocomplete: React.FC<
+  OrganizationAutocompleteProps
+> = ({ onSelect, initialValue, error, disabled = false }) => {
   const {
     query,
     setQuery,
@@ -45,29 +42,38 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
 
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value);
-    setIsOpen(true);
-    if (selectedOrg) {
-      selectOrganization(null);
-      onSelect(null);
-    }
-  }, [setQuery, selectedOrg, selectOrganization, onSelect]);
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setQuery(e.target.value);
+      setIsOpen(true);
+      if (selectedOrg) {
+        selectOrganization(null);
+        onSelect(null);
+      }
+    },
+    [setQuery, selectedOrg, selectOrganization, onSelect],
+  );
 
-  const handleSelect = useCallback((org: OrganizationSearchResult) => {
-    selectOrganization(org);
-    onSelect(org);
-    setIsOpen(false);
-  }, [selectOrganization, onSelect]);
+  const handleSelect = useCallback(
+    (org: OrganizationSearchResult) => {
+      selectOrganization(org);
+      onSelect(org);
+      setIsOpen(false);
+    },
+    [selectOrganization, onSelect],
+  );
 
   const handleResultClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -92,11 +98,14 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
     }
   }, [query.length, selectedOrg]);
 
-  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Escape') {
-      setIsOpen(false);
-    }
-  }, []);
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Escape") {
+        setIsOpen(false);
+      }
+    },
+    [],
+  );
 
   return (
     <div ref={wrapperRef} className="relative">
@@ -118,8 +127,8 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
           placeholder="Search for an organization..."
           disabled={disabled}
           className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
-            error ? 'border-red-300' : 'border-gray-300'
-          } ${disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white'}`}
+            error ? "border-red-300" : "border-gray-300"
+          } ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
         />
         {(query || selectedOrg) && !disabled && (
           <button
@@ -132,9 +141,7 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
         )}
       </div>
 
-      {error && (
-        <p className="mt-1 text-sm text-red-600">{error}</p>
-      )}
+      {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
 
       {selectedOrg && (
         <div className="mt-2 p-3 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center gap-3">
@@ -144,7 +151,9 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
               {selectedOrg.name}
             </p>
             {selectedOrg.location && (
-              <p className="text-xs text-indigo-600 truncate">{selectedOrg.location}</p>
+              <p className="text-xs text-indigo-600 truncate">
+                {selectedOrg.location}
+              </p>
             )}
           </div>
           <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
@@ -169,7 +178,9 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
                     {org.name}
                   </p>
                   {org.location && (
-                    <p className="text-xs text-gray-500 truncate">{org.location}</p>
+                    <p className="text-xs text-gray-500 truncate">
+                      {org.location}
+                    </p>
                   )}
                 </div>
               </button>
@@ -178,11 +189,15 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
         </ul>
       )}
 
-      {isOpen && query.length >= 2 && results.length === 0 && !loading && !selectedOrg && (
-        <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm">
-          No organizations found matching &ldquo;{query}&rdquo;
-        </div>
-      )}
+      {isOpen &&
+        query.length >= 2 &&
+        results.length === 0 &&
+        !loading &&
+        !selectedOrg && (
+          <div className="absolute z-10 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg p-4 text-center text-gray-500 text-sm">
+            No organizations found matching &ldquo;{query}&rdquo;
+          </div>
+        )}
     </div>
   );
 };
