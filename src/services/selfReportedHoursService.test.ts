@@ -724,7 +724,6 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should apply organizationId filter", async () => {
-      const now = new Date();
       const mockData = [];
       setMockResult("self_reported_hours", { data: mockData, error: null });
 
@@ -840,7 +839,6 @@ describe("selfReportedHoursService", () => {
 
   describe("requestValidation - success path", () => {
     it("should successfully create validation request", async () => {
-      const now = new Date();
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const mockRecord = {
         id: "record-1",
