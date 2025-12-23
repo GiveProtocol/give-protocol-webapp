@@ -143,6 +143,7 @@ const SimpleTokenCheck: React.FC = () => {
           >
             Check Owner
           </Button>
+          </Button>
         </div>
 
         {loading && (
