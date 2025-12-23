@@ -18,16 +18,8 @@ import {
 } from "@/types/selfReportedHours";
 import { OrganizationAutocomplete } from "./OrganizationAutocomplete";
 import { DateHoursLocationRow } from "./DateHoursLocationRow";
-import {
-  validateSelfReportedHoursForm,
-  isFormValid,
-} from "./validation";
-import {
-  AlertTriangle,
-  Building2,
-  ChevronDown,
-  Check,
-} from "lucide-react";
+import { validateSelfReportedHoursForm, isFormValid } from "./validation";
+import { AlertTriangle, Building2, ChevronDown, Check } from "lucide-react";
 
 interface SelfReportedHoursFormProps {
   initialData?: Partial<SelfReportedHoursInput>;

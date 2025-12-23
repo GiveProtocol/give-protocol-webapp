@@ -130,7 +130,10 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
               "Your donation history will appear here once you receive contributions.",
             )}
           </p>
-          <Button variant="secondary" className="inline-flex items-center gap-2">
+          <Button
+            variant="secondary"
+            className="inline-flex items-center gap-2"
+          >
             <Share2 className="h-4 w-4" />
             {t("transactions.shareDonationPage", "Share donation page")}
           </Button>

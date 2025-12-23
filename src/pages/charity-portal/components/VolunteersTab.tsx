@@ -17,7 +17,9 @@ interface VolunteersTabProps {
   pendingHours: VolunteerHours[];
 }
 
-export const VolunteersTab: React.FC<VolunteersTabProps> = ({ pendingHours }) => {
+export const VolunteersTab: React.FC<VolunteersTabProps> = ({
+  pendingHours,
+}) => {
   const { t } = useTranslation();
 
   return (

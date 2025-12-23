@@ -124,7 +124,12 @@ export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
   const [activeTab, setActiveTab] = useState<
-    "transactions" | "volunteers" | "applications" | "opportunities" | "causes" | "validation"
+    | "transactions"
+    | "volunteers"
+    | "applications"
+    | "opportunities"
+    | "causes"
+    | "validation"
   >("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
   const [sortConfig, setSortConfig] = useState<{

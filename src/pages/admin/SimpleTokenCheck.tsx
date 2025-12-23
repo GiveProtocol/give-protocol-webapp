@@ -73,9 +73,12 @@ const SimpleTokenCheck: React.FC = () => {
     }
   }, [contract, address]);
 
-  const handleTokenAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-    setTokenAddress(e.target.value);
-  }, []);
+  const handleTokenAddressChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTokenAddress(e.target.value);
+    },
+    [],
+  );
 
   const handleUseZeroAddress = useCallback(() => {
     setTokenAddress(ZeroAddress);
