@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
@@ -113,6 +113,25 @@ export const AddTokenToDistributionForm: React.FC = () => {
     [tokenAddress, tokenPrice, provider],
   );
 
+  const handleTokenAddressChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTokenAddress(e.target.value);
+    },
+    [],
+  );
+
+  const handleTokenPriceChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTokenPrice(e.target.value);
+    },
+    [],
+  );
+
+  const handleUseDevToken = useCallback(() => {
+    setTokenAddress("0x7Cb6b60Ca0e18a0BceB24Bd3C99d8894Ed199abD");
+    setTokenPrice("0.025");
+  }, []);
+
   if (!isConnected) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl">
@@ -162,7 +181,7 @@ export const AddTokenToDistributionForm: React.FC = () => {
             id="token-address"
             type="text"
             value={tokenAddress}
-            onChange={(e) => setTokenAddress(e.target.value)}
+            onChange={handleTokenAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
@@ -184,7 +203,7 @@ export const AddTokenToDistributionForm: React.FC = () => {
             step="0.00000001"
             min="0"
             value={tokenPrice}
-            onChange={(e) => setTokenPrice(e.target.value)}
+            onChange={handleTokenPriceChange}
             placeholder="e.g., 1.00 for stablecoins, 0.025 for GLMR"
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
@@ -218,10 +237,7 @@ export const AddTokenToDistributionForm: React.FC = () => {
             </code>
             <button
               type="button"
-              onClick={() => {
-                setTokenAddress("0x7Cb6b60Ca0e18a0BceB24Bd3C99d8894Ed199abD");
-                setTokenPrice("0.025");
-              }}
+              onClick={handleUseDevToken}
               className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
             >
               Click to use (price: $0.025)

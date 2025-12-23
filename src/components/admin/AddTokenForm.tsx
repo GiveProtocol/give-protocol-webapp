@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, type ChangeEvent } from "react";
 import { useContract } from "@/hooks/web3/useContract";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Button } from "@/components/ui/Button";
@@ -81,6 +81,17 @@ export const AddTokenForm: React.FC = () => {
     [contract, tokenAddress],
   );
 
+  const handleTokenAddressChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTokenAddress(e.target.value);
+    },
+    [],
+  );
+
+  const handleUseZeroAddress = useCallback(() => {
+    setTokenAddress(ZeroAddress);
+  }, []);
+
   if (!isConnected) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl">
@@ -131,7 +142,7 @@ export const AddTokenForm: React.FC = () => {
             id="token-address"
             type="text"
             value={tokenAddress}
-            onChange={(e) => setTokenAddress(e.target.value)}
+            onChange={handleTokenAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
@@ -162,7 +173,7 @@ export const AddTokenForm: React.FC = () => {
         </code>
         <button
           type="button"
-          onClick={() => setTokenAddress(ZeroAddress)}
+          onClick={handleUseZeroAddress}
           className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
         >
           Click to use this address

@@ -69,6 +69,17 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
     setIsOpen(false);
   }, [selectOrganization, onSelect]);
 
+  const handleResultClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const orgId = e.currentTarget.dataset.orgId;
+      const org = results.find((r) => r.id === orgId);
+      if (org) {
+        handleSelect(org);
+      }
+    },
+    [results, handleSelect],
+  );
+
   const handleClear = useCallback(() => {
     clearSelection();
     onSelect(null);
@@ -148,7 +159,8 @@ export const OrganizationAutocomplete: React.FC<OrganizationAutocompleteProps> =
             <li key={org.id}>
               <button
                 type="button"
-                onClick={() => handleSelect(org)}
+                data-org-id={org.id}
+                onClick={handleResultClick}
                 className="w-full text-left px-4 py-3 hover:bg-gray-50 focus:bg-gray-50 focus:outline-none flex items-center gap-3"
               >
                 <Building2 className="h-5 w-5 text-gray-400 flex-shrink-0" />

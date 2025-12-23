@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, ChangeEvent } from "react";
 import { useContract } from "@/hooks/web3/useContract";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Button } from "@/components/ui/Button";
@@ -73,6 +73,14 @@ const SimpleTokenCheck: React.FC = () => {
     }
   }, [contract, address]);
 
+  const handleTokenAddressChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setTokenAddress(e.target.value);
+  }, []);
+
+  const handleUseZeroAddress = useCallback(() => {
+    setTokenAddress(ZeroAddress);
+  }, []);
+
   if (!isConnected) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -110,13 +118,13 @@ const SimpleTokenCheck: React.FC = () => {
             id="tokenAddress"
             type="text"
             value={tokenAddress}
-            onChange={(e) => setTokenAddress(e.target.value)}
+            onChange={handleTokenAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500"
           />
           <button
             type="button"
-            onClick={() => setTokenAddress(ZeroAddress)}
+            onClick={handleUseZeroAddress}
             className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
           >
             Use zero address (native token)

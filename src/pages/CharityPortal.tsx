@@ -3,17 +3,8 @@ import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import {
-  DollarSign,
-  Users,
-  Clock,
-  Download,
-  Award,
-  ExternalLink,
   Plus,
   CheckCircle,
-  X,
-  ChevronUp,
-  ChevronDown,
   MapPin,
   Globe,
   Trash2,
@@ -24,10 +15,14 @@ import {
   Briefcase,
   Heart,
   RefreshCw,
-  TrendingUp,
-  FileText,
-  Share2,
+  Clock,
 } from "lucide-react";
+import {
+  TransactionsTab,
+  VolunteersTab,
+  ApplicationsTab,
+  StatsCards,
+} from "./charity-portal/components";
 import {
   MAX_OPPORTUNITIES_PER_CHARITY,
   MAX_CAUSES_PER_CHARITY,
@@ -36,7 +31,6 @@ import { ValidationQueueDashboard } from "@/components/charity/validation";
 import { Button } from "@/components/ui/Button";
 import { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
-import { formatDate } from "@/utils/date";
 import { useTranslation } from "@/hooks/useTranslation";
 import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 import { supabase } from "@/lib/supabase";
@@ -606,89 +600,10 @@ export const CharityPortal: React.FC = () => {
     [],
   );
 
-  // Individual sort handlers for better performance
-  const handleSortByDate = useCallback(() => handleSort("date"), [handleSort]);
-  const handleSortByType = useCallback(() => handleSort("type"), [handleSort]);
-  const handleSortByOrganization = useCallback(
-    () => handleSort("organization"),
-    [handleSort],
-  );
-  const handleSortByStatus = useCallback(
-    () => handleSort("status"),
-    [handleSort],
-  );
-
   // Modal close handler
   const handleCloseExportModal = useCallback(
     () => setShowExportModal(false),
     [],
-  );
-
-  const sortedTransactions = useCallback(() => {
-    if (!sortConfig.key) return transactions;
-
-    return [...transactions].sort((a, b) => {
-      let aValue: string | number;
-      let bValue: string | number;
-
-      switch (sortConfig.key) {
-        case "date":
-          aValue = new Date(a.timestamp).getTime();
-          bValue = new Date(b.timestamp).getTime();
-          break;
-        case "type":
-          aValue = a.purpose.toLowerCase();
-          bValue = b.purpose.toLowerCase();
-          break;
-        case "status":
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
-          break;
-        case "organization":
-          aValue = (
-            a.metadata?.organization ||
-            a.metadata?.donor ||
-            "Anonymous"
-          ).toLowerCase();
-          bValue = (
-            b.metadata?.organization ||
-            b.metadata?.donor ||
-            "Anonymous"
-          ).toLowerCase();
-          break;
-        default:
-          return 0;
-      }
-
-      // Use localeCompare for strings, numeric comparison for numbers
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        const compareResult = aValue.localeCompare(bValue);
-        return sortConfig.direction === "asc" ? compareResult : -compareResult;
-      } else {
-        // Numeric comparison for timestamps and other numbers
-        if (aValue < bValue) {
-          return sortConfig.direction === "asc" ? -1 : 1;
-        }
-        if (aValue > bValue) {
-          return sortConfig.direction === "asc" ? 1 : -1;
-        }
-        return 0;
-      }
-    });
-  }, [transactions, sortConfig]);
-
-  const getSortIcon = useCallback(
-    (columnKey: "date" | "type" | "status" | "organization") => {
-      if (sortConfig.key !== columnKey) {
-        return <ChevronUp className="h-4 w-4 text-gray-300" />;
-      }
-      return sortConfig.direction === "asc" ? (
-        <ChevronUp className="h-4 w-4 text-gray-600" />
-      ) : (
-        <ChevronDown className="h-4 w-4 text-gray-600" />
-      );
-    },
-    [sortConfig],
   );
 
   if (!user) {
@@ -830,101 +745,11 @@ export const CharityPortal: React.FC = () => {
         </div>
 
         {/* Enhanced Metrics Grid */}
-        <div className="grid gap-6 mb-8 grid-cols-2 lg:grid-cols-4">
-          {/* Donations Card */}
-          <button
-            onClick={handleTransactionsTab}
-            className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-left group cursor-pointer"
-          >
-            <div className="flex items-center">
-              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shadow-inner">
-                <DollarSign className="h-7 w-7 text-indigo-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">
-                  {t("dashboard.totalDonations")}
-                </p>
-                <p className="text-3xl font-bold text-gray-900">
-                  <CurrencyDisplay amount={charityStats.totalDonated} />
-                </p>
-                <p className="text-xs text-green-600 flex items-center mt-1">
-                  <TrendingUp className="h-3 w-3 mr-1" />
-                  {t("dashboard.thisMonth", "This month")}
-                </p>
-              </div>
-            </div>
-            <div className="h-1 w-full bg-indigo-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
-
-          {/* Volunteers Card */}
-          <button
-            onClick={handleVolunteersTab}
-            className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-left group cursor-pointer"
-          >
-            <div className="flex items-center">
-              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center shadow-inner">
-                <Users className="h-7 w-7 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">
-                  {t("charity.activeVolunteers")}
-                </p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {charityStats.activeVolunteers}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {t("dashboard.verified", "Verified volunteers")}
-                </p>
-              </div>
-            </div>
-            <div className="h-1 w-full bg-green-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
-
-          {/* Hours Card */}
-          <button
-            onClick={handleVolunteersTab}
-            className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-left group cursor-pointer"
-          >
-            <div className="flex items-center">
-              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-inner">
-                <Clock className="h-7 w-7 text-purple-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">
-                  {t("dashboard.volunteerHours")}
-                </p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {charityStats.volunteerHours}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {t("dashboard.hoursLogged", "Hours logged")}
-                </p>
-              </div>
-            </div>
-            <div className="h-1 w-full bg-purple-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </button>
-
-          {/* Skills Card */}
-          <div className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 group">
-            <div className="flex items-center">
-              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-amber-100 to-amber-200 flex items-center justify-center shadow-inner">
-                <Award className="h-7 w-7 text-amber-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm font-medium text-gray-500">
-                  {t("dashboard.skillsEndorsed")}
-                </p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {charityStats.skillsEndorsed}
-                </p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {t("dashboard.endorsements", "Endorsements")}
-                </p>
-              </div>
-            </div>
-            <div className="h-1 w-full bg-amber-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
-          </div>
-        </div>
+        <StatsCards
+          stats={charityStats}
+          onTransactionsClick={handleTransactionsTab}
+          onVolunteersClick={handleVolunteersTab}
+        />
 
         {/* Enhanced Tabs with Icons */}
         <div className="mb-6">
@@ -1012,304 +837,22 @@ export const CharityPortal: React.FC = () => {
 
         {/* Transaction History */}
         {activeTab === "transactions" && (
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 mb-8">
-            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {t("charity.transactions")}
-              </h2>
-              <Button
-                onClick={handleShowExportModal}
-                variant="secondary"
-                className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
-              >
-                <Download className="h-4 w-4 text-indigo-600" />
-                {t("contributions.export")}
-              </Button>
-            </div>
-            {transactions.length > 0 ? (
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                        onClick={handleSortByDate}
-                      >
-                        <span className="flex items-center gap-1">
-                          {t("contributions.date")}
-                          {getSortIcon("date")}
-                        </span>
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                        onClick={handleSortByType}
-                      >
-                        <span className="flex items-center gap-1">
-                          {t("contributions.type")}
-                          {getSortIcon("type")}
-                        </span>
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                        onClick={handleSortByOrganization}
-                      >
-                        <span className="flex items-center gap-1">
-                          {t("donor.volunteer", "Donor/Volunteer")}
-                          {getSortIcon("organization")}
-                        </span>
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("contributions.details")}
-                      </th>
-                      <th
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100 select-none"
-                        onClick={handleSortByStatus}
-                      >
-                        <span className="flex items-center gap-1">
-                          {t("contributions.status")}
-                          {getSortIcon("status")}
-                        </span>
-                      </th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        {t("contributions.verification")}
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {sortedTransactions().map((transaction) => (
-                      <tr
-                        key={transaction.id}
-                        className="hover:bg-gray-50 transition-colors"
-                      >
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {formatDate(transaction.timestamp, true)}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {t(
-                            `contribution.type.${transaction.purpose.toLowerCase().replace(" ", "")}`,
-                            transaction.purpose,
-                          )}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          {transaction.metadata?.organization ||
-                            transaction.metadata?.donor ||
-                            t("donor.anonymous", "Anonymous")}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                          <span className="font-medium">
-                            {transaction.amount} {transaction.cryptoType}
-                          </span>
-                          <span className="text-gray-500 ml-1">
-                            (
-                            <CurrencyDisplay
-                              amount={transaction.fiatValue || 0}
-                            />
-                            )
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap">
-                          <span
-                            className={`px-2.5 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                              transaction.status === "completed"
-                                ? "bg-green-100 text-green-800"
-                                : transaction.status === "pending"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
-                            }`}
-                          >
-                            {t(
-                              `status.${transaction.status}`,
-                              transaction.status.charAt(0).toUpperCase() +
-                                transaction.status.slice(1),
-                            )}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {transaction.hash ? (
-                            <a
-                              href={`https://moonscan.io/tx/${transaction.hash}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
-                            >
-                              <span className="truncate max-w-[100px]">
-                                {transaction.hash.substring(0, 10)}...
-                              </span>
-                              <ExternalLink className="h-3 w-3" />
-                            </a>
-                          ) : (
-                            t("common.notAvailable", "N/A")
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <div className="py-16 px-6 text-center">
-                <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-                  <FileText className="h-8 w-8 text-gray-400" />
-                </div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
-                  {t("transactions.noTransactionsYet", "No transactions yet")}
-                </h3>
-                <p className="text-gray-500 mb-6 max-w-sm mx-auto">
-                  {t(
-                    "transactions.noTransactionsDescription",
-                    "Your donation history will appear here once you receive contributions.",
-                  )}
-                </p>
-                <Button
-                  variant="secondary"
-                  className="inline-flex items-center gap-2"
-                >
-                  <Share2 className="h-4 w-4" />
-                  {t("transactions.shareDonationPage", "Share donation page")}
-                </Button>
-              </div>
-            )}
-          </div>
+          <TransactionsTab
+            transactions={transactions}
+            sortConfig={sortConfig}
+            onSort={handleSort}
+            onShowExportModal={handleShowExportModal}
+          />
         )}
 
         {/* Volunteer Hours Verification */}
         {activeTab === "volunteers" && (
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 mb-8">
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex justify-between items-center">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  {t("volunteer.pendingHours", "Pending Volunteer Hours")}
-                </h2>
-                <Button
-                  variant="secondary"
-                  className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition-all"
-                >
-                  <Download className="h-4 w-4 text-indigo-600" />
-                  {t("contributions.export")}
-                </Button>
-              </div>
-            </div>
-            <div className="p-6 space-y-4">
-              {pendingHours.length > 0 ? (
-                pendingHours.map((hours) => (
-                  <div
-                    key={hours.id}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-5 flex justify-between items-start hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex-grow pr-4">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {hours.volunteerName}
-                      </h3>
-                      <p className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-purple-500" />
-                        <span className="font-medium">
-                          {hours.hours} {t("volunteer.hours")}
-                        </span>
-                        <span className="text-gray-400">|</span>
-                        {formatDate(hours.date_performed)}
-                      </p>
-                      {hours.description && (
-                        <p className="text-sm text-gray-600 bg-white rounded-lg p-3 mt-2">
-                          {hours.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      <Button className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        {t("volunteer.verify")}
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        className="flex items-center gap-2"
-                      >
-                        <X className="h-4 w-4" />
-                        {t("volunteer.reject")}
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-16 text-center">
-                  <div className="mx-auto w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mb-4">
-                    <Clock className="h-8 w-8 text-purple-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("volunteer.allCaughtUp", "All caught up!")}
-                  </h3>
-                  <p className="text-gray-500 max-w-sm mx-auto">
-                    {t(
-                      "volunteer.noPendingHours",
-                      "No pending volunteer hours to verify.",
-                    )}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+          <VolunteersTab pendingHours={pendingHours} />
         )}
 
         {/* Volunteer Applications */}
         {activeTab === "applications" && (
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 mb-8">
-            <div className="p-6 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">
-                {t("volunteer.pendingApplications", "Pending Applications")}
-              </h2>
-            </div>
-            <div className="p-6 space-y-4">
-              {pendingApplications.length > 0 ? (
-                pendingApplications.map((application) => (
-                  <div
-                    key={application.id}
-                    className="bg-gray-50 border border-gray-200 rounded-xl p-5 flex justify-between items-start hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex-grow">
-                      <h3 className="text-lg font-medium text-gray-900">
-                        {application.full_name}
-                      </h3>
-                      <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
-                        <Briefcase className="h-4 w-4 text-indigo-500" />
-                        {t("volunteer.appliedFor")}:{" "}
-                        <span className="font-medium">
-                          {application.opportunity?.title ||
-                            "Unknown Opportunity"}
-                        </span>
-                      </p>
-                    </div>
-                    <div className="flex gap-2 ml-4">
-                      <Button className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" />
-                        {t("volunteer.accept")}
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        className="flex items-center gap-2"
-                      >
-                        <X className="h-4 w-4" />
-                        {t("volunteer.reject")}
-                      </Button>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="py-16 text-center">
-                  <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                    <ClipboardList className="h-8 w-8 text-green-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
-                    {t("volunteer.noApplications", "No pending applications")}
-                  </h3>
-                  <p className="text-gray-500 max-w-sm mx-auto">
-                    {t(
-                      "volunteer.noPendingApplications",
-                      "No pending applications to review.",
-                    )}
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+          <ApplicationsTab pendingApplications={pendingApplications} />
         )}
 
         {/* Volunteer Opportunities Management */}

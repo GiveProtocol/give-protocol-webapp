@@ -74,16 +74,12 @@ function mapRowToSelfReportedHours(row: Record<string, unknown>): SelfReportedHo
 export async function getOrganizationValidationQueue(
   organizationId: string
 ): Promise<ValidationQueueItem[]> {
+  // First, fetch validation requests with self_reported_hours
   const { data, error } = await supabase
     .from('validation_requests')
     .select(`
       *,
-      self_reported_hours:self_reported_hours_id (*),
-      volunteer:volunteer_id (
-        id,
-        email,
-        raw_user_meta_data
-      )
+      self_reported_hours:self_reported_hours_id (*)
     `)
     .eq('organization_id', organizationId)
     .eq('status', 'pending')
@@ -94,20 +90,35 @@ export async function getOrganizationValidationQueue(
     throw new Error(`Failed to fetch validation queue: ${error.message}`);
   }
 
+  if (!data || data.length === 0) {
+    return [];
+  }
+
+  // Fetch volunteer profiles separately
+  const volunteerIds = [...new Set(data.map((row) => row.volunteer_id))];
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('user_id, display_name, email')
+    .in('user_id', volunteerIds);
+
+  const profileMap = new Map(
+    (profiles || []).map((p) => [p.user_id, p])
+  );
+
   const now = new Date().getTime();
 
-  return (data || []).map((row) => {
+  return data.map((row) => {
     const request = mapRowToValidationRequest(row);
     const hoursData = row.self_reported_hours as Record<string, unknown>;
-    const volunteerData = row.volunteer as { id: string; email: string; raw_user_meta_data?: { full_name?: string } } | null;
+    const volunteerProfile = profileMap.get(row.volunteer_id);
 
     const daysUntilExpiration = Math.ceil((request.expiresAt - now) / (1000 * 60 * 60 * 24));
 
     return {
       requestId: request.id,
       selfReportedHours: mapRowToSelfReportedHours(hoursData),
-      volunteerName: volunteerData?.raw_user_meta_data?.full_name || 'Anonymous Volunteer',
-      volunteerEmail: volunteerData?.email || '',
+      volunteerName: volunteerProfile?.display_name || 'Anonymous Volunteer',
+      volunteerEmail: volunteerProfile?.email || '',
       daysUntilExpiration: Math.max(0, daysUntilExpiration),
       isResubmission: request.isResubmission,
     };

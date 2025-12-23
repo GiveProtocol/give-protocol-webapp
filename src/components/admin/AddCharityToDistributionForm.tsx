@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, type ChangeEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { ethers } from "ethers";
@@ -89,6 +89,17 @@ export const AddCharityToDistributionForm: React.FC = () => {
     [charityAddress, provider],
   );
 
+  const handleCharityAddressChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setCharityAddress(e.target.value);
+    },
+    [],
+  );
+
+  const handleUseTestAddress = useCallback(() => {
+    setCharityAddress("0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75");
+  }, []);
+
   if (!isConnected) {
     return (
       <div className="bg-white p-6 rounded-lg shadow-md max-w-2xl">
@@ -137,7 +148,7 @@ export const AddCharityToDistributionForm: React.FC = () => {
             id="charity-address-distribution"
             type="text"
             value={charityAddress}
-            onChange={(e) => setCharityAddress(e.target.value)}
+            onChange={handleCharityAddressChange}
             placeholder="0x..."
             className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
           />
@@ -168,9 +179,7 @@ export const AddCharityToDistributionForm: React.FC = () => {
         </code>
         <button
           type="button"
-          onClick={() =>
-            setCharityAddress("0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75")
-          }
+          onClick={handleUseTestAddress}
           className="mt-2 text-sm text-blue-600 hover:text-blue-800 font-medium"
         >
           Click to use this address
