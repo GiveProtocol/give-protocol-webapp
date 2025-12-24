@@ -1,9 +1,12 @@
-import React, { useCallback } from 'react';
-import { Button } from '@/components/ui/Button';
-import { ValidationStatusBadge } from './ValidationStatusBadge';
-import { ValidationQueueItem as QueueItemType, ACTIVITY_TYPE_LABELS } from '@/types/selfReportedHours';
-import { formatDate } from '@/utils/date';
-import { User, Calendar, Clock, Eye, CheckCircle, XCircle } from 'lucide-react';
+import React, { useCallback } from "react";
+import { Button } from "@/components/ui/Button";
+import { ValidationStatusBadge } from "./ValidationStatusBadge";
+import {
+  ValidationQueueItem as QueueItemType,
+  ACTIVITY_TYPE_LABELS,
+} from "@/types/selfReportedHours";
+import { formatDate } from "@/utils/date";
+import { User, Calendar, Clock, Eye, CheckCircle, XCircle } from "lucide-react";
 
 interface ValidationQueueItemProps {
   item: QueueItemType;
@@ -19,17 +22,15 @@ interface ValidationQueueItemProps {
  * @param props - Component props
  * @returns JSX element
  */
-export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = ({
-  item,
-  isSelected,
-  onSelect,
-  onView,
-  onQuickApprove,
-  onQuickReject,
-}) => {
-  const handleCheckboxChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    onSelect(item.id, e.target.checked);
-  }, [item.id, onSelect]);
+export const ValidationQueueItemComponent: React.FC<
+  ValidationQueueItemProps
+> = ({ item, isSelected, onSelect, onView, onQuickApprove, onQuickReject }) => {
+  const handleCheckboxChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      onSelect(item.id, e.target.checked);
+    },
+    [item.id, onSelect],
+  );
 
   const handleView = useCallback(() => {
     onView(item);
@@ -43,12 +44,17 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
     onQuickReject(item.id);
   }, [item.id, onQuickReject]);
 
-  const activityTypeLabel = ACTIVITY_TYPE_LABELS[item.activityType] || 'Unknown';
+  const activityTypeLabel =
+    ACTIVITY_TYPE_LABELS[item.activityType] || "Unknown";
 
   return (
-    <div className={`p-4 border rounded-lg transition-colors ${
-      isSelected ? 'border-indigo-300 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'
-    }`}>
+    <div
+      className={`p-4 border rounded-lg transition-colors ${
+        isSelected
+          ? "border-indigo-300 bg-indigo-50"
+          : "border-gray-200 hover:border-gray-300"
+      }`}
+    >
       <div className="flex items-start gap-4">
         {/* Checkbox */}
         <div className="pt-1">
@@ -67,7 +73,9 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
               {/* Volunteer Info */}
               <div className="flex items-center gap-2 mb-1">
                 <User className="h-4 w-4 text-gray-400" />
-                <span className="font-medium text-gray-900 truncate">{item.volunteerName}</span>
+                <span className="font-medium text-gray-900 truncate">
+                  {item.volunteerName}
+                </span>
                 {item.isResubmission && (
                   <span className="text-xs bg-amber-100 text-amber-700 px-1.5 py-0.5 rounded">
                     Appeal
@@ -77,8 +85,10 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
 
               {/* Activity Summary */}
               <p className="text-sm text-gray-600 mb-2">
-                <span className="font-medium">{item.hours} {item.hours === 1 ? 'hour' : 'hours'}</span>
-                {' · '}
+                <span className="font-medium">
+                  {item.hours} {item.hours === 1 ? "hour" : "hours"}
+                </span>
+                {" · "}
                 {activityTypeLabel}
               </p>
 
@@ -98,7 +108,10 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
                   Submitted {formatDate(item.createdAt, false)}
                 </span>
                 {item.daysRemaining !== undefined && (
-                  <ValidationStatusBadge status="pending" daysRemaining={item.daysRemaining} />
+                  <ValidationStatusBadge
+                    status="pending"
+                    daysRemaining={item.daysRemaining}
+                  />
                 )}
               </div>
             </div>

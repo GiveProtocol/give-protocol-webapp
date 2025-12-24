@@ -1,9 +1,9 @@
-import React from 'react';
-import { ValidationQueueItemComponent } from './ValidationQueueItem';
-import { ValidationBatchActions } from './ValidationBatchActions';
-import { ValidationQueueItem } from '@/types/selfReportedHours';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { ClipboardList } from 'lucide-react';
+import React from "react";
+import { ValidationQueueItemComponent } from "./ValidationQueueItem";
+import { ValidationBatchActions } from "./ValidationBatchActions";
+import { ValidationQueueItem } from "@/types/selfReportedHours";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { ClipboardList } from "lucide-react";
 
 interface ValidationQueueListProps {
   items: ValidationQueueItem[];
@@ -55,7 +55,8 @@ export const ValidationQueueList: React.FC<ValidationQueueListProps> = ({
           No pending validation requests
         </h3>
         <p className="text-gray-500">
-          When volunteers submit hours for your organization, they will appear here.
+          When volunteers submit hours for your organization, they will appear
+          here.
         </p>
       </div>
     );
