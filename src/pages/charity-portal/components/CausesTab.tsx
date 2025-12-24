@@ -58,7 +58,7 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
             <p className="text-gray-500 mb-6 max-w-sm mx-auto">
               {t(
                 "cause.noCausesYet",
-                "Create your first cause to start fundraising for specific projects."
+                "Create your first cause to start fundraising for specific projects.",
               )}
             </p>
             <Link to="/charity-portal/create-cause">
@@ -157,9 +157,14 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
             {/* Funding Progress */}
             <div className="bg-gray-50 rounded-lg p-4">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-gray-600 font-medium">Funding Progress</span>
+                <span className="text-gray-600 font-medium">
+                  Funding Progress
+                </span>
                 <span className="font-semibold text-gray-900">
-                  {Math.round((cause.raised_amount / cause.target_amount) * 100)}%
+                  {Math.round(
+                    (cause.raised_amount / cause.target_amount) * 100,
+                  )}
+                  %
                 </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3 mb-2">

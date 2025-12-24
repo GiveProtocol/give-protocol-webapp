@@ -1,6 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Plus, MapPin, Globe, Clock, Trash2, Edit, Briefcase } from "lucide-react";
+import {
+  Plus,
+  MapPin,
+  Globe,
+  Clock,
+  Trash2,
+  Edit,
+  Briefcase,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useTranslation } from "@/hooks/useTranslation";
 import { MAX_OPPORTUNITIES_PER_CHARITY } from "@/types/charity";
@@ -58,7 +66,7 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
             <p className="text-gray-500 mb-6 max-w-sm mx-auto">
               {t(
                 "volunteer.noOpportunitiesYet",
-                "Create your first volunteer opportunity to start recruiting helpers."
+                "Create your first volunteer opportunity to start recruiting helpers.",
               )}
             </p>
             <Link to="/charity-portal/create-opportunity">
@@ -81,7 +89,8 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
             {t("volunteer.opportunities", "Volunteer Opportunities")}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
-            {activeCount} of {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
+            {activeCount} of {MAX_OPPORTUNITIES_PER_CHARITY} active
+            opportunities
           </p>
         </div>
         <Link to="/charity-portal/create-opportunity">
