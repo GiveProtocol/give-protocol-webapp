@@ -2,6 +2,7 @@
  * Mock implementation of SettingsContext for testing
  */
 import React, { createContext, useContext } from "react";
+import PropTypes from "prop-types";
 
 const mockValue = {
   language: "en",
@@ -26,3 +27,7 @@ export const useSettings = () => useContext(SettingsContext);
 
 export const SettingsProvider = ({ children }) =>
   React.createElement(SettingsContext.Provider, { value: mockValue }, children);
+
+SettingsProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

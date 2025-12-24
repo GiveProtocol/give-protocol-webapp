@@ -4,8 +4,8 @@ import { RejectionReason, REJECTION_REASON_LABELS } from '@/types/selfReportedHo
 interface RejectionReasonSelectProps {
   value: RejectionReason | '';
   notes: string;
-  onReasonChange: (reason: RejectionReason | '') => void;
-  onNotesChange: (notes: string) => void;
+  onReasonChange: (_reason: RejectionReason | '') => void;
+  onNotesChange: (_notes: string) => void;
   error?: string;
 }
 

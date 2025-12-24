@@ -22,11 +22,11 @@ interface ValidationResponseModalProps {
   item: ValidationQueueItem;
   isOpen: boolean;
   onClose: () => void;
-  onApprove: (requestId: string) => Promise<boolean>;
+  onApprove: (_requestId: string) => Promise<boolean>;
   onReject: (
-    requestId: string,
-    reason: RejectionReason,
-    notes?: string,
+    _requestId: string,
+    _reason: RejectionReason,
+    _notes?: string,
   ) => Promise<boolean>;
 }
 

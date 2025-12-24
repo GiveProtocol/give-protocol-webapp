@@ -9,12 +9,12 @@ interface ValidationQueueListProps {
   items: ValidationQueueItem[];
   loading: boolean;
   selectedIds: Set<string>;
-  onSelect: (id: string, selected: boolean) => void;
+  onSelect: (_id: string, _selected: boolean) => void;
   onSelectAll: () => void;
   onClearSelection: () => void;
-  onView: (item: ValidationQueueItem) => void;
-  onQuickApprove: (id: string) => void;
-  onQuickReject: (id: string) => void;
+  onView: (_item: ValidationQueueItem) => void;
+  onQuickApprove: (_id: string) => void;
+  onQuickReject: (_id: string) => void;
   onBatchApprove: () => void;
   onBatchReject: () => void;
   batchProcessing: boolean;

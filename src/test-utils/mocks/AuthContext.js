@@ -2,6 +2,7 @@
  * Mock implementation of AuthContext for testing
  */
 import React, { createContext, useContext } from "react";
+import PropTypes from "prop-types";
 
 const mockValue = {
   user: null,
@@ -37,3 +38,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) =>
   React.createElement(AuthContext.Provider, { value: mockValue }, children);
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

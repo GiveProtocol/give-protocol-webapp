@@ -8,10 +8,10 @@ import { User, Calendar, Clock, Eye, CheckCircle, XCircle } from 'lucide-react';
 interface ValidationQueueItemProps {
   item: QueueItemType;
   isSelected: boolean;
-  onSelect: (id: string, selected: boolean) => void;
-  onView: (item: QueueItemType) => void;
-  onQuickApprove: (id: string) => void;
-  onQuickReject: (id: string) => void;
+  onSelect: (_id: string, _selected: boolean) => void;
+  onView: (_item: QueueItemType) => void;
+  onQuickApprove: (_id: string) => void;
+  onQuickReject: (_id: string) => void;
 }
 
 /**

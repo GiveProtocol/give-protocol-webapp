@@ -2,6 +2,7 @@
  * Mock implementation of Web3Context for testing
  */
 import React, { createContext, useContext } from "react";
+import PropTypes from "prop-types";
 
 const mockValue = {
   provider: null,
@@ -28,3 +29,7 @@ export const useWeb3 = () => useContext(Web3Context);
 
 export const Web3Provider = ({ children }) =>
   React.createElement(Web3Context.Provider, { value: mockValue }, children);
+
+Web3Provider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

@@ -71,7 +71,7 @@ export const createHookMocks = () => ({
 
 interface MockButtonProps {
   children?: React.ReactNode;
-  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClick?: (_e: React.MouseEvent<HTMLButtonElement>) => void;
   variant?: string;
   disabled?: boolean;
   className?: string;
@@ -80,7 +80,7 @@ interface MockButtonProps {
 
 interface MockInputProps {
   value?: string | number;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange?: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   className?: string;
   [key: string]: unknown;
