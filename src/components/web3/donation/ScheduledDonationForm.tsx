@@ -297,13 +297,10 @@ export function ScheduledDonationForm({
     setAmount(newAmount);
   }, []);
 
-  const handleTokenSelect = useCallback(
-    (token: TokenConfig) => {
-      setSelectedToken(token);
-      setAmount(0); // Reset amount when token changes
-    },
-    [],
-  );
+  const handleTokenSelect = useCallback((token: TokenConfig) => {
+    setSelectedToken(token);
+    setAmount(0); // Reset amount when token changes
+  }, []);
 
   const handleMonthsChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -391,7 +388,7 @@ export function ScheduledDonationForm({
         // Check current allowance before approving
         const currentAllowance = await tokenContract.allowance(
           address,
-          distributionAddress
+          distributionAddress,
         );
 
         if (currentAllowance < parsedAmount) {
