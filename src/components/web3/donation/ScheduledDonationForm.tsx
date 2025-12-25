@@ -8,7 +8,7 @@ import { useToast } from "@/contexts/ToastContext";
 import { Logger } from "@/utils/logger";
 import { ethers } from "ethers";
 import { getContractAddress } from "@/config/contracts";
-import { MOONBEAM_TOKENS } from "@/config/tokens";
+import { MOONBEAM_TOKENS, TokenConfig } from "@/config/tokens";
 import { TokenSelector } from "./TokenSelector";
 import { DualAmountInput } from "./DualAmountInput";
 import { FiatPresets } from "./FiatPresets";
@@ -20,6 +20,9 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
+
+// Filter to only ERC20 tokens (native tokens not supported by the distribution contract)
+const ERC20_TOKENS = MOONBEAM_TOKENS.filter((token) => !token.isNative);
 
 // Error type guards for transaction errors
 interface TransactionError {
@@ -272,7 +275,7 @@ export function ScheduledDonationForm({
   onClose: _onClose,
 }: ScheduledDonationFormProps) {
   const [amount, setAmount] = useState(0);
-  const [selectedToken, setSelectedToken] = useState(MOONBEAM_TOKENS[0]);
+  const [selectedToken, setSelectedToken] = useState(ERC20_TOKENS[0]);
   const [numberOfMonths, setNumberOfMonths] = useState(12);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -295,7 +298,7 @@ export function ScheduledDonationForm({
   }, []);
 
   const handleTokenSelect = useCallback(
-    (token: (typeof MOONBEAM_TOKENS)[0]) => {
+    (token: TokenConfig) => {
       setSelectedToken(token);
       setAmount(0); // Reset amount when token changes
     },
@@ -370,33 +373,54 @@ export function ScheduledDonationForm({
           signer,
         );
 
-        // For now, we'll use the native token (GLMR)
-        // In a real implementation, you would get the token address from a dropdown
-        const tokenAddress = getContractAddress("TOKEN");
+        // Use the selected token address
+        const tokenAddress = selectedToken.address;
 
         // First, approve the token transfer
         const tokenContract = new ethers.Contract(
           tokenAddress,
-          ["function approve(address spender, uint256 amount) returns (bool)"],
+          [
+            "function approve(address spender, uint256 amount) returns (bool)",
+            "function allowance(address owner, address spender) view returns (uint256)",
+          ],
           signer,
         );
 
         const parsedAmount = ethers.parseEther(amount.toString());
 
-        try {
-          const approveTx = await tokenContract.approve(
-            distributionAddress,
-            parsedAmount,
-          );
-          await approveTx.wait();
-        } catch (approveError: unknown) {
-          // Check if user rejected the transaction
-          if (isUserRejection(approveError)) {
-            throw new Error(
-              "Transaction was rejected. Please approve the transaction in your wallet to continue.",
+        // Check current allowance before approving
+        const currentAllowance = await tokenContract.allowance(
+          address,
+          distributionAddress
+        );
+
+        if (currentAllowance < parsedAmount) {
+          Logger.info("Requesting token approval for scheduled donation", {
+            token: selectedToken.symbol,
+            spender: distributionAddress,
+          });
+
+          try {
+            // Approve unlimited amount to avoid repeated approvals
+            const approveTx = await tokenContract.approve(
+              distributionAddress,
+              ethers.MaxUint256,
             );
+            await approveTx.wait();
+
+            Logger.info("Token approval successful", {
+              token: selectedToken.symbol,
+              spender: distributionAddress,
+            });
+          } catch (approveError: unknown) {
+            // Check if user rejected the transaction
+            if (isUserRejection(approveError)) {
+              throw new Error(
+                "Transaction was rejected. Please approve the transaction in your wallet to continue.",
+              );
+            }
+            throw approveError;
           }
-          throw approveError;
         }
 
         // Get current token price from CurrencyContext
@@ -477,7 +501,7 @@ export function ScheduledDonationForm({
       balance,
       selectedToken,
       tokenPrices,
-      convertToFiat,
+      numberOfMonths,
     ],
   );
 
@@ -547,6 +571,7 @@ export function ScheduledDonationForm({
         onSelectToken={handleTokenSelect}
         walletBalance={balance}
         isLoadingBalance={isLoadingBalance}
+        availableTokens={ERC20_TOKENS}
       />
 
       <FiatPresets
