@@ -90,6 +90,25 @@ export const MOONBEAM_TOKENS: TokenConfig[] = [
     icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
     isNative: false,
   },
+  // Test tokens for Moonbase Alpha testnet
+  {
+    symbol: "MERC",
+    name: "Mercury Test Token",
+    address: "0x37822de108AFFdd5cDCFDaAa2E32756Da284DB85",
+    decimals: 18,
+    coingeckoId: "moonbeam", // Using GLMR price as proxy for test token
+    icon: "https://assets.coingecko.com/coins/images/22459/small/glmr.png",
+    isNative: false,
+  },
+  {
+    symbol: "PLUT",
+    name: "Pluto Test Token",
+    address: "0x4c945cD20DD13168BC87f30D55f12dC26512ca33",
+    decimals: 18,
+    coingeckoId: "moonbeam", // Using GLMR price as proxy for test token
+    icon: "https://assets.coingecko.com/coins/images/22459/small/glmr.png",
+    isNative: false,
+  },
 ];
 
 /**
