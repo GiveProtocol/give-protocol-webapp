@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/lib/supabase";
 import {
   SelfReportedHours,
   SelfReportedHoursInput,
@@ -15,31 +15,38 @@ import {
   canEditRecord,
   canDeleteRecord,
   canRequestValidation,
-} from '@/types/selfReportedHours';
-import { Logger } from '@/utils/logger';
+} from "@/types/selfReportedHours";
+import { Logger } from "@/utils/logger";
 
 /**
  * Maps database row to SelfReportedHours interface
  * @param row - Database row object
  * @returns SelfReportedHours object
  */
-function mapRowToSelfReportedHours(row: Record<string, unknown>): SelfReportedHours {
+function mapRowToSelfReportedHours(
+  row: Record<string, unknown>,
+): SelfReportedHours {
   return {
     id: row.id as string,
     volunteerId: row.volunteer_id as string,
     activityDate: row.activity_date as string,
     hours: Number(row.hours),
-    activityType: row.activity_type as SelfReportedHours['activityType'],
+    activityType: row.activity_type as SelfReportedHours["activityType"],
     description: row.description as string,
     location: row.location as string | undefined,
     organizationId: row.organization_id as string | undefined,
     organizationName: row.organization_name as string | undefined,
-    organizationContactEmail: row.organization_contact_email as string | undefined,
+    organizationContactEmail: row.organization_contact_email as
+      | string
+      | undefined,
     validationStatus: row.validation_status as ValidationStatus,
     validationRequestId: row.validation_request_id as string | undefined,
-    validatedAt: row.validated_at ? new Date(row.validated_at as string).getTime() : undefined,
+    validatedAt: row.validated_at
+      ? new Date(row.validated_at as string).getTime()
+      : undefined,
     validatedBy: row.validated_by as string | undefined,
-    rejectionReason: row.rejection_reason as SelfReportedHours['rejectionReason'],
+    rejectionReason:
+      row.rejection_reason as SelfReportedHours["rejectionReason"],
     rejectionNotes: row.rejection_notes as string | undefined,
     sbtTokenId: row.sbt_token_id as number | undefined,
     blockchainTxHash: row.blockchain_tx_hash as string | undefined,
@@ -57,14 +64,15 @@ function mapRowToSelfReportedHours(row: Record<string, unknown>): SelfReportedHo
  */
 function mapToDisplay(
   hours: SelfReportedHours,
-  orgName?: string
+  orgName?: string,
 ): SelfReportedHoursDisplay {
   const isVerifiedOrganization = Boolean(hours.organizationId);
   const daysUntilExpiration = calculateDaysUntilExpiration(hours.activityDate);
 
   return {
     ...hours,
-    organizationDisplayName: orgName || hours.organizationName || 'Unknown Organization',
+    organizationDisplayName:
+      orgName || hours.organizationName || "Unknown Organization",
     isVerifiedOrganization,
     daysUntilExpiration,
     canEdit: canEditRecord(hours.validationStatus),
@@ -72,7 +80,7 @@ function mapToDisplay(
     canRequestValidation: canRequestValidation(
       hours.validationStatus,
       hours.activityDate,
-      isVerifiedOrganization
+      isVerifiedOrganization,
     ),
   };
 }
@@ -82,7 +90,10 @@ function mapToDisplay(
  * @param input - The input to validate
  * @returns Object with isValid flag and errors array
  */
-function validateInput(input: SelfReportedHoursInput): { isValid: boolean; errors: string[] } {
+function validateInput(input: SelfReportedHoursInput): {
+  isValid: boolean;
+  errors: string[];
+} {
   const errors: string[] = [];
 
   // Validate activity date
@@ -91,28 +102,37 @@ function validateInput(input: SelfReportedHoursInput): { isValid: boolean; error
   today.setHours(23, 59, 59, 999);
 
   if (activityDate > today) {
-    errors.push('Activity date cannot be in the future');
+    errors.push("Activity date cannot be in the future");
   }
 
   // Validate hours
-  if (input.hours < MIN_HOURS_PER_RECORD || input.hours > MAX_HOURS_PER_RECORD) {
-    errors.push(`Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`);
+  if (
+    input.hours < MIN_HOURS_PER_RECORD ||
+    input.hours > MAX_HOURS_PER_RECORD
+  ) {
+    errors.push(
+      `Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`,
+    );
   }
 
   // Validate description length
   if (input.description.length < MIN_DESCRIPTION_LENGTH) {
-    errors.push(`Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`);
+    errors.push(
+      `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`,
+    );
   }
   if (input.description.length > MAX_DESCRIPTION_LENGTH) {
-    errors.push(`Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+    errors.push(
+      `Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`,
+    );
   }
 
   // Validate organization
   if (!input.organizationId && !input.organizationName) {
-    errors.push('Either organization ID or organization name is required');
+    errors.push("Either organization ID or organization name is required");
   }
   if (input.organizationId && input.organizationName) {
-    errors.push('Cannot specify both organization ID and organization name');
+    errors.push("Cannot specify both organization ID and organization name");
   }
 
   return {
@@ -129,12 +149,12 @@ function validateInput(input: SelfReportedHoursInput): { isValid: boolean; error
  */
 export async function createSelfReportedHours(
   volunteerId: string,
-  input: SelfReportedHoursInput
+  input: SelfReportedHoursInput,
 ): Promise<SelfReportedHours> {
   // Validate input
   const validation = validateInput(input);
   if (!validation.isValid) {
-    throw new Error(validation.errors.join('; '));
+    throw new Error(validation.errors.join("; "));
   }
 
   // Determine initial validation status
@@ -151,7 +171,7 @@ export async function createSelfReportedHours(
   }
 
   const { data, error } = await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .insert({
       volunteer_id: volunteerId,
       activity_date: input.activityDate,
@@ -168,7 +188,7 @@ export async function createSelfReportedHours(
     .single();
 
   if (error) {
-    Logger.error('Error creating self-reported hours', { error, volunteerId });
+    Logger.error("Error creating self-reported hours", { error, volunteerId });
     throw new Error(`Failed to create record: ${error.message}`);
   }
 
@@ -177,9 +197,17 @@ export async function createSelfReportedHours(
   // If verified org and not expired, create validation request
   if (input.organizationId && validationStatus === ValidationStatus.PENDING) {
     try {
-      await createValidationRequest(record.id, input.organizationId, volunteerId, input.activityDate);
+      await createValidationRequest(
+        record.id,
+        input.organizationId,
+        volunteerId,
+        input.activityDate,
+      );
     } catch (requestError) {
-      Logger.warn('Failed to create validation request', { error: requestError, recordId: record.id });
+      Logger.warn("Failed to create validation request", {
+        error: requestError,
+        recordId: record.id,
+      });
       // Don't fail the whole operation, just log the warning
     }
   }
@@ -199,20 +227,20 @@ async function createValidationRequest(
   selfReportedHoursId: string,
   organizationId: string,
   volunteerId: string,
-  activityDate: string
+  activityDate: string,
 ): Promise<string> {
   const expiresAt = new Date(activityDate);
   expiresAt.setDate(expiresAt.getDate() + VALIDATION_WINDOW_DAYS);
 
   const { data, error } = await supabase
-    .from('validation_requests')
+    .from("validation_requests")
     .insert({
       self_reported_hours_id: selfReportedHoursId,
       organization_id: organizationId,
       volunteer_id: volunteerId,
       expires_at: expiresAt.toISOString(),
     })
-    .select('id')
+    .select("id")
     .single();
 
   if (error) {
@@ -221,9 +249,9 @@ async function createValidationRequest(
 
   // Update the hours record with the request ID
   await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .update({ validation_request_id: data.id })
-    .eq('id', selfReportedHoursId);
+    .eq("id", selfReportedHoursId);
 
   return data.id;
 }
@@ -236,41 +264,47 @@ async function createValidationRequest(
  */
 export async function getVolunteerSelfReportedHours(
   volunteerId: string,
-  filters?: SelfReportedHoursFilters
+  filters?: SelfReportedHoursFilters,
 ): Promise<SelfReportedHoursDisplay[]> {
   let query = supabase
-    .from('self_reported_hours')
-    .select(`
+    .from("self_reported_hours")
+    .select(
+      `
       *,
       organization:organization_id (
         id,
         name
       )
-    `)
-    .eq('volunteer_id', volunteerId)
-    .order('activity_date', { ascending: false });
+    `,
+    )
+    .eq("volunteer_id", volunteerId)
+    .order("activity_date", { ascending: false });
 
   // Apply filters
   if (filters?.status) {
-    query = query.eq('validation_status', filters.status);
+    query = query.eq("validation_status", filters.status);
   }
   if (filters?.organizationId) {
-    query = query.eq('organization_id', filters.organizationId);
+    query = query.eq("organization_id", filters.organizationId);
   }
   if (filters?.activityType) {
-    query = query.eq('activity_type', filters.activityType);
+    query = query.eq("activity_type", filters.activityType);
   }
   if (filters?.dateFrom) {
-    query = query.gte('activity_date', filters.dateFrom);
+    query = query.gte("activity_date", filters.dateFrom);
   }
   if (filters?.dateTo) {
-    query = query.lte('activity_date', filters.dateTo);
+    query = query.lte("activity_date", filters.dateTo);
   }
 
   const { data, error } = await query;
 
   if (error) {
-    Logger.error('Error fetching self-reported hours', { error, volunteerId, filters });
+    Logger.error("Error fetching self-reported hours", {
+      error,
+      volunteerId,
+      filters,
+    });
     throw new Error(`Failed to fetch records: ${error.message}`);
   }
 
@@ -289,26 +323,32 @@ export async function getVolunteerSelfReportedHours(
  */
 export async function getSelfReportedHoursById(
   id: string,
-  volunteerId: string
+  volunteerId: string,
 ): Promise<SelfReportedHoursDisplay | null> {
   const { data, error } = await supabase
-    .from('self_reported_hours')
-    .select(`
+    .from("self_reported_hours")
+    .select(
+      `
       *,
       organization:organization_id (
         id,
         name
       )
-    `)
-    .eq('id', id)
-    .eq('volunteer_id', volunteerId)
+    `,
+    )
+    .eq("id", id)
+    .eq("volunteer_id", volunteerId)
     .single();
 
   if (error) {
-    if (error.code === 'PGRST116') {
+    if (error.code === "PGRST116") {
       return null; // Not found
     }
-    Logger.error('Error fetching self-reported hours by ID', { error, id, volunteerId });
+    Logger.error("Error fetching self-reported hours by ID", {
+      error,
+      id,
+      volunteerId,
+    });
     throw new Error(`Failed to fetch record: ${error.message}`);
   }
 
@@ -323,15 +363,18 @@ export async function getSelfReportedHoursById(
  * @returns Statistics object
  */
 export async function getVolunteerHoursStats(
-  volunteerId: string
+  volunteerId: string,
 ): Promise<VolunteerHoursStats> {
   const { data, error } = await supabase
-    .from('self_reported_hours')
-    .select('hours, validation_status')
-    .eq('volunteer_id', volunteerId);
+    .from("self_reported_hours")
+    .select("hours, validation_status")
+    .eq("volunteer_id", volunteerId);
 
   if (error) {
-    Logger.error('Error fetching volunteer hours stats', { error, volunteerId });
+    Logger.error("Error fetching volunteer hours stats", {
+      error,
+      volunteerId,
+    });
     throw new Error(`Failed to fetch stats: ${error.message}`);
   }
 
@@ -395,26 +438,26 @@ export async function getVolunteerHoursStats(
 export async function updateSelfReportedHours(
   id: string,
   volunteerId: string,
-  input: Partial<SelfReportedHoursInput>
+  input: Partial<SelfReportedHoursInput>,
 ): Promise<SelfReportedHours> {
   // First check if record exists and is editable
   const { data: existing, error: fetchError } = await supabase
-    .from('self_reported_hours')
-    .select('volunteer_id, validation_status')
-    .eq('id', id)
+    .from("self_reported_hours")
+    .select("volunteer_id, validation_status")
+    .eq("id", id)
     .single();
 
   if (fetchError) {
-    Logger.error('Error fetching record for update', { error: fetchError, id });
-    throw new Error('Record not found');
+    Logger.error("Error fetching record for update", { error: fetchError, id });
+    throw new Error("Record not found");
   }
 
   if (existing.volunteer_id !== volunteerId) {
-    throw new Error('Access denied');
+    throw new Error("Access denied");
   }
 
   if (!canEditRecord(existing.validation_status as ValidationStatus)) {
-    throw new Error('Cannot edit validated records');
+    throw new Error("Cannot edit validated records");
   }
 
   // Build update object
@@ -423,14 +466,19 @@ export async function updateSelfReportedHours(
   if (input.activityDate !== undefined) {
     const activityDate = new Date(input.activityDate);
     if (activityDate > new Date()) {
-      throw new Error('Activity date cannot be in the future');
+      throw new Error("Activity date cannot be in the future");
     }
     updateData.activity_date = input.activityDate;
   }
 
   if (input.hours !== undefined) {
-    if (input.hours < MIN_HOURS_PER_RECORD || input.hours > MAX_HOURS_PER_RECORD) {
-      throw new Error(`Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`);
+    if (
+      input.hours < MIN_HOURS_PER_RECORD ||
+      input.hours > MAX_HOURS_PER_RECORD
+    ) {
+      throw new Error(
+        `Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`,
+      );
     }
     updateData.hours = input.hours;
   }
@@ -441,10 +489,14 @@ export async function updateSelfReportedHours(
 
   if (input.description !== undefined) {
     if (input.description.length < MIN_DESCRIPTION_LENGTH) {
-      throw new Error(`Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`);
+      throw new Error(
+        `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`,
+      );
     }
     if (input.description.length > MAX_DESCRIPTION_LENGTH) {
-      throw new Error(`Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+      throw new Error(
+        `Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`,
+      );
     }
     updateData.description = input.description;
   }
@@ -454,14 +506,14 @@ export async function updateSelfReportedHours(
   }
 
   const { data, error } = await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .update(updateData)
-    .eq('id', id)
+    .eq("id", id)
     .select()
     .single();
 
   if (error) {
-    Logger.error('Error updating self-reported hours', { error, id });
+    Logger.error("Error updating self-reported hours", { error, id });
     throw new Error(`Failed to update record: ${error.message}`);
   }
 
@@ -475,35 +527,35 @@ export async function updateSelfReportedHours(
  */
 export async function deleteSelfReportedHours(
   id: string,
-  volunteerId: string
+  volunteerId: string,
 ): Promise<void> {
   // First check if record exists and is deletable
   const { data: existing, error: fetchError } = await supabase
-    .from('self_reported_hours')
-    .select('volunteer_id, validation_status')
-    .eq('id', id)
+    .from("self_reported_hours")
+    .select("volunteer_id, validation_status")
+    .eq("id", id)
     .single();
 
   if (fetchError) {
-    Logger.error('Error fetching record for delete', { error: fetchError, id });
-    throw new Error('Record not found');
+    Logger.error("Error fetching record for delete", { error: fetchError, id });
+    throw new Error("Record not found");
   }
 
   if (existing.volunteer_id !== volunteerId) {
-    throw new Error('Access denied');
+    throw new Error("Access denied");
   }
 
   if (!canDeleteRecord(existing.validation_status as ValidationStatus)) {
-    throw new Error('Cannot delete validated records');
+    throw new Error("Cannot delete validated records");
   }
 
   const { error } = await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .delete()
-    .eq('id', id);
+    .eq("id", id);
 
   if (error) {
-    Logger.error('Error deleting self-reported hours', { error, id });
+    Logger.error("Error deleting self-reported hours", { error, id });
     throw new Error(`Failed to delete record: ${error.message}`);
   }
 }
@@ -517,35 +569,35 @@ export async function deleteSelfReportedHours(
 export async function requestValidation(
   id: string,
   volunteerId: string,
-  organizationId: string
+  organizationId: string,
 ): Promise<void> {
   // Get the existing record
   const { data: existing, error: fetchError } = await supabase
-    .from('self_reported_hours')
-    .select('volunteer_id, validation_status, activity_date, organization_id')
-    .eq('id', id)
+    .from("self_reported_hours")
+    .select("volunteer_id, validation_status, activity_date, organization_id")
+    .eq("id", id)
     .single();
 
   if (fetchError) {
-    throw new Error('Record not found');
+    throw new Error("Record not found");
   }
 
   if (existing.volunteer_id !== volunteerId) {
-    throw new Error('Access denied');
+    throw new Error("Access denied");
   }
 
   // Check if validation can be requested
   const daysLeft = calculateDaysUntilExpiration(existing.activity_date);
   if (daysLeft === undefined) {
-    throw new Error('Validation window has expired for this activity');
+    throw new Error("Validation window has expired for this activity");
   }
 
   if (existing.validation_status === ValidationStatus.PENDING) {
-    throw new Error('Validation request already pending');
+    throw new Error("Validation request already pending");
   }
 
   if (existing.validation_status === ValidationStatus.VALIDATED) {
-    throw new Error('Record is already validated');
+    throw new Error("Record is already validated");
   }
 
   // Create validation request
@@ -553,17 +605,17 @@ export async function requestValidation(
     id,
     organizationId,
     volunteerId,
-    existing.activity_date
+    existing.activity_date,
   );
 
   // Update the hours record
   await supabase
-    .from('self_reported_hours')
+    .from("self_reported_hours")
     .update({
       organization_id: organizationId,
       organization_name: null,
       validation_status: ValidationStatus.PENDING,
       validation_request_id: requestId,
     })
-    .eq('id', id);
+    .eq("id", id);
 }
