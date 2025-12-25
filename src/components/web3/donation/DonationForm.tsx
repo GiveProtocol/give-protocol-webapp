@@ -8,8 +8,11 @@ import { Logger } from "@/utils/logger";
 import { TokenSelector } from "./TokenSelector";
 import { DualAmountInput } from "./DualAmountInput";
 import { FiatPresets } from "./FiatPresets";
-import { MOONBEAM_TOKENS } from "@/config/tokens";
+import { MOONBEAM_TOKENS, TokenConfig } from "@/config/tokens";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+
+// Filter to only ERC20 tokens (native tokens not yet supported by the contract)
+const ERC20_TOKENS = MOONBEAM_TOKENS.filter((token) => !token.isNative);
 
 interface DonationFormProps {
   charityAddress: string;
@@ -35,7 +38,7 @@ interface DonationFormProps {
  */
 export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
   const [amount, setAmount] = useState(0);
-  const [selectedToken, setSelectedToken] = useState(MOONBEAM_TOKENS[0]); // Default to GLMR
+  const [selectedToken, setSelectedToken] = useState(ERC20_TOKENS[0]); // Default to first ERC20 token (WGLMR)
   const { donate, loading, error: donationError } = useDonation();
   const { isConnected, connect } = useWeb3();
   const [error, setError] = useState("");
@@ -46,7 +49,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
     setAmount(newAmount);
   }, []);
 
-  const handleTokenSelect = useCallback((token: typeof MOONBEAM_TOKENS[0]) => {
+  const handleTokenSelect = useCallback((token: TokenConfig) => {
     setSelectedToken(token);
     setAmount(0); // Reset amount when token changes
   }, []);
@@ -78,15 +81,12 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
       }
 
       try {
-        const donationType = selectedToken.isNative
-          ? DonationType._NATIVE
-          : DonationType._TOKEN;
-
+        // All donations are ERC20 tokens (native tokens not supported by contract)
         await donate({
           charityAddress,
           amount: amount.toString(),
-          type: donationType,
-          _tokenAddress: selectedToken.isNative ? undefined : selectedToken.address,
+          type: DonationType._TOKEN,
+          _tokenAddress: selectedToken.address,
         });
 
         setSuccessMessage(`Successfully donated ${amount} ${selectedToken.symbol}!`);
@@ -108,7 +108,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
         );
       }
     },
-    [amount, charityAddress, selectedToken, donate, onSuccess],
+    [amount, balance, charityAddress, selectedToken, donate, onSuccess],
   );
 
   if (!isConnected) {
@@ -141,6 +141,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
         onSelectToken={handleTokenSelect}
         walletBalance={balance}
         isLoadingBalance={isLoadingBalance}
+        availableTokens={ERC20_TOKENS}
       />
 
       <FiatPresets

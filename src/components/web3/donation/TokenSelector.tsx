@@ -11,6 +11,8 @@ interface TokenSelectorProps {
   onSelectToken: (_token: TokenConfig) => void;
   walletBalance?: number;
   isLoadingBalance?: boolean;
+  /** Optional list of tokens to show. Defaults to all MOONBEAM_TOKENS */
+  availableTokens?: TokenConfig[];
 }
 
 /**
@@ -29,10 +31,11 @@ export function TokenSelector({
   onSelectToken,
   walletBalance,
   isLoadingBalance = false,
+  availableTokens = MOONBEAM_TOKENS,
 }: TokenSelectorProps): React.ReactElement {
   const [isOpen, setIsOpen] = useState(false);
   const { selectedCurrency, tokenPrices, convertToFiat } = useCurrencyContext();
-  const { balances, isLoading: isLoadingAllBalances } = useMultiTokenBalance(MOONBEAM_TOKENS);
+  const { balances, isLoading: isLoadingAllBalances } = useMultiTokenBalance(availableTokens);
 
   const handleToggle = useCallback(() => {
     setIsOpen(!isOpen);
@@ -43,13 +46,13 @@ export function TokenSelector({
       const symbol = e.currentTarget.dataset.symbol;
       if (!symbol) return;
 
-      const token = MOONBEAM_TOKENS.find((t) => t.symbol === symbol);
+      const token = availableTokens.find((t) => t.symbol === symbol);
       if (token) {
         onSelectToken(token);
         setIsOpen(false);
       }
     },
-    [onSelectToken],
+    [onSelectToken, availableTokens],
   );
 
   const fiatValue = walletBalance
@@ -106,7 +109,7 @@ export function TokenSelector({
 
       {isOpen && (
         <div className="absolute z-10 w-full mt-2 bg-white border border-gray-200 rounded-lg shadow-lg py-2 max-h-96 overflow-y-auto">
-          {MOONBEAM_TOKENS.map((token) => {
+          {availableTokens.map((token) => {
             const price = tokenPrices[token.coingeckoId];
             const isSelected = token.symbol === selectedToken.symbol;
             const tokenBalance = balances[token.symbol];
