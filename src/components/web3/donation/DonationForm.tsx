@@ -39,7 +39,7 @@ interface DonationFormProps {
 export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
   const [amount, setAmount] = useState(0);
   const [selectedToken, setSelectedToken] = useState(ERC20_TOKENS[0]); // Default to first ERC20 token (WGLMR)
-  const { donate, loading, error: donationError } = useDonation();
+  const { donate, loading, approving, error: donationError } = useDonation();
   const { isConnected, connect } = useWeb3();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -158,13 +158,13 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
 
       <Button
         type="submit"
-        disabled={loading || amount <= 0 || isLoadingBalance || (balance !== undefined && amount > balance)}
+        disabled={loading || approving || amount <= 0 || isLoadingBalance || (balance !== undefined && amount > balance)}
         fullWidth
         size="lg"
-        icon={loading ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined}
+        icon={(loading || approving) ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined}
         className="font-bold text-lg shadow-xl hover:shadow-2xl"
       >
-        {loading ? "Processing Donation..." : successMessage ? "Donation Successful!" : isLoadingBalance ? "Loading Balance..." : "Donate Now"}
+        {approving ? "Approving Token..." : loading ? "Processing Donation..." : successMessage ? "Donation Successful!" : isLoadingBalance ? "Loading Balance..." : "Donate Now"}
       </Button>
     </form>
   );

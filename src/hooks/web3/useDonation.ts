@@ -1,9 +1,17 @@
 import { useState } from "react";
 import { useContract } from "./useContract";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { parseEther, getAddress, isAddress } from "ethers";
+import { parseEther, getAddress, isAddress, Contract, MaxUint256 } from "ethers";
 import { Logger } from "@/utils/logger";
 import { trackTransaction } from "@/lib/sentry";
+import { getContractAddress } from "@/config/contracts";
+import { CHAIN_IDS } from "@/config/contracts";
+
+// Minimal ERC20 ABI for allowance and approve functions
+const ERC20_ABI = [
+  "function allowance(address owner, address spender) view returns (uint256)",
+  "function approve(address spender, uint256 amount) returns (bool)",
+];
 
 export enum DonationType {
   _NATIVE = "native", // Prefixed with _ as currently unused
@@ -73,8 +81,9 @@ interface DonationParams {
  */
 export function useDonation() {
   const { contract } = useContract("donation");
-  const { address } = useWeb3();
+  const { address, signer, chainId } = useWeb3();
   const [loading, setLoading] = useState(false);
+  const [approving, setApproving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const donate = async ({
@@ -136,6 +145,60 @@ export function useDonation() {
         throw new Error("Invalid token address format");
       }
       const normalizedTokenAddress = getAddress(_tokenAddress);
+
+      // Get donation contract address for approval
+      const donationContractAddress = getContractAddress(
+        "DONATION",
+        chainId ?? CHAIN_IDS.MOONBASE
+      );
+
+      // Check if we need to approve the token first
+      if (!signer) {
+        throw new Error("Wallet signer not available");
+      }
+
+      const tokenContract = new Contract(
+        normalizedTokenAddress,
+        ERC20_ABI,
+        signer
+      );
+
+      // Check current allowance
+      const currentAllowance = await tokenContract.allowance(
+        address,
+        donationContractAddress
+      );
+
+      Logger.info("Checking token allowance", {
+        currentAllowance: currentAllowance.toString(),
+        requiredAmount: parsedAmount.toString(),
+        tokenAddress: normalizedTokenAddress,
+      });
+
+      // If allowance is insufficient, request approval
+      if (currentAllowance < parsedAmount) {
+        Logger.info("Requesting token approval", {
+          spender: donationContractAddress,
+          amount: "unlimited",
+        });
+
+        setApproving(true);
+        try {
+          // Approve unlimited amount to avoid repeated approvals
+          const approveTx = await tokenContract.approve(
+            donationContractAddress,
+            MaxUint256
+          );
+          await approveTx.wait();
+
+          Logger.info("Token approval successful", {
+            tokenAddress: normalizedTokenAddress,
+            spender: donationContractAddress,
+          });
+        } finally {
+          setApproving(false);
+        }
+      }
 
       // Call processDonation(charity, token, charityAmount, platformTip)
       // For now, platformTip is 0 (no tip)
@@ -216,6 +279,7 @@ export function useDonation() {
     donate,
     withdraw,
     loading,
+    approving,
     error,
   };
 }
