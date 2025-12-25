@@ -43,7 +43,8 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
   const { isConnected, connect } = useWeb3();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
-  const { balance, isLoading: isLoadingBalance } = useTokenBalance(selectedToken);
+  const { balance, isLoading: isLoadingBalance } =
+    useTokenBalance(selectedToken);
 
   const handleAmountChange = useCallback((newAmount: number) => {
     setAmount(newAmount);
@@ -76,7 +77,9 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
 
       // Validate balance
       if (balance !== undefined && amount > balance) {
-        setError(`Insufficient balance. You only have ${balance.toFixed(6)} ${selectedToken.symbol} available.`);
+        setError(
+          `Insufficient balance. You only have ${balance.toFixed(6)} ${selectedToken.symbol} available.`,
+        );
         return;
       }
 
@@ -89,7 +92,9 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
           _tokenAddress: selectedToken.address,
         });
 
-        setSuccessMessage(`Successfully donated ${amount} ${selectedToken.symbol}!`);
+        setSuccessMessage(
+          `Successfully donated ${amount} ${selectedToken.symbol}!`,
+        );
         setAmount(0);
 
         setTimeout(() => {
@@ -158,13 +163,31 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
 
       <Button
         type="submit"
-        disabled={loading || approving || amount <= 0 || isLoadingBalance || (balance !== undefined && amount > balance)}
+        disabled={
+          loading ||
+          approving ||
+          amount <= 0 ||
+          isLoadingBalance ||
+          (balance !== undefined && amount > balance)
+        }
         fullWidth
         size="lg"
-        icon={(loading || approving) ? <Loader2 className="w-5 h-5 animate-spin" /> : undefined}
+        icon={
+          loading || approving ? (
+            <Loader2 className="w-5 h-5 animate-spin" />
+          ) : undefined
+        }
         className="font-bold text-lg shadow-xl hover:shadow-2xl"
       >
-        {approving ? "Approving Token..." : loading ? "Processing Donation..." : successMessage ? "Donation Successful!" : isLoadingBalance ? "Loading Balance..." : "Donate Now"}
+        {approving
+          ? "Approving Token..."
+          : loading
+            ? "Processing Donation..."
+            : successMessage
+              ? "Donation Successful!"
+              : isLoadingBalance
+                ? "Loading Balance..."
+                : "Donate Now"}
       </Button>
     </form>
   );
