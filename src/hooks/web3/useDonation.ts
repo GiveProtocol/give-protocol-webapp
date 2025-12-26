@@ -1,11 +1,16 @@
 import { useState } from "react";
 import { useContract } from "./useContract";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { parseEther, getAddress, isAddress, Contract, MaxUint256 } from "ethers";
+import {
+  parseEther,
+  getAddress,
+  isAddress,
+  Contract,
+  MaxUint256,
+} from "ethers";
 import { Logger } from "@/utils/logger";
 import { trackTransaction } from "@/lib/sentry";
-import { getContractAddress } from "@/config/contracts";
-import { CHAIN_IDS } from "@/config/contracts";
+import { getContractAddress, CHAIN_IDS } from "@/config/contracts";
 
 // Minimal ERC20 ABI for allowance and approve functions
 const ERC20_ABI = [
@@ -149,7 +154,7 @@ export function useDonation() {
       // Get donation contract address for approval
       const donationContractAddress = getContractAddress(
         "DONATION",
-        chainId ?? CHAIN_IDS.MOONBASE
+        chainId ?? CHAIN_IDS.MOONBASE,
       );
 
       // Check if we need to approve the token first
@@ -160,13 +165,13 @@ export function useDonation() {
       const tokenContract = new Contract(
         normalizedTokenAddress,
         ERC20_ABI,
-        signer
+        signer,
       );
 
       // Check current allowance
       const currentAllowance = await tokenContract.allowance(
         address,
-        donationContractAddress
+        donationContractAddress,
       );
 
       Logger.info("Checking token allowance", {
@@ -187,7 +192,7 @@ export function useDonation() {
           // Approve unlimited amount to avoid repeated approvals
           const approveTx = await tokenContract.approve(
             donationContractAddress,
-            MaxUint256
+            MaxUint256,
           );
           await approveTx.wait();
 
