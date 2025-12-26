@@ -115,7 +115,8 @@ export function formatBalance(
   if (balance === undefined || balance === null || balance === "") {
     return "0.0000";
   }
-  const num = typeof balance === "string" ? Number.parseFloat(balance) : balance;
+  const num =
+    typeof balance === "string" ? Number.parseFloat(balance) : balance;
   if (Number.isNaN(num)) return "0.0000";
   return num.toFixed(decimals);
 }

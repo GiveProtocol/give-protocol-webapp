@@ -117,7 +117,7 @@ export const GiveDashboard: React.FC = () => {
       },
     },
     // Volunteer contribution examples - All 5 types
-    
+
     // Type 1: Volunteer Solicitation (donor/volunteer initiated)
     {
       id: "4",
@@ -134,14 +134,16 @@ export const GiveDashboard: React.FC = () => {
       metadata: {
         organization: "Education for All",
         opportunity: "Web Development for Education Platform",
-        applicationText: "I have 5 years of React experience and would love to help build your education platform.",
+        applicationText:
+          "I have 5 years of React experience and would love to help build your education platform.",
         availability: "10-15 hours per week",
         transactionInitiator: "volunteer",
-        verificationHash: "0xef89012345678901234567890123456789012345678901234567890123456789",
+        verificationHash:
+          "0xef89012345678901234567890123456789012345678901234567890123456789",
         blockNumber: 1234567,
       },
     },
-    
+
     // Type 2: Volunteer Acceptance (charity initiated)
     {
       id: "5",
@@ -162,11 +164,12 @@ export const GiveDashboard: React.FC = () => {
         acceptedBy: "Jane Smith, Volunteer Coordinator",
         transactionInitiator: "charity",
         relatedTransactionId: "4", // Links to the solicitation
-        verificationHash: "0x98765432109876543210987654321098765432109876543210987654321098",
+        verificationHash:
+          "0x98765432109876543210987654321098765432109876543210987654321098",
         blockNumber: 1234590,
       },
     },
-    
+
     // Type 3: Volunteer Hours Record (volunteer initiated)
     {
       id: "6",
@@ -186,13 +189,15 @@ export const GiveDashboard: React.FC = () => {
         hours: 8,
         startTime: "2024-04-10T08:00:00Z",
         endTime: "2024-04-10T16:00:00Z",
-        description: "Implemented user authentication system and created login/signup pages",
+        description:
+          "Implemented user authentication system and created login/signup pages",
         transactionInitiator: "volunteer",
-        verificationHash: "0x23456789012345678901234567890123456789012345678901234567890123ef",
+        verificationHash:
+          "0x23456789012345678901234567890123456789012345678901234567890123ef",
         blockNumber: 1235678,
       },
     },
-    
+
     // Type 4: Volunteer Hours Approval (charity initiated)
     {
       id: "7",
@@ -213,12 +218,14 @@ export const GiveDashboard: React.FC = () => {
         acceptedBy: "Jane Smith, Volunteer Coordinator",
         transactionInitiator: "charity",
         relatedTransactionId: "6", // Links to the hours record
-        description: "Hours verified and approved for authentication system implementation",
-        verificationHash: "0xabcdef123456789abcdef123456789abcdef123456789abcdef123456789abc",
+        description:
+          "Hours verified and approved for authentication system implementation",
+        verificationHash:
+          "0xabcdef123456789abcdef123456789abcdef123456789abcdef123456789abc",
         blockNumber: 1235700,
       },
     },
-    
+
     // Type 5: Volunteer Endorsement (charity initiated)
     {
       id: "8",
@@ -235,10 +242,12 @@ export const GiveDashboard: React.FC = () => {
       metadata: {
         organization: "Education for All",
         skills: ["React", "Node.js", "TypeScript"], // Top 3 skills
-        endorsementText: "Outstanding volunteer who delivered high-quality authentication system. Highly skilled in React and modern web development.",
+        endorsementText:
+          "Outstanding volunteer who delivered high-quality authentication system. Highly skilled in React and modern web development.",
         transactionInitiator: "charity",
         hours: 32, // Total hours contributed
-        verificationHash: "0x11111111222222223333333344444444555555556666666677777777888888",
+        verificationHash:
+          "0x11111111222222223333333344444444555555556666666677777777888888",
         blockNumber: 1236000,
       },
     },

@@ -3,11 +3,7 @@ import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { WalletButtonProps, WalletBalances } from "./types";
 import { WalletDropdown } from "./WalletDropdown";
-import {
-  formatAddress,
-  getAddressGradient,
-  copyToClipboard,
-} from "./utils";
+import { formatAddress, getAddressGradient, copyToClipboard } from "./utils";
 
 /**
  * Wallet avatar component with gradient background based on address

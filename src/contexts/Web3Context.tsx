@@ -301,141 +301,140 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     [currentWalletProvider],
   );
 
-  const connect = useCallback(
-    async (_walletProvider?: unknown) => {
-      // Ignore if a browser event was passed (e.g., from onClick={connect})
-      // Check for common event properties to detect event objects
-      const isEvent =
-        _walletProvider instanceof Event ||
-        (typeof _walletProvider === "object" &&
-          _walletProvider !== null &&
-          "nativeEvent" in _walletProvider);
+  const connect = useCallback(async (_walletProvider?: unknown) => {
+    // Ignore if a browser event was passed (e.g., from onClick={connect})
+    // Check for common event properties to detect event objects
+    const isEvent =
+      _walletProvider instanceof Event ||
+      (typeof _walletProvider === "object" &&
+        _walletProvider !== null &&
+        "nativeEvent" in _walletProvider);
 
-      // Use provided wallet provider or fallback to window.ethereum
-      const walletProvider = isEvent ? window.ethereum : (_walletProvider || window.ethereum);
+    // Use provided wallet provider or fallback to window.ethereum
+    const walletProvider = isEvent
+      ? window.ethereum
+      : _walletProvider || window.ethereum;
 
-      if (!walletProvider) {
-        const error = new Error(
-          "No wallet provider found. Please install a wallet extension.",
-        );
-        Logger.error("Wallet provider not found", { error });
-        setError(error);
-        throw error;
+    if (!walletProvider) {
+      const error = new Error(
+        "No wallet provider found. Please install a wallet extension.",
+      );
+      Logger.error("Wallet provider not found", { error });
+      setError(error);
+      throw error;
+    }
+
+    // Validate that the provider has the required request method (EIP-1193)
+    if (!isEIP1193Provider(walletProvider)) {
+      const error = new Error(
+        "Wallet provider is not EIP-1193 compliant. Please try refreshing the page.",
+      );
+      Logger.error("Invalid wallet provider", {
+        hasRequest: typeof (walletProvider as { request?: unknown }).request,
+        providerType: typeof walletProvider,
+      });
+      setError(error);
+      throw error;
+    }
+
+    try {
+      setIsConnecting(true);
+      isConnectingRef.current = true;
+      setError(null);
+
+      // Request account access
+      const accounts = (await walletProvider.request({
+        method: "eth_requestAccounts",
+      })) as string[];
+
+      if (!accounts || accounts.length === 0) {
+        throw new Error("No accounts found");
       }
 
-      // Validate that the provider has the required request method (EIP-1193)
-      if (!isEIP1193Provider(walletProvider)) {
-        const error = new Error(
-          "Wallet provider is not EIP-1193 compliant. Please try refreshing the page.",
-        );
-        Logger.error("Invalid wallet provider", {
-          hasRequest: typeof (walletProvider as { request?: unknown }).request,
-          providerType: typeof walletProvider,
-        });
-        setError(error);
-        throw error;
-      }
+      // Get connected chain ID first to check if we need to switch
+      const initialProvider = new ethers.BrowserProvider(walletProvider);
+      const initialNetwork = await initialProvider.getNetwork();
+      const currentChainId = Number(initialNetwork.chainId);
 
-      try {
-        setIsConnecting(true);
-        isConnectingRef.current = true;
-        setError(null);
-
-        // Request account access
-        const accounts = (await walletProvider.request({
-          method: "eth_requestAccounts",
-        })) as string[];
-
-        if (!accounts || accounts.length === 0) {
-          throw new Error("No accounts found");
-        }
-
-        // Get connected chain ID first to check if we need to switch
-        const initialProvider = new ethers.BrowserProvider(walletProvider);
-        const initialNetwork = await initialProvider.getNetwork();
-        const currentChainId = Number(initialNetwork.chainId);
-
-        // Switch to Moonbase Alpha if on wrong network BEFORE setting any state
-        if (currentChainId !== CHAIN_IDS.MOONBASE) {
+      // Switch to Moonbase Alpha if on wrong network BEFORE setting any state
+      if (currentChainId !== CHAIN_IDS.MOONBASE) {
+        try {
+          // Perform chain switch using the wallet provider directly
           try {
-            // Perform chain switch using the wallet provider directly
-            try {
-              await walletProvider.request({
-                method: "wallet_switchEthereumChain",
-                params: [{ chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}` }],
-              });
-              Logger.info("Switched network", { chainId: CHAIN_IDS.MOONBASE });
-            } catch (switchError: unknown) {
-              // If the chain hasn't been added to wallet
-              if (hasErrorCode(switchError, 4902)) {
-                await walletProvider.request({
-                  method: "wallet_addEthereumChain",
-                  params: [MOONBASE_CHAIN_INFO],
-                });
-                Logger.info("Added Moonbase Alpha network");
-              } else {
-                throw switchError;
-              }
-            }
-          } catch (switchError: unknown) {
-            // If user rejected the switch, throw error and don't set any state
-            if (hasErrorCode(switchError, 4001)) {
-              throw new Error("Please switch to Moonbase Alpha (TestNet)");
-            }
-            // For other errors, log and throw - don't leave state inconsistent
-            Logger.error("Failed to switch to Moonbase Alpha", {
-              error: switchError,
+            await walletProvider.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}` }],
             });
-            throw new Error("Failed to switch network. Please try again.");
+            Logger.info("Switched network", { chainId: CHAIN_IDS.MOONBASE });
+          } catch (switchError: unknown) {
+            // If the chain hasn't been added to wallet
+            if (hasErrorCode(switchError, 4902)) {
+              await walletProvider.request({
+                method: "wallet_addEthereumChain",
+                params: [MOONBASE_CHAIN_INFO],
+              });
+              Logger.info("Added Moonbase Alpha network");
+            } else {
+              throw switchError;
+            }
           }
+        } catch (switchError: unknown) {
+          // If user rejected the switch, throw error and don't set any state
+          if (hasErrorCode(switchError, 4001)) {
+            throw new Error("Please switch to Moonbase Alpha (TestNet)");
+          }
+          // For other errors, log and throw - don't leave state inconsistent
+          Logger.error("Failed to switch to Moonbase Alpha", {
+            error: switchError,
+          });
+          throw new Error("Failed to switch network. Please try again.");
         }
+      }
 
-        // Create provider AFTER chain switch is complete so it uses the correct chain
-        const provider = new ethers.BrowserProvider(walletProvider);
-        const signer = await provider.getSigner();
-        const finalNetwork = await provider.getNetwork();
-        const finalChainId = Number(finalNetwork.chainId);
+      // Create provider AFTER chain switch is complete so it uses the correct chain
+      const provider = new ethers.BrowserProvider(walletProvider);
+      const signer = await provider.getSigner();
+      const finalNetwork = await provider.getNetwork();
+      const finalChainId = Number(finalNetwork.chainId);
 
-        // Set all state atomically after all operations succeed
-        setProvider(provider);
-        setSigner(signer);
-        setCurrentWalletProvider(walletProvider);
-        setChainId(finalChainId);
-        setAddress(accounts[0]);
+      // Set all state atomically after all operations succeed
+      setProvider(provider);
+      setSigner(signer);
+      setCurrentWalletProvider(walletProvider);
+      setChainId(finalChainId);
+      setAddress(accounts[0]);
 
-        Logger.info("Wallet connected successfully", {
-          address: accounts[0],
-          chainId: finalChainId,
-        });
-      } catch (err: unknown) {
-        // Clear any partial state on error
-        setProvider(null);
-        setSigner(null);
-        setCurrentWalletProvider(null);
-        setChainId(null);
-        setAddress(null);
+      Logger.info("Wallet connected successfully", {
+        address: accounts[0],
+        chainId: finalChainId,
+      });
+    } catch (err: unknown) {
+      // Clear any partial state on error
+      setProvider(null);
+      setSigner(null);
+      setCurrentWalletProvider(null);
+      setChainId(null);
+      setAddress(null);
 
-        // Handle user rejected request
-        if (hasErrorCode(err, 4001)) {
-          const error = new Error("User rejected wallet connection");
-          setError(error);
-          throw error;
-        }
-
-        // Handle other errors
-        const message =
-          err instanceof Error ? err.message : "Failed to connect wallet";
-        const error = new Error(message);
-        Logger.error("Wallet connection failed", { error });
+      // Handle user rejected request
+      if (hasErrorCode(err, 4001)) {
+        const error = new Error("User rejected wallet connection");
         setError(error);
         throw error;
-      } finally {
-        setIsConnecting(false);
-        isConnectingRef.current = false;
       }
-    },
-    [],
-  );
+
+      // Handle other errors
+      const message =
+        err instanceof Error ? err.message : "Failed to connect wallet";
+      const error = new Error(message);
+      Logger.error("Wallet connection failed", { error });
+      setError(error);
+      throw error;
+    } finally {
+      setIsConnecting(false);
+      isConnectingRef.current = false;
+    }
+  }, []);
 
   const disconnect = useCallback(async () => {
     try {
