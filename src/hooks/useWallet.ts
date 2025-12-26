@@ -186,13 +186,15 @@ class MetaMaskWallet extends EVMWalletBase {
     super(
       "MetaMask",
       "metamask",
-      typeof window !== 'undefined' && window.ethereum?.isMetaMask ? window.ethereum : null,
+      typeof window !== "undefined" && window.ethereum?.isMetaMask
+        ? window.ethereum
+        : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     return Boolean(window.ethereum?.isMetaMask);
   }
 }
@@ -240,10 +242,10 @@ class WalletConnect implements WalletProvider {
   }
 
   async switchChain(_chainId: number | string): Promise<void> {
-    Logger.info("WalletConnect chain switch requested", { 
+    Logger.info("WalletConnect chain switch requested", {
       chainId: _chainId,
       provider: this.provider,
-      connectionAttempts: this.connectionAttempts
+      connectionAttempts: this.connectionAttempts,
     });
   }
 }
@@ -270,13 +272,13 @@ class NovaWallet extends EVMWalletBase {
     super(
       "Nova Wallet",
       "nova",
-      typeof window !== 'undefined' && window.nova ? window.nova : null,
+      typeof window !== "undefined" && window.nova ? window.nova : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     return typeof window.nova !== "undefined";
   }
 }
@@ -303,13 +305,15 @@ class SubWallet extends EVMWalletBase {
     super(
       "SubWallet",
       "subwallet",
-      typeof window !== 'undefined' && window.SubWallet ? window.SubWallet : null,
+      typeof window !== "undefined" && window.SubWallet
+        ? window.SubWallet
+        : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     return typeof window.SubWallet !== "undefined";
   }
 }
@@ -336,13 +340,15 @@ class TalismanWallet extends EVMWalletBase {
     super(
       "Talisman",
       "talisman",
-      typeof window !== 'undefined' && window.talismanEth ? window.talismanEth : null,
+      typeof window !== "undefined" && window.talismanEth
+        ? window.talismanEth
+        : null,
     );
   }
 
   isInstalled(): boolean {
     this.installationChecks++;
-    if (typeof window === 'undefined') return false;
+    if (typeof window === "undefined") return false;
     return typeof window.talismanEth !== "undefined";
   }
 }
