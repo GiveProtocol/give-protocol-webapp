@@ -57,6 +57,11 @@ export const GiveDashboard: React.FC = () => {
     }
   }, [location.state]);
 
+  // Wrapper to prevent click event from being passed to connect
+  const handleConnectWallet = useCallback(() => {
+    connect();
+  }, [connect]);
+
   // Sample data - replace with actual data fetching
   const [contributions, _setContributions] = useState<Transaction[]>([
     // setContributions prefixed as unused
@@ -441,7 +446,7 @@ export const GiveDashboard: React.FC = () => {
             To view your dashboard and make donations, please connect your
             wallet.
           </p>
-          <Button onClick={connect}>Connect Wallet</Button>
+          <Button onClick={handleConnectWallet}>Connect Wallet</Button>
         </div>
       </div>
     );

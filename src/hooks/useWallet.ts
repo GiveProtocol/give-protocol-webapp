@@ -4,6 +4,7 @@ import { CHAIN_IDS } from "@/config/contracts";
 export interface WalletProvider {
   name: string;
   icon: string;
+  provider: unknown; // The underlying EIP-1193 provider
   isInstalled: () => boolean;
   isConnected: (_address: string) => Promise<boolean>; // Prefixed as unused in interface
   connect: () => Promise<string>;
@@ -29,7 +30,7 @@ export interface WalletProvider {
 class EVMWalletBase implements WalletProvider {
   readonly name: string;
   readonly icon: string;
-  protected readonly provider: unknown;
+  readonly provider: unknown;
   private disconnectionAttempts = 0;
   private chainParams: Record<number, unknown> | null = null;
 
@@ -212,7 +213,7 @@ class MetaMaskWallet extends EVMWalletBase {
 class WalletConnect implements WalletProvider {
   readonly name = "WalletConnect";
   readonly icon = "walletconnect";
-  private readonly provider: unknown = null;
+  readonly provider: unknown = null;
   private connectionAttempts = 0;
 
   isInstalled(): boolean {

@@ -263,8 +263,10 @@ export function ConnectButton() {
   const [showWalletSelect, setShowWalletSelect] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
+  const [_retryCount, setRetryCount] = useState(0);
   const [isRetrying, setIsRetrying] = useState(false);
+  // Use ref to track retry count for exponential backoff calculation
+  const retryCountRef = React.useRef(0);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -285,6 +287,7 @@ export function ConnectButton() {
   const handleConnect = useCallback(() => {
     setConnectionError(null);
     setRetryCount(0);
+    retryCountRef.current = 0;
     setIsRetrying(false);
     setShowWalletSelect(true);
   }, []);
@@ -303,6 +306,9 @@ export function ConnectButton() {
         await connect(_wallet.provider);
         clearTimeout(timeoutId);
         setShowWalletSelect(false);
+        // Reset retry count on successful connection
+        retryCountRef.current = 0;
+        setRetryCount(0);
 
         // Check if connected to supported network
         if (chainId && !isSupportedChainId(chainId)) {
@@ -319,24 +325,26 @@ export function ConnectButton() {
         Logger.error("Wallet connection failed", {
           wallet: _wallet.name,
           error: err,
-          retryCount,
+          retryCount: retryCountRef.current,
         });
 
-        // Only retry if not user rejected
+        // Only retry if not user rejected and under max retries
         if (
-          retryCount < MAX_RETRIES &&
+          retryCountRef.current < MAX_RETRIES &&
           !message.toLowerCase().includes("user rejected")
         ) {
           setIsRetrying(true);
-          setRetryCount((prev) => prev + 1);
-          setTimeout(
-            () => handleWalletSelect(_wallet),
-            RETRY_DELAY * Math.pow(2, retryCount),
-          );
+          // Calculate delay using current ref value before incrementing
+          const currentRetryCount = retryCountRef.current;
+          const delay = RETRY_DELAY * Math.pow(2, currentRetryCount);
+          // Increment both ref and state
+          retryCountRef.current += 1;
+          setRetryCount(retryCountRef.current);
+          setTimeout(() => handleWalletSelect(_wallet), delay);
         }
       }
     },
-    [connect, chainId, switchChain, retryCount],
+    [connect, chainId, switchChain],
   );
 
   const handleDisconnect = useCallback(async () => {
@@ -347,6 +355,7 @@ export function ConnectButton() {
       setShowAccountMenu(false);
       setConnectionError(null);
       setRetryCount(0);
+      retryCountRef.current = 0;
       setIsRetrying(false);
 
       // Only try to logout if user is actually logged in
@@ -374,6 +383,7 @@ export function ConnectButton() {
       // Even if disconnect fails, reset the UI state and refresh
       setConnectionError(null);
       setRetryCount(0);
+      retryCountRef.current = 0;
       setIsRetrying(false);
       // Force refresh to clear any stale state
       window.location.reload();
