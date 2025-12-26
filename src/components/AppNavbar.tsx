@@ -9,9 +9,12 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { ConnectButton } from "./web3/ConnectButton";
 import { SettingsMenu } from "./SettingsMenu";
+import { WalletButton, NetworkSelector } from "./Wallet";
+import type { NetworkType, WalletProviderType } from "./Wallet";
 import { Menu, X, Calendar } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWeb3 } from "@/contexts/Web3Context";
 import { DOCS_CONFIG } from "@/config/docs";
 
 // Desktop navigation links component
@@ -258,25 +261,93 @@ const NavActions: React.FC<{
   isMenuOpen: boolean;
   toggleMenu: () => void;
   menuButtonRef: React.RefObject<HTMLButtonElement>;
-}> = ({ isMenuOpen, toggleMenu, menuButtonRef }) => (
-  <div className="flex items-center space-x-2">
-    <SettingsMenu />
-    <ConnectButton />
-    <MobileMenuButton
-      isMenuOpen={isMenuOpen}
-      toggleMenu={toggleMenu}
-      menuButtonRef={menuButtonRef}
-    />
-  </div>
-);
+  isConnected: boolean;
+  address: string | null;
+  network: NetworkType;
+  onNetworkChange: (_network: NetworkType) => void;
+  onDisconnect: () => void;
+}> = ({
+  isMenuOpen,
+  toggleMenu,
+  menuButtonRef,
+  isConnected,
+  address,
+  network,
+  onNetworkChange,
+  onDisconnect,
+}) => {
+  // Determine wallet provider from window.ethereum
+  const getWalletProvider = useCallback((): WalletProviderType => {
+    if (typeof window === "undefined" || !window.ethereum) return "metamask";
+    if (window.ethereum.isMetaMask) return "metamask";
+    if (window.ethereum.isTalisman) return "talisman";
+    if (window.ethereum.isSubWallet) return "subwallet";
+    return "metamask";
+  }, []);
+
+  const handleSwitchAccount = useCallback(() => {
+    // For now, just disconnect and let user reconnect
+    onDisconnect();
+  }, [onDisconnect]);
+
+  return (
+    <div className="flex items-center space-x-2">
+      <SettingsMenu />
+      {isConnected && address ? (
+        <>
+          <NetworkSelector
+            currentNetwork={network}
+            onNetworkChange={onNetworkChange}
+            className="hidden sm:block"
+          />
+          <WalletButton
+            address={address}
+            provider={getWalletProvider()}
+            network={network}
+            onDisconnect={onDisconnect}
+            onSwitchAccount={handleSwitchAccount}
+            onNetworkChange={onNetworkChange}
+          />
+        </>
+      ) : (
+        <ConnectButton />
+      )}
+      <MobileMenuButton
+        isMenuOpen={isMenuOpen}
+        toggleMenu={toggleMenu}
+        menuButtonRef={menuButtonRef}
+      />
+    </div>
+  );
+};
 
 export const AppNavbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [network, setNetwork] = useState<NetworkType>("moonbase");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
   const { userType } = useAuth();
+  const { isConnected, address, disconnect, chainId } = useWeb3();
+
+  // Sync network state with chainId from Web3 context
+  useEffect(() => {
+    if (chainId === 1284) {
+      setNetwork("moonbeam");
+    } else if (chainId === 1287) {
+      setNetwork("moonbase");
+    }
+  }, [chainId]);
+
+  const handleNetworkChange = useCallback((_network: NetworkType) => {
+    setNetwork(_network);
+    // Network switching is handled by Web3Context's switchChain
+  }, []);
+
+  const handleDisconnect = useCallback(() => {
+    disconnect();
+  }, [disconnect]);
 
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(
@@ -353,6 +424,11 @@ export const AppNavbar: React.FC = () => {
           isMenuOpen={isMenuOpen}
           toggleMenu={toggleMenu}
           menuButtonRef={menuButtonRef}
+          isConnected={isConnected}
+          address={address}
+          network={network}
+          onNetworkChange={handleNetworkChange}
+          onDisconnect={handleDisconnect}
         />
       </div>
 
