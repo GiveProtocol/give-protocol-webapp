@@ -4,8 +4,7 @@ import { useWeb3 } from "@/contexts/Web3Context";
 import { parseEther, getAddress, isAddress, Contract, MaxUint256 } from "ethers";
 import { Logger } from "@/utils/logger";
 import { trackTransaction } from "@/lib/sentry";
-import { getContractAddress } from "@/config/contracts";
-import { CHAIN_IDS } from "@/config/contracts";
+import { getContractAddress, CHAIN_IDS } from "@/config/contracts";
 
 // Minimal ERC20 ABI for allowance and approve functions
 const ERC20_ABI = [
