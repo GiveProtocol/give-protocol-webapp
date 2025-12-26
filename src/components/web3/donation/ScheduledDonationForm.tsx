@@ -286,7 +286,7 @@ export function ScheduledDonationForm({
   const { showToast: _showToast } = useToast();
   const { balance, isLoading: isLoadingBalance } =
     useTokenBalance(selectedToken);
-  const { convertToFiat, tokenPrices } = useCurrencyContext();
+  const { convertToFiat: _convertToFiat, tokenPrices } = useCurrencyContext();
 
   // Calculate start and end dates for the donation schedule
   const startDate = new Date();
