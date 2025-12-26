@@ -141,7 +141,7 @@ export const SUPPORTED_CURRENCIES: FiatCurrency[] = [
  */
 export function getTokenBySymbol(symbol: string): TokenConfig | undefined {
   return MOONBEAM_TOKENS.find(
-    (token) => token.symbol.toLowerCase() === symbol.toLowerCase()
+    (token) => token.symbol.toLowerCase() === symbol.toLowerCase(),
   );
 }
 
@@ -152,7 +152,7 @@ export function getTokenBySymbol(symbol: string): TokenConfig | undefined {
  */
 export function getTokenByAddress(address: string): TokenConfig | undefined {
   return MOONBEAM_TOKENS.find(
-    (token) => token.address.toLowerCase() === address.toLowerCase()
+    (token) => token.address.toLowerCase() === address.toLowerCase(),
   );
 }
 
@@ -163,6 +163,6 @@ export function getTokenByAddress(address: string): TokenConfig | undefined {
  */
 export function getCurrencyByCode(code: string): FiatCurrency | undefined {
   return SUPPORTED_CURRENCIES.find(
-    (currency) => currency.code.toLowerCase() === code.toLowerCase()
+    (currency) => currency.code.toLowerCase() === code.toLowerCase(),
   );
 }
