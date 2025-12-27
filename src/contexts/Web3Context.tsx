@@ -72,6 +72,54 @@ function hasErrorMessage(error: unknown, message: string): boolean {
   );
 }
 
+/**
+ * Checks if a value is a browser event (e.g., from onClick={connect})
+ * @param value - The value to check
+ * @returns True if the value is an event object
+ */
+function isEventObject(value: unknown): boolean {
+  if (value instanceof Event) return true;
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "nativeEvent" in value
+  );
+}
+
+/**
+ * Attempts to switch to Moonbase Alpha network
+ * @param walletProvider - The EIP-1193 wallet provider
+ * @throws Error if user rejects or switch fails
+ */
+async function switchToMoonbaseAlpha(
+  walletProvider: EIP1193Provider,
+): Promise<void> {
+  try {
+    await walletProvider.request({
+      method: "wallet_switchEthereumChain",
+      params: [{ chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}` }],
+    });
+    Logger.info("Switched network", { chainId: CHAIN_IDS.MOONBASE });
+  } catch (switchError: unknown) {
+    // Chain not added - try to add it
+    if (hasErrorCode(switchError, 4902)) {
+      await walletProvider.request({
+        method: "wallet_addEthereumChain",
+        params: [MOONBASE_CHAIN_INFO],
+      });
+      Logger.info("Added Moonbase Alpha network");
+      return;
+    }
+    // User rejected
+    if (hasErrorCode(switchError, 4001)) {
+      throw new Error("Please switch to Moonbase Alpha (TestNet)");
+    }
+    // Other errors
+    Logger.error("Failed to switch to Moonbase Alpha", { error: switchError });
+    throw new Error("Failed to switch network. Please try again.");
+  }
+}
+
 interface Web3ContextType {
   provider: ethers.Provider | null;
   signer: ethers.Signer | null;
@@ -302,18 +350,10 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   );
 
   const connect = useCallback(async (_walletProvider?: unknown) => {
-    // Ignore if a browser event was passed (e.g., from onClick={connect})
-    // Check for common event properties to detect event objects
-    const isEvent =
-      _walletProvider instanceof Event ||
-      (typeof _walletProvider === "object" &&
-        _walletProvider !== null &&
-        "nativeEvent" in _walletProvider);
-
-    // Use provided wallet provider or fallback to window.ethereum
-    const walletProvider = isEvent
+    // Resolve wallet provider (ignore events from onClick={connect})
+    const walletProvider = isEventObject(_walletProvider)
       ? window.ethereum
-      : _walletProvider || window.ethereum;
+      : (_walletProvider || window.ethereum);
 
     if (!walletProvider) {
       const error = new Error(
@@ -324,7 +364,6 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       throw error;
     }
 
-    // Validate that the provider has the required request method (EIP-1193)
     if (!isEIP1193Provider(walletProvider)) {
       const error = new Error(
         "Wallet provider is not EIP-1193 compliant. Please try refreshing the page.",
@@ -351,47 +390,17 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         throw new Error("No accounts found");
       }
 
-      // Get connected chain ID first to check if we need to switch
+      // Check if we need to switch networks
       const initialProvider = new ethers.BrowserProvider(walletProvider);
       const initialNetwork = await initialProvider.getNetwork();
       const currentChainId = Number(initialNetwork.chainId);
 
-      // Switch to Moonbase Alpha if on wrong network BEFORE setting any state
+      // Switch to Moonbase Alpha if on wrong network
       if (currentChainId !== CHAIN_IDS.MOONBASE) {
-        try {
-          // Perform chain switch using the wallet provider directly
-          try {
-            await walletProvider.request({
-              method: "wallet_switchEthereumChain",
-              params: [{ chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}` }],
-            });
-            Logger.info("Switched network", { chainId: CHAIN_IDS.MOONBASE });
-          } catch (switchError: unknown) {
-            // If the chain hasn't been added to wallet
-            if (hasErrorCode(switchError, 4902)) {
-              await walletProvider.request({
-                method: "wallet_addEthereumChain",
-                params: [MOONBASE_CHAIN_INFO],
-              });
-              Logger.info("Added Moonbase Alpha network");
-            } else {
-              throw switchError;
-            }
-          }
-        } catch (switchError: unknown) {
-          // If user rejected the switch, throw error and don't set any state
-          if (hasErrorCode(switchError, 4001)) {
-            throw new Error("Please switch to Moonbase Alpha (TestNet)");
-          }
-          // For other errors, log and throw - don't leave state inconsistent
-          Logger.error("Failed to switch to Moonbase Alpha", {
-            error: switchError,
-          });
-          throw new Error("Failed to switch network. Please try again.");
-        }
+        await switchToMoonbaseAlpha(walletProvider);
       }
 
-      // Create provider AFTER chain switch is complete so it uses the correct chain
+      // Create provider AFTER chain switch is complete
       const provider = new ethers.BrowserProvider(walletProvider);
       const signer = await provider.getSigner();
       const finalNetwork = await provider.getNetwork();

@@ -161,7 +161,7 @@ export async function copyToClipboard(text: string): Promise<boolean> {
     } catch {
       return false;
     } finally {
-      document.body.removeChild(textArea);
+      textArea.remove();
     }
   }
 }
