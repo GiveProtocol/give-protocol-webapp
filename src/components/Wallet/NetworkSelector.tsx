@@ -141,6 +141,16 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
           aria-label="Select network"
         >
           <div className="p-1">
+            const { clickHandlers, keyDownHandlers } = React.useMemo(() => {
+              const clickHandlers: Record<string, () => void> = {};
+              const keyDownHandlers: Record<string, (e: React.KeyboardEvent<HTMLButtonElement>) => void> = {};
+              NETWORKS.forEach((network) => {
+                clickHandlers[network.id] = () => handleNetworkSelect(network.id);
+                keyDownHandlers[network.id] = (e) => handleKeyboardSelect(e, network.id);
+              });
+              return { clickHandlers, keyDownHandlers };
+            }, [handleNetworkSelect, handleKeyboardSelect]);
+
             {NETWORKS.map((network) => {
               const isSelected = network.id === currentNetwork;
               return (
@@ -149,8 +159,8 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                   type="button"
                   role="option"
                   aria-selected={isSelected}
-                  onClick={() => handleNetworkSelect(network.id)}
-                  onKeyDown={(e) => handleKeyboardSelect(e, network.id)}
+                  onClick={clickHandlers[network.id]}
+                  onKeyDown={keyDownHandlers[network.id]}
                   className={`
                     w-full flex items-center gap-3 px-3 py-2.5
                     rounded-lg transition-colors
