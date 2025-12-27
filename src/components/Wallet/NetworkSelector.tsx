@@ -79,7 +79,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
     }
   }, [disabled]);
 
-  const handleNetworkSelect = useCallback(
+  const _handleNetworkSelect = useCallback(
     (network: NetworkType) => {
       onNetworkChange(network);
       setIsOpen(false);
