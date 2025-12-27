@@ -87,16 +87,6 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
     [onNetworkChange],
   );
 
-  const handleKeyboardSelect = useCallback(
-    (event: React.KeyboardEvent, network: NetworkType) => {
-      if (event.key === "Enter" || event.key === " ") {
-        event.preventDefault();
-        handleNetworkSelect(network);
-      }
-    },
-    [handleNetworkSelect],
-  );
-
   return (
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Trigger Button */}
