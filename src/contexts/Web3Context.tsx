@@ -79,11 +79,7 @@ function hasErrorMessage(error: unknown, message: string): boolean {
  */
 function isEventObject(value: unknown): boolean {
   if (value instanceof Event) return true;
-  return (
-    typeof value === "object" &&
-    value !== null &&
-    "nativeEvent" in value
-  );
+  return typeof value === "object" && value !== null && "nativeEvent" in value;
 }
 
 /**
@@ -353,7 +349,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     // Resolve wallet provider (ignore events from onClick={connect})
     const walletProvider = isEventObject(_walletProvider)
       ? window.ethereum
-      : (_walletProvider || window.ethereum);
+      : _walletProvider || window.ethereum;
 
     if (!walletProvider) {
       const error = new Error(
