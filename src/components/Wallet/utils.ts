@@ -110,7 +110,7 @@ export const PROVIDER_NAMES: Record<string, string> = {
  */
 export function formatBalance(
   balance: string | number | undefined,
-  decimals: number = 4,
+  decimals = 4,
 ): string {
   if (balance === undefined || balance === null || balance === "") {
     return "0.0000";

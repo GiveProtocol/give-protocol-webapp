@@ -87,6 +87,21 @@ function isEventObject(value: unknown): boolean {
 }
 
 /**
+ * Moonbase Alpha chain configuration for wallet_addEthereumChain
+ */
+const MOONBASE_CHAIN_INFO = {
+  chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}`,
+  chainName: "Moonbase Alpha",
+  nativeCurrency: {
+    name: "DEV",
+    symbol: "DEV",
+    decimals: 18,
+  },
+  rpcUrls: ["https://rpc.api.moonbase.moonbeam.network"],
+  blockExplorerUrls: ["https://moonbase.moonscan.io/"],
+};
+
+/**
  * Attempts to switch to Moonbase Alpha network
  * @param walletProvider - The EIP-1193 wallet provider
  * @throws Error if user rejects or switch fails
@@ -134,18 +149,6 @@ interface Web3ContextType {
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
-
-const MOONBASE_CHAIN_INFO = {
-  chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}`,
-  chainName: "Moonbase Alpha",
-  nativeCurrency: {
-    name: "DEV",
-    symbol: "DEV",
-    decimals: 18,
-  },
-  rpcUrls: ["https://rpc.api.moonbase.moonbeam.network"],
-  blockExplorerUrls: ["https://moonbase.moonscan.io/"],
-};
 
 /**
  * Web3 provider component that manages blockchain wallet connections and state
