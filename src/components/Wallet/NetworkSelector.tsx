@@ -149,8 +149,9 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                   type="button"
                   role="option"
                   aria-selected={isSelected}
-                  onClick={() => handleNetworkSelect(network.id)}
-                  onKeyDown={(e) => handleKeyboardSelect(e, network.id)}
+                  data-network-id={network.id}
+                  onClick={handleNetworkClick}
+                  onKeyDown={handleNetworkKeyDown}
                   className={`
                     w-full flex items-center gap-3 px-3 py-2.5
                     rounded-lg transition-colors
