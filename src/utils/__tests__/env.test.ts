@@ -168,7 +168,7 @@ describe("getEnv utility", () => {
       // Mock development environment
       const originalNodeEnv = process.env.NODE_ENV;
       const originalMonitoring = process.env.VITE_MONITORING_ENDPOINT;
-      
+
       process.env.NODE_ENV = "development";
       process.env.VITE_MONITORING_ENDPOINT = "https://dev-monitoring";
 
@@ -392,11 +392,7 @@ describe("getEnv utility", () => {
     it("provides all required core properties", () => {
       const result = getEnv();
 
-      const requiredProperties = [
-        "PROD",
-        "DEV",
-        "MODE",
-      ];
+      const requiredProperties = ["PROD", "DEV", "MODE"];
       requiredProperties.forEach((prop) => {
         expect(result).toHaveProperty(prop);
       });
