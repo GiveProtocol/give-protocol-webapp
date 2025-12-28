@@ -223,14 +223,6 @@ export async function createSelfReportedHours(
  * @param activityDate - Date of the activity
  * @returns The created validation request ID
  */
-export async function createValidationRequest(
-  selfReportedHoursId: string,
-  organizationId: string,
-  volunteerId: string,
-  activityDate: string,
-): Promise<string> {
-  // implementation unchanged
-}
 async function createValidationRequest(
   selfReportedHoursId: string,
   organizationId: string,
