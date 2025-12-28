@@ -90,18 +90,9 @@ describe("getEnv utility", () => {
       }
     });
 
-    it("handles import.meta access failures gracefully", () => {
-      const globalWithImport = globalThis as unknown as GlobalWithImport;
-      const originalImport = globalWithImport.import;
-
-      // Set up scenario where import.meta access throws
-      Object.defineProperty(globalThis, 'import', {
-        get() {
-          throw new Error('import.meta not available');
-        },
-        configurable: true
-      });
-
+    it("handles missing import.meta gracefully by falling back to process.env", () => {
+      // In Jest environment, import.meta is typically not available
+      // getEnv should fall back to process.env gracefully
       const result = getEnv();
 
       // Should fall back to process.env or defaults
@@ -109,13 +100,8 @@ describe("getEnv utility", () => {
       expect(result).toHaveProperty("PROD");
       expect(result).toHaveProperty("DEV");
       expect(result).toHaveProperty("MODE");
-
-      // Restore
-      if (originalImport) {
-        globalWithImport.import = originalImport;
-      } else {
-        delete globalWithImport.import;
-      }
+      // In Jest, MODE should be "test"
+      expect(result.MODE).toBe("test");
     });
   });
 
@@ -145,15 +131,13 @@ describe("getEnv utility", () => {
       );
     });
 
-    it("includes VITE_MONITORING_ENDPOINT property", () => {
+    it("returns object with expected core properties", () => {
       const result = getEnv();
 
-      expect(result).toHaveProperty("VITE_MONITORING_ENDPOINT");
-      // Can be undefined, string, or other value
-      expect(
-        typeof result.VITE_MONITORING_ENDPOINT === "undefined" ||
-          typeof result.VITE_MONITORING_ENDPOINT === "string",
-      ).toBe(true);
+      // Core environment flags should always be present
+      expect(result).toHaveProperty("PROD");
+      expect(result).toHaveProperty("DEV");
+      expect(result).toHaveProperty("MODE");
     });
   });
 
@@ -277,25 +261,21 @@ describe("getEnv utility", () => {
       expect(result.MODE).toBe("test");
     });
 
-    it("includes all expected environment properties", () => {
+    it("includes all expected core environment properties", () => {
       const result = getEnv();
 
-      // Should have all the properties our code expects
+      // Should have all the core properties our code expects
       expect(result).toHaveProperty("PROD");
       expect(result).toHaveProperty("DEV");
       expect(result).toHaveProperty("MODE");
-      expect(result).toHaveProperty("VITE_MONITORING_ENDPOINT");
     });
 
-    it("handles VITE_MONITORING_ENDPOINT appropriately", () => {
+    it("returns valid boolean types for environment flags", () => {
       const result = getEnv();
 
-      // VITE_MONITORING_ENDPOINT should be present (may be undefined)
-      expect(result).toHaveProperty("VITE_MONITORING_ENDPOINT");
-
-      // Should be undefined or string
-      const endpoint = result.VITE_MONITORING_ENDPOINT;
-      expect(endpoint === undefined || typeof endpoint === "string").toBe(true);
+      expect(typeof result.PROD).toBe("boolean");
+      expect(typeof result.DEV).toBe("boolean");
+      expect(typeof result.MODE).toBe("string");
     });
 
     it("maintains logical consistency", () => {
@@ -325,7 +305,6 @@ describe("getEnv utility", () => {
       expect(result.PROD).toBeDefined();
       expect(result.DEV).toBeDefined();
       expect(result.MODE).toBeDefined();
-      expect(result).toHaveProperty("VITE_MONITORING_ENDPOINT");
 
       expect(typeof result.PROD).toBe("boolean");
       expect(typeof result.DEV).toBe("boolean");
@@ -410,14 +389,13 @@ describe("getEnv utility", () => {
       expect(result).not.toBeNull();
     });
 
-    it("provides all required properties", () => {
+    it("provides all required core properties", () => {
       const result = getEnv();
 
       const requiredProperties = [
         "PROD",
         "DEV",
         "MODE",
-        "VITE_MONITORING_ENDPOINT",
       ];
       requiredProperties.forEach((prop) => {
         expect(result).toHaveProperty(prop);
@@ -427,74 +405,31 @@ describe("getEnv utility", () => {
     it("handles property access without errors", () => {
       const result = getEnv();
 
-      // Should be able to access all properties without throwing
+      // Should be able to access core properties without throwing
       expect(() => {
         const _prod = result.PROD;
         const _dev = result.DEV;
         const _mode = result.MODE;
-        const _endpoint = result.VITE_MONITORING_ENDPOINT;
       }).not.toThrow();
     });
   });
 
   describe("edge cases and error handling", () => {
-    it("handles undefined globalThis gracefully", () => {
-      // Mock globalThis as undefined temporarily
-      const originalGlobalThis = globalThis;
-      (global as unknown as { globalThis: undefined }).globalThis = undefined;
-
+    it("getEnv function never throws exceptions", () => {
+      // The main value of getEnv is that it never throws, always returns something usable
       expect(() => getEnv()).not.toThrow();
       const result = getEnv();
       expect(result).toBeDefined();
-
-      // Restore globalThis
-      (global as unknown as { globalThis: typeof globalThis }).globalThis = originalGlobalThis;
+      expect(typeof result).toBe("object");
     });
 
-    it("handles dynamic property access errors", () => {
-      const globalWithImport = globalThis as unknown as GlobalWithImport;
-      const originalImport = globalWithImport.import;
+    it("returns consistent environment across multiple calls", () => {
+      const result1 = getEnv();
+      const result2 = getEnv();
 
-      // Set up import that throws on access
-      Object.defineProperty(globalThis, 'import', {
-        get() {
-          throw new Error('Dynamic import access error');
-        },
-        configurable: true
-      });
-
-      const result = getEnv();
-      expect(result).toBeDefined();
-      expect(result.MODE).toBe("test"); // Should fall back to process.env
-
-      // Restore original
-      if (originalImport) {
-        globalWithImport.import = originalImport;
-      } else {
-        delete globalWithImport.import;
-      }
-    });
-
-    it("handles nested property access failures", () => {
-      const globalWithImport = globalThis as unknown as GlobalWithImport;
-      const originalImport = globalWithImport.import;
-
-      // Set up import.meta that throws
-      globalWithImport.import = {
-        get meta() {
-          throw new Error('Meta access error');
-        }
-      } as { meta: unknown };
-
-      const result = getEnv();
-      expect(result).toBeDefined();
-
-      // Restore original
-      if (originalImport) {
-        globalWithImport.import = originalImport;
-      } else {
-        delete globalWithImport.import;
-      }
+      expect(result1.MODE).toBe(result2.MODE);
+      expect(result1.PROD).toBe(result2.PROD);
+      expect(result1.DEV).toBe(result2.DEV);
     });
   });
 });

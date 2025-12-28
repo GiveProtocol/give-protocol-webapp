@@ -1,8 +1,13 @@
 // Environment utility that works in both Vite and test environments
 export const getEnv = () => {
   // Check if we're in a Vite environment via global access
-  if (typeof globalThis !== "undefined" && globalThis.import?.meta?.env) {
-    return globalThis.import.meta.env;
+  // Wrapped in try-catch in case import getter throws
+  try {
+    if (typeof globalThis !== "undefined" && globalThis.import?.meta?.env) {
+      return globalThis.import.meta.env;
+    }
+  } catch {
+    // globalThis.import access failed
   }
 
   // For Vite environments where import.meta is available, we'll try to access it
