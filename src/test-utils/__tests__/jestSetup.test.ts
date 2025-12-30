@@ -3,9 +3,9 @@ import { commonMocks, createHookMocks } from '../jestSetup';
 describe('jestSetup', () => {
   describe('commonMocks', () => {
     it('provides logger mock with expected methods', () => {
-      expect(commonMocks.logger.error).toBeInstanceOf(Function);
-      expect(commonMocks.logger.info).toBeInstanceOf(Function);
-      expect(commonMocks.logger.warn).toBeInstanceOf(Function);
+      expect(typeof commonMocks.logger.error).toBe('function');
+      expect(typeof commonMocks.logger.info).toBe('function');
+      expect(typeof commonMocks.logger.warn).toBe('function');
     });
 
     it('formatDate mock formats dates correctly', () => {
@@ -46,8 +46,8 @@ describe('jestSetup', () => {
     it('creates wallet mock with expected properties', () => {
       const mocks = createHookMocks();
       
-      expect(mocks.wallet.getInstalledWallets).toBeInstanceOf(Function);
-      expect(mocks.wallet.connectWallet).toBeInstanceOf(Function);
+      expect(typeof mocks.wallet.getInstalledWallets).toBe('function');
+      expect(typeof mocks.wallet.connectWallet).toBe('function');
       
       const wallets = mocks.wallet.getInstalledWallets();
       expect(wallets).toEqual([
@@ -95,7 +95,7 @@ describe('jestSetup', () => {
     it('creates translation mock with expected functionality', () => {
       const mocks = createHookMocks();
       
-      expect(mocks.translation.t).toBeInstanceOf(Function);
+      expect(typeof mocks.translation.t).toBe('function');
       expect(mocks.translation.t('key')).toBe('key');
       expect(mocks.translation.t('key', 'fallback')).toBe('fallback');
     });

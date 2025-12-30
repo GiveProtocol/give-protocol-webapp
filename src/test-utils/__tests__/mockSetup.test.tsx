@@ -47,7 +47,7 @@ describe("mockSetup", () => {
       expect(result.address).toBe("0x123");
       expect(result.isConnected).toBe(true);
       expect(result.chainId).toBe(1287);
-      expect(result.connect).toBeInstanceOf(Function);
+      expect(typeof result.connect).toBe('function');
     });
   });
 
@@ -194,9 +194,9 @@ describe("mockSetup", () => {
 
   describe("mockLogger", () => {
     it("provides mock logger methods", () => {
-      expect(mockLogger.error).toBeInstanceOf(Function);
-      expect(mockLogger.info).toBeInstanceOf(Function);
-      expect(mockLogger.warn).toBeInstanceOf(Function);
+      expect(typeof mockLogger.error).toBe('function');
+      expect(typeof mockLogger.info).toBe('function');
+      expect(typeof mockLogger.warn).toBe('function');
     });
 
     it("logger methods can be called without errors", () => {
@@ -243,10 +243,10 @@ describe("mockSetup", () => {
     it("creates mock supabase client with default responses", () => {
       const client = createMockSupabase();
       
-      expect(client.from).toBeInstanceOf(Function);
-      
+      expect(typeof client.from).toBe('function');
+
       const result = client.from("test_table");
-      expect(result.select).toBeInstanceOf(Function);
+      expect(typeof result.select).toBe('function');
     });
 
     it("creates mock supabase client with custom responses", () => {
@@ -257,16 +257,16 @@ describe("mockSetup", () => {
       const client = createMockSupabase(customResponses);
       const result = client.from("users");
       
-      expect(result.select).toBeInstanceOf(Function);
+      expect(typeof result.select).toBe('function');
     });
 
     it("supports chained query methods", () => {
       const client = createMockSupabase();
       const query = client.from("test_table").select();
       
-      expect(query.eq).toBeInstanceOf(Function);
-      expect(query.order).toBeInstanceOf(Function);
-      expect(query.single).toBeInstanceOf(Function);
+      expect(typeof query.eq).toBe('function');
+      expect(typeof query.order).toBe('function');
+      expect(typeof query.single).toBe('function');
     });
 
     it("supports nested eq and single methods", async () => {

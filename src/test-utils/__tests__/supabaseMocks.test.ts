@@ -63,36 +63,36 @@ describe('supabaseMocks', () => {
     it('creates mock client with from method', () => {
       const client = createMockSupabaseClient();
       
-      expect(client.from).toBeInstanceOf(Function);
+      expect(typeof client.from).toBe('function');
     });
 
     it('from method returns query builder with select', () => {
       const client = createMockSupabaseClient();
       const queryBuilder = client.from('test_table');
       
-      expect(queryBuilder.select).toBeInstanceOf(Function);
-      expect(queryBuilder.insert).toBeInstanceOf(Function);
-      expect(queryBuilder.update).toBeInstanceOf(Function);
-      expect(queryBuilder.delete).toBeInstanceOf(Function);
+      expect(typeof queryBuilder.select).toBe('function');
+      expect(typeof queryBuilder.insert).toBe('function');
+      expect(typeof queryBuilder.update).toBe('function');
+      expect(typeof queryBuilder.delete).toBe('function');
     });
 
     it('select method returns chainable methods', () => {
       const client = createMockSupabaseClient();
       const selectResult = client.from('test_table').select();
       
-      expect(selectResult.eq).toBeInstanceOf(Function);
-      expect(selectResult.order).toBeInstanceOf(Function);
-      expect(selectResult.single).toBeInstanceOf(Function);
+      expect(typeof selectResult.eq).toBe('function');
+      expect(typeof selectResult.order).toBe('function');
+      expect(typeof selectResult.single).toBe('function');
     });
 
     it('eq method returns nested chainable methods', async () => {
       const client = createMockSupabaseClient();
       const eqResult = client.from('test_table').select().eq('id', '123');
       
-      expect(eqResult.eq).toBeInstanceOf(Function);
-      expect(eqResult.single).toBeInstanceOf(Function);
-      expect(eqResult.order).toBeInstanceOf(Function);
-      expect(eqResult.in).toBeInstanceOf(Function);
+      expect(typeof eqResult.eq).toBe('function');
+      expect(typeof eqResult.single).toBe('function');
+      expect(typeof eqResult.order).toBe('function');
+      expect(typeof eqResult.in).toBe('function');
       
       // Test nested eq
       const nestedEq = await eqResult.eq('status', 'active');
@@ -108,7 +108,7 @@ describe('supabaseMocks', () => {
       
       // Test in with order
       const inResult = eqResult.in('ids', ['1', '2']);
-      expect(inResult.order).toBeInstanceOf(Function);
+      expect(typeof inResult.order).toBe('function');
       const inOrdered = await inResult.order('name');
       expect(inOrdered).toEqual({ data: [], error: null });
     });
@@ -117,8 +117,8 @@ describe('supabaseMocks', () => {
       const client = createMockSupabaseClient();
       const insertResult = client.from('test_table').insert({ name: 'Test' });
       
-      expect(insertResult.select).toBeInstanceOf(Function);
-      expect(insertResult.single).toBeInstanceOf(Function);
+      expect(typeof insertResult.select).toBe('function');
+      expect(typeof insertResult.single).toBe('function');
       
       const selectResult = await insertResult.select();
       expect(selectResult).toEqual({ data: [], error: null });
@@ -131,10 +131,10 @@ describe('supabaseMocks', () => {
       const client = createMockSupabaseClient();
       const updateResult = client.from('test_table').update({ name: 'Updated' });
       
-      expect(updateResult.eq).toBeInstanceOf(Function);
+      expect(typeof updateResult.eq).toBe('function');
       
       const eqResult = updateResult.eq('id', '123');
-      expect(eqResult.select).toBeInstanceOf(Function);
+      expect(typeof eqResult.select).toBe('function');
       
       const selected = await eqResult.select();
       expect(selected).toEqual({ data: [], error: null });
@@ -144,7 +144,7 @@ describe('supabaseMocks', () => {
       const client = createMockSupabaseClient();
       const deleteResult = client.from('test_table').delete();
       
-      expect(deleteResult.eq).toBeInstanceOf(Function);
+      expect(typeof deleteResult.eq).toBe('function');
       
       const eqResult = await deleteResult.eq('id', '123');
       expect(eqResult).toEqual({ data: [], error: null });
@@ -172,7 +172,7 @@ describe('supabaseMocks', () => {
       const queryBuilder = client.from('test_table');
       const selectResult = queryBuilder.select();
       
-      expect(selectResult.customMethod).toBeInstanceOf(Function);
+      expect(typeof selectResult.customMethod).toBe('function');
     });
 
     it('applies nested overrides for selectEq', () => {
@@ -182,7 +182,7 @@ describe('supabaseMocks', () => {
       });
       
       const eqResult = client.from('test_table').select().eq('id', '123');
-      expect(eqResult.customData).toBeInstanceOf(Function);
+      expect(typeof eqResult.customData).toBe('function');
     });
 
     it('applies overrides for insert operations', () => {
@@ -191,7 +191,7 @@ describe('supabaseMocks', () => {
       });
       
       const insertResult = client.from('test_table').insert({ data: 'test' });
-      expect(insertResult.customInsert).toBeInstanceOf(Function);
+      expect(typeof insertResult.customInsert).toBe('function');
     });
 
     it('applies overrides for update operations', () => {
@@ -201,10 +201,10 @@ describe('supabaseMocks', () => {
       });
       
       const updateResult = client.from('test_table').update({ data: 'test' });
-      expect(updateResult.customUpdate).toBeInstanceOf(Function);
+      expect(typeof updateResult.customUpdate).toBe('function');
       
       const eqResult = updateResult.eq('id', '123');
-      expect(eqResult.customUpdateEq).toBeInstanceOf(Function);
+      expect(typeof eqResult.customUpdateEq).toBe('function');
     });
 
     it('applies overrides for delete operations', () => {
@@ -214,7 +214,7 @@ describe('supabaseMocks', () => {
       
       const deleteResult = client.from('test_table').delete();
       const eqResult = deleteResult.eq('id', '123');
-      expect(eqResult.customDeleteEq).toBeInstanceOf(Function);
+      expect(typeof eqResult.customDeleteEq).toBe('function');
     });
 
     it('applies client-level overrides', () => {
@@ -223,7 +223,7 @@ describe('supabaseMocks', () => {
       });
       
       expect(client.auth).toBeDefined();
-      expect(client.auth.getUser).toBeInstanceOf(Function);
+      expect(typeof client.auth.getUser).toBe('function');
     });
 
     it('applies from-level overrides', () => {
@@ -232,7 +232,7 @@ describe('supabaseMocks', () => {
       });
       
       const fromResult = client.from('test_table');
-      expect(fromResult.customFrom).toBeInstanceOf(Function);
+      expect(typeof fromResult.customFrom).toBe('function');
     });
   });
 

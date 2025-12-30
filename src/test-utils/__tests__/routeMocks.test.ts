@@ -20,7 +20,7 @@ describe("routeMocks", () => {
       const mock = mockPageComponent("test-id", "Test Component");
 
       expect(mock.__esModule).toBe(true);
-      expect(mock.default).toBeInstanceOf(Function);
+      expect(typeof mock.default).toBe('function');
 
       const element = mock.default();
       expect(element.type).toBe("div");
@@ -37,7 +37,7 @@ describe("routeMocks", () => {
         "TestComponent",
       );
 
-      expect(mock.TestComponent).toBeInstanceOf(Function);
+      expect(typeof mock.TestComponent).toBe('function');
 
       const element = mock.TestComponent();
       expect(element.type).toBe("div");

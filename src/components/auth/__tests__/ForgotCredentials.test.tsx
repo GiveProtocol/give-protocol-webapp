@@ -1,16 +1,25 @@
+import React from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { ForgotCredentials } from "../ForgotCredentials";
 
+const mockResetPassword = jest.fn();
+const mockSendUsernameReminder = jest.fn();
+
 jest.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
-    resetPassword: jest.fn(),
-    sendUsernameReminder: jest.fn(),
+    resetPassword: mockResetPassword,
+    sendUsernameReminder: mockSendUsernameReminder,
     loading: false,
   }),
 }));
 
 describe("ForgotCredentials", () => {
+  beforeEach(() => {
+    mockResetPassword.mockClear();
+    mockSendUsernameReminder.mockClear();
+  });
+
   it("renders forgot credentials form", () => {
     render(<ForgotCredentials />);
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -23,13 +32,6 @@ describe("ForgotCredentials", () => {
   });
 
   it("calls resetPassword when reset button clicked", () => {
-    const mockResetPassword = jest.fn();
-    jest.mocked(jest.requireMock("@/hooks/useAuth").useAuth).mockReturnValue({
-      resetPassword: mockResetPassword,
-      sendUsernameReminder: jest.fn(),
-      loading: false,
-    });
-
     render(<ForgotCredentials />);
 
     fireEvent.change(screen.getByLabelText(/email/i), {
@@ -41,13 +43,6 @@ describe("ForgotCredentials", () => {
   });
 
   it("calls sendUsernameReminder when username button clicked", () => {
-    const mockSendUsernameReminder = jest.fn();
-    jest.mocked(jest.requireMock("@/hooks/useAuth").useAuth).mockReturnValue({
-      resetPassword: jest.fn(),
-      sendUsernameReminder: mockSendUsernameReminder,
-      loading: false,
-    });
-
     render(<ForgotCredentials />);
 
     fireEvent.change(screen.getByLabelText(/email/i), {

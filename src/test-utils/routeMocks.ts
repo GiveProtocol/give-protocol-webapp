@@ -33,14 +33,14 @@ export const mockNamedComponent = (testId: string, displayName: string, componen
  */
 export const setupCommonRouteMocks = () => {
   // Mock route utilities
-  jest.mock('./RouteTransition', () => ({
+  jest.mock('@/routes/RouteTransition', () => ({
     RouteTransition: ({ children }: { children: React.ReactNode }) => React.createElement('div', {}, children)
   }));
-  
-  jest.mock('./ProtectedRoute', () => ({
+
+  jest.mock('@/routes/ProtectedRoute', () => ({
     ProtectedRoute: ({ children }: { children: React.ReactNode }) => React.createElement('div', { 'data-testid': 'protected-route' }, children)
   }));
-  
+
   jest.mock('@/components/ui/LoadingSpinner', () => ({
     LoadingSpinner: ({ size }: { size?: string }) => React.createElement('div', { 'data-testid': 'loading-spinner', 'data-size': size }, 'Loading...')
   }));
@@ -65,7 +65,6 @@ export const setupPageMocks = () => {
   jest.mock('@/pages/About', () => mockNamedComponent('about', 'About', 'About'));
   jest.mock('@/pages/Legal', () => mockNamedComponent('legal', 'Legal', 'Legal'));
   jest.mock('@/pages/Privacy', () => mockNamedComponent('privacy', 'Privacy', 'Privacy'));
-  jest.mock('@/pages/Whitepaper', () => mockNamedComponent('whitepaper', 'Whitepaper', 'Whitepaper'));
 };
 
 /**
@@ -90,12 +89,11 @@ export const setupPortfolioPageMocks = () => {
 
 /**
  * Sets up Jest mocks for dashboard page components
- * Mocks GiveDashboard, CharityPortal, VolunteerDashboard, and AdminDashboard pages
+ * Mocks GiveDashboard, CharityPortal, and AdminDashboard pages
  */
 export const setupDashboardPageMocks = () => {
-  jest.mock('@/pages/donor/GiveDashboard', () => mockPageComponent('give-dashboard', 'Give Dashboard'));
-  jest.mock('@/pages/charity/CharityPortal', () => mockPageComponent('charity-portal', 'Charity Portal'));
-  jest.mock('@/pages/volunteer/VolunteerDashboard', () => mockPageComponent('volunteer-dashboard', 'Volunteer Dashboard'));
+  jest.mock('@/pages/GiveDashboard', () => mockPageComponent('give-dashboard', 'Give Dashboard'));
+  jest.mock('@/pages/CharityPortal', () => mockPageComponent('charity-portal', 'Charity Portal'));
   jest.mock('@/pages/admin/AdminDashboard', () => mockPageComponent('admin-dashboard', 'Admin Dashboard'));
 };
 

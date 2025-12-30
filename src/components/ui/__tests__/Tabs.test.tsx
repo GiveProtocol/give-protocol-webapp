@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../Tabs';
 import { jest } from '@jest/globals';

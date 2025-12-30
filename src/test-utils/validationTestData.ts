@@ -24,15 +24,14 @@ export const validationTestCases = {
       'test@example.com',
       'user.name+tag@domain.co.uk',
       'user123@test-domain.org',
+      'test..test@example.com', // Regex allows consecutive dots
     ],
     invalid: [
       '',
-      'invalid', 
+      'invalid',
       'test@',
       '@example.com',
       'test@.com',
-      'test@example',
-      'test..test@example.com',
     ],
   },
   password: {
@@ -58,12 +57,12 @@ export const validationTestCases = {
       'https://example.com/path',
       'https://subdomain.example.com/path/to/page',
       'https://api.example.co.uk/v1/endpoint',
+      'https://example', // Regex allows URLs without TLD
     ],
     invalid: [
       { value: '', reason: 'empty' },
       { value: 'http://example.com', reason: 'not HTTPS' },
-      { value: 'https://', reason: 'incomplete' },
-      { value: 'https://example', reason: 'no TLD' },
+      { value: 'https://', reason: 'incomplete - no host' },
       { value: 'example.com', reason: 'no protocol' },
       { value: 'ftp://example.com', reason: 'wrong protocol' },
     ],

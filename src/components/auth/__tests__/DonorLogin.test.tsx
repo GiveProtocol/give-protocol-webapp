@@ -1,16 +1,23 @@
+import React from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DonorLogin } from "../DonorLogin";
 
+const mockLogin = jest.fn();
+
 jest.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
-    login: jest.fn(),
+    login: mockLogin,
     loading: false,
     error: null,
   }),
 }));
 
 describe("DonorLogin", () => {
+  beforeEach(() => {
+    mockLogin.mockClear();
+  });
+
   it("renders login form", () => {
     render(<DonorLogin />);
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
@@ -21,13 +28,6 @@ describe("DonorLogin", () => {
   });
 
   it("calls login on form submission", () => {
-    const mockLogin = jest.fn();
-    jest.mocked(jest.requireMock("@/hooks/useAuth").useAuth).mockReturnValue({
-      login: mockLogin,
-      loading: false,
-      error: null,
-    });
-
     render(<DonorLogin />);
 
     fireEvent.change(screen.getByLabelText(/email/i), {
