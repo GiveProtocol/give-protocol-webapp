@@ -91,36 +91,36 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
   return (
     <div className="space-y-6">
       {/* Success Header */}
-      <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 text-green-700 rounded-xl shadow-sm animate-fadeIn">
-        <CheckCircle className="h-8 w-8 text-green-500 flex-shrink-0" />
+      <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl shadow-sm animate-fadeIn">
+        <CheckCircle className="h-8 w-8 text-green-500 dark:text-green-400 flex-shrink-0" />
         <div>
-          <h3 className="text-base font-bold text-green-900 mb-1">
+          <h3 className="text-base font-bold text-green-900 dark:text-green-300 mb-1">
             Recurring Donation Scheduled!
           </h3>
-          <p className="text-sm text-green-700">
+          <p className="text-sm text-green-700 dark:text-green-400">
             Your commitment has been secured on the blockchain.
           </p>
         </div>
       </div>
 
       {/* Important Commitment Notice */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-indigo-200 shadow-sm">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
         <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-indigo-600 flex-shrink-0 mt-0.5" />
+          <AlertTriangle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="text-sm font-bold text-indigo-900 mb-2">
+            <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-2">
               Important Notice
             </h4>
-            <p className="text-sm text-gray-700 leading-relaxed">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
               To immediately secure your full{" "}
-              <span className="font-bold text-indigo-900">
+              <span className="font-bold text-indigo-900 dark:text-indigo-300">
                 {amount.toFixed(4)} {tokenSymbol}
               </span>{" "}
               commitment, the total amount has been reserved today and will be
               automatically distributed to{" "}
-              <span className="font-bold text-indigo-900">{charityName}</span>{" "}
+              <span className="font-bold text-indigo-900 dark:text-indigo-300">{charityName}</span>{" "}
               in equal installments over the next{" "}
-              <span className="font-bold text-indigo-900">
+              <span className="font-bold text-indigo-900 dark:text-indigo-300">
                 {numberOfMonths} months
               </span>
               .
@@ -130,10 +130,10 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
       </div>
 
       {/* Transaction Recap */}
-      <div className="bg-gradient-to-br from-slate-50 to-gray-50 p-5 rounded-xl border-2 border-gray-200 shadow-sm">
-        <h4 className="text-sm font-bold text-gray-900 mb-4 flex items-center">
+      <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-gray-800 dark:to-gray-800 p-5 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-sm">
+        <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
           <svg
-            className="w-5 h-5 mr-2 text-gray-700"
+            className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -148,81 +148,81 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
           Transaction Recap
         </h4>
         <div className="space-y-2.5 text-sm">
-          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">
+          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
               Total Amount Reserved:
             </span>
-            <span className="font-bold text-gray-900 text-base">
+            <span className="font-bold text-gray-900 dark:text-gray-100 text-base">
               {amount.toFixed(6)} {tokenSymbol}
             </span>
           </div>
-          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">
+          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
               Monthly Distribution:
             </span>
-            <span className="font-bold text-indigo-900">
+            <span className="font-bold text-indigo-900 dark:text-indigo-300">
               {monthlyAmount.toFixed(6)} {tokenSymbol}
             </span>
           </div>
-          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">
+          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
               Number of Payments:
             </span>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {numberOfMonths} months
             </span>
           </div>
           {transactionFee && (
-            <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-              <span className="text-gray-600 font-medium">
+            <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+              <span className="text-gray-600 dark:text-gray-300 font-medium">
                 Transaction Fee:
               </span>
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-gray-900 dark:text-gray-100">
                 {transactionFee}
               </span>
             </div>
           )}
-          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">
+          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
               Distribution Starts:
             </span>
-            <span className="font-medium text-gray-900">
+            <span className="font-medium text-gray-900 dark:text-gray-100">
               {formatDate(startDate.toISOString())}
             </span>
           </div>
-          <div className="flex justify-between items-center p-3 bg-white rounded-lg shadow-sm">
-            <span className="text-gray-600 font-medium">
+          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
+            <span className="text-gray-600 dark:text-gray-300 font-medium">
               Distribution Ends:
             </span>
-            <span className="font-medium text-gray-900">
+            <span className="font-medium text-gray-900 dark:text-gray-100">
               {formatDate(endDate.toISOString())}
             </span>
           </div>
-          <div className="flex justify-between items-center p-3 bg-indigo-50 rounded-lg border border-indigo-200">
-            <span className="text-indigo-700 font-semibold">Beneficiary:</span>
-            <span className="font-bold text-indigo-900">{charityName}</span>
+          <div className="flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+            <span className="text-indigo-700 dark:text-indigo-400 font-semibold">Beneficiary:</span>
+            <span className="font-bold text-indigo-900 dark:text-indigo-300">{charityName}</span>
           </div>
         </div>
       </div>
 
       {/* Transaction Hash */}
       {transactionHash && (
-        <div className="bg-gradient-to-br from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-200">
+        <div className="bg-gradient-to-br from-gray-50 to-slate-50 dark:from-gray-800 dark:to-gray-800 p-4 rounded-xl border-2 border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-gray-700">
+            <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
               Transaction Hash:
             </p>
             <a
               href={`https://moonbase.moonscan.io/tx/${transactionHash}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 font-medium"
+              className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
             >
               View on Explorer
               <ExternalLink className="w-3 h-3" />
             </a>
           </div>
-          <p className="text-xs font-mono text-gray-600 break-all bg-white p-2 rounded border border-gray-200">
+          <p className="text-xs font-mono text-gray-600 dark:text-gray-300 break-all bg-white dark:bg-gray-700 p-2 rounded border border-gray-200 dark:border-gray-600">
             {transactionHash}
           </p>
         </div>
@@ -527,7 +527,7 @@ export function ScheduledDonationForm({
   if (!isConnected) {
     return (
       <div className="text-center">
-        <p className="mb-4 text-gray-600">
+        <p className="mb-4 text-gray-600 dark:text-gray-300">
           Connect your wallet to schedule monthly donations
         </p>
         <Button onClick={connect}>Connect Wallet</Button>
@@ -538,7 +538,7 @@ export function ScheduledDonationForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border-2 border-red-200 text-red-700 rounded-xl animate-fadeIn">
+        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl animate-fadeIn">
           <svg
             className="h-5 w-5 flex-shrink-0 text-red-400"
             xmlns="http://www.w3.org/2000/svg"
@@ -555,10 +555,10 @@ export function ScheduledDonationForm({
         </div>
       )}
 
-      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 p-4 rounded-xl border border-indigo-100">
-        <p className="text-sm text-gray-700 leading-relaxed">
+      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           Schedule recurring donations to{" "}
-          <span className="font-semibold text-indigo-900">{charityName}</span>.
+          <span className="font-semibold text-indigo-900 dark:text-indigo-300">{charityName}</span>.
           The total amount will be divided into equal monthly payments.
         </p>
       </div>
@@ -599,10 +599,10 @@ export function ScheduledDonationForm({
         />
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-5 rounded-xl border-2 border-blue-100 shadow-sm">
-        <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center">
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border-2 border-blue-100 dark:border-blue-800 shadow-sm">
+        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
           <svg
-            className="w-5 h-5 mr-2 text-indigo-600"
+            className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -617,22 +617,22 @@ export function ScheduledDonationForm({
           Schedule Preview
         </h4>
         <div className="space-y-2.5 text-sm">
-          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
-            <span className="text-gray-600">Monthly payment:</span>
-            <span className="font-bold text-indigo-900">
+          <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
+            <span className="text-gray-600 dark:text-gray-300">Monthly payment:</span>
+            <span className="font-bold text-indigo-900 dark:text-indigo-300">
               {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"}{" "}
               {selectedToken.symbol}
             </span>
           </div>
-          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
-            <span className="text-gray-600">Total payments:</span>
-            <span className="font-semibold text-gray-900">
+          <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
+            <span className="text-gray-600 dark:text-gray-300">Total payments:</span>
+            <span className="font-semibold text-gray-900 dark:text-gray-100">
               {numberOfMonths} months
             </span>
           </div>
-          <div className="flex justify-between items-center p-2 bg-white rounded-lg">
-            <span className="text-gray-600">Schedule period:</span>
-            <span className="font-medium text-gray-700 text-xs">
+          <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
+            <span className="text-gray-600 dark:text-gray-300">Schedule period:</span>
+            <span className="font-medium text-gray-700 dark:text-gray-200 text-xs">
               {formatDate(startDate.toISOString())} to{" "}
               {formatDate(endDate.toISOString())}
             </span>
@@ -642,9 +642,9 @@ export function ScheduledDonationForm({
 
       {/* Minimum Donation Info */}
       {amount > 0 && tokenPrices[selectedToken.coingeckoId] !== undefined && (
-        <div className="flex items-center gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-          <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0" />
-          <p className="text-xs text-amber-800">
+        <div className="flex items-center gap-2 p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+          <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0" />
+          <p className="text-xs text-amber-800 dark:text-amber-300">
             <span className="font-semibold">Minimum donation:</span> $
             {MINIMUM_DONATION_USD} USD to prevent dust transactions
           </p>

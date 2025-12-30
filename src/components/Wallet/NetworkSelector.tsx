@@ -79,12 +79,35 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
     }
   }, [disabled]);
 
-  const _handleNetworkSelect = useCallback(
+  const handleNetworkSelect = useCallback(
     (network: NetworkType) => {
       onNetworkChange(network);
       setIsOpen(false);
     },
     [onNetworkChange],
+  );
+
+  const handleNetworkClick = useCallback(
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      const networkId = event.currentTarget.dataset.networkId as NetworkType;
+      if (networkId) {
+        handleNetworkSelect(networkId);
+      }
+    },
+    [handleNetworkSelect],
+  );
+
+  const handleNetworkKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        const networkId = event.currentTarget.dataset.networkId as NetworkType;
+        if (networkId) {
+          handleNetworkSelect(networkId);
+        }
+      }
+    },
+    [handleNetworkSelect],
   );
 
   return (
@@ -96,28 +119,28 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
         disabled={disabled}
         className={`
           flex items-center gap-2 px-3 py-2
-          bg-white/90 hover:bg-white
-          border border-gray-200
+          bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800
+          border border-gray-200 dark:border-gray-700
           rounded-xl shadow-sm
           transition-all duration-200
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:shadow-md"}
-          ${isOpen ? "ring-2 ring-green-500 ring-offset-1" : ""}
+          ${isOpen ? "ring-2 ring-green-500 ring-offset-1 dark:ring-offset-gray-900" : ""}
         `}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
         aria-label={`Current network: ${currentNetworkConfig?.name || currentNetwork}`}
       >
-        <Globe className="h-4 w-4 text-gray-500" />
+        <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400" />
         {currentNetworkConfig && (
           <>
             <NetworkIcon color={currentNetworkConfig.color} size={8} />
-            <span className="text-sm font-medium text-gray-700 hidden sm:inline">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-200 hidden sm:inline">
               {currentNetworkConfig.name}
             </span>
           </>
         )}
         <ChevronDown
-          className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${
+          className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
         />
@@ -126,7 +149,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-50 overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
           role="listbox"
           aria-label="Select network"
         >
@@ -147,18 +170,18 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                     rounded-lg transition-colors
                     ${
                       isSelected
-                        ? "bg-green-50 text-green-700"
-                        : "text-gray-700 hover:bg-gray-100"
+                        ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }
                   `}
                 >
                   <NetworkIcon color={network.color} size={10} />
                   <div className="flex-1 text-left">
                     <p className="text-sm font-medium">{network.name}</p>
-                    <p className="text-xs text-gray-500">{network.token}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{network.token}</p>
                   </div>
                   {isSelected && (
-                    <Check className="h-4 w-4 text-green-600 flex-shrink-0" />
+                    <Check className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                   )}
                 </button>
               );

@@ -23,25 +23,25 @@ export const Input: React.FC<InputProps> = ({
   const errorId = `${inputId}-error`;
   const helperId = `${inputId}-helper`;
 
-  const baseClasses = "block w-full shadow-sm transition-all duration-200 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2";
+  const baseClasses = "block w-full shadow-sm transition-all duration-200 placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 text-gray-900 dark:text-gray-100";
 
   const variantClasses = {
     default: cn(
-      "rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50",
-      error && "border-red-300 focus:border-red-500 focus:ring-red-500"
+      "rounded-md border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50 dark:bg-gray-700",
+      error && "border-red-300 dark:border-red-600 focus:border-red-500 focus:ring-red-500"
     ),
     enhanced: cn(
       // Enhanced styling with your specifications
-      "border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base bg-[#fafbfc]",
-      "focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white",
-      error && "border-red-300 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+      "border-[1.5px] border-[#e1e4e8] dark:border-gray-600 rounded-lg px-4 py-3 text-base bg-[#fafbfc] dark:bg-gray-700",
+      "focus:border-[#0366d6] dark:focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white dark:focus:bg-gray-600",
+      error && "border-red-300 dark:border-red-600 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
     )
   };
 
   return (
     <div className="space-y-1">
       {label && (
-        <label htmlFor={inputId} className="block text-sm font-medium text-gray-900">
+        <label htmlFor={inputId} className="block text-sm font-medium text-gray-900 dark:text-gray-100">
           {label}
         </label>
       )}
@@ -61,12 +61,12 @@ export const Input: React.FC<InputProps> = ({
         {...props}
       />
       {error && (
-        <p id={errorId} className="text-sm text-red-600" role="alert" aria-live="polite">
+        <p id={errorId} className="text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">
           {error}
         </p>
       )}
       {helperText && !error && (
-        <p id={helperId} className="text-sm text-gray-500">
+        <p id={helperId} className="text-sm text-gray-500 dark:text-gray-400">
           {helperText}
         </p>
       )}
