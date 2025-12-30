@@ -933,7 +933,9 @@ export const VolunteerApplicationForm: React.FC<
             {validationErrors.consent && (
               <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-start">
                 <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
-                <p className="text-red-700 dark:text-red-400">{validationErrors.consent}</p>
+                <p className="text-red-700 dark:text-red-400">
+                  {validationErrors.consent}
+                </p>
               </div>
             )}
           </div>

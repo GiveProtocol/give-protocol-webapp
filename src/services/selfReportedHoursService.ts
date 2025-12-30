@@ -67,8 +67,7 @@ function mapToDisplay(hours: SelfReportedHours): SelfReportedHoursDisplay {
 
   return {
     ...hours,
-    organizationDisplayName:
-      hours.organizationName || "Unknown Organization",
+    organizationDisplayName: hours.organizationName || "Unknown Organization",
     isVerifiedOrganization,
     daysUntilExpiration,
     canEdit: canEditRecord(hours.validationStatus),
