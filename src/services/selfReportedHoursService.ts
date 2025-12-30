@@ -59,20 +59,16 @@ function mapRowToSelfReportedHours(
 /**
  * Maps SelfReportedHours to display type with computed fields
  * @param hours - SelfReportedHours object
- * @param orgName - Optional organization name from join
  * @returns SelfReportedHoursDisplay object
  */
-function mapToDisplay(
-  hours: SelfReportedHours,
-  orgName?: string,
-): SelfReportedHoursDisplay {
+function mapToDisplay(hours: SelfReportedHours): SelfReportedHoursDisplay {
   const isVerifiedOrganization = Boolean(hours.organizationId);
   const daysUntilExpiration = calculateDaysUntilExpiration(hours.activityDate);
 
   return {
     ...hours,
     organizationDisplayName:
-      orgName || hours.organizationName || "Unknown Organization",
+      hours.organizationName || "Unknown Organization",
     isVerifiedOrganization,
     daysUntilExpiration,
     canEdit: canEditRecord(hours.validationStatus),
@@ -268,15 +264,7 @@ export async function getVolunteerSelfReportedHours(
 ): Promise<SelfReportedHoursDisplay[]> {
   let query = supabase
     .from("self_reported_hours")
-    .select(
-      `
-      *,
-      organization:organization_id (
-        id,
-        name
-      )
-    `,
-    )
+    .select("*")
     .eq("volunteer_id", volunteerId)
     .order("activity_date", { ascending: false });
 
@@ -310,8 +298,7 @@ export async function getVolunteerSelfReportedHours(
 
   return (data || []).map((row) => {
     const hours = mapRowToSelfReportedHours(row);
-    const orgData = row.organization as { id: string; name: string } | null;
-    return mapToDisplay(hours, orgData?.name);
+    return mapToDisplay(hours);
   });
 }
 
@@ -327,15 +314,7 @@ export async function getSelfReportedHoursById(
 ): Promise<SelfReportedHoursDisplay | null> {
   const { data, error } = await supabase
     .from("self_reported_hours")
-    .select(
-      `
-      *,
-      organization:organization_id (
-        id,
-        name
-      )
-    `,
-    )
+    .select("*")
     .eq("id", id)
     .eq("volunteer_id", volunteerId)
     .single();
@@ -353,8 +332,7 @@ export async function getSelfReportedHoursById(
   }
 
   const hours = mapRowToSelfReportedHours(data);
-  const orgData = data.organization as { id: string; name: string } | null;
-  return mapToDisplay(hours, orgData?.name);
+  return mapToDisplay(hours);
 }
 
 /**
