@@ -1,10 +1,13 @@
 // Safe email regex that avoids catastrophic backtracking
 // Rejects consecutive dots which are invalid for all major email providers
 // Uses negative lookahead (?!.*\.\.) to reject consecutive dots anywhere in the email
-const EMAIL_REGEX = /^(?!.*\.\.)(?!.*\.$)(?!^\.)(?!.*\.@)(?!.*@\.)[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/;
-const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+const EMAIL_REGEX =
+  /^(?!.*\.\.)(?!.*\.$)(?!^\.)(?!.*\.@)(?!.*@\.)[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/;
+const PASSWORD_REGEX =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 // Safe URL regex - requires TLD for proper URL validation
-const URL_REGEX = /^https:\/\/[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}(?:\/[^\s]*)?$/;
+const URL_REGEX =
+  /^https:\/\/[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}(?:\/[^\s]*)?$/;
 
 /**
  * Input validation utility with security-focused regex patterns
@@ -29,8 +32,8 @@ export const InputValidator = {
 
   sanitizeInput(input: string): string {
     return input
-      .replace(/[<>]/g, '') // Remove potential HTML tags
-      .replace(/['"]/g, '') // Remove quotes
+      .replace(/[<>]/g, "") // Remove potential HTML tags
+      .replace(/['"]/g, "") // Remove quotes
       .trim();
   },
 
@@ -41,5 +44,5 @@ export const InputValidator = {
       amount <= 1000000 &&
       Number.isInteger(amount * 100) // Ensure max 2 decimal places
     );
-  }
+  },
 } as const;
