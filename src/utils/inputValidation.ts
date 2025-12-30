@@ -1,8 +1,10 @@
 // Safe email regex that avoids catastrophic backtracking
-const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+// Rejects consecutive dots which are invalid for all major email providers
+// Uses negative lookahead (?!.*\.\.) to reject consecutive dots anywhere in the email
+const EMAIL_REGEX = /^(?!.*\.\.)(?!.*\.$)(?!^\.)(?!.*\.@)(?!.*@\.)[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-// Safe URL regex with proper escaping and bounded quantifiers  
-const URL_REGEX = /^https:\/\/[a-zA-Z0-9.-]+(?:\.[a-zA-Z]{2,})?(?:\/[^\s]*)?$/;
+// Safe URL regex - requires TLD for proper URL validation
+const URL_REGEX = /^https:\/\/[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}(?:\/[^\s]*)?$/;
 
 /**
  * Input validation utility with security-focused regex patterns
