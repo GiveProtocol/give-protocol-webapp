@@ -1,4 +1,4 @@
-import { jest } from '@jest/globals';
+import { jest } from "@jest/globals";
 import {
   createMockAuthFlow,
   createMockWeb3Flow,
@@ -75,14 +75,14 @@ describe("authTestHelpers", () => {
     it("creates all auth method mocks", () => {
       const mocks = createAuthMocks();
 
-      expect(typeof mocks.getSession).toBe('function');
-      expect(typeof mocks.onAuthStateChange).toBe('function');
-      expect(typeof mocks.signInWithPassword).toBe('function');
-      expect(typeof mocks.signInWithOAuth).toBe('function');
-      expect(typeof mocks.signOut).toBe('function');
-      expect(typeof mocks.signUp).toBe('function');
-      expect(typeof mocks.resetPasswordForEmail).toBe('function');
-      expect(typeof mocks.refreshSession).toBe('function');
+      expect(typeof mocks.getSession).toBe("function");
+      expect(typeof mocks.onAuthStateChange).toBe("function");
+      expect(typeof mocks.signInWithPassword).toBe("function");
+      expect(typeof mocks.signInWithOAuth).toBe("function");
+      expect(typeof mocks.signOut).toBe("function");
+      expect(typeof mocks.signUp).toBe("function");
+      expect(typeof mocks.resetPasswordForEmail).toBe("function");
+      expect(typeof mocks.refreshSession).toBe("function");
     });
   });
 
@@ -90,7 +90,7 @@ describe("authTestHelpers", () => {
     it("sets up mocks and returns mockShowToast", () => {
       const result = setupAuthTest(mockSupabase, mockUseToast);
 
-      expect(typeof result.mockShowToast).toBe('function');
+      expect(typeof result.mockShowToast).toBe("function");
       expect(mockUseToast).toHaveBeenCalledWith({
         showToast: result.mockShowToast,
       });
@@ -104,7 +104,7 @@ describe("authTestHelpers", () => {
       const mockSupabase = { auth: { signInWithPassword: jest.fn() } };
       const mockScreen = {
         getByTestId: jest.fn().mockReturnValue({ click: jest.fn() }),
-        __mockShowToast: jest.fn()
+        __mockShowToast: jest.fn(),
       };
       const mockResponse = { data: { user: {} }, error: null };
 
@@ -116,7 +116,7 @@ describe("authTestHelpers", () => {
         mockResponse,
         mockScreen,
         "login-button",
-        ["Success", "Login successful"]
+        ["Success", "Login successful"],
       );
 
       expect(mockSupabase.auth.signInWithPassword).toHaveBeenCalled();
@@ -128,7 +128,7 @@ describe("authTestHelpers", () => {
       const mockSupabase = { auth: { signInWithPassword: jest.fn() } };
       const mockScreen = {
         getByTestId: jest.fn().mockReturnValue({ click: jest.fn() }),
-        __mockShowToast: jest.fn()
+        __mockShowToast: jest.fn(),
       };
       const mockError = new Error("Auth failed");
 
@@ -140,7 +140,7 @@ describe("authTestHelpers", () => {
         mockError,
         mockScreen,
         "login-button",
-        ["Error", "Auth failed"]
+        ["Error", "Auth failed"],
       );
 
       expect(mockSupabase.auth.signInWithPassword).toHaveBeenCalled();
