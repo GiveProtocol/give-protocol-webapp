@@ -189,6 +189,23 @@ export async function createSelfReportedHours(
 
   const { data, error } = await supabase
     .from("self_reported_hours")
+/**
+ * Creates a validation request for a self-reported hours record
+ * @param selfReportedHoursId - ID of the hours record
+ * @param organizationId - ID of the organization
+ * @param volunteerId - ID of the volunteer
+ * @param activityDate - Date of the activity
+ * @returns The created validation request ID
+ */
+export async function createValidationRequest(
+  selfReportedHoursId: number,
+  organizationId: number,
+  volunteerId: number,
+  activityDate: string,
+): Promise<number> {
+  // Implementation unchanged
+}
+
     .insert({
       volunteer_id: volunteerId,
       activity_date: input.activityDate,
@@ -231,15 +248,6 @@ export async function createSelfReportedHours(
 
   return record;
 }
-
-/**
- * Creates a validation request for a self-reported hours record
- * @param selfReportedHoursId - ID of the hours record
- * @param organizationId - ID of the organization
- * @param volunteerId - ID of the volunteer
- * @param activityDate - Date of the activity
- * @returns The created validation request ID
- */
 async function createValidationRequest(
   selfReportedHoursId: string,
   organizationId: string,
