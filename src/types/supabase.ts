@@ -14,18 +14,39 @@ export interface Database {
           id: string;
           user_id: string;
           type: "donor" | "charity";
+          name?: string;
+          meta?: {
+            logoUrl?: string;
+            location?: string;
+            description?: string;
+            [key: string]: unknown;
+          };
           created_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
           type: "donor" | "charity";
+          name?: string;
+          meta?: {
+            logoUrl?: string;
+            location?: string;
+            description?: string;
+            [key: string]: unknown;
+          };
           created_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
           type?: "donor" | "charity";
+          name?: string;
+          meta?: {
+            logoUrl?: string;
+            location?: string;
+            description?: string;
+            [key: string]: unknown;
+          };
           created_at?: string;
         };
       };

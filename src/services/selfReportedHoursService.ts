@@ -147,6 +147,28 @@ export async function createSelfReportedHours(
   volunteerId: string,
   input: SelfReportedHoursInput,
 ): Promise<SelfReportedHours> {
+  // Verify the authenticated user matches the volunteerId
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    Logger.error("Authentication error in createSelfReportedHours", {
+      error: authError,
+      volunteerId,
+    });
+    throw new Error("You must be logged in to log volunteer hours");
+  }
+
+  if (user.id !== volunteerId) {
+    Logger.error("User ID mismatch in createSelfReportedHours", {
+      authenticatedUserId: user.id,
+      providedVolunteerId: volunteerId,
+    });
+    throw new Error("Authentication mismatch - please refresh and try again");
+  }
+
   // Validate input
   const validation = validateInput(input);
   if (!validation.isValid) {

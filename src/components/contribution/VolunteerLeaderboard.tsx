@@ -1,22 +1,23 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Award, Clock, Search } from "lucide-react";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
+import { useVolunteerLeaderboard } from "@/hooks/useContributionStats";
 
 interface VolunteerLeader {
   id: string;
   alias: string;
   walletAddress: string;
   hours: number;
+  formalHours: number;
+  selfReportedHours: number;
   endorsements: number;
   rank: number;
-  skills: string[];
 }
 
 interface VolunteerLeaderboardProps {
-  timeRange: string;
-  region: string;
-  searchTerm: string;
+  timeRange?: string;
+  region?: string;
+  searchTerm?: string;
   highlightSkill?: string;
   section?: "hours" | "endorsements";
 }
@@ -34,74 +35,11 @@ const getRankColor = (rank: number): string => {
   }
 };
 
-const fetchVolunteerLeaders = async (
-  sortBy: "hours" | "endorsements",
-): Promise<VolunteerLeader[]> => {
-  // Simulated API call
-  // skipcq: SCT-A000 - These are placeholder test Ethereum addresses for mock data, not real secrets
-  const leaders = [
-    {
-      id: "1",
-      alias: "Community Builder",
-      walletAddress: "0x1234567890123456789012345678901234567890",
-      hours: 120,
-      endorsements: 45,
-      rank: 1,
-      skills: ["Web Development", "Project Management", "Community Building"],
-    },
-    {
-      id: "2",
-      alias: "Helping Hand",
-      walletAddress: "0x2345678901234567890123456789012345678901",
-      hours: 95,
-      endorsements: 38,
-      rank: 2,
-      skills: ["Event Planning", "Fundraising", "Social Media"],
-    },
-    {
-      id: "3",
-      alias: "Skill Sharer",
-      walletAddress: "0x3456789012345678901234567890123456789012",
-      hours: 85,
-      endorsements: 32,
-      rank: 3,
-      skills: ["Web Development", "Teaching", "Mentoring"],
-    },
-    {
-      id: "4",
-      alias: "Time Giver",
-      walletAddress: "0x4567890123456789012345678901234567890123",
-      hours: 75,
-      endorsements: 28,
-      rank: 4,
-      skills: ["Project Management", "Data Analysis", "Research"],
-    },
-    {
-      id: "5",
-      alias: "Impact Maker",
-      walletAddress: "0x5678901234567890123456789012345678901234",
-      hours: 65,
-      endorsements: 25,
-      rank: 5,
-      skills: ["Event Planning", "Marketing", "Design"],
-    },
-  ];
-
-  // Sort based on selected metric (create copy to avoid mutation)
-  const sortedLeaders = leaders.toSorted((a, b) => {
-    const valueA = sortBy === "hours" ? a.hours : a.endorsements;
-    const valueB = sortBy === "hours" ? b.hours : b.endorsements;
-    return valueB - valueA;
-  });
-
-  return sortedLeaders.map((leader, index) => ({ ...leader, rank: index + 1 }));
-};
-
 export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
   timeRange: _timeRange,
   region: _region,
   searchTerm,
-  highlightSkill,
+  highlightSkill: _highlightSkill,
   section = "hours",
 }) => {
   const [activeTab, setActiveTab] = useState<"hours" | "endorsements">(section);
@@ -111,19 +49,34 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
     (VolunteerLeader & { displayName: string })[]
   >([]);
 
-  const { data: leaders, isLoading } = useQuery({
-    queryKey: ["volunteerLeaders", activeTab],
-    queryFn: () => fetchVolunteerLeaders(activeTab),
-  });
+  // Fetch real data from the aggregation service
+  const { data: leaderboardData, isLoading } = useVolunteerLeaderboard(10, false);
+
+  // Transform API data to component format
+  const leaders = useMemo(() => {
+    if (!leaderboardData) return [];
+    return leaderboardData.map((entry) => ({
+      id: entry.userId,
+      alias: entry.alias || `Volunteer ${entry.rank}`,
+      walletAddress: entry.walletAddress || "",
+      hours: entry.totalHours,
+      formalHours: entry.formalHours,
+      selfReportedHours: entry.selfReportedHours,
+      endorsements: entry.endorsements,
+      rank: entry.rank,
+    }));
+  }, [leaderboardData]);
 
   // Update display names with aliases when available
   useEffect(() => {
-    if (!leaders) return;
+    if (leaders.length === 0) return;
 
     const updateAliases = async () => {
       const updatedLeaders = await Promise.all(
         leaders.map(async (leader) => {
-          const alias = await getAliasForAddress(leader.walletAddress);
+          const alias = leader.walletAddress
+            ? await getAliasForAddress(leader.walletAddress)
+            : null;
           return {
             ...leader,
             displayName: alias || leader.alias,
@@ -156,14 +109,9 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
     const searchTermToUse = localSearchTerm || searchTerm;
     if (!searchTermToUse) return true;
 
-    return (
-      leader.displayName
-        .toLowerCase()
-        .includes(searchTermToUse.toLowerCase()) ||
-      leader.skills.some((skill) =>
-        skill.toLowerCase().includes(searchTermToUse.toLowerCase()),
-      )
-    );
+    return leader.displayName
+      .toLowerCase()
+      .includes(searchTermToUse.toLowerCase());
   });
 
   if (isLoading) return <div>Loading leaderboard&hellip;</div>;
@@ -208,59 +156,39 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
 
       {filteredLeaders.length > 0 ? (
         <div className="space-y-3">
-          {filteredLeaders.map((leader) => {
-            const isHighlighted =
-              highlightSkill && leader.skills.includes(highlightSkill);
-
-            return (
-              <div
-                key={leader.id}
-                className={`flex items-center justify-between p-4 ${
-                  isHighlighted
-                    ? "bg-indigo-50 border-l-4 border-indigo-500"
-                    : "bg-gray-50"
-                } rounded-lg`}
-              >
-                <div className="flex items-center space-x-4">
-                  <span
-                    className={`w-8 h-8 flex items-center justify-center rounded-full ${
-                      leader.rank <= 3
-                        ? getRankColor(leader.rank)
-                        : "bg-gray-200"
-                    } text-gray-900 font-semibold`}
-                  >
-                    {leader.rank}
-                  </span>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {leader.displayName}
+          {filteredLeaders.map((leader) => (
+            <div
+              key={leader.id}
+              className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg"
+            >
+              <div className="flex items-center space-x-4">
+                <span
+                  className={`w-8 h-8 flex items-center justify-center rounded-full ${
+                    leader.rank <= 3
+                      ? getRankColor(leader.rank)
+                      : "bg-gray-200 dark:bg-gray-600"
+                  } text-gray-900 dark:text-gray-100 font-semibold`}
+                >
+                  {leader.rank}
+                </span>
+                <div>
+                  <p className="font-medium text-gray-900 dark:text-gray-100">
+                    {leader.displayName}
+                  </p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">
+                    {activeTab === "hours"
+                      ? `${leader.hours.toLocaleString()} hrs • ${leader.endorsements} endorsements`
+                      : `${leader.endorsements} endorsements • ${leader.hours.toLocaleString()} hrs`}
+                  </p>
+                  {leader.selfReportedHours > 0 && (
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                      {leader.formalHours.toLocaleString()} verified • {leader.selfReportedHours.toLocaleString()} self-reported
                     </p>
-                    <p className="text-sm text-gray-500">
-                      {activeTab === "hours"
-                        ? `${leader.hours} hrs • ${leader.endorsements} endorsements`
-                        : `${leader.endorsements} endorsements • ${leader.hours} hrs`}
-                    </p>
-                    {isHighlighted && (
-                      <div className="mt-1 flex flex-wrap gap-2">
-                        {leader.skills.map((skill) => (
-                          <span
-                            key={skill}
-                            className={`text-xs px-2 py-1 rounded-full ${
-                              skill === highlightSkill
-                                ? "bg-indigo-100 text-indigo-800 font-medium"
-                                : "bg-gray-100 text-gray-600"
-                            }`}
-                          >
-                            {skill}
-                          </span>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
       ) : (
         <div className="flex items-center justify-center h-40 bg-gray-50 rounded-lg">

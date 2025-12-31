@@ -1,47 +1,49 @@
 import React from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { DonationStats } from './DonationStats';
-import { RecentDonations } from './RecentDonations';
+import { RecentContributions } from './RecentContributions';
 import { VolunteerImpact } from './VolunteerImpact';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-
-interface PersonalStats {
-  totalDonated: number;
-  volunteerHours: number;
-  skillsEndorsed: number;
-}
-
-const fetchPersonalStats = async (_filters: Record<string, unknown>): Promise<PersonalStats> => {
-  // Simulated API call with filter-based data
-  return {
-    totalDonated: 5200,
-    volunteerHours: 48,
-    skillsEndorsed: 8
-  };
-};
+import { useUserContributionStats } from '@/hooks/useContributionStats';
 
 interface PersonalContributionsProps {
-  filters: Record<string, unknown>;
+  filters?: Record<string, unknown>;
 }
 
-export const PersonalContributions: React.FC<PersonalContributionsProps> = ({ filters }) => {
-  const { data: stats, isLoading } = useQuery({
-    queryKey: ['personalStats', filters],
-    queryFn: () => fetchPersonalStats(filters)
-  });
+export const PersonalContributions: React.FC<PersonalContributionsProps> = ({ filters: _filters }) => {
+  const { data: userStats, isLoading, error } = useUserContributionStats();
 
   if (isLoading) {
     return <LoadingSpinner size="lg" />;
   }
 
+  if (error) {
+    return (
+      <div className="text-center py-8 text-red-600 dark:text-red-400">
+        Error loading contribution stats. Please try again.
+      </div>
+    );
+  }
+
+  // Transform userStats to the format expected by DonationStats
+  const stats = userStats ? {
+    totalDonated: userStats.totalDonated,
+    volunteerHours: {
+      formal: userStats.formalVolunteerHours,
+      selfReported: userStats.selfReportedHours,
+      total: userStats.totalVolunteerHours,
+    },
+    skillsEndorsed: userStats.skillsEndorsed,
+    organizationsHelped: userStats.organizationsHelped,
+  } : undefined;
+
   return (
     <div className="space-y-8">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         <DonationStats stats={stats} isPersonal />
       </div>
 
       <div className="grid gap-8 lg:grid-cols-2">
-        <RecentDonations />
+        <RecentContributions />
         <VolunteerImpact />
       </div>
     </div>

@@ -1,53 +1,11 @@
 import React, { useMemo, useState, useEffect, useCallback } from "react";
-import { useQuery } from "@tanstack/react-query";
 import { Trophy, Search } from "lucide-react";
 import { formatCurrency } from "@/utils/money";
-import { LeaderboardEntry } from "@/types/contribution";
+import type { LeaderboardEntry } from "@/types/contribution";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { FixedSizeList } from "react-window";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
-
-const fetchLeaderboardData = async (): Promise<LeaderboardEntry[]> => {
-  // Simulated API call
-  // skipcq: SCT-A000 - These are placeholder test Ethereum addresses for mock data, not real secrets
-  return [
-    {
-      id: "1",
-      alias: "Anonymous Hero",
-      walletAddress: "0x1234567890123456789012345678901234567890",
-      totalDonated: 50000,
-      rank: 1,
-    },
-    {
-      id: "2",
-      alias: "Giving Soul",
-      walletAddress: "0x2345678901234567890123456789012345678901",
-      totalDonated: 35000,
-      rank: 2,
-    },
-    {
-      id: "3",
-      alias: "Kind Heart",
-      walletAddress: "0x3456789012345678901234567890123456789012",
-      totalDonated: 25000,
-      rank: 3,
-    },
-    {
-      id: "4",
-      alias: "Hope Giver",
-      walletAddress: "0x4567890123456789012345678901234567890123",
-      totalDonated: 15000,
-      rank: 4,
-    },
-    {
-      id: "5",
-      alias: "Change Maker",
-      walletAddress: "0x5678901234567890123456789012345678901234",
-      totalDonated: 10000,
-      rank: 5,
-    },
-  ];
-};
+import { useDonorLeaderboard } from "@/hooks/useContributionStats";
 
 const getRankColor = (rank: number): string => {
   switch (rank) {
@@ -102,27 +60,40 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
 
 export const DonationLeaderboard: React.FC = () => {
   const {
-    data: leaderboard,
+    data: leaderboardData,
     isLoading,
     error,
-  } = useQuery({
-    queryKey: ["donationLeaderboard"],
-    queryFn: fetchLeaderboardData,
-  });
+  } = useDonorLeaderboard(10);
   const { getAliasForAddress } = useWalletAlias();
   const [searchTerm, setSearchTerm] = useState("");
   const [displayLeaderboard, setDisplayLeaderboard] = useState<
     LeaderboardEntry[]
   >([]);
 
+  // Transform API data to component format
+  const leaderboard = useMemo(() => {
+    if (!leaderboardData) return [];
+    return leaderboardData.map((entry) => ({
+      id: entry.userId,
+      alias: entry.alias || `Donor ${entry.rank}`,
+      walletAddress: entry.walletAddress || "",
+      totalDonated: entry.totalDonated,
+      rank: entry.rank,
+      donationCount: entry.donationCount,
+      organizationsSupported: entry.organizationsSupported,
+    }));
+  }, [leaderboardData]);
+
   // Update display names with aliases when available
   useEffect(() => {
-    if (!leaderboard) return;
+    if (leaderboard.length === 0) return;
 
     const updateAliases = async () => {
       const updatedLeaderboard = await Promise.all(
         leaderboard.map(async (entry) => {
-          const alias = await getAliasForAddress(entry.walletAddress);
+          const alias = entry.walletAddress
+            ? await getAliasForAddress(entry.walletAddress)
+            : null;
           return {
             ...entry,
             displayName: alias || entry.alias,

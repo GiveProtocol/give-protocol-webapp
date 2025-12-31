@@ -1,16 +1,34 @@
 // Contribution Types
+export type ContributionSourceType =
+  | "donation"
+  | "formal_volunteer"
+  | "self_reported";
+
 export interface ContributionFilters {
   organization: string;
   category: string;
   region: string;
   timeRange: string;
+  sources?: ContributionSourceType[];
+}
+
+export interface VolunteerHoursBreakdown {
+  formal: number;
+  selfReported: {
+    validated: number;
+    pending: number;
+    unvalidated: number;
+    total: number;
+  };
+  total: number; // formal + validated self-reported
 }
 
 export interface DonationStatsProps {
   stats?: {
     totalDonated: number;
-    volunteerHours: number;
+    volunteerHours: number | VolunteerHoursBreakdown;
     skillsEndorsed: number;
+    organizationsHelped?: number;
   };
   isPersonal?: boolean;
 }
@@ -22,6 +40,8 @@ export interface LeaderboardEntry {
   displayName?: string;
   totalDonated: number;
   rank: number;
+  donationCount?: number;
+  organizationsSupported?: number;
 }
 
 export interface VolunteerStats {
