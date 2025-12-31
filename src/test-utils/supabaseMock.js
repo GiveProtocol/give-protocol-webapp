@@ -7,6 +7,8 @@ import { jest } from "@jest/globals";
 let mockState = {
   fromResults: new Map(), // Map of table name -> result
   defaultResult: { data: [], error: null },
+  authUser: null, // The authenticated user
+  authError: null, // Auth error if any
 };
 
 // Helper to set mock response for a table
@@ -19,11 +21,25 @@ export const setDefaultMockResult = (result) => {
   mockState.defaultResult = result;
 };
 
+// Helper to set the authenticated user
+export const setMockAuthUser = (user) => {
+  mockState.authUser = user;
+  mockState.authError = null;
+};
+
+// Helper to set auth error
+export const setMockAuthError = (error) => {
+  mockState.authUser = null;
+  mockState.authError = error;
+};
+
 // Helper to reset all mock state
 export const resetMockState = () => {
   mockState = {
     fromResults: new Map(),
     defaultResult: { data: [], error: null },
+    authUser: null,
+    authError: null,
   };
 };
 
@@ -81,7 +97,12 @@ const mockFrom = jest.fn((tableName) => createQueryBuilder(tableName));
 export const supabase = {
   from: mockFrom,
   auth: {
-    getUser: jest.fn().mockResolvedValue({ data: { user: null }, error: null }),
+    getUser: jest.fn().mockImplementation(() =>
+      Promise.resolve({
+        data: { user: mockState.authUser },
+        error: mockState.authError,
+      })
+    ),
     getSession: jest
       .fn()
       .mockResolvedValue({ data: { session: null }, error: null }),

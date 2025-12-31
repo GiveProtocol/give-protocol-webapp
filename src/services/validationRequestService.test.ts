@@ -53,14 +53,17 @@ describe("validationRequestService", () => {
             created_at: now.toISOString(),
             updated_at: now.toISOString(),
           },
-          volunteer: {
-            id: "vol-1",
-            email: "test@example.com",
-            raw_user_meta_data: { full_name: "Test User" },
-          },
+        },
+      ];
+      const mockProfiles = [
+        {
+          user_id: "vol-1",
+          display_name: "Test User",
+          email: "test@example.com",
         },
       ];
       setMockResult("validation_requests", { data: mockData, error: null });
+      setMockResult("profiles", { data: mockProfiles, error: null });
 
       const result = await getOrganizationValidationQueue("org-1");
 
@@ -96,10 +99,11 @@ describe("validationRequestService", () => {
             created_at: now.toISOString(),
             updated_at: now.toISOString(),
           },
-          volunteer: null,
         },
       ];
+      // No profiles mock - simulates profile not found
       setMockResult("validation_requests", { data: mockData, error: null });
+      setMockResult("profiles", { data: [], error: null });
 
       const result = await getOrganizationValidationQueue("org-1");
 
@@ -450,6 +454,7 @@ describe("validationRequestService", () => {
         resubmitValidationRequest("request-1", "vol-1"),
       ).rejects.toThrow("Hours record not found");
     });
+
   });
 
   describe("getValidationHistory", () => {

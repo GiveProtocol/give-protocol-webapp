@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
-import { setMockResult, resetMockState } from "@/test-utils/supabaseMock";
+import {
+  setMockResult,
+  resetMockState,
+  setMockAuthUser,
+} from "@/test-utils/supabaseMock";
 import { ValidationStatus, ActivityType } from "@/types/selfReportedHours";
 import {
   createSelfReportedHours,
@@ -33,6 +37,7 @@ describe("selfReportedHoursService", () => {
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       setMockResult("self_reported_hours", { data: mockRecord, error: null });
 
       const input = {
@@ -52,9 +57,12 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should throw error for future date", async () => {
-      const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000);
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
+      // Use a date far in the future to avoid timezone edge cases
+      const futureDate = new Date();
+      futureDate.setFullYear(futureDate.getFullYear() + 1);
       const input = {
-        activityDate: tomorrow.toISOString().split("T")[0],
+        activityDate: futureDate.toISOString().split("T")[0],
         hours: 4,
         activityType: ActivityType.DIRECT_SERVICE,
         description:
@@ -68,6 +76,7 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should throw error for invalid hours", async () => {
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const input = {
         activityDate: yesterday.toISOString().split("T")[0],
@@ -84,6 +93,7 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should throw error for short description", async () => {
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const input = {
         activityDate: yesterday.toISOString().split("T")[0],
@@ -99,6 +109,7 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should throw error when no organization specified", async () => {
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const input = {
         activityDate: yesterday.toISOString().split("T")[0],
@@ -116,6 +127,40 @@ describe("selfReportedHoursService", () => {
         ),
       ).rejects.toThrow(
         "Either organization ID or organization name is required",
+      );
+    });
+
+    it("should throw error when not logged in", async () => {
+      // Auth user is null by default after resetMockState
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const input = {
+        activityDate: yesterday.toISOString().split("T")[0],
+        hours: 4,
+        activityType: ActivityType.DIRECT_SERVICE,
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organizationName: "Test Org",
+      };
+
+      await expect(createSelfReportedHours("user-1", input)).rejects.toThrow(
+        "You must be logged in to log volunteer hours",
+      );
+    });
+
+    it("should throw error when user ID mismatch", async () => {
+      setMockAuthUser({ id: "different-user", email: "test@example.com" });
+      const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+      const input = {
+        activityDate: yesterday.toISOString().split("T")[0],
+        hours: 4,
+        activityType: ActivityType.DIRECT_SERVICE,
+        description:
+          "This is a test description that meets the minimum character requirement for validation purposes.",
+        organizationName: "Test Org",
+      };
+
+      await expect(createSelfReportedHours("user-1", input)).rejects.toThrow(
+        "Authentication mismatch",
       );
     });
   });
@@ -416,6 +461,7 @@ describe("selfReportedHoursService", () => {
 
   describe("createSelfReportedHours - additional cases", () => {
     it("should throw error for description too long", async () => {
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const longDescription = "x".repeat(600);
       const input = {
@@ -432,6 +478,7 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should throw error when both organization ID and name specified", async () => {
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       const input = {
         activityDate: yesterday.toISOString().split("T")[0],
@@ -623,6 +670,7 @@ describe("selfReportedHoursService", () => {
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       setMockResult("self_reported_hours", { data: mockRecord, error: null });
       setMockResult("validation_requests", {
         data: { id: "request-1" },
@@ -659,6 +707,7 @@ describe("selfReportedHoursService", () => {
         created_at: now.toISOString(),
         updated_at: now.toISOString(),
       };
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       setMockResult("self_reported_hours", { data: mockRecord, error: null });
 
       const input = {
@@ -676,6 +725,7 @@ describe("selfReportedHoursService", () => {
     });
 
     it("should throw on database error during create", async () => {
+      setMockAuthUser({ id: "user-1", email: "test@example.com" });
       const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
       setMockResult("self_reported_hours", {
         data: null,
