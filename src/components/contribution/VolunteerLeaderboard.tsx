@@ -50,7 +50,10 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
   >([]);
 
   // Fetch real data from the aggregation service
-  const { data: leaderboardData, isLoading } = useVolunteerLeaderboard(10, false);
+  const { data: leaderboardData, isLoading } = useVolunteerLeaderboard(
+    10,
+    false,
+  );
 
   // Transform API data to component format
   const leaders = useMemo(() => {
@@ -182,7 +185,8 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
                   </p>
                   {leader.selfReportedHours > 0 && (
                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                      {leader.formalHours.toLocaleString()} verified • {leader.selfReportedHours.toLocaleString()} self-reported
+                      {leader.formalHours.toLocaleString()} verified •{" "}
+                      {leader.selfReportedHours.toLocaleString()} self-reported
                     </p>
                   )}
                 </div>

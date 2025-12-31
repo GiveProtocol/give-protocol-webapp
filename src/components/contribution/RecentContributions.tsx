@@ -1,16 +1,19 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { DollarSign, Clock, ClipboardCheck } from 'lucide-react';
-import { formatCurrency } from '@/utils/money';
-import { formatDate } from '@/utils/date';
-import { useUnifiedContributions } from '@/hooks/useContributionStats';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import type { ContributionSourceType } from '@/types/contribution';
-import type { ContributionSource, ContributionFilters } from '@/services/contributionAggregationService';
+import React, { useState, useCallback, useMemo } from "react";
+import { DollarSign, Clock, ClipboardCheck } from "lucide-react";
+import { formatCurrency } from "@/utils/money";
+import { formatDate } from "@/utils/date";
+import { useUnifiedContributions } from "@/hooks/useContributionStats";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import type { ContributionSourceType } from "@/types/contribution";
+import type {
+  ContributionSource,
+  ContributionFilters,
+} from "@/services/contributionAggregationService";
 
 const SOURCE_OPTIONS: { value: ContributionSourceType; label: string }[] = [
-  { value: 'donation', label: 'Donations' },
-  { value: 'formal_volunteer', label: 'Verified Hours' },
-  { value: 'self_reported', label: 'Self-Reported' },
+  { value: "donation", label: "Donations" },
+  { value: "formal_volunteer", label: "Verified Hours" },
+  { value: "self_reported", label: "Self-Reported" },
 ];
 
 interface SourceFilterButtonProps {
@@ -33,8 +36,8 @@ function SourceFilterButtonComponent(props: SourceFilterButtonProps) {
       onClick={handleClick}
       className={`px-2 py-1 text-xs rounded-full border transition-colors ${
         isSelected
-          ? 'bg-indigo-100 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-300'
-          : 'bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400'
+          ? "bg-indigo-100 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-300"
+          : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
       }`}
       aria-pressed={isSelected}
     >
@@ -47,11 +50,15 @@ const SourceFilterButton = React.memo(SourceFilterButtonComponent);
 
 function getContributionIcon(type: ContributionSource) {
   switch (type) {
-    case 'donation':
-      return <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />;
-    case 'formal_volunteer':
-      return <ClipboardCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
-    case 'self_reported':
+    case "donation":
+      return (
+        <DollarSign className="h-4 w-4 text-green-600 dark:text-green-400" />
+      );
+    case "formal_volunteer":
+      return (
+        <ClipboardCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+      );
+    case "self_reported":
       return <Clock className="h-4 w-4 text-amber-600 dark:text-amber-400" />;
     default:
       return <Clock className="h-4 w-4 text-gray-600 dark:text-gray-400" />;
@@ -60,33 +67,33 @@ function getContributionIcon(type: ContributionSource) {
 
 function getContributionLabel(type: ContributionSource): string {
   switch (type) {
-    case 'donation':
-      return 'Donation';
-    case 'formal_volunteer':
-      return 'Verified Hours';
-    case 'self_reported':
-      return 'Self-Reported';
+    case "donation":
+      return "Donation";
+    case "formal_volunteer":
+      return "Verified Hours";
+    case "self_reported":
+      return "Self-Reported";
     default:
-      return 'Contribution';
+      return "Contribution";
   }
 }
 
 function getStatusBadge(status: string) {
   switch (status) {
-    case 'completed':
-    case 'validated':
+    case "completed":
+    case "validated":
       return (
         <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">
           Verified
         </span>
       );
-    case 'pending':
+    case "pending":
       return (
         <span className="px-2 py-0.5 text-xs rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400">
           Pending
         </span>
       );
-    case 'unvalidated':
+    case "unvalidated":
       return (
         <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400">
           Unvalidated
@@ -98,17 +105,22 @@ function getStatusBadge(status: string) {
 }
 
 export const RecentContributions: React.FC = () => {
-  const [selectedSources, setSelectedSources] = useState<ContributionSourceType[]>([
-    'donation',
-    'formal_volunteer',
-    'self_reported',
-  ]);
+  const [selectedSources, setSelectedSources] = useState<
+    ContributionSourceType[]
+  >(["donation", "formal_volunteer", "self_reported"]);
 
-  const filters: ContributionFilters = useMemo(() => ({
-    sources: selectedSources as ContributionSource[],
-  }), [selectedSources]);
+  const filters: ContributionFilters = useMemo(
+    () => ({
+      sources: selectedSources as ContributionSource[],
+    }),
+    [selectedSources],
+  );
 
-  const { data: contributions, isLoading, error } = useUnifiedContributions(filters);
+  const {
+    data: contributions,
+    isLoading,
+    error,
+  } = useUnifiedContributions(filters);
 
   const handleSourceToggle = useCallback((source: ContributionSourceType) => {
     setSelectedSources((current) => {
@@ -141,7 +153,9 @@ export const RecentContributions: React.FC = () => {
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
           Recent Contributions
         </h2>
-        <p className="text-red-600 dark:text-red-400">Failed to load contributions.</p>
+        <p className="text-red-600 dark:text-red-400">
+          Failed to load contributions.
+        </p>
       </div>
     );
   }
@@ -184,7 +198,8 @@ export const RecentContributions: React.FC = () => {
                     {getStatusBadge(contribution.status)}
                   </div>
                   <p className="text-sm text-gray-500 dark:text-gray-400">
-                    {getContributionLabel(contribution.type)} &bull; {formatDate(contribution.date)}
+                    {getContributionLabel(contribution.type)} &bull;{" "}
+                    {formatDate(contribution.date)}
                   </p>
                 </div>
               </div>
@@ -204,7 +219,9 @@ export const RecentContributions: React.FC = () => {
         </div>
       ) : (
         <div className="flex items-center justify-center h-40 bg-gray-50 dark:bg-gray-700 rounded-lg">
-          <p className="text-gray-500 dark:text-gray-400">No contributions found</p>
+          <p className="text-gray-500 dark:text-gray-400">
+            No contributions found
+          </p>
         </div>
       )}
     </div>

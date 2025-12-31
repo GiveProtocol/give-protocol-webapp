@@ -1,15 +1,17 @@
-import React from 'react';
-import { DonationStats } from './DonationStats';
-import { RecentContributions } from './RecentContributions';
-import { VolunteerImpact } from './VolunteerImpact';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { useUserContributionStats } from '@/hooks/useContributionStats';
+import React from "react";
+import { DonationStats } from "./DonationStats";
+import { RecentContributions } from "./RecentContributions";
+import { VolunteerImpact } from "./VolunteerImpact";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useUserContributionStats } from "@/hooks/useContributionStats";
 
 interface PersonalContributionsProps {
   filters?: Record<string, unknown>;
 }
 
-export const PersonalContributions: React.FC<PersonalContributionsProps> = ({ filters: _filters }) => {
+export const PersonalContributions: React.FC<PersonalContributionsProps> = ({
+  filters: _filters,
+}) => {
   const { data: userStats, isLoading, error } = useUserContributionStats();
 
   if (isLoading) {
@@ -25,16 +27,18 @@ export const PersonalContributions: React.FC<PersonalContributionsProps> = ({ fi
   }
 
   // Transform userStats to the format expected by DonationStats
-  const stats = userStats ? {
-    totalDonated: userStats.totalDonated,
-    volunteerHours: {
-      formal: userStats.formalVolunteerHours,
-      selfReported: userStats.selfReportedHours,
-      total: userStats.totalVolunteerHours,
-    },
-    skillsEndorsed: userStats.skillsEndorsed,
-    organizationsHelped: userStats.organizationsHelped,
-  } : undefined;
+  const stats = userStats
+    ? {
+        totalDonated: userStats.totalDonated,
+        volunteerHours: {
+          formal: userStats.formalVolunteerHours,
+          selfReported: userStats.selfReportedHours,
+          total: userStats.totalVolunteerHours,
+        },
+        skillsEndorsed: userStats.skillsEndorsed,
+        organizationsHelped: userStats.organizationsHelped,
+      }
+    : undefined;
 
   return (
     <div className="space-y-8">

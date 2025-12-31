@@ -1,15 +1,17 @@
-import React, { useMemo } from 'react';
-import { DonationStats } from './DonationStats';
-import { DonationLeaderboard } from './DonationLeaderboard';
-import { VolunteerLeaderboard } from './VolunteerLeaderboard';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { useGlobalContributionStats } from '@/hooks/useContributionStats';
+import React, { useMemo } from "react";
+import { DonationStats } from "./DonationStats";
+import { DonationLeaderboard } from "./DonationLeaderboard";
+import { VolunteerLeaderboard } from "./VolunteerLeaderboard";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useGlobalContributionStats } from "@/hooks/useContributionStats";
 
 interface GlobalContributionsProps {
   filters?: Record<string, unknown>;
 }
 
-export const GlobalContributions: React.FC<GlobalContributionsProps> = ({ filters: _filters }) => {
+export const GlobalContributions: React.FC<GlobalContributionsProps> = ({
+  filters: _filters,
+}) => {
   const { data: globalStats, isLoading, error } = useGlobalContributionStats();
 
   // Transform global stats to format expected by DonationStats
@@ -51,11 +53,15 @@ export const GlobalContributions: React.FC<GlobalContributionsProps> = ({ filter
 
       <div className="grid gap-8 lg:grid-cols-2">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Donation Leaderboard</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Donation Leaderboard
+          </h2>
           <DonationLeaderboard />
         </div>
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Volunteer Leaderboard</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">
+            Volunteer Leaderboard
+          </h2>
           <VolunteerLeaderboard />
         </div>
       </div>

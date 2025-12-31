@@ -63,7 +63,7 @@ export interface Donation {
   amount: number;
   organization: string;
   date: string;
-  status: 'completed' | 'pending';
+  status: "completed" | "pending";
 }
 
 export interface VolunteerLeader {
@@ -87,7 +87,7 @@ export interface Transaction {
   fiatValue?: number;
   fee?: number;
   timestamp: string;
-  status: 'pending' | 'completed' | 'failed';
+  status: "pending" | "completed" | "failed";
   purpose?: string;
   metadata?: TransactionMetadata;
 }
@@ -100,7 +100,7 @@ export interface TransactionMetadata extends Record<string, unknown> {
   description?: string;
   verificationHash?: string;
   blockNumber?: number;
-  
+
   // Volunteer-specific fields
   opportunity?: string;
   hours?: number;
@@ -112,7 +112,7 @@ export interface TransactionMetadata extends Record<string, unknown> {
   availability?: string;
   acceptanceDate?: string;
   acceptedBy?: string;
-  transactionInitiator?: 'volunteer' | 'charity';
+  transactionInitiator?: "volunteer" | "charity";
   relatedTransactionId?: string;
 }
 

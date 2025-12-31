@@ -59,11 +59,7 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
 };
 
 export const DonationLeaderboard: React.FC = () => {
-  const {
-    data: leaderboardData,
-    isLoading,
-    error,
-  } = useDonorLeaderboard(10);
+  const { data: leaderboardData, isLoading, error } = useDonorLeaderboard(10);
   const { getAliasForAddress } = useWalletAlias();
   const [searchTerm, setSearchTerm] = useState("");
   const [displayLeaderboard, setDisplayLeaderboard] = useState<
