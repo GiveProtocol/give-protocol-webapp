@@ -79,7 +79,7 @@ export const validationTestCases = {
       { value: 10.123, reason: "more than 2 decimal places" },
       { value: Infinity, reason: "infinity" },
       { value: -Infinity, reason: "negative infinity" },
-      { value: NaN, reason: "NaN" },
+      { value: Number.NaN, reason: "NaN" },
     ],
     decimalPrecision: {
       valid: [0.99, 1.0],
