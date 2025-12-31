@@ -101,7 +101,7 @@ export const supabase = {
       Promise.resolve({
         data: { user: mockState.authUser },
         error: mockState.authError,
-      })
+      }),
     ),
     getSession: jest
       .fn()

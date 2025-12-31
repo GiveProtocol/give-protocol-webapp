@@ -454,7 +454,6 @@ describe("validationRequestService", () => {
         resubmitValidationRequest("request-1", "vol-1"),
       ).rejects.toThrow("Hours record not found");
     });
-
   });
 
   describe("getValidationHistory", () => {
