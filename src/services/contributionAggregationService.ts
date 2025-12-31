@@ -376,10 +376,7 @@ export async function getUnifiedContributions(
           filters.dateTo,
         );
       }
-      if (
-        filters.validationStatus &&
-        filters.validationStatus.length > 0
-      ) {
+      if (filters.validationStatus && filters.validationStatus.length > 0) {
         selfReportedQuery = selfReportedQuery.in(
           "validation_status",
           filters.validationStatus,
@@ -458,7 +455,10 @@ export async function getVolunteerLeaderboard(
       .select("volunteer_id, hours, validation_status");
 
     if (!includeUnvalidated) {
-      selfReportedQuery = selfReportedQuery.eq("validation_status", "validated");
+      selfReportedQuery = selfReportedQuery.eq(
+        "validation_status",
+        "validated",
+      );
     }
 
     const { data: selfReportedData, error: selfReportedError } =
@@ -499,9 +499,7 @@ export async function getVolunteerLeaderboard(
     });
 
     // Convert to array and sort
-    const entries: VolunteerLeaderboardEntry[] = Array.from(
-      userHours.entries(),
-    )
+    const entries: VolunteerLeaderboardEntry[] = Array.from(userHours.entries())
       .map(([userId, hours]) => ({
         rank: 0,
         userId,
@@ -561,9 +559,7 @@ export async function getDonorLeaderboard(
     });
 
     // Convert to array and sort
-    const entries: DonorLeaderboardEntry[] = Array.from(
-      userDonations.entries(),
-    )
+    const entries: DonorLeaderboardEntry[] = Array.from(userDonations.entries())
       .map(([userId, stats]) => ({
         rank: 0,
         userId,

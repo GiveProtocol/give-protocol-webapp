@@ -1,8 +1,8 @@
-import React from 'react';
-import { DollarSign, Clock, Award, Users } from 'lucide-react';
-import { CurrencyDisplay } from '@/components/CurrencyDisplay';
-import { useTranslation } from '@/hooks/useTranslation';
-import type { VolunteerHoursBreakdown } from '@/types/contribution';
+import React from "react";
+import { DollarSign, Clock, Award, Users } from "lucide-react";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { useTranslation } from "@/hooks/useTranslation";
+import type { VolunteerHoursBreakdown } from "@/types/contribution";
 
 interface DonationStatsProps {
   stats?: {
@@ -23,7 +23,7 @@ function getDisplayHours(volunteerHours: number | VolunteerHoursBreakdown): {
   formal?: number;
   selfReported?: { validated: number; pending: number };
 } {
-  if (typeof volunteerHours === 'number') {
+  if (typeof volunteerHours === "number") {
     return { total: volunteerHours, hasBreakdown: false };
   }
   return {
@@ -37,7 +37,10 @@ function getDisplayHours(volunteerHours: number | VolunteerHoursBreakdown): {
   };
 }
 
-export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal }) => {
+export const DonationStats: React.FC<DonationStatsProps> = ({
+  stats,
+  isPersonal,
+}) => {
   const { t } = useTranslation();
 
   if (!stats) return null;
@@ -51,8 +54,8 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             {isPersonal
-              ? t('dashboard.yourTotalDonated', 'Your Total Donated')
-              : t('dashboard.totalDonations')}
+              ? t("dashboard.yourTotalDonated", "Your Total Donated")
+              : t("dashboard.totalDonations")}
           </p>
           <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             <CurrencyDisplay amount={stats.totalDonated} />
@@ -66,8 +69,8 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
               {isPersonal
-                ? t('dashboard.yourVolunteerHours', 'Your Volunteer Hours')
-                : t('dashboard.volunteerHours')}
+                ? t("dashboard.yourVolunteerHours", "Your Volunteer Hours")
+                : t("dashboard.volunteerHours")}
             </p>
             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               {hoursInfo.total.toLocaleString()}
@@ -78,7 +81,9 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
           <div className="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700 text-xs text-gray-500 dark:text-gray-400 space-y-1">
             <div className="flex justify-between">
               <span>Verified Hours:</span>
-              <span className="font-medium">{hoursInfo.formal?.toLocaleString() || 0}</span>
+              <span className="font-medium">
+                {hoursInfo.formal?.toLocaleString() || 0}
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Self-Reported (Validated):</span>
@@ -103,8 +108,8 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             {isPersonal
-              ? t('dashboard.yourSkillsEndorsed', 'Your Skills Endorsed')
-              : t('dashboard.skillsEndorsed')}
+              ? t("dashboard.yourSkillsEndorsed", "Your Skills Endorsed")
+              : t("dashboard.skillsEndorsed")}
           </p>
           <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
             {stats.skillsEndorsed.toLocaleString()}
@@ -118,8 +123,8 @@ export const DonationStats: React.FC<DonationStatsProps> = ({ stats, isPersonal 
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
               {isPersonal
-                ? t('dashboard.organizationsHelped', 'Organizations Helped')
-                : t('dashboard.organizationsHelped', 'Organizations Helped')}
+                ? t("dashboard.organizationsHelped", "Organizations Helped")
+                : t("dashboard.organizationsHelped", "Organizations Helped")}
             </p>
             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               {stats.organizationsHelped.toLocaleString()}
