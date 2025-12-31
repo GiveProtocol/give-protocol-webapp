@@ -123,8 +123,11 @@ export const DonationStats: React.FC<DonationStatsProps> = ({
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
               {isPersonal
-              ? t("dashboard.yourOrganizationsHelped", "Organizations You've Helped")
-              : t("dashboard.organizationsHelped", "Organizations Helped")}
+                ? t(
+                    "dashboard.yourOrganizationsHelped",
+                    "Organizations You've Helped",
+                  )
+                : t("dashboard.organizationsHelped", "Organizations Helped")}
             </p>
             <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
               {stats.organizationsHelped.toLocaleString()}
