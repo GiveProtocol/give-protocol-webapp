@@ -114,6 +114,28 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
     [filters, onChange],
   );
 
+  const SourceFilterSection: React.FC<{
+    selectedSources: ContributionSourceType[];
+    onToggle: (source: ContributionSourceType) => void;
+  }> = ({ selectedSources, onToggle }) => (
+    <div className="mb-4">
+      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        Contribution Types
+      </p>
+      <div className="flex flex-wrap gap-2">
+        {SOURCE_OPTIONS.map((option) => (
+          <SourceToggleButton
+            key={option.value}
+            source={option.value}
+            label={option.label}
+            isSelected={selectedSources.includes(option.value)}
+            onToggle={onToggle}
+          />
+        ))}
+      </div>
+    </div>
+  );
+
   const selectedSources = filters.sources || [
     "donation",
     "formal_volunteer",
@@ -135,6 +157,13 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
       </div>
 
       {showSourceFilter && (
+        <SourceFilterSection
+          selectedSources={selectedSources}
+          onToggle={handleSourceToggle}
+        />
+      )}
+
+      {showSourceFilter && (
         <div className="mb-4">
           <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Contribution Types
@@ -147,6 +176,11 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
                 label={option.label}
                 isSelected={selectedSources.includes(option.value)}
                 onToggle={handleSourceToggle}
+              />
+            ))}
+          </div>
+        </div>
+      )}
               />
             ))}
           </div>
