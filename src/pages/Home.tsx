@@ -516,8 +516,8 @@ const Home: React.FC = () => {
         </div>
         <div className="pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
           <p>
-            © 2025 Give Protocol Foundation. Building on Moonbeam. Powered by
-            Give Protocol volunteers.
+            © {new Date().getFullYear()} Give Protocol Foundation. Building on
+            Moonbeam. Powered by Give Protocol volunteers.
           </p>
         </div>
       </footer>
