@@ -163,30 +163,6 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
         />
       )}
 
-      {showSourceFilter && (
-        <div className="mb-4">
-          <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-            Contribution Types
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {SOURCE_OPTIONS.map((option) => (
-              <SourceToggleButton
-                key={option.value}
-                source={option.value}
-                label={option.label}
-                isSelected={selectedSources.includes(option.value)}
-                onToggle={handleSourceToggle}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <label className="block">
           <span className="sr-only">Organization</span>

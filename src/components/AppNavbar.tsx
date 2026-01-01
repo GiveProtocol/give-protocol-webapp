@@ -328,7 +328,7 @@ export const AppNavbar: React.FC = () => {
   const [network, setNetwork] = useState<NetworkType>("moonbase");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
-  const { userType } = useAuth();
+  const { userType, logout, user } = useAuth();
   const { isConnected, address, disconnect, chainId } = useWeb3();
 
   // Sync network state with chainId from Web3 context
@@ -345,9 +345,31 @@ export const AppNavbar: React.FC = () => {
     // Network switching is handled by Web3Context's switchChain
   }, []);
 
-  const handleDisconnect = useCallback(() => {
-    disconnect();
-  }, [disconnect]);
+  const handleDisconnect = useCallback(async () => {
+    try {
+      // Disconnect wallet first
+      await disconnect();
+
+      // If user is logged in, also log them out
+      if (user) {
+        try {
+          await logout();
+        } catch (logoutError) {
+          // Log but don't block - we still want to redirect
+          console.warn("Logout failed during disconnect:", logoutError);
+        }
+        // Redirect to login page
+        window.location.href = `${window.location.origin}/login`;
+      } else {
+        // If not logged in, just refresh to clear state
+        window.location.reload();
+      }
+    } catch (err) {
+      console.error("Disconnect failed:", err);
+      // Force refresh to clear any stale state
+      window.location.reload();
+    }
+  }, [disconnect, logout, user]);
 
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(
