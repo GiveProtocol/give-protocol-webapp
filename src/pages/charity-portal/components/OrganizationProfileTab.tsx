@@ -36,10 +36,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       } catch (err) {
         Logger.error("Error fetching organization profile", { error: err });
         setError(
-          t(
-            "organization.loadError",
-            "Failed to load organization profile",
-          ),
+          t("organization.loadError", "Failed to load organization profile"),
         );
       } finally {
         setLoading(false);
@@ -92,10 +89,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       } catch (err) {
         Logger.error("Error saving organization profile", { error: err });
         setError(
-          t(
-            "organization.saveError",
-            "Failed to save organization profile",
-          ),
+          t("organization.saveError", "Failed to save organization profile"),
         );
       } finally {
         setSaving(false);
