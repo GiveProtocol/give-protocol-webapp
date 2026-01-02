@@ -21,6 +21,54 @@ interface HoursVerificationTabProps {
 
 type ViewMode = "all" | "formal" | "self-reported";
 
+interface VolunteerHourCardProps {
+  hours: VolunteerHours;
+  hoursLabel: string;
+  verifyLabel: string;
+  rejectLabel: string;
+}
+
+/**
+ * Card component for displaying a single volunteer hour entry
+ */
+const VolunteerHourCard: React.FC<VolunteerHourCardProps> = ({
+  hours,
+  hoursLabel,
+  verifyLabel,
+  rejectLabel,
+}) => (
+  <div className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5 flex justify-between items-start hover:shadow-sm transition-shadow">
+    <div className="flex-grow pr-4">
+      <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+        {hours.volunteerName}
+      </h4>
+      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
+        <Clock className="h-4 w-4 text-purple-500" aria-hidden="true" />
+        <span className="font-medium">
+          {hours.hours} {hoursLabel}
+        </span>
+        <span className="text-gray-400">|</span>
+        {formatDate(hours.date_performed)}
+      </p>
+      {Boolean(hours.description) && (
+        <p className="text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 rounded-lg p-3 mt-2">
+          {hours.description}
+        </p>
+      )}
+    </div>
+    <div className="flex gap-2">
+      <Button className="flex items-center gap-2">
+        <CheckCircle className="h-4 w-4" aria-hidden="true" />
+        {verifyLabel}
+      </Button>
+      <Button variant="secondary" className="flex items-center gap-2">
+        <X className="h-4 w-4" aria-hidden="true" />
+        {rejectLabel}
+      </Button>
+    </div>
+  </div>
+);
+
 /**
  * Unified tab for verifying both formal volunteer hours and self-reported hours
  */
@@ -108,74 +156,40 @@ export const HoursVerificationTab: React.FC<HoursVerificationTabProps> = ({
             </h3>
           )}
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md border border-gray-200 dark:border-gray-700">
-            <div className="p-6 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  {t(
-                    "volunteer.loggedHoursDescription",
-                    "Hours logged by volunteers through your opportunities",
-                  )}
-                </p>
-                <Button
-                  variant="secondary"
-                  className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition-all"
-                >
-                  <Download className="h-4 w-4 text-indigo-600" />
-                  {t("contributions.export", "Export")}
-                </Button>
-              </div>
+            <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                {t(
+                  "volunteer.loggedHoursDescription",
+                  "Hours logged by volunteers through your opportunities",
+                )}
+              </p>
+              <Button
+                variant="secondary"
+                className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition-all"
+              >
+                <Download className="h-4 w-4 text-indigo-600" />
+                {t("contributions.export", "Export")}
+              </Button>
             </div>
             <div className="p-6 space-y-4">
               {pendingHours.length > 0 ? (
                 pendingHours.map((hours) => (
-                  <div
+                  <VolunteerHourCard
                     key={hours.id}
-                    className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-xl p-5 flex justify-between items-start hover:shadow-sm transition-shadow"
-                  >
-                    <div className="flex-grow pr-4">
-                      <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        {hours.volunteerName}
-                      </h4>
-                      <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
-                        <Clock
-                          className="h-4 w-4 text-purple-500"
-                          aria-hidden="true"
-                        />
-                        <span className="font-medium">
-                          {hours.hours} {t("volunteer.hours", "hours")}
-                        </span>
-                        <span className="text-gray-400">|</span>
-                        {formatDate(hours.date_performed)}
-                      </p>
-                      {hours.description && (
-                        <p className="text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-600 rounded-lg p-3 mt-2">
-                          {hours.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      <Button className="flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4" aria-hidden="true" />
-                        {t("volunteer.verify", "Verify")}
-                      </Button>
-                      <Button
-                        variant="secondary"
-                        className="flex items-center gap-2"
-                      >
-                        <X className="h-4 w-4" aria-hidden="true" />
-                        {t("volunteer.reject", "Reject")}
-                      </Button>
-                    </div>
-                  </div>
+                    hours={hours}
+                    hoursLabel={t("volunteer.hours", "hours")}
+                    verifyLabel={t("volunteer.verify", "Verify")}
+                    rejectLabel={t("volunteer.reject", "Reject")}
+                  />
                 ))
               ) : (
                 <div className="py-12 text-center">
-                  <div className="mx-auto w-14 h-14 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
+                  <span className="mx-auto w-14 h-14 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
                     <Clock
                       className="h-7 w-7 text-purple-400"
                       aria-hidden="true"
                     />
-                  </div>
+                  </span>
                   <h4 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
                     {t("volunteer.allCaughtUp", "All caught up!")}
                   </h4>

@@ -22,8 +22,8 @@ interface OrganizationProfileFormProps {
 function validateUrl(url: string): boolean {
   if (!url) return true;
   try {
-    new URL(url.startsWith("http") ? url : `https://${url}`);
-    return true;
+    const normalizedUrl = url.startsWith("http") ? url : `https://${url}`;
+    return Boolean(new URL(normalizedUrl));
   } catch {
     return false;
   }
