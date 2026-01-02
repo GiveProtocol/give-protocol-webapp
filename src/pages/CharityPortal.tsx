@@ -750,14 +750,14 @@ export const CharityPortal: React.FC = () => {
 
         {/* Enhanced Tabs with Icons */}
         <div className="mb-6">
-          <div className="bg-gray-100 rounded-xl p-1.5 overflow-x-auto">
+          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 overflow-x-auto">
             <nav className="flex gap-1 min-w-max">
               <button
                 onClick={handleTransactionsTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                   activeTab === "transactions"
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <Receipt className="h-4 w-4" />
@@ -767,8 +767,8 @@ export const CharityPortal: React.FC = () => {
                 onClick={handleHoursTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
                   activeTab === "hours"
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <Clock className="h-4 w-4" />
@@ -783,8 +783,8 @@ export const CharityPortal: React.FC = () => {
                 onClick={handleApplicationsTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
                   activeTab === "applications"
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <ClipboardList className="h-4 w-4" />
@@ -799,8 +799,8 @@ export const CharityPortal: React.FC = () => {
                 onClick={handleOpportunitiesTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                   activeTab === "opportunities"
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <Briefcase className="h-4 w-4" />
@@ -810,8 +810,8 @@ export const CharityPortal: React.FC = () => {
                 onClick={handleCausesTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                   activeTab === "causes"
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <Heart className="h-4 w-4" />
@@ -821,8 +821,8 @@ export const CharityPortal: React.FC = () => {
                 onClick={handleOrganizationTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                   activeTab === "organization"
-                    ? "bg-white text-indigo-700 shadow-sm"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
                 }`}
               >
                 <Settings className="h-4 w-4" />
