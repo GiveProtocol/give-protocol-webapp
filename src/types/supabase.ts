@@ -19,6 +19,25 @@ export interface Database {
             logoUrl?: string;
             location?: string;
             description?: string;
+            yearFounded?: number;
+            address?: {
+              street?: string;
+              city?: string;
+              stateProvince?: string;
+              postalCode?: string;
+              country?: string;
+            };
+            contact?: {
+              phone?: string;
+              email?: string;
+              website?: string;
+            };
+            socialLinks?: {
+              twitter?: string;
+              facebook?: string;
+              linkedin?: string;
+              instagram?: string;
+            };
             [key: string]: unknown;
           };
           created_at: string;
@@ -32,6 +51,25 @@ export interface Database {
             logoUrl?: string;
             location?: string;
             description?: string;
+            yearFounded?: number;
+            address?: {
+              street?: string;
+              city?: string;
+              stateProvince?: string;
+              postalCode?: string;
+              country?: string;
+            };
+            contact?: {
+              phone?: string;
+              email?: string;
+              website?: string;
+            };
+            socialLinks?: {
+              twitter?: string;
+              facebook?: string;
+              linkedin?: string;
+              instagram?: string;
+            };
             [key: string]: unknown;
           };
           created_at?: string;
@@ -45,6 +83,25 @@ export interface Database {
             logoUrl?: string;
             location?: string;
             description?: string;
+            yearFounded?: number;
+            address?: {
+              street?: string;
+              city?: string;
+              stateProvince?: string;
+              postalCode?: string;
+              country?: string;
+            };
+            contact?: {
+              phone?: string;
+              email?: string;
+              website?: string;
+            };
+            socialLinks?: {
+              twitter?: string;
+              facebook?: string;
+              linkedin?: string;
+              instagram?: string;
+            };
             [key: string]: unknown;
           };
           created_at?: string;

@@ -156,6 +156,65 @@ export interface CauseProfileData extends Cause {
   partners: string[];
 }
 
+/**
+ * Organization address structure for charity profiles
+ */
+export interface OrganizationAddress {
+  street?: string;
+  city?: string;
+  stateProvince?: string;
+  postalCode?: string;
+  country?: string;
+}
+
+/**
+ * Organization contact information
+ */
+export interface OrganizationContact {
+  phone?: string;
+  email?: string;
+  website?: string;
+}
+
+/**
+ * Social media links for organizations
+ */
+export interface OrganizationSocialLinks {
+  twitter?: string;
+  facebook?: string;
+  linkedin?: string;
+  instagram?: string;
+}
+
+/**
+ * Complete organization profile data stored in profiles.meta
+ */
+export interface OrganizationProfile {
+  yearFounded?: number;
+  address?: OrganizationAddress;
+  contact?: OrganizationContact;
+  socialLinks?: OrganizationSocialLinks;
+}
+
+/**
+ * Form data type for the Organization Profile form
+ */
+export interface OrganizationProfileFormData {
+  yearFounded: string;
+  street: string;
+  city: string;
+  stateProvince: string;
+  postalCode: string;
+  country: string;
+  phone: string;
+  email: string;
+  website: string;
+  twitter: string;
+  facebook: string;
+  linkedin: string;
+  instagram: string;
+}
+
 /** Maximum number of causes a charity can have active at once */
 export const MAX_CAUSES_PER_CHARITY = 3;
 

@@ -4,23 +4,23 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useProfile } from "@/hooks/useProfile";
 import {
   Plus,
-  CheckCircle,
   Receipt,
   ClipboardList,
   Briefcase,
   Heart,
   RefreshCw,
   Clock,
+  Settings,
 } from "lucide-react";
 import {
   ApplicationsTab,
   CausesTab,
+  HoursVerificationTab,
   OpportunitiesTab,
+  OrganizationProfileTab,
   StatsCards,
   TransactionsTab,
-  VolunteersTab,
 } from "./charity-portal/components";
-import { ValidationQueueDashboard } from "@/components/charity/validation";
 import { Button } from "@/components/ui/Button";
 import { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
@@ -117,11 +117,11 @@ export const CharityPortal: React.FC = () => {
   const { profile, loading: profileLoading } = useProfile();
   const [activeTab, setActiveTab] = useState<
     | "transactions"
-    | "volunteers"
+    | "hours"
     | "applications"
     | "opportunities"
     | "causes"
-    | "validation"
+    | "organization"
   >("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
@@ -560,8 +560,8 @@ export const CharityPortal: React.FC = () => {
     setActiveTab("transactions");
   }, []);
 
-  const handleVolunteersTab = useCallback(() => {
-    setActiveTab("volunteers");
+  const handleHoursTab = useCallback(() => {
+    setActiveTab("hours");
   }, []);
 
   const handleApplicationsTab = useCallback(() => {
@@ -576,8 +576,8 @@ export const CharityPortal: React.FC = () => {
     setActiveTab("causes");
   }, []);
 
-  const handleValidationTab = useCallback(() => {
-    setActiveTab("validation");
+  const handleOrganizationTab = useCallback(() => {
+    setActiveTab("organization");
   }, []);
 
   const handleShowExportModal = useCallback(() => {
@@ -745,7 +745,7 @@ export const CharityPortal: React.FC = () => {
         <StatsCards
           stats={charityStats}
           onTransactionsClick={handleTransactionsTab}
-          onVolunteersClick={handleVolunteersTab}
+          onVolunteersClick={handleHoursTab}
         />
 
         {/* Enhanced Tabs with Icons */}
@@ -764,15 +764,15 @@ export const CharityPortal: React.FC = () => {
                 {t("charity.transactions")}
               </button>
               <button
-                onClick={handleVolunteersTab}
+                onClick={handleHoursTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
-                  activeTab === "volunteers"
+                  activeTab === "hours"
                     ? "bg-white text-indigo-700 shadow-sm"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
                 <Clock className="h-4 w-4" />
-                {t("charity.volunteers")}
+                {t("volunteer.hoursVerification", "Hours")}
                 {pendingHoursCount > 0 && (
                   <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
                     {pendingHoursCount}
@@ -818,15 +818,15 @@ export const CharityPortal: React.FC = () => {
                 {t("cause.causes", "Causes")}
               </button>
               <button
-                onClick={handleValidationTab}
+                onClick={handleOrganizationTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  activeTab === "validation"
+                  activeTab === "organization"
                     ? "bg-white text-indigo-700 shadow-sm"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
               >
-                <CheckCircle className="h-4 w-4" />
-                Validation Queue
+                <Settings className="h-4 w-4" />
+                {t("organization.settings", "Organization")}
               </button>
             </nav>
           </div>
@@ -842,9 +842,12 @@ export const CharityPortal: React.FC = () => {
           />
         )}
 
-        {/* Volunteer Hours Verification */}
-        {activeTab === "volunteers" && (
-          <VolunteersTab pendingHours={pendingHours} />
+        {/* Hours Verification (unified) */}
+        {activeTab === "hours" && profile?.id && (
+          <HoursVerificationTab
+            pendingHours={pendingHours}
+            profileId={profile.id}
+          />
         )}
 
         {/* Volunteer Applications */}
@@ -860,11 +863,9 @@ export const CharityPortal: React.FC = () => {
         {/* Causes Tab */}
         {activeTab === "causes" && <CausesTab causes={causes} />}
 
-        {/* Validation Queue */}
-        {activeTab === "validation" && profile?.id && (
-          <div className="bg-white rounded-xl shadow-md border border-gray-200 mb-8 p-6">
-            <ValidationQueueDashboard organizationId={profile.id} />
-          </div>
+        {/* Organization Profile */}
+        {activeTab === "organization" && profile?.id && (
+          <OrganizationProfileTab profileId={profile.id} />
         )}
 
         {/* Export Modal */}

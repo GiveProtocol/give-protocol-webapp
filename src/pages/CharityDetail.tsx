@@ -1,17 +1,53 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   CharityPageTemplate,
   CharityProfileData,
 } from "@/components/charity/CharityPageTemplate";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { supabase } from "@/lib/supabase";
+import { Logger } from "@/utils/logger";
+import type { OrganizationProfile } from "@/types/charity";
 
 /**
  * Dynamic charity detail page with scroll animations.
- * Currently uses sample data - should be replaced with actual API call.
+ * Fetches organization profile from database when available.
  */
 const CharityDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
+  const [organizationProfile, setOrganizationProfile] =
+    useState<OrganizationProfile | null>(null);
+
+  // Fetch organization profile from database
+  useEffect(() => {
+    const fetchOrganizationProfile = async () => {
+      if (!id) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("meta")
+          .eq("id", id)
+          .eq("type", "charity")
+          .single();
+
+        if (error) {
+          // Profile might not exist or isn't a charity - silently ignore
+          Logger.debug("Could not fetch organization profile", { id, error });
+          return;
+        }
+
+        if (data?.meta) {
+          const meta = data.meta as OrganizationProfile;
+          setOrganizationProfile(meta);
+        }
+      } catch (err) {
+        Logger.debug("Error fetching organization profile", { id, error: err });
+      }
+    };
+
+    fetchOrganizationProfile();
+  }, [id]);
 
   // Sample data - replace with actual API call using the id parameter
   const charityData: CharityProfileData = {
@@ -38,6 +74,7 @@ const CharityDetail: React.FC = () => {
       "Removed 50 tons of plastic waste from oceans",
       "Educated 10,000 students about marine conservation",
     ],
+    organizationProfile: organizationProfile ?? undefined,
   };
 
   return (

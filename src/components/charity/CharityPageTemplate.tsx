@@ -3,6 +3,8 @@ import { DonationButton } from "@/components/web3/donation/DonationButton";
 import { ScheduledDonationButton } from "@/components/web3/donation/ScheduledDonationButton";
 import { formatCurrency } from "@/utils/money";
 import { CharityHeroSection } from "@/components/ui/CharityHeroSection";
+import { OrganizationInfoSection } from "@/components/charity/OrganizationInfoSection";
+import type { OrganizationProfile } from "@/types/charity";
 
 /**
  * Data structure for charity profile information.
@@ -38,6 +40,8 @@ export interface CharityProfileData {
   mission: string;
   /** List of impact highlights/achievements */
   impact: string[];
+  /** Organization profile information (optional) */
+  organizationProfile?: OrganizationProfile;
 }
 
 interface CharityPageTemplateProps {
@@ -166,6 +170,14 @@ export const CharityPageTemplate: React.FC<CharityPageTemplateProps> = ({
             </ul>
           </div>
         </div>
+
+        {/* Organization Info Section */}
+        {charity.organizationProfile && (
+          <OrganizationInfoSection
+            profile={charity.organizationProfile}
+            charityName={charity.name}
+          />
+        )}
       </main>
     </div>
   );
