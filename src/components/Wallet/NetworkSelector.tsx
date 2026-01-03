@@ -178,7 +178,9 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                   <NetworkIcon color={network.color} size={10} />
                   <div className="flex-1 text-left">
                     <p className="text-sm font-medium">{network.name}</p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">{network.token}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      {network.token}
+                    </p>
                   </div>
                   {isSelected && (
                     <Check className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
