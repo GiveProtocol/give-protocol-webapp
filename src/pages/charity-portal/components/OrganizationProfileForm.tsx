@@ -30,13 +30,27 @@ function validateUrl(url: string): boolean {
 }
 
 /**
- * Validates an email string
+ * Validates an email string using string methods to avoid ReDoS vulnerabilities
  * @param email - The email to validate
  * @returns True if valid or empty
  */
 function validateEmail(email: string): boolean {
   if (!email) return true;
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+  // Check for whitespace
+  if (/\s/.test(email)) return false;
+
+  // Must have exactly one @
+  const atIndex = email.indexOf("@");
+  if (atIndex < 1 || atIndex !== email.lastIndexOf("@")) return false;
+
+  const domain = email.slice(atIndex + 1);
+
+  // Domain must have at least one dot, not at start/end
+  const dotIndex = domain.indexOf(".");
+  if (dotIndex < 1 || dotIndex === domain.length - 1) return false;
+
+  return true;
 }
 
 /**

@@ -150,7 +150,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
       {isOpen && (
         <div
           className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
-          role="listbox"
+          role="menu"
           aria-label="Select network"
         >
           <div className="p-1">
@@ -160,8 +160,8 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                 <button
                   key={network.id}
                   type="button"
-                  role="option"
-                  aria-selected={isSelected}
+                  role="menuitemradio"
+                  aria-checked={isSelected}
                   data-network-id={network.id}
                   onClick={handleNetworkClick}
                   onKeyDown={handleNetworkKeyDown}
