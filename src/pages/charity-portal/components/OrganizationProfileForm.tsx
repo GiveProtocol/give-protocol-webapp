@@ -48,9 +48,7 @@ function validateEmail(email: string): boolean {
 
   // Domain must have at least one dot, not at start/end
   const dotIndex = domain.indexOf(".");
-  if (dotIndex < 1 || dotIndex === domain.length - 1) return false;
-
-  return true;
+  return dotIndex >= 1 && dotIndex !== domain.length - 1;
 }
 
 /**
