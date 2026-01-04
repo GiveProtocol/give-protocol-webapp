@@ -32,6 +32,44 @@ type View =
   | "forgotPassword"
   | "forgotUsername";
 
+type SortKey = "date" | "type" | "status" | "organization";
+
+/**
+ * Extracts sortable value from a contribution based on sort key
+ */
+function getSortValue(
+  contribution: Transaction,
+  key: SortKey,
+): string | number {
+  switch (key) {
+    case "date":
+      return new Date(contribution.timestamp).getTime();
+    case "type":
+      return contribution.purpose.toLowerCase();
+    case "status":
+      return contribution.status.toLowerCase();
+    case "organization":
+      return (contribution.metadata?.organization || "").toLowerCase();
+  }
+}
+
+/**
+ * Compares two values for sorting
+ */
+function compareValues(
+  aValue: string | number,
+  bValue: string | number,
+  direction: "asc" | "desc",
+): number {
+  if (typeof aValue === "string" && typeof bValue === "string") {
+    const result = aValue.localeCompare(bValue);
+    return direction === "asc" ? result : -result;
+  }
+  if (aValue < bValue) return direction === "asc" ? -1 : 1;
+  if (aValue > bValue) return direction === "asc" ? 1 : -1;
+  return 0;
+}
+
 export const GiveDashboard: React.FC = () => {
   const [_view, _setView] = useState<View>("select"); // Prefixed as unused
   const { user, userType } = useAuth();
@@ -373,41 +411,9 @@ export const GiveDashboard: React.FC = () => {
     })
     .sort((a, b) => {
       if (!sortConfig.key) return 0;
-
-      let aValue: string | number;
-      let bValue: string | number;
-
-      switch (sortConfig.key) {
-        case "date":
-          aValue = new Date(a.timestamp).getTime();
-          bValue = new Date(b.timestamp).getTime();
-          break;
-        case "type":
-          aValue = a.purpose.toLowerCase();
-          bValue = b.purpose.toLowerCase();
-          break;
-        case "status":
-          aValue = a.status.toLowerCase();
-          bValue = b.status.toLowerCase();
-          break;
-        case "organization":
-          aValue = (a.metadata?.organization || "").toLowerCase();
-          bValue = (b.metadata?.organization || "").toLowerCase();
-          break;
-        default:
-          return 0;
-      }
-
-      // Use localeCompare for strings, numeric comparison for numbers
-      if (typeof aValue === "string" && typeof bValue === "string") {
-        const compareResult = aValue.localeCompare(bValue);
-        return sortConfig.direction === "asc" ? compareResult : -compareResult;
-      } else {
-        // Numeric comparison for timestamps and other numbers
-        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
-        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
-        return 0;
-      }
+      const aValue = getSortValue(a, sortConfig.key);
+      const bValue = getSortValue(b, sortConfig.key);
+      return compareValues(aValue, bValue, sortConfig.direction);
     });
 
   const years = [

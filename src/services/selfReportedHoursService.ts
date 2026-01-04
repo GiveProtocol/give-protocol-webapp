@@ -428,6 +428,50 @@ export async function getVolunteerHoursStats(
 }
 
 /**
+ * Validates and builds update data for self-reported hours
+ * @throws Error if validation fails
+ */
+function buildUpdateData(
+  input: Partial<SelfReportedHoursInput>,
+): Record<string, unknown> {
+  const updateData: Record<string, unknown> = {};
+
+  if (input.activityDate !== undefined) {
+    if (new Date(input.activityDate) > new Date()) {
+      throw new Error("Activity date cannot be in the future");
+    }
+    updateData.activity_date = input.activityDate;
+  }
+
+  if (input.hours !== undefined) {
+    if (input.hours < MIN_HOURS_PER_RECORD || input.hours > MAX_HOURS_PER_RECORD) {
+      throw new Error(`Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`);
+    }
+    updateData.hours = input.hours;
+  }
+
+  if (input.activityType !== undefined) {
+    updateData.activity_type = input.activityType;
+  }
+
+  if (input.description !== undefined) {
+    if (input.description.length < MIN_DESCRIPTION_LENGTH) {
+      throw new Error(`Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`);
+    }
+    if (input.description.length > MAX_DESCRIPTION_LENGTH) {
+      throw new Error(`Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+    }
+    updateData.description = input.description;
+  }
+
+  if (input.location !== undefined) {
+    updateData.location = input.location || null;
+  }
+
+  return updateData;
+}
+
+/**
  * Updates a self-reported hours record (only if editable)
  * @param id - The record ID
  * @param volunteerId - The volunteer's user ID
@@ -439,7 +483,6 @@ export async function updateSelfReportedHours(
   volunteerId: string,
   input: Partial<SelfReportedHoursInput>,
 ): Promise<SelfReportedHours> {
-  // First check if record exists and is editable
   const { data: existing, error: fetchError } = await supabase
     .from("self_reported_hours")
     .select("volunteer_id, validation_status")
@@ -459,50 +502,7 @@ export async function updateSelfReportedHours(
     throw new Error("Cannot edit validated records");
   }
 
-  // Build update object
-  const updateData: Record<string, unknown> = {};
-
-  if (input.activityDate !== undefined) {
-    const activityDate = new Date(input.activityDate);
-    if (activityDate > new Date()) {
-      throw new Error("Activity date cannot be in the future");
-    }
-    updateData.activity_date = input.activityDate;
-  }
-
-  if (input.hours !== undefined) {
-    if (
-      input.hours < MIN_HOURS_PER_RECORD ||
-      input.hours > MAX_HOURS_PER_RECORD
-    ) {
-      throw new Error(
-        `Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`,
-      );
-    }
-    updateData.hours = input.hours;
-  }
-
-  if (input.activityType !== undefined) {
-    updateData.activity_type = input.activityType;
-  }
-
-  if (input.description !== undefined) {
-    if (input.description.length < MIN_DESCRIPTION_LENGTH) {
-      throw new Error(
-        `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`,
-      );
-    }
-    if (input.description.length > MAX_DESCRIPTION_LENGTH) {
-      throw new Error(
-        `Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`,
-      );
-    }
-    updateData.description = input.description;
-  }
-
-  if (input.location !== undefined) {
-    updateData.location = input.location || null;
-  }
+  const updateData = buildUpdateData(input);
 
   const { data, error } = await supabase
     .from("self_reported_hours")

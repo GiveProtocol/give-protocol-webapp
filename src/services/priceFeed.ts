@@ -2,12 +2,55 @@
  * Price feed service for fetching cryptocurrency prices from CoinGecko API
  */
 
-import type { PriceCache } from "@/types/blockchain";
+import type { PriceCache, TokenPrice } from "@/types/blockchain";
 import { Logger } from "@/utils/logger";
 
 // Use local proxy to avoid CORS issues
 const COINGECKO_API_BASE = "/api/coingecko";
 const CACHE_DURATION_MS = 60000; // 1 minute
+
+/**
+ * Attempts to get all prices from cache
+ * @returns Cached prices if all tokens found, null otherwise
+ */
+function tryGetCachedPrices(
+  priceCache: Record<string, TokenPrice>,
+  tokenIds: string[],
+  targetCurrency: string,
+): Record<string, number> | null {
+  const cachedPrices: Record<string, number> = {};
+
+  for (const tokenId of tokenIds) {
+    const cached = priceCache[`${tokenId}_${targetCurrency}`];
+    if (cached && cached.currency === targetCurrency) {
+      cachedPrices[tokenId] = cached.price;
+    } else {
+      return null;
+    }
+  }
+
+  return cachedPrices;
+}
+
+/**
+ * Gets any available stale prices from cache
+ */
+function getStalePrices(
+  priceCache: Record<string, TokenPrice>,
+  tokenIds: string[],
+  targetCurrency: string,
+): Record<string, number> {
+  const stalePrices: Record<string, number> = {};
+
+  for (const tokenId of tokenIds) {
+    const cached = priceCache[`${tokenId}_${targetCurrency}`];
+    if (cached) {
+      stalePrices[tokenId] = cached.price;
+    }
+  }
+
+  return stalePrices;
+}
 
 /**
  * Service for fetching and caching cryptocurrency prices from CoinGecko
@@ -28,93 +71,81 @@ export class PriceFeedService {
     tokenIds: string[],
     targetCurrency = "usd"
   ): Promise<Record<string, number>> {
-    // Check cache validity
     const now = Date.now();
     const cacheKey = `${tokenIds.join(",")}_${targetCurrency}`;
 
+    // Check cache validity
     if (
       this.priceCache.lastUpdate &&
       now - this.priceCache.lastUpdate < CACHE_DURATION_MS
     ) {
-      const cachedPrices: Record<string, number> = {};
-      let allCached = true;
-
-      for (const tokenId of tokenIds) {
-        const cached = this.priceCache.prices[`${tokenId}_${targetCurrency}`];
-        if (cached && cached.currency === targetCurrency) {
-          cachedPrices[tokenId] = cached.price;
-        } else {
-          allCached = false;
-          break;
-        }
-      }
-
-      if (allCached) {
+      const cached = tryGetCachedPrices(this.priceCache.prices, tokenIds, targetCurrency);
+      if (cached) {
         Logger.info("Price feed: Using cached prices", { cacheKey });
-        return cachedPrices;
+        return cached;
       }
     }
 
     // Fetch fresh prices
     try {
-      const ids = tokenIds.join(",");
-      const url = `${COINGECKO_API_BASE}/simple/price?ids=${ids}&vs_currencies=${targetCurrency}`;
-
-      Logger.info("Price feed: Fetching prices", { tokenIds, targetCurrency });
-
-      const response = await fetch(url);
-
-      if (!response.ok) {
-        throw new Error(`CoinGecko API error: ${response.statusText}`);
-      }
-
-      const data: Record<string, Record<string, number>> = await response.json();
-
-      const prices: Record<string, number> = {};
-
-      // Parse response and update cache
-      for (const tokenId of tokenIds) {
-        const tokenData = data[tokenId];
-        if (tokenData && tokenData[targetCurrency] !== undefined) {
-          const price = tokenData[targetCurrency];
-          prices[tokenId] = price;
-
-          // Update cache
-          this.priceCache.prices[`${tokenId}_${targetCurrency}`] = {
-            tokenId,
-            price,
-            currency: targetCurrency,
-            timestamp: now,
-          };
-        } else {
-          Logger.warn("Price feed: Missing price data", { tokenId, targetCurrency });
-        }
-      }
-
-      this.priceCache.lastUpdate = now;
-
-      Logger.info("Price feed: Fetched fresh prices", { prices });
-
+      const prices = await this.fetchFreshPrices(tokenIds, targetCurrency, now);
       return prices;
     } catch (error) {
       Logger.error("Price feed: Failed to fetch prices", { error });
-
-      // Return stale cache data if available
-      const stalePrices: Record<string, number> = {};
-      for (const tokenId of tokenIds) {
-        const cached = this.priceCache.prices[`${tokenId}_${targetCurrency}`];
-        if (cached) {
-          stalePrices[tokenId] = cached.price;
-        }
-      }
-
-      if (Object.keys(stalePrices).length > 0) {
-        Logger.warn("Price feed: Using stale cached prices", { stalePrices });
-        return stalePrices;
-      }
-
-      throw new Error("Failed to fetch token prices and no cache available");
+      return this.handleFetchError(tokenIds, targetCurrency);
     }
+  }
+
+  private async fetchFreshPrices(
+    tokenIds: string[],
+    targetCurrency: string,
+    now: number,
+  ): Promise<Record<string, number>> {
+    const url = `${COINGECKO_API_BASE}/simple/price?ids=${tokenIds.join(",")}&vs_currencies=${targetCurrency}`;
+
+    Logger.info("Price feed: Fetching prices", { tokenIds, targetCurrency });
+
+    const response = await fetch(url);
+    if (!response.ok) {
+      throw new Error(`CoinGecko API error: ${response.statusText}`);
+    }
+
+    const data: Record<string, Record<string, number>> = await response.json();
+    const prices: Record<string, number> = {};
+
+    for (const tokenId of tokenIds) {
+      const tokenData = data[tokenId];
+      if (tokenData && tokenData[targetCurrency] !== undefined) {
+        prices[tokenId] = tokenData[targetCurrency];
+        this.priceCache.prices[`${tokenId}_${targetCurrency}`] = {
+          tokenId,
+          price: tokenData[targetCurrency],
+          currency: targetCurrency,
+          timestamp: now,
+        };
+      } else {
+        Logger.warn("Price feed: Missing price data", { tokenId, targetCurrency });
+      }
+    }
+
+    this.priceCache.lastUpdate = now;
+    Logger.info("Price feed: Fetched fresh prices", { prices });
+
+    return prices;
+  }
+
+  private handleFetchError(
+    tokenIds: string[],
+    targetCurrency: string,
+  ): Record<string, number> {
+    const stalePrices = getStalePrices(this.priceCache.prices, tokenIds, targetCurrency);
+
+    if (Object.keys(stalePrices).length > 0) {
+      Logger.warn("Price feed: Using stale cached prices", { stalePrices });
+      return stalePrices;
+    }
+
+    throw new Error("Failed to fetch token prices and no cache available");
   }
 
   /**

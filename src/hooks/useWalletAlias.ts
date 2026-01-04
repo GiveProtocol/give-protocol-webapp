@@ -7,6 +7,68 @@ import { Logger } from "@/utils/logger";
 import { useToast } from "@/contexts/ToastContext";
 
 /**
+ * Checks if an alias is already taken by another user
+ */
+async function isAliasTaken(alias: string, userId: string): Promise<boolean> {
+  const { data, error } = await supabase
+    .from("wallet_aliases")
+    .select("id")
+    .eq("alias", alias)
+    .not("user_id", "eq", userId)
+    .single();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+  return Boolean(data);
+}
+
+/**
+ * Gets existing alias ID for a wallet address
+ */
+async function getExistingWalletAliasId(
+  userId: string,
+  walletAddress: string,
+): Promise<string | null> {
+  const { data, error } = await supabase
+    .from("wallet_aliases")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("wallet_address", walletAddress)
+    .maybeSingle();
+
+  if (error && error.code !== "PGRST116") {
+    throw error;
+  }
+  return data?.id || null;
+}
+
+/**
+ * Creates or updates a wallet alias
+ */
+async function upsertWalletAlias(
+  existingId: string | null,
+  userId: string,
+  walletAddress: string,
+  alias: string,
+): Promise<void> {
+  const result = existingId
+    ? await supabase
+        .from("wallet_aliases")
+        .update({ alias, updated_at: new Date().toISOString() })
+        .eq("id", existingId)
+    : await supabase.from("wallet_aliases").insert({
+        user_id: userId,
+        wallet_address: walletAddress,
+        alias,
+      });
+
+  if (result.error) {
+    throw result.error;
+  }
+}
+
+/**
  * Wallet alias management hook for user-friendly wallet address naming
  * @function useWalletAlias
  * @description Manages wallet aliases for users, allowing them to assign friendly names to wallet addresses.
@@ -161,21 +223,13 @@ export function useWalletAlias() {
   const setWalletAlias = async (newAlias: string) => {
     if (!user) {
       setError("Please sign in to set a wallet alias");
-      showToast(
-        "error",
-        "Authentication Required",
-        "Please sign in to set a wallet alias",
-      );
+      showToast("error", "Authentication Required", "Please sign in to set a wallet alias");
       return false;
     }
 
     if (!address) {
       setError("Please connect your wallet to set an alias");
-      showToast(
-        "error",
-        "Wallet Not Connected",
-        "Please connect your wallet to set an alias",
-      );
+      showToast("error", "Wallet Not Connected", "Please connect your wallet to set an alias");
       return false;
     }
 
@@ -190,76 +244,24 @@ export function useWalletAlias() {
 
       Logger.info("Setting wallet alias", { address, alias: newAlias });
 
-      // Check if alias is already taken
-      const { data: existingAlias, error: checkError } = await supabase
-        .from("wallet_aliases")
-        .select("id")
-        .eq("alias", newAlias)
-        .not("user_id", "eq", user.id) // Allow user to reuse their own aliases
-        .single();
-
-      if (checkError && checkError.code !== "PGRST116") {
-        // PGRST116 is "no rows returned" error
-        throw checkError;
-      }
-
-      if (existingAlias) {
+      if (await isAliasTaken(newAlias, user.id)) {
         setError("This alias is already taken");
         return false;
       }
 
-      // Check if this wallet already has an alias for this user
-      const { data: existingWalletAlias, error: walletCheckError } =
-        await supabase
-          .from("wallet_aliases")
-          .select("id")
-          .eq("user_id", user.id)
-          .eq("wallet_address", address)
-          .maybeSingle();
-
-      if (walletCheckError && walletCheckError.code !== "PGRST116") {
-        throw walletCheckError;
-      }
-
-      let result;
-
-      if (existingWalletAlias) {
-        // Update existing alias
-        result = await supabase
-          .from("wallet_aliases")
-          .update({ alias: newAlias, updated_at: new Date().toISOString() })
-          .eq("id", existingWalletAlias.id);
-      } else {
-        // Create new alias
-        result = await supabase.from("wallet_aliases").insert({
-          user_id: user.id,
-          wallet_address: address,
-          alias: newAlias,
-        });
-      }
-
-      if (result.error) {
-        throw result.error;
-      }
+      const existingId = await getExistingWalletAliasId(user.id, address);
+      await upsertWalletAlias(existingId, user.id, address, newAlias);
 
       setAlias(newAlias);
-      await fetchUserAliases(); // Refresh the list of aliases
-      showToast(
-        "success",
-        "Wallet alias updated",
-        "Your wallet alias has been successfully updated",
-      );
+      await fetchUserAliases();
+      showToast("success", "Wallet alias updated", "Your wallet alias has been successfully updated");
       return true;
     } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to set wallet alias";
-      const errorStack = err instanceof Error ? err.stack : undefined;
-
+      const message = err instanceof Error ? err.message : "Failed to set wallet alias";
       Logger.error("Error setting wallet alias", {
         error: message,
-        stack: errorStack,
+        stack: err instanceof Error ? err.stack : undefined,
       });
-
       setError(message);
       showToast("error", "Error", message);
       return false;
