@@ -594,6 +594,7 @@ export async function getGlobalContributionStats(): Promise<{
   totalVolunteerHours: number;
   totalVolunteers: number;
   totalDonors: number;
+  totalSkillsEndorsed: number;
 }> {
   try {
     // Get donation stats
@@ -625,6 +626,18 @@ export async function getGlobalContributionStats(): Promise<{
     if (selfReportedError) {
       Logger.warn("Error fetching global self-reported hours", {
         error: selfReportedError,
+      });
+    }
+
+    // Get skill endorsements count
+    const { count: endorsementsCount, error: endorsementsError } =
+      await supabase
+        .from("skill_endorsements")
+        .select("id", { count: "exact", head: true });
+
+    if (endorsementsError) {
+      Logger.warn("Error fetching global skill endorsements", {
+        error: endorsementsError,
       });
     }
 
@@ -671,6 +684,7 @@ export async function getGlobalContributionStats(): Promise<{
       totalVolunteerHours: totalFormalHours + validatedSelfReported,
       totalVolunteers: volunteerIds.size,
       totalDonors: uniqueDonors.size,
+      totalSkillsEndorsed: endorsementsCount || 0,
     };
   } catch (error) {
     Logger.error("Error fetching global contribution stats", { error });
