@@ -30,25 +30,25 @@ const DesktopNavLinks: React.FC<{
       <>
         <Link
           to="/about"
-          className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/about")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/about")}`}
         >
           {t("nav.about")}
         </Link>
         <a
           href={DOCS_CONFIG.url}
-          className="flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-gray-300 hover:bg-white/10 hover:text-emerald-400"
+          className="flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-gray-300 hover:bg-white/10 hover:text-emerald-400"
         >
           {t("nav.docs")}
         </a>
         <Link
           to="/legal"
-          className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/legal")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/legal")}`}
         >
           {t("nav.legal")}
         </Link>
         <Link
           to="/privacy"
-          className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/privacy")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/privacy")}`}
         >
           Privacy
         </Link>
@@ -60,25 +60,25 @@ const DesktopNavLinks: React.FC<{
     <>
       <Link
         to="/browse"
-        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/browse")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/browse")}`}
       >
         {t("nav.browse")}
       </Link>
       <Link
         to="/opportunities"
-        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/opportunities")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/opportunities")}`}
       >
         {t("nav.opportunities")}
       </Link>
       <Link
         to="/contributions"
-        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/contributions")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/contributions")}`}
       >
         {t("nav.contributions")}
       </Link>
       <button
         onClick={handleDashboardClick}
-        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
           isActive("/give-dashboard") || isActive("/charity-portal")
         }`}
       >
@@ -87,14 +87,14 @@ const DesktopNavLinks: React.FC<{
       {userType === "donor" && (
         <Link
           to="/scheduled-donations"
-          className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/scheduled-donations")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/scheduled-donations")}`}
         >
           Monthly Donations
         </Link>
       )}
       <Link
         to="/governance"
-        className={`flex items-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/governance")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/governance")}`}
       >
         {t("nav.governance")}
       </Link>
