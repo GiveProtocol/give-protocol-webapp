@@ -56,13 +56,15 @@ async function fetchUserTypeFromProfile(userId: string): Promise<UserType> {
     .eq("user_id", userId)
     .single();
 
-  return profile?.type as UserType || null;
+  return (profile?.type as UserType) || null;
 }
 
 /**
  * Gets user type from metadata or falls back to profile table
  */
-async function resolveUserType(user: User | null | undefined): Promise<UserType> {
+async function resolveUserType(
+  user: User | null | undefined,
+): Promise<UserType> {
   if (!user) return null;
 
   const metadataType = user.user_metadata?.type as UserType;
@@ -566,13 +568,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       register,
       sendUsernameReminder,
     }),
-    [state, login, loginWithGoogle, logout, resetPassword, refreshSession, register, sendUsernameReminder]
+    [
+      state,
+      login,
+      loginWithGoogle,
+      logout,
+      resetPassword,
+      refreshSession,
+      register,
+      sendUsernameReminder,
+    ],
   );
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 
