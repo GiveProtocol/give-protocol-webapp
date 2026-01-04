@@ -381,19 +381,7 @@ export const CharityPortal: React.FC = () => {
     try {
       const { data: pendingHoursData, error } = await supabase
         .from("volunteer_hours")
-        .select(
-          `
-          id,
-          volunteer_id,
-          hours,
-          date_performed,
-          description,
-          volunteer:volunteer_id (
-            id,
-            user_id
-          )
-        `,
-        )
+        .select("id, volunteer_id, hours, date_performed, description")
         .eq("charity_id", charityId)
         .eq("status", "pending")
         .order("created_at", { ascending: false });
@@ -415,7 +403,7 @@ export const CharityPortal: React.FC = () => {
       return pendingHoursList.map((hour) => ({
         id: hour?.id || "",
         volunteer_id: hour?.volunteer_id || "",
-        volunteerName: hour?.volunteer?.id ? "Volunteer" : "Unknown Volunteer",
+        volunteerName: hour?.volunteer_id ? "Volunteer" : "Unknown Volunteer",
         hours: hour?.hours ? Number(hour.hours) : 0,
         date_performed: hour?.date_performed || new Date().toISOString(),
         description: hour?.description || "",
