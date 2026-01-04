@@ -50,6 +50,9 @@ function getSortValue(
       return contribution.status.toLowerCase();
     case "organization":
       return (contribution.metadata?.organization || "").toLowerCase();
+    default:
+      // All SortKey cases are handled above; this satisfies exhaustiveness checking
+      return "";
   }
 }
 
