@@ -201,8 +201,8 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
               in equal installments over the next{" "}
               <span className="font-bold text-indigo-900 dark:text-indigo-300">
                 {numberOfMonths} months
-              </span>
-              .
+              </span>{"."}
+
             </p>
           </div>
         </div>

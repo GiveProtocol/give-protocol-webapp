@@ -796,8 +796,8 @@ export const VolunteerApplicationForm: React.FC<
                       >
                         legal@giveprotocol.io <Mail className="w-3 h-3" />
                       </a>
-                    </span>
-                    , though this will not affect the lawfulness of processing
+                    </span>{", "}
+                    though this will not affect the lawfulness of processing
                     based on my consent before withdrawal. Withdrawing consent
                     may impact the organization&apos;s ability to consider my
                     volunteer application.

@@ -298,7 +298,7 @@ const ValidationPreview: React.FC<ValidationPreviewProps> = ({
   if (orgMode === "other") {
     return (
       <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-4 py-3">
-        <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0" />
+        <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0" />{" "}
         This record will be saved as unvalidated
       </div>
     );
