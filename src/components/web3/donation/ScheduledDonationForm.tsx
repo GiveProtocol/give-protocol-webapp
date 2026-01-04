@@ -207,11 +207,14 @@ const ImportantNotice: React.FC<ImportantNoticeProps> = ({
         </strong>{" "}
         commitment, the total amount has been reserved today and will be
         automatically distributed to{" "}
-        <strong className="text-indigo-900 dark:text-indigo-300">{charityName}</strong>{" "}
+        <strong className="text-indigo-900 dark:text-indigo-300">
+          {charityName}
+        </strong>{" "}
         in equal installments over the next{" "}
         <strong className="text-indigo-900 dark:text-indigo-300">
           {numberOfMonths} months
-        </strong>{"."}
+        </strong>
+        {"."}
       </p>
     </section>
   </div>
@@ -324,8 +327,12 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
             </span>
           </div>
           <div className="flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
-            <span className="text-indigo-700 dark:text-indigo-400 font-semibold">Beneficiary:</span>
-            <span className="font-bold text-indigo-900 dark:text-indigo-300">{charityName}</span>
+            <span className="text-indigo-700 dark:text-indigo-400 font-semibold">
+              Beneficiary:
+            </span>
+            <span className="font-bold text-indigo-900 dark:text-indigo-300">
+              {charityName}
+            </span>
           </div>
         </div>
       </div>
@@ -605,8 +612,10 @@ export function ScheduledDonationForm({
       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           Schedule recurring donations to{" "}
-          <span className="font-semibold text-indigo-900 dark:text-indigo-300">{charityName}</span>.
-          The total amount will be divided into equal monthly payments.
+          <span className="font-semibold text-indigo-900 dark:text-indigo-300">
+            {charityName}
+          </span>
+          . The total amount will be divided into equal monthly payments.
         </p>
       </div>
 
@@ -665,20 +674,26 @@ export function ScheduledDonationForm({
         </h4>
         <div className="space-y-2.5 text-sm">
           <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
-            <span className="text-gray-600 dark:text-gray-300">Monthly payment:</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              Monthly payment:
+            </span>
             <span className="font-bold text-indigo-900 dark:text-indigo-300">
               {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"}{" "}
               {selectedToken.symbol}
             </span>
           </div>
           <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
-            <span className="text-gray-600 dark:text-gray-300">Total payments:</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              Total payments:
+            </span>
             <span className="font-semibold text-gray-900 dark:text-gray-100">
               {numberOfMonths} months
             </span>
           </div>
           <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
-            <span className="text-gray-600 dark:text-gray-300">Schedule period:</span>
+            <span className="text-gray-600 dark:text-gray-300">
+              Schedule period:
+            </span>
             <span className="font-medium text-gray-700 dark:text-gray-200 text-xs">
               {formatDate(startDate.toISOString())} to{" "}
               {formatDate(endDate.toISOString())}

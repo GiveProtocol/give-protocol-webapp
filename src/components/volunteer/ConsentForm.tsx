@@ -214,11 +214,11 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
               >
                 legal@giveprotocol.io{" "}
                 <Mail className="h-3 w-3" aria-hidden="true" />
-              </a>{", "}
-              though this will not affect the lawfulness of processing based
-              on my consent before withdrawal. Withdrawing consent may impact
-              the organization&apos;s ability to consider my volunteer
-              application.
+              </a>
+              {", "}
+              though this will not affect the lawfulness of processing based on
+              my consent before withdrawal. Withdrawing consent may impact the
+              organization&apos;s ability to consider my volunteer application.
             </li>
           </ol>
 
