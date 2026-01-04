@@ -44,6 +44,51 @@ const SESSION_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const MAX_RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000; // 1 second
 
+type UserType = "donor" | "charity" | "admin" | null;
+
+/**
+ * Fetches user type from profile table
+ */
+async function fetchUserTypeFromProfile(userId: string): Promise<UserType> {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("type")
+    .eq("user_id", userId)
+    .single();
+
+  return profile?.type as UserType || null;
+}
+
+/**
+ * Gets user type from metadata or falls back to profile table
+ */
+async function resolveUserType(user: User | null | undefined): Promise<UserType> {
+  if (!user) return null;
+
+  const metadataType = user.user_metadata?.type as UserType;
+  if (metadataType) return metadataType;
+
+  return fetchUserTypeFromProfile(user.id);
+}
+
+/**
+ * Updates Sentry user context based on session
+ */
+function updateSentryUserContext(
+  user: User | null | undefined,
+  userType: UserType,
+): void {
+  if (user) {
+    setSentryUser({
+      id: user.id,
+      email: user.email,
+      userType: userType || undefined,
+    });
+  } else {
+    clearSentryUser();
+  }
+}
+
 /**
  * Authentication provider component that manages user authentication state
  * Handles session initialization, refresh, and auth state changes
@@ -115,9 +160,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
     let refreshInterval: ReturnType<typeof setTimeout>;
 
+    const handleAuthEvent = (
+      event: string,
+      startRefresh: () => void,
+      stopRefresh: () => void,
+    ) => {
+      switch (event) {
+        case "SIGNED_IN":
+          showToast("success", "Signed in successfully");
+          startRefresh();
+          break;
+        case "SIGNED_OUT":
+          showToast("success", "Signed out successfully");
+          stopRefresh();
+          break;
+        case "USER_UPDATED":
+          showToast("success", "Profile updated successfully");
+          break;
+      }
+    };
+
+    const startRefreshInterval = () => {
+      refreshInterval = setInterval(refreshSession, SESSION_REFRESH_INTERVAL);
+    };
+
+    const stopRefreshInterval = () => {
+      if (refreshInterval) clearInterval(refreshInterval);
+    };
+
     const initializeAuth = async () => {
       try {
-        // Check active session
         const {
           data: { session },
           error: sessionError,
@@ -132,52 +204,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           throw sessionError;
         }
 
-        if (mounted) {
-          let userType = session?.user?.user_metadata?.type as
-            | "donor"
-            | "charity"
-            | "admin"
-            | null;
+        if (!mounted) return undefined;
 
-          // If type not in metadata, fetch from profile
-          if (!userType && session?.user) {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("type")
-              .eq("user_id", session.user.id)
-              .single();
+        const userType = await resolveUserType(session?.user);
 
-            if (profile) {
-              userType = profile.type as "donor" | "charity" | "admin";
-            }
-          }
+        setState((prev) => ({
+          ...prev,
+          user: session?.user ?? null,
+          userType,
+          loading: false,
+        }));
 
-          setState((prev) => ({
-            ...prev,
-            user: session?.user ?? null,
-            userType,
-            loading: false,
-          }));
+        updateSentryUserContext(session?.user, userType);
 
-          // Update Sentry user context
-          if (session?.user) {
-            setSentryUser({
-              id: session.user.id,
-              email: session.user.email,
-              userType: userType || undefined,
-            });
-          } else {
-            clearSentryUser();
-          }
-
-          // Start session refresh interval if user is logged in
-          if (session?.user) {
-            refreshInterval = setInterval(
-              refreshSession,
-              SESSION_REFRESH_INTERVAL,
-            );
-          }
-        }
+        if (session?.user) startRefreshInterval();
 
         // Listen for auth changes
         const {
@@ -187,43 +227,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           Logger.info("Auth state changed", { event });
 
-          let userType = session?.user?.user_metadata?.type as
-            | "donor"
-            | "charity"
-            | "admin"
-            | null;
+          const userType = await resolveUserType(session?.user);
 
-          // If type not in metadata, fetch from profile
-          if (!userType && session?.user) {
-            const { data: profile } = await supabase
-              .from("profiles")
-              .select("type")
-              .eq("user_id", session.user.id)
-              .single();
-
-            if (profile) {
-              userType = profile.type as "donor" | "charity" | "admin";
-            }
-          }
-
-          if (event === "SIGNED_IN") {
-            showToast("success", "Signed in successfully");
-            refreshInterval = setInterval(
-              refreshSession,
-              SESSION_REFRESH_INTERVAL,
-            );
-          }
-
-          if (event === "SIGNED_OUT") {
-            showToast("success", "Signed out successfully");
-            if (refreshInterval) {
-              clearInterval(refreshInterval);
-            }
-          }
-
-          if (event === "USER_UPDATED") {
-            showToast("success", "Profile updated successfully");
-          }
+          handleAuthEvent(event, startRefreshInterval, stopRefreshInterval);
 
           setState((prev) => ({
             ...prev,
@@ -232,24 +238,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             loading: false,
           }));
 
-          // Update Sentry user context on auth state change
-          if (session?.user) {
-            setSentryUser({
-              id: session.user.id,
-              email: session.user.email,
-              userType: userType || undefined,
-            });
-          } else {
-            clearSentryUser();
-          }
+          updateSentryUserContext(session?.user, userType);
         });
 
         return () => {
           mounted = false;
           subscription.unsubscribe();
-          if (refreshInterval) {
-            clearInterval(refreshInterval);
-          }
+          stopRefreshInterval();
         };
       } catch (err) {
         Logger.error("Auth initialization failed", {

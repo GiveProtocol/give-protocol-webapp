@@ -1,13 +1,56 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logger } from "@/utils/logger";
+import type { User } from "@supabase/supabase-js";
 
 interface Profile {
   id: string;
   user_id: string;
   type: "donor" | "charity";
   created_at: string;
+}
+
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second base delay
+
+/**
+ * Fetches existing profile from database
+ */
+async function fetchExistingProfile(userId: string): Promise<Profile | null> {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Creates a new profile for the user
+ */
+async function createNewProfile(user: User): Promise<Profile> {
+  const userType = user.user_metadata?.type || "donor";
+  const { data, error } = await supabase
+    .from("profiles")
+    .insert({
+      user_id: user.id,
+      type: userType,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Calculates retry delay with exponential backoff
+ */
+function calculateRetryDelay(retryCount: number): number {
+  return RETRY_DELAY * Math.pow(2, retryCount);
 }
 
 /**
@@ -41,17 +84,49 @@ export function useProfile() {
   const [profile, setProfile] = useState<Profile | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const [retryCount, setRetryCount] = useState(0);
-  const MAX_RETRIES = 3;
-  const RETRY_DELAY = 1000; // 1 second base delay
+  const retryCountRef = useRef(0);
+  const mountedRef = useRef(true);
+  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const scheduleRetry = useCallback((fetchFn: () => void) => {
+    if (retryCountRef.current >= MAX_RETRIES) return;
+
+    const delay = calculateRetryDelay(retryCountRef.current);
+    Logger.info(
+      `Retrying profile fetch in ${delay}ms (attempt ${retryCountRef.current + 1}/${MAX_RETRIES})`,
+    );
+
+    retryTimeoutRef.current = setTimeout(() => {
+      retryCountRef.current += 1;
+      fetchFn();
+    }, delay);
+  }, []);
+
+  const handleFetchError = useCallback(
+    (err: unknown, fetchFn: () => void) => {
+      Logger.error("Profile fetch failed", {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        retryCount: retryCountRef.current,
+      });
+
+      if (!mountedRef.current) return;
+
+      setError(
+        err instanceof Error ? err : new Error("Failed to fetch profile"),
+      );
+      scheduleRetry(fetchFn);
+    },
+    [scheduleRetry],
+  );
 
   useEffect(() => {
-    let mounted = true;
-    let retryTimeout: ReturnType<typeof setTimeout> | null = null;
+    mountedRef.current = true;
+    retryCountRef.current = 0;
 
     const fetchProfile = async () => {
       if (!user) {
-        if (mounted) {
+        if (mountedRef.current) {
           setProfile(null);
           setLoading(false);
         }
@@ -59,69 +134,18 @@ export function useProfile() {
       }
 
       try {
-        // First try to get existing profile
-        const { data: existingProfile, error: fetchError } = await supabase
-          .from("profiles")
-          .select("*")
-          .eq("user_id", user.id)
-          .maybeSingle();
+        const existingProfile = await fetchExistingProfile(user.id);
+        const profileData = existingProfile || (await createNewProfile(user));
 
-        if (fetchError) throw fetchError;
-
-        // If no profile exists, create one
-        if (!existingProfile) {
-          const userType = user.user_metadata?.type || "donor";
-          const { data: newProfile, error: insertError } = await supabase
-            .from("profiles")
-            .insert({
-              user_id: user.id,
-              type: userType,
-            })
-            .select()
-            .single();
-
-          if (insertError) throw insertError;
-
-          if (mounted) {
-            setProfile(newProfile);
-            setError(null);
-          }
-        } else {
-          if (mounted) {
-            setProfile(existingProfile);
-            setError(null);
-          }
+        if (mountedRef.current) {
+          setProfile(profileData);
+          setError(null);
+          retryCountRef.current = 0;
         }
-
-        // Reset retry count on success
-        setRetryCount(0);
       } catch (err) {
-        Logger.error("Profile fetch failed", {
-          error: err instanceof Error ? err.message : String(err),
-          stack: err instanceof Error ? err.stack : undefined,
-          retryCount,
-        });
-
-        if (mounted) {
-          setError(
-            err instanceof Error ? err : new Error("Failed to fetch profile"),
-          );
-
-          // Implement retry with exponential backoff
-          if (retryCount < MAX_RETRIES) {
-            const delay = RETRY_DELAY * Math.pow(2, retryCount);
-            Logger.info(
-              `Retrying profile fetch in ${delay}ms (attempt ${retryCount + 1}/${MAX_RETRIES})`,
-            );
-
-            retryTimeout = setTimeout(() => {
-              setRetryCount((prev) => prev + 1);
-              fetchProfile();
-            }, delay);
-          }
-        }
+        handleFetchError(err, fetchProfile);
       } finally {
-        if (mounted) {
+        if (mountedRef.current) {
           setLoading(false);
         }
       }
@@ -130,12 +154,12 @@ export function useProfile() {
     fetchProfile();
 
     return () => {
-      mounted = false;
-      if (retryTimeout) {
-        clearTimeout(retryTimeout);
+      mountedRef.current = false;
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
       }
     };
-  }, [user, retryCount]);
+  }, [user, handleFetchError]);
 
   return { profile, loading, error };
 }
