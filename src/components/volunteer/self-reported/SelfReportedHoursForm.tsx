@@ -472,10 +472,11 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
   }, [charCount]);
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 overflow-hidden">
-        <div className="p-8 space-y-8">
-          {/* Date, Hours, Location Row */}
+    <form
+      onSubmit={handleSubmit}
+      className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 overflow-hidden p-8 space-y-8"
+    >
+      {/* Date, Hours, Location Row */}
           <DateHoursLocationRow
             activityDate={formData.activityDate}
             hours={formData.hours}
@@ -563,7 +564,6 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
               isExpired={daysInfo.isExpired}
             />
           </div>
-        </div>
 
         {/* Form Actions */}
         <div className="flex items-center justify-end gap-4 px-8 py-5 bg-gray-50/50 border-t border-gray-100">
@@ -611,7 +611,6 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
             )}
           </Button>
         </div>
-      </div>
     </form>
   );
 };

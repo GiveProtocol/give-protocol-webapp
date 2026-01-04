@@ -136,6 +136,87 @@ function handleTransactionError(error: unknown): never {
   throw error;
 }
 
+/**
+ * Error alert component for form errors
+ */
+const ErrorAlert: React.FC<{ message: string }> = ({ message }) => (
+  <div
+    className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl animate-fadeIn"
+    role="alert"
+  >
+    <svg
+      className="h-5 w-5 flex-shrink-0 text-red-400"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path
+        fillRule="evenodd"
+        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+        clipRule="evenodd"
+      />
+    </svg>
+    <p className="text-sm font-medium">{message}</p>
+  </div>
+);
+
+/**
+ * Success header component for donation confirmation
+ */
+const SuccessHeader: React.FC = () => (
+  <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl shadow-sm animate-fadeIn">
+    <CheckCircle className="h-8 w-8 text-green-500 dark:text-green-400 flex-shrink-0" />
+    <hgroup>
+      <h3 className="text-base font-bold text-green-900 dark:text-green-300 mb-1">
+        Recurring Donation Scheduled!
+      </h3>
+      <p className="text-sm text-green-700 dark:text-green-400">
+        Your commitment has been secured on the blockchain.
+      </p>
+    </hgroup>
+  </div>
+);
+
+interface ImportantNoticeProps {
+  amount: number;
+  tokenSymbol: string;
+  charityName: string;
+  numberOfMonths: number;
+}
+
+/**
+ * Important notice component for commitment details
+ */
+const ImportantNotice: React.FC<ImportantNoticeProps> = ({
+  amount,
+  tokenSymbol,
+  charityName,
+  numberOfMonths,
+}) => (
+  <div className="flex items-start gap-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
+    <AlertTriangle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+    <section>
+      <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-2">
+        Important Notice
+      </h4>
+      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+        To immediately secure your full{" "}
+        <strong className="text-indigo-900 dark:text-indigo-300">
+          {amount.toFixed(4)} {tokenSymbol}
+        </strong>{" "}
+        commitment, the total amount has been reserved today and will be
+        automatically distributed to{" "}
+        <strong className="text-indigo-900 dark:text-indigo-300">{charityName}</strong>{" "}
+        in equal installments over the next{" "}
+        <strong className="text-indigo-900 dark:text-indigo-300">
+          {numberOfMonths} months
+        </strong>{"."}
+      </p>
+    </section>
+  </div>
+);
+
 interface SuccessMessageProps {
   amount: number;
   charityName: string;
@@ -148,10 +229,6 @@ interface SuccessMessageProps {
 
 /**
  * Component that displays a success message after a scheduled donation is created
- * @param amount - The donation amount
- * @param charityName - Name of the charity receiving the donation
- * @param transactionHash - The blockchain transaction hash
- * @param onClose - Callback function to close the success message
  */
 const SuccessMessage: React.FC<SuccessMessageProps> = ({
   amount,
@@ -169,44 +246,13 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
 
   return (
     <div className="space-y-6">
-      {/* Success Header */}
-      <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl shadow-sm animate-fadeIn">
-        <CheckCircle className="h-8 w-8 text-green-500 dark:text-green-400 flex-shrink-0" />
-        <div>
-          <h3 className="text-base font-bold text-green-900 dark:text-green-300 mb-1">
-            Recurring Donation Scheduled!
-          </h3>
-          <p className="text-sm text-green-700 dark:text-green-400">
-            Your commitment has been secured on the blockchain.
-          </p>
-        </div>
-      </div>
-
-      {/* Important Commitment Notice */}
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
-        <div className="flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
-          <div>
-            <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-2">
-              Important Notice
-            </h4>
-            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-              To immediately secure your full{" "}
-              <span className="font-bold text-indigo-900 dark:text-indigo-300">
-                {amount.toFixed(4)} {tokenSymbol}
-              </span>{" "}
-              commitment, the total amount has been reserved today and will be
-              automatically distributed to{" "}
-              <span className="font-bold text-indigo-900 dark:text-indigo-300">{charityName}</span>{" "}
-              in equal installments over the next{" "}
-              <span className="font-bold text-indigo-900 dark:text-indigo-300">
-                {numberOfMonths} months
-              </span>{"."}
-
-            </p>
-          </div>
-        </div>
-      </div>
+      <SuccessHeader />
+      <ImportantNotice
+        amount={amount}
+        tokenSymbol={tokenSymbol}
+        charityName={charityName}
+        numberOfMonths={numberOfMonths}
+      />
 
       {/* Transaction Recap */}
       <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-gray-800 dark:to-gray-800 p-5 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-sm">
@@ -554,23 +600,7 @@ export function ScheduledDonationForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && (
-        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 rounded-xl animate-fadeIn">
-          <svg
-            className="h-5 w-5 flex-shrink-0 text-red-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clipRule="evenodd"
-            />
-          </svg>
-          <p className="text-sm font-medium">{error}</p>
-        </div>
-      )}
+      {error && <ErrorAlert message={error} />}
 
       <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">

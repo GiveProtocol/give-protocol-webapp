@@ -12,6 +12,136 @@ import {
 import { AlertCircle, X, Mail } from "lucide-react";
 import { useToast } from "@/contexts/ToastContext";
 
+type CommitmentType = "one-time" | "short-term" | "long-term";
+
+// Sub-component for section headers with numbered badges
+interface SectionHeaderProps {
+  number: number;
+  title: string;
+}
+
+const SectionHeader: React.FC<SectionHeaderProps> = ({ number, title }) => (
+  <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
+    <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
+      {number}
+    </span>{" "}
+    {title}
+  </h2>
+);
+
+// Sub-component for consent checkbox items
+interface ConsentCheckboxProps {
+  id: string;
+  checked: boolean;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  title: string;
+  description: string;
+  note?: string;
+}
+
+const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
+  id,
+  checked,
+  onChange,
+  title,
+  description,
+  note,
+}) => (
+  <label
+    htmlFor={id}
+    aria-label={title}
+    className="flex items-start hover:bg-white dark:hover:bg-gray-600 rounded-lg p-3 transition-colors cursor-pointer"
+  >
+    <input
+      id={id}
+      type="checkbox"
+      checked={checked}
+      onChange={onChange}
+      className="mt-1 h-5 w-5 rounded border-gray-300 dark:border-gray-500 text-emerald-600 focus:ring-emerald-500"
+    />
+    <div className="ml-3">
+      <strong className="font-semibold text-gray-900 dark:text-gray-100">
+        {title}
+      </strong>
+      <p className="text-gray-700 dark:text-gray-300 text-sm mt-1">
+        {description}
+      </p>
+      {note && (
+        <p className="text-gray-500 dark:text-gray-400 italic text-xs mt-1">
+          {note}
+        </p>
+      )}
+    </div>
+  </label>
+);
+
+// Sub-component for skill tags
+interface SkillTagProps {
+  skill: string;
+  onRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+const SkillTag: React.FC<SkillTagProps> = ({ skill, onRemove }) => (
+  <span className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full mr-2 mb-2 animate-fadeIn">
+    <span className="text-sm">{skill}</span>
+    <button
+      type="button"
+      onClick={onRemove}
+      className="bg-white/20 hover:bg-white/30 rounded-full w-5 h-5 flex items-center justify-center transition-colors"
+      aria-label={`Remove ${skill}`}
+    >
+      <X className="w-3 h-3" />
+    </button>
+  </span>
+);
+
+// Sub-component for commitment type radio options
+interface CommitmentOptionProps {
+  id: string;
+  value: CommitmentType;
+  selectedValue: CommitmentType;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  title: string;
+  description: string;
+}
+
+const CommitmentOption: React.FC<CommitmentOptionProps> = ({
+  id,
+  value,
+  selectedValue,
+  onChange,
+  title,
+  description,
+}) => (
+  <label
+    htmlFor={id}
+    aria-label={`${title} commitment level`}
+    className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
+      selectedValue === value
+        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30"
+        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
+    }`}
+  >
+    <input
+      id={id}
+      type="radio"
+      name="commitmentType"
+      value={value}
+      checked={selectedValue === value}
+      onChange={onChange}
+      className="sr-only"
+    />
+    <div className="text-center">
+      <div className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
+        {title}
+      </div>
+      <div className="text-sm text-gray-600 dark:text-gray-300">
+        {description}
+      </div>
+    </div>
+  </label>
+);
+
 interface VolunteerApplicationFormProps {
   opportunityId: string;
   opportunityTitle: string;
@@ -28,7 +158,6 @@ type AgeRange =
   | "45-54"
   | "55-64"
   | "65+";
-type CommitmentType = "one-time" | "short-term" | "long-term";
 
 interface FormData {
   // Personal Information
@@ -357,30 +486,29 @@ export const VolunteerApplicationForm: React.FC<
         aria-modal="true"
         aria-labelledby="modal-title"
       >
-        <div className="bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white p-8 text-center rounded-t-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent" />
-          <div className="relative z-10">
-            <h1 id="modal-title" className="text-3xl font-light mb-2">
-              Volunteer Opportunity Application
-            </h1>
-            <p className="text-lg opacity-90 pb-2">
-              Help create sustainable impact through verified contributions
-            </p>
-          </div>
-        </div>
+        <header className="bg-gradient-to-br from-emerald-500 via-teal-600 to-emerald-700 text-white p-8 text-center rounded-t-2xl relative overflow-hidden">
+          <div
+            className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
+            aria-hidden="true"
+          />
+          <h1
+            id="modal-title"
+            className="relative z-10 text-3xl font-light mb-2"
+          >
+            Volunteer Opportunity Application
+          </h1>
+          <p className="relative z-10 text-lg opacity-90 pb-2">
+            Help create sustainable impact through verified contributions
+          </p>
+        </header>
 
         <form
           onSubmit={handleSubmit}
           className="px-8 py-6 overflow-y-auto max-h-[calc(90vh-200px)]"
         >
           {/* Personal Information Section */}
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
-                1
-              </span>{" "}
-              Personal Information
-            </h2>
+          <section className="mb-8">
+            <SectionHeader number={1} title="Personal Information" />
             <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
               <div>
                 <label
@@ -557,16 +685,11 @@ export const VolunteerApplicationForm: React.FC<
                 )}
               </div>
             </div>
-          </div>
+          </section>
 
           {/* Skills & Interests Section */}
-          <div className="mb-8 mt-8">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
-                2
-              </span>{" "}
-              Skills & Interests
-            </h2>
+          <section className="mb-8 mt-8">
+            <SectionHeader number={2} title="Skills & Interests" />
 
             <div className="mb-4">
               <label
@@ -578,20 +701,11 @@ export const VolunteerApplicationForm: React.FC<
               </label>
               <div className="relative border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 bg-gray-50 dark:bg-gray-700 transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full min-h-[100px]">
                 {formData.skills.map((skill, index) => (
-                  <span
+                  <SkillTag
                     key={skill}
-                    className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full mr-2 mb-2 animate-fadeIn"
-                  >
-                    <span className="text-sm">{skill}</span>
-                    <button
-                      type="button"
-                      onClick={createRemoveSkillHandler(index)}
-                      className="bg-white/20 hover:bg-white/30 rounded-full w-5 h-5 flex items-center justify-center transition-colors"
-                      aria-label={`Remove ${skill}`}
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
+                    skill={skill}
+                    onRemove={createRemoveSkillHandler(index)}
+                  />
                 ))}
                 <input
                   id="skillInput"
@@ -615,97 +729,38 @@ export const VolunteerApplicationForm: React.FC<
               )}
             </div>
 
-            <div className="mb-4">
-              <fieldset>
-                <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-                  Commitment Level{" "}
-                  <span className="text-red-500 text-base">*</span>
-                </legend>
-                <div className="grid md:grid-cols-3 gap-3">
-                  <label
-                    htmlFor="commitment-one-time"
-                    aria-label="One-time commitment level"
-                    className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
-                      formData.commitmentType === "one-time"
-                        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30"
-                        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
-                    }`}
-                  >
-                    <input
-                      id="commitment-one-time"
-                      type="radio"
-                      name="commitmentType"
-                      value="one-time"
-                      checked={formData.commitmentType === "one-time"}
-                      onChange={handleFieldChange("commitmentType")}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                        One-time
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        Single project or short-duration tasks
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    htmlFor="commitment-short-term"
-                    aria-label="Short-term commitment level"
-                    className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
-                      formData.commitmentType === "short-term"
-                        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30"
-                        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
-                    }`}
-                  >
-                    <input
-                      id="commitment-short-term"
-                      type="radio"
-                      name="commitmentType"
-                      value="short-term"
-                      checked={formData.commitmentType === "short-term"}
-                      onChange={handleFieldChange("commitmentType")}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                        Short-Term
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        Few weeks to a few months
-                      </div>
-                    </div>
-                  </label>
-                  <label
-                    htmlFor="commitment-long-term"
-                    aria-label="Long-term commitment level"
-                    className={`relative border-2 rounded-xl p-4 cursor-pointer transition-all duration-200 ${
-                      formData.commitmentType === "long-term"
-                        ? "border-emerald-600 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30"
-                        : "border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500"
-                    }`}
-                  >
-                    <input
-                      id="commitment-long-term"
-                      type="radio"
-                      name="commitmentType"
-                      value="long-term"
-                      checked={formData.commitmentType === "long-term"}
-                      onChange={handleFieldChange("commitmentType")}
-                      className="sr-only"
-                    />
-                    <div className="text-center">
-                      <div className="font-semibold text-gray-900 dark:text-gray-100 mb-1">
-                        Long-Term
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        Ongoing commitment of several months or more
-                      </div>
-                    </div>
-                  </label>
-                </div>
-              </fieldset>
-            </div>
+            <fieldset className="mb-4">
+              <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                Commitment Level{" "}
+                <span className="text-red-500 text-base">*</span>
+              </legend>
+              <div className="grid md:grid-cols-3 gap-3">
+                <CommitmentOption
+                  id="commitment-one-time"
+                  value="one-time"
+                  selectedValue={formData.commitmentType}
+                  onChange={handleFieldChange("commitmentType")}
+                  title="One-time"
+                  description="Single project or short-duration tasks"
+                />
+                <CommitmentOption
+                  id="commitment-short-term"
+                  value="short-term"
+                  selectedValue={formData.commitmentType}
+                  onChange={handleFieldChange("commitmentType")}
+                  title="Short-Term"
+                  description="Few weeks to a few months"
+                />
+                <CommitmentOption
+                  id="commitment-long-term"
+                  value="long-term"
+                  selectedValue={formData.commitmentType}
+                  onChange={handleFieldChange("commitmentType")}
+                  title="Long-Term"
+                  description="Ongoing commitment of several months or more"
+                />
+              </div>
+            </fieldset>
 
             <div>
               <label
@@ -729,16 +784,11 @@ export const VolunteerApplicationForm: React.FC<
                 </p>
               )}
             </div>
-          </div>
+          </section>
 
           {/* Consent & Agreement Section */}
-          <div className="mb-8 mt-8">
-            <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
-              <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
-                3
-              </span>{" "}
-              Consent & Agreement
-            </h2>
+          <section className="mb-8 mt-8">
+            <SectionHeader number={3} title="Consent & Agreement" />
 
             <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border-l-4 border-emerald-600">
               <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
@@ -815,62 +865,21 @@ export const VolunteerApplicationForm: React.FC<
                 </p>
 
                 <div className="space-y-3">
-                  <label
-                    htmlFor="essential-processing"
-                    aria-label="Essential processing consent"
-                    className="flex items-start hover:bg-white dark:hover:bg-gray-600 rounded-lg p-3 transition-colors cursor-pointer"
-                  >
-                    <input
-                      id="essential-processing"
-                      type="checkbox"
-                      checked={formData.essentialProcessing}
-                      onChange={handleCheckboxChange("essentialProcessing")}
-                      className="mt-1 h-5 w-5 rounded border-gray-300 dark:border-gray-500 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <div className="ml-3">
-                      <strong className="font-semibold text-gray-900 dark:text-gray-100">
-                        Essential Processing (Required):
-                      </strong>
-                      <p className="text-gray-700 dark:text-gray-300 text-sm mt-1">
-                        I consent to GIVE PROTOCOL collecting and processing my
-                        personal information for the purpose of evaluating my
-                        volunteer application and, if successful, managing my
-                        volunteer engagement.
-                      </p>
-                      <p className="text-gray-500 dark:text-gray-400 italic text-xs mt-1">
-                        Note: This consent is necessary to process your
-                        volunteer application. If you do not provide this
-                        consent, we will not be able to consider your
-                        application.
-                      </p>
-                    </div>
-                  </label>
-
-                  <label
-                    htmlFor="international-transfers"
-                    aria-label="International transfers consent"
-                    className="flex items-start hover:bg-white dark:hover:bg-gray-600 rounded-lg p-3 transition-colors cursor-pointer"
-                  >
-                    <input
-                      id="international-transfers"
-                      type="checkbox"
-                      checked={formData.internationalTransfers}
-                      onChange={handleCheckboxChange("internationalTransfers")}
-                      className="mt-1 h-5 w-5 rounded border-gray-300 dark:border-gray-500 text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <div className="ml-3">
-                      <strong className="font-semibold text-gray-900 dark:text-gray-100">
-                        International Transfers (if applicable):
-                      </strong>
-                      <p className="text-gray-700 dark:text-gray-300 text-sm mt-1">
-                        I consent to GIVE PROTOCOL transferring my personal
-                        information to countries outside my country of
-                        residence, including countries that may not provide the
-                        same level of data protection, with appropriate
-                        safeguards in place as described in the Privacy Notice.
-                      </p>
-                    </div>
-                  </label>
+                  <ConsentCheckbox
+                    id="essential-processing"
+                    checked={formData.essentialProcessing}
+                    onChange={handleCheckboxChange("essentialProcessing")}
+                    title="Essential Processing (Required):"
+                    description="I consent to GIVE PROTOCOL collecting and processing my personal information for the purpose of evaluating my volunteer application and, if successful, managing my volunteer engagement."
+                    note="Note: This consent is necessary to process your volunteer application. If you do not provide this consent, we will not be able to consider your application."
+                  />
+                  <ConsentCheckbox
+                    id="international-transfers"
+                    checked={formData.internationalTransfers}
+                    onChange={handleCheckboxChange("internationalTransfers")}
+                    title="International Transfers (if applicable):"
+                    description="I consent to GIVE PROTOCOL transferring my personal information to countries outside my country of residence, including countries that may not provide the same level of data protection, with appropriate safeguards in place as described in the Privacy Notice."
+                  />
                 </div>
               </div>
 
@@ -879,54 +888,21 @@ export const VolunteerApplicationForm: React.FC<
                   ACKNOWLEDGMENT
                 </p>
 
-                <label
-                  htmlFor="age-confirmation"
-                  aria-label="Age confirmation"
-                  className="flex items-start mb-3 hover:bg-white dark:hover:bg-gray-600 rounded-lg p-3 transition-colors cursor-pointer"
-                >
-                  <input
-                    id="age-confirmation"
-                    type="checkbox"
-                    checked={formData.ageConfirmation}
-                    onChange={handleCheckboxChange("ageConfirmation")}
-                    className="mt-1 h-5 w-5 rounded border-gray-300 dark:border-gray-500 text-emerald-600 focus:ring-emerald-500"
-                  />
-                  <div className="ml-3">
-                    <strong className="font-semibold text-gray-900 dark:text-gray-100">
-                      Age Confirmation:
-                    </strong>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm mt-1">
-                      I confirm that I am at least 16 years of age.
-                    </p>
-                    <p className="text-gray-500 dark:text-gray-400 italic text-xs mt-1">
-                      (If you are under 16 years of age, parental or guardian
-                      consent is required)
-                    </p>
-                  </div>
-                </label>
-
-                <label
-                  htmlFor="privacy-notice"
-                  aria-label="Privacy notice acknowledgment"
-                  className="flex items-start hover:bg-white dark:hover:bg-gray-600 rounded-lg p-3 transition-colors cursor-pointer"
-                >
-                  <input
-                    id="privacy-notice"
-                    type="checkbox"
-                    checked={formData.privacyNotice}
-                    onChange={handleCheckboxChange("privacyNotice")}
-                    className="mt-1 h-5 w-5 rounded border-gray-300 dark:border-gray-500 text-emerald-600 focus:ring-emerald-500"
-                  />
-                  <div className="ml-3">
-                    <strong className="font-semibold text-gray-900 dark:text-gray-100">
-                      Privacy Notice:
-                    </strong>
-                    <p className="text-gray-700 dark:text-gray-300 text-sm mt-1">
-                      I confirm that I have read and understood the Privacy
-                      Notice.
-                    </p>
-                  </div>
-                </label>
+                <ConsentCheckbox
+                  id="age-confirmation"
+                  checked={formData.ageConfirmation}
+                  onChange={handleCheckboxChange("ageConfirmation")}
+                  title="Age Confirmation:"
+                  description="I confirm that I am at least 16 years of age."
+                  note="(If you are under 16 years of age, parental or guardian consent is required)"
+                />
+                <ConsentCheckbox
+                  id="privacy-notice"
+                  checked={formData.privacyNotice}
+                  onChange={handleCheckboxChange("privacyNotice")}
+                  title="Privacy Notice:"
+                  description="I confirm that I have read and understood the Privacy Notice."
+                />
               </div>
             </div>
 
@@ -936,7 +912,7 @@ export const VolunteerApplicationForm: React.FC<
                 <p className="text-red-700 dark:text-red-400">{validationErrors.consent}</p>
               </div>
             )}
-          </div>
+          </section>
 
           <div className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-8 pb-4">
             <Button
