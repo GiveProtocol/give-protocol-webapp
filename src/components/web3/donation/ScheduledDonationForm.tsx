@@ -57,6 +57,85 @@ import { formatDate } from "@/utils/date";
 // Minimum donation amount in USD to prevent dust donations
 const MINIMUM_DONATION_USD = 10;
 
+/**
+ * Validates form inputs before submission
+ * @returns Error message if validation fails, null if valid
+ */
+function validateFormInputs(
+  amount: number,
+  balance: number | undefined,
+  tokenSymbol: string,
+): string | null {
+  if (!validateAmount(amount)) {
+    return "Please enter a valid amount between 0 and 1,000,000";
+  }
+  if (amount <= 0) {
+    return "Please enter an amount greater than 0";
+  }
+  if (balance !== undefined && amount > balance) {
+    return `Insufficient balance. You have ${balance.toFixed(6)} ${tokenSymbol} but need ${amount.toFixed(6)} ${tokenSymbol}.`;
+  }
+  return null;
+}
+
+/**
+ * Ensures token approval for the distribution contract
+ * @throws Error if approval fails or is rejected
+ */
+async function ensureTokenApproval(
+  tokenContract: ethers.Contract,
+  ownerAddress: string,
+  spenderAddress: string,
+  requiredAmount: bigint,
+  tokenSymbol: string,
+): Promise<void> {
+  const currentAllowance = await tokenContract.allowance(
+    ownerAddress,
+    spenderAddress,
+  );
+
+  if (currentAllowance >= requiredAmount) {
+    return;
+  }
+
+  Logger.info("Requesting token approval for scheduled donation", {
+    token: tokenSymbol,
+    spender: spenderAddress,
+  });
+
+  try {
+    const approveTx = await tokenContract.approve(
+      spenderAddress,
+      ethers.MaxUint256,
+    );
+    await approveTx.wait();
+    Logger.info("Token approval successful", {
+      token: tokenSymbol,
+      spender: spenderAddress,
+    });
+  } catch (approveError: unknown) {
+    if (isUserRejection(approveError)) {
+      throw new Error(
+        "Transaction was rejected. Please approve the transaction in your wallet to continue.",
+      );
+    }
+    throw approveError;
+  }
+}
+
+/**
+ * Handles transaction rejection errors
+ * @throws Error with user-friendly message if rejected, otherwise rethrows
+ */
+function handleTransactionError(error: unknown): never {
+  if (isUserRejection(error)) {
+    throw new Error(
+      "Transaction was rejected. Please confirm the transaction in your wallet to schedule your donation.",
+    );
+  }
+  throw error;
+}
+
 interface SuccessMessageProps {
   amount: number;
   charityName: string;
@@ -316,41 +395,22 @@ export function ScheduledDonationForm({
       e.preventDefault();
       setError(null);
 
-      if (!validateAmount(amount)) {
-        setError("Please enter a valid amount between 0 and 1,000,000");
+      // Validate form inputs
+      const validationError = validateFormInputs(
+        amount,
+        balance,
+        selectedToken.symbol,
+      );
+      if (validationError) {
+        setError(validationError);
         return;
       }
 
-      if (amount <= 0) {
-        setError("Please enter an amount greater than 0");
-        return;
-      }
-
-      // Check minimum donation threshold ($10 USD equivalent)
-      // TEMPORARILY DISABLED FOR TESTING
-      // const tokenPrice = tokenPrices[selectedToken.coingeckoId];
-      // if (tokenPrice) {
-      //   const fiatValue = convertToFiat(amount, selectedToken.coingeckoId);
-      //   if (fiatValue < MINIMUM_DONATION_USD) {
-      //     setError(
-      //       `Minimum donation is $${MINIMUM_DONATION_USD} USD. Current value: $${fiatValue.toFixed(2)} USD. Please increase your donation amount.`
-      //     );
-      //     return;
-      //   }
-      // }
-
-      // Check for sufficient balance
-      if (balance !== undefined && amount > balance) {
-        setError(
-          `Insufficient balance. You have ${balance.toFixed(6)} ${selectedToken.symbol} but need ${amount.toFixed(6)} ${selectedToken.symbol}.`,
-        );
-        return;
-      }
-
+      // Ensure wallet connection
       if (!isConnected || !provider || !address) {
         try {
           await connect();
-        } catch (err) {
+        } catch {
           setError("Please connect your wallet to continue");
           return;
         }
@@ -359,21 +419,12 @@ export function ScheduledDonationForm({
       try {
         setLoading(true);
 
-        // Get the distribution contract address
         const distributionAddress = getContractAddress("DISTRIBUTION");
-
-        // Create contract instance
         const signer = await provider.getSigner();
-        const distributionContract = new ethers.Contract(
-          distributionAddress,
-          CharityScheduledDistributionABI.abi,
-          signer,
-        );
-
-        // Use the selected token address
         const tokenAddress = selectedToken.address;
+        const parsedAmount = ethers.parseEther(amount.toString());
 
-        // First, approve the token transfer
+        // Create token contract for approval
         const tokenContract = new ethers.Contract(
           tokenAddress,
           [
@@ -383,44 +434,16 @@ export function ScheduledDonationForm({
           signer,
         );
 
-        const parsedAmount = ethers.parseEther(amount.toString());
-
-        // Check current allowance before approving
-        const currentAllowance = await tokenContract.allowance(
+        // Ensure token approval
+        await ensureTokenApproval(
+          tokenContract,
           address,
           distributionAddress,
+          parsedAmount,
+          selectedToken.symbol,
         );
 
-        if (currentAllowance < parsedAmount) {
-          Logger.info("Requesting token approval for scheduled donation", {
-            token: selectedToken.symbol,
-            spender: distributionAddress,
-          });
-
-          try {
-            // Approve unlimited amount to avoid repeated approvals
-            const approveTx = await tokenContract.approve(
-              distributionAddress,
-              ethers.MaxUint256,
-            );
-            await approveTx.wait();
-
-            Logger.info("Token approval successful", {
-              token: selectedToken.symbol,
-              spender: distributionAddress,
-            });
-          } catch (approveError: unknown) {
-            // Check if user rejected the transaction
-            if (isUserRejection(approveError)) {
-              throw new Error(
-                "Transaction was rejected. Please approve the transaction in your wallet to continue.",
-              );
-            }
-            throw approveError;
-          }
-        }
-
-        // Get current token price from CurrencyContext
+        // Get token price for contract
         const tokenPrice = tokenPrices[selectedToken.coingeckoId];
         if (!tokenPrice) {
           throw new Error(
@@ -428,7 +451,6 @@ export function ScheduledDonationForm({
           );
         }
 
-        // Convert price to 8 decimals for the contract (USD with 8 decimals)
         const tokenPriceWith8Decimals = Math.floor(tokenPrice * 10 ** 8);
 
         Logger.info("Creating scheduled donation", {
@@ -439,46 +461,41 @@ export function ScheduledDonationForm({
           tokenPriceWith8Decimals,
         });
 
-        // Create the scheduled donation with new parameters
-        try {
-          const tx = await distributionContract.createSchedule(
+        // Create distribution contract and execute transaction
+        const distributionContract = new ethers.Contract(
+          distributionAddress,
+          CharityScheduledDistributionABI.abi,
+          signer,
+        );
+
+        const tx = await distributionContract
+          .createSchedule(
             charityAddress,
             tokenAddress,
             parsedAmount,
             numberOfMonths,
             tokenPriceWith8Decimals.toString(),
-          );
+          )
+          .catch(handleTransactionError);
 
-          const receipt = await tx.wait();
-          setTransactionHash(receipt.hash);
+        const receipt = await tx.wait();
+        setTransactionHash(receipt.hash);
 
-          // Calculate transaction fee
-          const gasUsed = receipt.gasUsed;
-          const gasPrice = receipt.gasPrice || receipt.effectiveGasPrice;
-          const fee = ethers.formatEther(gasUsed * gasPrice);
-          setTransactionFee(`${Number.parseFloat(fee).toFixed(6)} GLMR`);
+        // Calculate transaction fee
+        const gasUsed = receipt.gasUsed;
+        const gasPrice = receipt.gasPrice || receipt.effectiveGasPrice;
+        const fee = ethers.formatEther(gasUsed * gasPrice);
+        setTransactionFee(`${Number.parseFloat(fee).toFixed(6)} GLMR`);
 
-          setShowConfirmation(true);
+        setShowConfirmation(true);
 
-          Logger.info("Scheduled donation created", {
-            charity: charityAddress,
-            amount,
-            token: tokenAddress,
-            txHash: receipt.hash,
-            transactionFee: fee,
-          });
-        } catch (txError: unknown) {
-          // Check if user rejected the transaction
-          if (
-            txError.code === 4001 ||
-            txError.message?.includes("user rejected")
-          ) {
-            throw new Error(
-              "Transaction was rejected. Please confirm the transaction in your wallet to schedule your donation.",
-            );
-          }
-          throw txError;
-        }
+        Logger.info("Scheduled donation created", {
+          charity: charityAddress,
+          amount,
+          token: tokenAddress,
+          txHash: receipt.hash,
+          transactionFee: fee,
+        });
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to schedule donation";
