@@ -178,6 +178,42 @@ const SuccessHeader: React.FC = () => (
   </div>
 );
 
+/**
+ * Transaction recap row component to flatten nesting
+ */
+interface TransactionRecapRowProps {
+  label: string;
+  value: string;
+  variant?: "default" | "highlight";
+}
+
+const TransactionRecapRow: React.FC<TransactionRecapRowProps> = ({
+  label,
+  value,
+  variant = "default",
+}) => {
+  const baseClasses = "flex justify-between items-center p-3 rounded-lg shadow-sm";
+  const variantClasses =
+    variant === "highlight"
+      ? "bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800"
+      : "bg-white dark:bg-gray-700";
+  const labelClasses =
+    variant === "highlight"
+      ? "text-indigo-700 dark:text-indigo-400 font-semibold"
+      : "text-gray-600 dark:text-gray-300 font-medium";
+  const valueClasses =
+    variant === "highlight"
+      ? "font-bold text-indigo-900 dark:text-indigo-300"
+      : "font-semibold text-gray-900 dark:text-gray-100";
+
+  return (
+    <div className={`${baseClasses} ${variantClasses}`}>
+      <span className={labelClasses}>{label}</span>
+      <span className={valueClasses}>{value}</span>
+    </div>
+  );
+};
+
 interface ImportantNoticeProps {
   amount: number;
   tokenSymbol: string;
@@ -255,8 +291,8 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
       />
 
       {/* Transaction Recap */}
-      <div className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-gray-800 dark:to-gray-800 p-5 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-sm">
-        <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4 flex items-center">
+      <section className="bg-gradient-to-br from-slate-50 to-gray-50 dark:from-gray-800 dark:to-gray-800 p-5 rounded-xl border-2 border-gray-200 dark:border-gray-700 shadow-sm space-y-4">
+        <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 flex items-center">
           <svg
             className="w-5 h-5 mr-2 text-gray-700 dark:text-gray-300"
             fill="none"
@@ -272,63 +308,35 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
           </svg>
           Transaction Recap
         </h4>
-        <div className="space-y-2.5 text-sm">
-          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
-              Total Amount Reserved:
-            </span>
-            <span className="font-bold text-gray-900 dark:text-gray-100 text-base">
-              {amount.toFixed(6)} {tokenSymbol}
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
-              Monthly Distribution:
-            </span>
-            <span className="font-bold text-indigo-900 dark:text-indigo-300">
-              {monthlyAmount.toFixed(6)} {tokenSymbol}
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
-              Number of Payments:
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-gray-100">
-              {numberOfMonths} months
-            </span>
-          </div>
-          {transactionFee && (
-            <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-              <span className="text-gray-600 dark:text-gray-300 font-medium">
-                Transaction Fee:
-              </span>
-              <span className="font-medium text-gray-900 dark:text-gray-100">
-                {transactionFee}
-              </span>
-            </div>
-          )}
-          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
-              Distribution Starts:
-            </span>
-            <span className="font-medium text-gray-900 dark:text-gray-100">
-              {formatDate(startDate.toISOString())}
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-white dark:bg-gray-700 rounded-lg shadow-sm">
-            <span className="text-gray-600 dark:text-gray-300 font-medium">
-              Distribution Ends:
-            </span>
-            <span className="font-medium text-gray-900 dark:text-gray-100">
-              {formatDate(endDate.toISOString())}
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
-            <span className="text-indigo-700 dark:text-indigo-400 font-semibold">Beneficiary:</span>
-            <span className="font-bold text-indigo-900 dark:text-indigo-300">{charityName}</span>
-          </div>
-        </div>
-      </div>
+        <TransactionRecapRow
+          label="Total Amount Reserved:"
+          value={`${amount.toFixed(6)} ${tokenSymbol}`}
+        />
+        <TransactionRecapRow
+          label="Monthly Distribution:"
+          value={`${monthlyAmount.toFixed(6)} ${tokenSymbol}`}
+        />
+        <TransactionRecapRow
+          label="Number of Payments:"
+          value={`${numberOfMonths} months`}
+        />
+        {transactionFee && (
+          <TransactionRecapRow label="Transaction Fee:" value={transactionFee} />
+        )}
+        <TransactionRecapRow
+          label="Distribution Starts:"
+          value={formatDate(startDate.toISOString())}
+        />
+        <TransactionRecapRow
+          label="Distribution Ends:"
+          value={formatDate(endDate.toISOString())}
+        />
+        <TransactionRecapRow
+          label="Beneficiary:"
+          value={charityName}
+          variant="highlight"
+        />
+      </section>
 
       {/* Transaction Hash */}
       {transactionHash && (

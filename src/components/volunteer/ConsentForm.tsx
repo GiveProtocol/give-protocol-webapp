@@ -13,6 +13,55 @@ interface ConsentCheckboxProps {
   className?: string;
 }
 
+/**
+ * List of consent understanding items - extracted to reduce nesting depth
+ */
+const ConsentUnderstandingList: React.FC = () => (
+  <ol className="list-decimal pl-6 space-y-2 text-gray-700 mb-6">
+    <li>
+      My personal information will be processed for the purposes of
+      evaluating my volunteer application, managing volunteer
+      assignments, and related activities.
+    </li>
+    <li>
+      GIVE PROTOCOL may collect various categories of my personal
+      information, including identity information, contact details,
+      background information, availability, references, and where
+      relevant and permitted by law, certain special categories of data.
+    </li>
+    <li>
+      My personal information may be shared with authorized personnel
+      within the charity organization offering the volunteer
+      opportunity, service providers, and third parties as outlined in
+      the Privacy Notice.
+    </li>
+    <li>
+      My personal information may be transferred internationally with
+      appropriate safeguards in place.
+    </li>
+    <li>
+      I have certain rights regarding my personal information, which
+      vary depending on my location, including the rights to access,
+      rectify, delete, restrict processing, data portability, and object
+      to processing.
+    </li>
+    <li className="flex flex-wrap items-center gap-1">
+      I can withdraw my consent at any time by contacting{" "}
+      <a
+        href="mailto:legal@giveprotocol.io"
+        className="text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+      >
+        legal@giveprotocol.io{" "}
+        <Mail className="h-3 w-3" aria-hidden="true" />
+      </a>{", "}
+      though this will not affect the lawfulness of processing based
+      on my consent before withdrawal. Withdrawing consent may impact
+      the organization&apos;s ability to consider my volunteer
+      application.
+    </li>
+  </ol>
+);
+
 const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
   id,
   checked,
@@ -178,49 +227,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
           </p>
 
           <p className="font-semibold text-gray-900 mb-3">I understand that:</p>
-          <ol className="list-decimal pl-6 space-y-2 text-gray-700 mb-6">
-            <li>
-              My personal information will be processed for the purposes of
-              evaluating my volunteer application, managing volunteer
-              assignments, and related activities.
-            </li>
-            <li>
-              GIVE PROTOCOL may collect various categories of my personal
-              information, including identity information, contact details,
-              background information, availability, references, and where
-              relevant and permitted by law, certain special categories of data.
-            </li>
-            <li>
-              My personal information may be shared with authorized personnel
-              within the charity organization offering the volunteer
-              opportunity, service providers, and third parties as outlined in
-              the Privacy Notice.
-            </li>
-            <li>
-              My personal information may be transferred internationally with
-              appropriate safeguards in place.
-            </li>
-            <li>
-              I have certain rights regarding my personal information, which
-              vary depending on my location, including the rights to access,
-              rectify, delete, restrict processing, data portability, and object
-              to processing.
-            </li>
-            <li className="flex flex-wrap items-center gap-1">
-              I can withdraw my consent at any time by contacting{" "}
-              <a
-                href="mailto:legal@giveprotocol.io"
-                className="text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
-              >
-                legal@giveprotocol.io{" "}
-                <Mail className="h-3 w-3" aria-hidden="true" />
-              </a>{", "}
-              though this will not affect the lawfulness of processing based
-              on my consent before withdrawal. Withdrawing consent may impact
-              the organization&apos;s ability to consider my volunteer
-              application.
-            </li>
-          </ol>
+          <ConsentUnderstandingList />
 
           <div className="border-t border-gray-200 pt-6 mb-6">
             <p className="font-semibold text-gray-900 mb-4">
