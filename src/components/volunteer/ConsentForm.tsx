@@ -14,6 +14,20 @@ interface ConsentCheckboxProps {
 }
 
 /**
+ * Modal header component - extracted to reduce nesting depth
+ */
+const ConsentModalHeader: React.FC = () => (
+  <header className="bg-gradient-to-r from-purple-600 to-indigo-600 text-gray-900 p-8 text-center">
+    <h1 id="consent-modal-title" className="text-3xl font-light mb-2">
+      Volunteer Opportunity Application
+    </h1>
+    <p className="text-lg opacity-90">
+      Help create sustainable impact through verified contributions
+    </p>
+  </header>
+);
+
+/**
  * List of consent understanding items - extracted to reduce nesting depth
  */
 const ConsentUnderstandingList: React.FC = () => (
@@ -205,15 +219,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
         aria-modal="true"
         aria-labelledby="consent-modal-title"
       >
-        <header className="bg-gradient-to-r from-purple-600 to-indigo-600 text-gray-900 p-8 text-center">
-          <h1 id="consent-modal-title" className="text-3xl font-light mb-2">
-            Volunteer Opportunity Application
-          </h1>
-          <p className="text-lg opacity-90">
-            Help create sustainable impact through verified contributions
-          </p>
-        </header>
-
+        <ConsentModalHeader />
         <article className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
             Volunteer Application Consent
