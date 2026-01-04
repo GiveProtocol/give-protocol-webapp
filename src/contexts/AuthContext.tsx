@@ -177,6 +177,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         case "USER_UPDATED":
           showToast("success", "Profile updated successfully");
           break;
+        default:
+          // Other auth events (TOKEN_REFRESHED, PASSWORD_RECOVERY, etc.) don't require user notification
+          break;
       }
     };
 
