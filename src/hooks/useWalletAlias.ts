@@ -223,13 +223,21 @@ export function useWalletAlias() {
   const setWalletAlias = async (newAlias: string) => {
     if (!user) {
       setError("Please sign in to set a wallet alias");
-      showToast("error", "Authentication Required", "Please sign in to set a wallet alias");
+      showToast(
+        "error",
+        "Authentication Required",
+        "Please sign in to set a wallet alias",
+      );
       return false;
     }
 
     if (!address) {
       setError("Please connect your wallet to set an alias");
-      showToast("error", "Wallet Not Connected", "Please connect your wallet to set an alias");
+      showToast(
+        "error",
+        "Wallet Not Connected",
+        "Please connect your wallet to set an alias",
+      );
       return false;
     }
 
@@ -254,10 +262,15 @@ export function useWalletAlias() {
 
       setAlias(newAlias);
       await fetchUserAliases();
-      showToast("success", "Wallet alias updated", "Your wallet alias has been successfully updated");
+      showToast(
+        "success",
+        "Wallet alias updated",
+        "Your wallet alias has been successfully updated",
+      );
       return true;
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to set wallet alias";
+      const message =
+        err instanceof Error ? err.message : "Failed to set wallet alias";
       Logger.error("Error setting wallet alias", {
         error: message,
         stack: err instanceof Error ? err.stack : undefined,

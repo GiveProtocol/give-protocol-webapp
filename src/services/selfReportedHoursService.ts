@@ -444,8 +444,13 @@ function buildUpdateData(
   }
 
   if (input.hours !== undefined) {
-    if (input.hours < MIN_HOURS_PER_RECORD || input.hours > MAX_HOURS_PER_RECORD) {
-      throw new Error(`Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`);
+    if (
+      input.hours < MIN_HOURS_PER_RECORD ||
+      input.hours > MAX_HOURS_PER_RECORD
+    ) {
+      throw new Error(
+        `Hours must be between ${MIN_HOURS_PER_RECORD} and ${MAX_HOURS_PER_RECORD}`,
+      );
     }
     updateData.hours = input.hours;
   }
@@ -456,10 +461,14 @@ function buildUpdateData(
 
   if (input.description !== undefined) {
     if (input.description.length < MIN_DESCRIPTION_LENGTH) {
-      throw new Error(`Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`);
+      throw new Error(
+        `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters`,
+      );
     }
     if (input.description.length > MAX_DESCRIPTION_LENGTH) {
-      throw new Error(`Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`);
+      throw new Error(
+        `Description cannot exceed ${MAX_DESCRIPTION_LENGTH} characters`,
+      );
     }
     updateData.description = input.description;
   }

@@ -69,7 +69,7 @@ export class PriceFeedService {
    */
   async getTokenPrices(
     tokenIds: string[],
-    targetCurrency = "usd"
+    targetCurrency = "usd",
   ): Promise<Record<string, number>> {
     const now = Date.now();
     const cacheKey = `${tokenIds.join(",")}_${targetCurrency}`;
@@ -79,7 +79,11 @@ export class PriceFeedService {
       this.priceCache.lastUpdate &&
       now - this.priceCache.lastUpdate < CACHE_DURATION_MS
     ) {
-      const cached = tryGetCachedPrices(this.priceCache.prices, tokenIds, targetCurrency);
+      const cached = tryGetCachedPrices(
+        this.priceCache.prices,
+        tokenIds,
+        targetCurrency,
+      );
       if (cached) {
         Logger.info("Price feed: Using cached prices", { cacheKey });
         return cached;
@@ -124,7 +128,10 @@ export class PriceFeedService {
           timestamp: now,
         };
       } else {
-        Logger.warn("Price feed: Missing price data", { tokenId, targetCurrency });
+        Logger.warn("Price feed: Missing price data", {
+          tokenId,
+          targetCurrency,
+        });
       }
     }
 
@@ -138,7 +145,11 @@ export class PriceFeedService {
     tokenIds: string[],
     targetCurrency: string,
   ): Record<string, number> {
-    const stalePrices = getStalePrices(this.priceCache.prices, tokenIds, targetCurrency);
+    const stalePrices = getStalePrices(
+      this.priceCache.prices,
+      tokenIds,
+      targetCurrency,
+    );
 
     if (Object.keys(stalePrices).length > 0) {
       Logger.warn("Price feed: Using stale cached prices", { stalePrices });
@@ -156,7 +167,7 @@ export class PriceFeedService {
    */
   async getTokenPrice(
     tokenId: string,
-    targetCurrency = "usd"
+    targetCurrency = "usd",
   ): Promise<number> {
     const prices = await this.getTokenPrices([tokenId], targetCurrency);
     const price = prices[tokenId];
