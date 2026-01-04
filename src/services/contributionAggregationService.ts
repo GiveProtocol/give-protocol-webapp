@@ -219,6 +219,141 @@ export async function getUserContributionStats(
 }
 
 /**
+ * Fetches donation contributions
+ */
+async function fetchDonationContributions(
+  filters: ContributionFilters,
+): Promise<UnifiedContribution[]> {
+  let query = supabase.from("donations").select(`
+    id, amount, created_at, donor_id, charity_id,
+    charity:charity_id ( charity_details ( name ) )
+  `);
+
+  if (filters.userId) query = query.eq("donor_id", filters.userId);
+  if (filters.organizationId)
+    query = query.eq("charity_id", filters.organizationId);
+  if (filters.dateFrom) query = query.gte("created_at", filters.dateFrom);
+  if (filters.dateTo) query = query.lte("created_at", filters.dateTo);
+
+  const { data, error } = await query;
+
+  if (error) {
+    Logger.warn("Error fetching donations", { error });
+    return [];
+  }
+
+  return (data || []).map((d) => {
+    const charityData = d.charity as {
+      charity_details?: { name?: string };
+    } | null;
+    return {
+      id: d.id,
+      type: "donation" as const,
+      userId: d.donor_id,
+      date: d.created_at,
+      organizationId: d.charity_id,
+      organizationName: charityData?.charity_details?.name || "Unknown Charity",
+      amount: d.amount,
+      status: "completed" as const,
+      createdAt: d.created_at,
+    };
+  });
+}
+
+/**
+ * Fetches formal volunteer hour contributions
+ */
+async function fetchFormalVolunteerContributions(
+  filters: ContributionFilters,
+): Promise<UnifiedContribution[]> {
+  let query = supabase.from("volunteer_hours").select(`
+    id, hours, date_performed, description, status, created_at, volunteer_id, charity_id
+  `);
+
+  if (filters.userId) query = query.eq("volunteer_id", filters.userId);
+  if (filters.organizationId)
+    query = query.eq("charity_id", filters.organizationId);
+  if (filters.dateFrom) query = query.gte("date_performed", filters.dateFrom);
+  if (filters.dateTo) query = query.lte("date_performed", filters.dateTo);
+
+  const { data, error } = await query;
+
+  if (error) {
+    Logger.warn("Error fetching formal volunteer hours", { error });
+    return [];
+  }
+
+  return (data || []).map((h) => ({
+    id: h.id,
+    type: "formal_volunteer" as const,
+    userId: h.volunteer_id,
+    date: h.date_performed,
+    organizationId: h.charity_id,
+    organizationName: "Organization",
+    hours: h.hours,
+    description: h.description,
+    status: (h.status === "approved" ? "completed" : "pending") as
+      | "completed"
+      | "pending",
+    createdAt: h.created_at,
+  }));
+}
+
+/**
+ * Maps validation status to unified contribution status
+ */
+function mapValidationStatus(
+  validationStatus: string | null,
+): UnifiedContribution["status"] {
+  if (validationStatus === "validated") return "validated";
+  if (validationStatus === "pending") return "pending";
+  return "unvalidated";
+}
+
+/**
+ * Fetches self-reported hour contributions
+ */
+async function fetchSelfReportedContributions(
+  filters: ContributionFilters,
+): Promise<UnifiedContribution[]> {
+  let query = supabase.from("self_reported_hours").select(`
+    id, hours, activity_date, activity_type, description,
+    validation_status, created_at, volunteer_id, organization_id, organization_name
+  `);
+
+  if (filters.userId) query = query.eq("volunteer_id", filters.userId);
+  if (filters.organizationId)
+    query = query.eq("organization_id", filters.organizationId);
+  if (filters.dateFrom) query = query.gte("activity_date", filters.dateFrom);
+  if (filters.dateTo) query = query.lte("activity_date", filters.dateTo);
+  if (filters.validationStatus && filters.validationStatus.length > 0) {
+    query = query.in("validation_status", filters.validationStatus);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    Logger.warn("Error fetching self-reported hours", { error });
+    return [];
+  }
+
+  return (data || []).map((h) => ({
+    id: h.id,
+    type: "self_reported" as const,
+    userId: h.volunteer_id,
+    date: h.activity_date,
+    organizationId: h.organization_id || undefined,
+    organizationName: h.organization_name || "Unknown Organization",
+    hours: h.hours,
+    activityType: h.activity_type,
+    description: h.description,
+    validationStatus: h.validation_status,
+    status: mapValidationStatus(h.validation_status),
+    createdAt: h.created_at,
+  }));
+}
+
+/**
  * Fetches unified contributions for a user (all types combined)
  * @param filters - Filter options
  * @returns Array of UnifiedContribution objects
@@ -226,7 +361,6 @@ export async function getUserContributionStats(
 export async function getUnifiedContributions(
   filters: ContributionFilters,
 ): Promise<UnifiedContribution[]> {
-  const contributions: UnifiedContribution[] = [];
   const sources = filters.sources || [
     "donation",
     "formal_volunteer",
@@ -234,185 +368,20 @@ export async function getUnifiedContributions(
   ];
 
   try {
-    // Fetch donations if included
+    const fetchPromises: Promise<UnifiedContribution[]>[] = [];
+
     if (sources.includes("donation")) {
-      let donationQuery = supabase.from("donations").select(`
-          id,
-          amount,
-          created_at,
-          donor_id,
-          charity_id,
-          charity:charity_id (
-            charity_details (
-              name
-            )
-          )
-        `);
-
-      if (filters.userId) {
-        donationQuery = donationQuery.eq("donor_id", filters.userId);
-      }
-      if (filters.organizationId) {
-        donationQuery = donationQuery.eq("charity_id", filters.organizationId);
-      }
-      if (filters.dateFrom) {
-        donationQuery = donationQuery.gte("created_at", filters.dateFrom);
-      }
-      if (filters.dateTo) {
-        donationQuery = donationQuery.lte("created_at", filters.dateTo);
-      }
-
-      const { data: donations, error: donationsError } = await donationQuery;
-
-      if (donationsError) {
-        Logger.warn("Error fetching donations", { error: donationsError });
-      } else {
-        donations?.forEach((d) => {
-          const charityData = d.charity as {
-            charity_details?: { name?: string };
-          } | null;
-          contributions.push({
-            id: d.id,
-            type: "donation",
-            userId: d.donor_id,
-            date: d.created_at,
-            organizationId: d.charity_id,
-            organizationName:
-              charityData?.charity_details?.name || "Unknown Charity",
-            amount: d.amount,
-            status: "completed",
-            createdAt: d.created_at,
-          });
-        });
-      }
+      fetchPromises.push(fetchDonationContributions(filters));
     }
-
-    // Fetch formal volunteer hours if included
     if (sources.includes("formal_volunteer")) {
-      let formalQuery = supabase.from("volunteer_hours").select(`
-          id,
-          hours,
-          date_performed,
-          description,
-          status,
-          created_at,
-          volunteer_id,
-          charity_id
-        `);
-
-      if (filters.userId) {
-        formalQuery = formalQuery.eq("volunteer_id", filters.userId);
-      }
-      if (filters.organizationId) {
-        formalQuery = formalQuery.eq("charity_id", filters.organizationId);
-      }
-      if (filters.dateFrom) {
-        formalQuery = formalQuery.gte("date_performed", filters.dateFrom);
-      }
-      if (filters.dateTo) {
-        formalQuery = formalQuery.lte("date_performed", filters.dateTo);
-      }
-
-      const { data: formalHours, error: formalError } = await formalQuery;
-
-      if (formalError) {
-        Logger.warn("Error fetching formal volunteer hours", {
-          error: formalError,
-        });
-      } else {
-        formalHours?.forEach((h) => {
-          contributions.push({
-            id: h.id,
-            type: "formal_volunteer",
-            userId: h.volunteer_id,
-            date: h.date_performed,
-            organizationId: h.charity_id,
-            organizationName: "Organization", // Would need join for name
-            hours: h.hours,
-            description: h.description,
-            status: h.status === "approved" ? "completed" : "pending",
-            createdAt: h.created_at,
-          });
-        });
-      }
+      fetchPromises.push(fetchFormalVolunteerContributions(filters));
     }
-
-    // Fetch self-reported hours if included
     if (sources.includes("self_reported")) {
-      let selfReportedQuery = supabase.from("self_reported_hours").select(`
-          id,
-          hours,
-          activity_date,
-          activity_type,
-          description,
-          validation_status,
-          created_at,
-          volunteer_id,
-          organization_id,
-          organization_name
-        `);
-
-      if (filters.userId) {
-        selfReportedQuery = selfReportedQuery.eq(
-          "volunteer_id",
-          filters.userId,
-        );
-      }
-      if (filters.organizationId) {
-        selfReportedQuery = selfReportedQuery.eq(
-          "organization_id",
-          filters.organizationId,
-        );
-      }
-      if (filters.dateFrom) {
-        selfReportedQuery = selfReportedQuery.gte(
-          "activity_date",
-          filters.dateFrom,
-        );
-      }
-      if (filters.dateTo) {
-        selfReportedQuery = selfReportedQuery.lte(
-          "activity_date",
-          filters.dateTo,
-        );
-      }
-      if (filters.validationStatus && filters.validationStatus.length > 0) {
-        selfReportedQuery = selfReportedQuery.in(
-          "validation_status",
-          filters.validationStatus,
-        );
-      }
-
-      const { data: selfReported, error: selfReportedError } =
-        await selfReportedQuery;
-
-      if (selfReportedError) {
-        Logger.warn("Error fetching self-reported hours", {
-          error: selfReportedError,
-        });
-      } else {
-        selfReported?.forEach((h) => {
-          let status: UnifiedContribution["status"] = "unvalidated";
-          if (h.validation_status === "validated") status = "validated";
-          else if (h.validation_status === "pending") status = "pending";
-
-          contributions.push({
-            id: h.id,
-            type: "self_reported",
-            userId: h.volunteer_id,
-            date: h.activity_date,
-            organizationId: h.organization_id || undefined,
-            organizationName: h.organization_name || "Unknown Organization",
-            hours: h.hours,
-            activityType: h.activity_type,
-            description: h.description,
-            validationStatus: h.validation_status,
-            status,
-            createdAt: h.created_at,
-          });
-        });
-      }
+      fetchPromises.push(fetchSelfReportedContributions(filters));
     }
+
+    const results = await Promise.all(fetchPromises);
+    const contributions = results.flat();
 
     // Sort by date descending
     contributions.sort(
