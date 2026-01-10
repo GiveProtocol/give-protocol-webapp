@@ -15,7 +15,7 @@ interface SourceToggleButtonProps {
   source: ContributionSourceType;
   label: string;
   isSelected: boolean;
-  onToggle: (source: ContributionSourceType) => void;
+  onToggle: (_source: ContributionSourceType) => void;
 }
 
 function SourceToggleButtonComponent(props: SourceToggleButtonProps) {
@@ -116,7 +116,7 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
 
   const SourceFilterSection: React.FC<{
     selectedSources: ContributionSourceType[];
-    onToggle: (source: ContributionSourceType) => void;
+    onToggle: (_source: ContributionSourceType) => void;
   }> = ({ selectedSources, onToggle }) => (
     <div className="mb-4">
       <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

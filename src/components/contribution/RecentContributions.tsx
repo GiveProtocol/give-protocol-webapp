@@ -20,7 +20,7 @@ interface SourceFilterButtonProps {
   source: ContributionSourceType;
   label: string;
   isSelected: boolean;
-  onToggle: (source: ContributionSourceType) => void;
+  onToggle: (_source: ContributionSourceType) => void;
 }
 
 function SourceFilterButtonComponent(props: SourceFilterButtonProps) {

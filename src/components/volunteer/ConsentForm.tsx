@@ -6,7 +6,7 @@ import { AlertCircle, Mail } from "lucide-react";
 interface ConsentCheckboxProps {
   id: string;
   checked: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   title: string;
   description: string;
   note?: string;

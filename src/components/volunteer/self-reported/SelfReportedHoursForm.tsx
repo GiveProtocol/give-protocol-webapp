@@ -23,7 +23,7 @@ import { AlertTriangle, Building2, ChevronDown, Check } from "lucide-react";
 
 interface SelfReportedHoursFormProps {
   initialData?: Partial<SelfReportedHoursInput>;
-  onSubmit: (input: SelfReportedHoursInput) => Promise<void>;
+  onSubmit: (_input: SelfReportedHoursInput) => Promise<void>;
   onCancel: () => void;
   isEdit?: boolean;
   isLoading?: boolean;
@@ -43,7 +43,7 @@ interface ActivityTypeDropdownProps {
   value: ActivityType;
   isOpen: boolean;
   onToggle: () => void;
-  onSelect: (type: ActivityType) => void;
+  onSelect: (_type: ActivityType) => void;
   dropdownRef: React.RefObject<HTMLDivElement>;
 }
 
@@ -136,9 +136,9 @@ interface OrganizationSelectorProps {
   organizationName: string;
   organizationContactEmail: string;
   errors: Record<string, string>;
-  onModeChange: (mode: OrgMode) => void;
-  onOrgSelect: (org: { id: string; name: string } | null) => void;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onModeChange: (_mode: OrgMode) => void;
+  onOrgSelect: (_org: { id: string; name: string } | null) => void;
+  onInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({

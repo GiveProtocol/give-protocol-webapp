@@ -10,7 +10,7 @@ import type {
 
 interface OrganizationProfileFormProps {
   initialData: OrganizationProfile | null;
-  onSave: (data: OrganizationProfile) => Promise<void>;
+  onSave: (_data: OrganizationProfile) => Promise<void>;
   loading: boolean;
 }
 

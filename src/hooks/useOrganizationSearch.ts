@@ -4,13 +4,13 @@ import { searchOrganizations, getOrganizationById } from '@/services/organizatio
 
 interface UseOrganizationSearchReturn {
   query: string;
-  setQuery: (query: string) => void;
+  setQuery: (_query: string) => void;
   results: OrganizationSearchResult[];
   loading: boolean;
   selectedOrg: OrganizationSearchResult | null;
-  selectOrganization: (org: OrganizationSearchResult | null) => void;
+  selectOrganization: (_org: OrganizationSearchResult | null) => void;
   clearSelection: () => void;
-  fetchOrganization: (id: string) => Promise<OrganizationSearchResult | null>;
+  fetchOrganization: (_id: string) => Promise<OrganizationSearchResult | null>;
 }
 
 /**

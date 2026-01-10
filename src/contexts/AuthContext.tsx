@@ -276,7 +276,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, [refreshSession, showToast]);
 
-  const login = async (
+  const login = useCallback(async (
     email: string,
     password: string,
     accountType: "donor" | "charity",
@@ -348,9 +348,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
-  };
+  }, [showToast]);
 
-  const loginWithGoogle = async () => {
+  const loginWithGoogle = useCallback(async () => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
 
@@ -384,9 +384,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
-  };
+  }, [showToast]);
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
       const { error } = await supabase.auth.signOut();
@@ -420,9 +420,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }));
       throw err;
     }
-  };
+  }, [showToast]);
 
-  const resetPassword = async (email: string) => {
+  const resetPassword = useCallback(async (email: string) => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -450,9 +450,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
-  };
+  }, [showToast]);
 
-  const register = async (
+  const register = useCallback(async (
     email: string,
     password: string,
     type: "donor" | "charity",
@@ -533,9 +533,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
-  };
+  }, [showToast]);
 
-  const sendUsernameReminder = async (_email: string) => {
+  const sendUsernameReminder = useCallback(async (_email: string) => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
       // In a real app, this would send an email with the username
@@ -558,7 +558,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setState((prev) => ({ ...prev, loading: false }));
     }
-  };
+  }, [showToast]);
 
   const contextValue = React.useMemo(
     () => ({

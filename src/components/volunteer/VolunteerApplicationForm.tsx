@@ -33,7 +33,7 @@ const SectionHeader: React.FC<SectionHeaderProps> = ({ number, title }) => (
 interface ConsentCheckboxProps {
   id: string;
   checked: boolean;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   title: string;
   description: string;
   note?: string;
@@ -78,7 +78,7 @@ const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
 // Sub-component for skill tags
 interface SkillTagProps {
   skill: string;
-  onRemove: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onRemove: (_e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
 const SkillTag: React.FC<SkillTagProps> = ({ skill, onRemove }) => (
@@ -100,7 +100,7 @@ interface CommitmentOptionProps {
   id: string;
   value: CommitmentType;
   selectedValue: CommitmentType;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   title: string;
   description: string;
 }

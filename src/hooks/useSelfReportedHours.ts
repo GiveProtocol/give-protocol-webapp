@@ -26,14 +26,14 @@ interface UseSelfReportedHoursReturn {
   error: string | null;
   filters: SelfReportedHoursFilters;
   setFilters: React.Dispatch<React.SetStateAction<SelfReportedHoursFilters>>;
-  createHours: (input: SelfReportedHoursInput) => Promise<boolean>;
-  updateHours: (id: string, input: Partial<SelfReportedHoursInput>) => Promise<boolean>;
-  deleteHours: (id: string) => Promise<boolean>;
-  requestHoursValidation: (id: string, organizationId: string) => Promise<boolean>;
-  cancelRequest: (requestId: string) => Promise<boolean>;
-  resubmitRequest: (requestId: string) => Promise<boolean>;
+  createHours: (_input: SelfReportedHoursInput) => Promise<boolean>;
+  updateHours: (_id: string, _input: Partial<SelfReportedHoursInput>) => Promise<boolean>;
+  deleteHours: (_id: string) => Promise<boolean>;
+  requestHoursValidation: (_id: string, _organizationId: string) => Promise<boolean>;
+  cancelRequest: (_requestId: string) => Promise<boolean>;
+  resubmitRequest: (_requestId: string) => Promise<boolean>;
   refetch: () => Promise<void>;
-  getHoursById: (id: string) => Promise<SelfReportedHoursDisplay | null>;
+  getHoursById: (_id: string) => Promise<SelfReportedHoursDisplay | null>;
 }
 
 /**

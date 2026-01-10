@@ -4,7 +4,7 @@ import { OrganizationSearchResult } from "@/types/selfReportedHours";
 import { Search, X, Building2, Loader2 } from "lucide-react";
 
 interface OrganizationAutocompleteProps {
-  onSelect: (org: OrganizationSearchResult | null) => void;
+  onSelect: (_org: OrganizationSearchResult | null) => void;
   initialValue?: OrganizationSearchResult | null;
   error?: string;
   disabled?: boolean;

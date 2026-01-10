@@ -12,9 +12,9 @@ import { Calendar, MapPin, Building2, Edit2, Trash2, Eye } from 'lucide-react';
 
 interface SelfReportedHoursCardProps {
   record: SelfReportedHoursDisplay;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onView: (_id: string) => void;
+  onEdit: (_id: string) => void;
+  onDelete: (_id: string) => void;
 }
 
 /**

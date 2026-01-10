@@ -8,10 +8,10 @@ interface SelfReportedHoursListProps {
   records: SelfReportedHoursDisplay[];
   loading: boolean;
   filters: SelfReportedHoursFilters;
-  onFilterChange: (filters: SelfReportedHoursFilters) => void;
-  onView: (id: string) => void;
-  onEdit: (id: string) => void;
-  onDelete: (id: string) => void;
+  onFilterChange: (_filters: SelfReportedHoursFilters) => void;
+  onView: (_id: string) => void;
+  onEdit: (_id: string) => void;
+  onDelete: (_id: string) => void;
 }
 
 /**

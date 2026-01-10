@@ -20,11 +20,11 @@ interface UseValidationQueueReturn {
   loading: boolean;
   error: string | null;
   selectedIds: Set<string>;
-  approveRequest: (requestId: string) => Promise<boolean>;
-  rejectRequest: (requestId: string, reason: RejectionReason, notes?: string) => Promise<boolean>;
+  approveRequest: (_requestId: string) => Promise<boolean>;
+  rejectRequest: (_requestId: string, _reason: RejectionReason, _notes?: string) => Promise<boolean>;
   batchApprove: () => Promise<void>;
-  batchReject: (reason: RejectionReason, notes?: string) => Promise<void>;
-  toggleSelection: (requestId: string) => void;
+  batchReject: (_reason: RejectionReason, _notes?: string) => Promise<void>;
+  toggleSelection: (_requestId: string) => void;
   selectAll: () => void;
   clearSelection: () => void;
   refetch: () => Promise<void>;
