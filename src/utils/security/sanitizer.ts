@@ -118,10 +118,10 @@ export class InputSanitizer {
       .trim()
       .slice(0, this.maxLengths[field])
       .replace(/[<>]/g, "")
-      .replace(/&/g, "&amp;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#x27;")
-      .replace(/\//g, "&#x2F;");
+      .replaceAll("&", "&amp;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#x27;")
+      .replaceAll("/", "&#x2F;");
 
     return sanitized;
   }

@@ -356,7 +356,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
             >
               {CAUSE_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
-                  {t(`cause.category.${category.toLowerCase().replace(/ & /g, "_")}`, category)}
+                  {t(`cause.category.${category.toLowerCase().replaceAll(" & ", "_")}`, category)}
                 </option>
               ))}
             </select>

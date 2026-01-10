@@ -155,7 +155,7 @@ export function parseFormattedNumber(formattedValue: string): number {
   // Handle European format (comma as decimal separator)
   if (cleaned.includes(",") && cleaned.includes(".")) {
     // If both exist, assume comma is thousands separator
-    return Number.parseFloat(cleaned.replace(/,/g, ""));
+    return Number.parseFloat(cleaned.replaceAll(",", ""));
   } else if (cleaned.includes(",")) {
     // Comma as decimal separator
     return Number.parseFloat(cleaned.replace(",", "."));

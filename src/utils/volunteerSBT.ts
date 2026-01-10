@@ -102,7 +102,7 @@ export const mintVolunteerHoursSBT = async (
 
     // For development/testing, simulate blockchain minting
     const mockTokenId = SecureRandom.generateSecureNumber(1, 1000000).toString();
-    const mockTxHash = `0x${SecureRandom.generateTransactionId().replace(/-/g, '').padEnd(64, '0')}`;
+    const mockTxHash = `0x${SecureRandom.generateTransactionId().replaceAll('-', '').padEnd(64, '0')}`;
     const mockBlockNumber = SecureRandom.generateSecureNumber(1, 1000000);
 
     // Update the self_reported_hours record with SBT info
@@ -144,7 +144,7 @@ export const mintVolunteerHoursSBT = async (
     // For development, return simulated data
     return {
       tokenId: SecureRandom.generateSecureNumber(1, 1000000).toString(),
-      transactionHash: `0x${SecureRandom.generateTransactionId().replace(/-/g, '').padEnd(64, '0')}`,
+      transactionHash: `0x${SecureRandom.generateTransactionId().replaceAll('-', '').padEnd(64, '0')}`,
       blockNumber: SecureRandom.generateSecureNumber(1, 1000000),
       verificationHash: generateVolunteerHoursHash({
         volunteerId,

@@ -22,7 +22,7 @@ export function convertToCSV<T extends Record<string, unknown>>(
         // Handle values that might contain commas or quotes
         const value =
           row[header] === null || row[header] === undefined ? "" : row[header];
-        const escaped = String(value).replace(/"/g, '""');
+        const escaped = String(value).replaceAll('"', '""');
         return `"${escaped}"`;
       })
       .join(",");

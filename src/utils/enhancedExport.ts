@@ -198,7 +198,7 @@ export function convertToCSVWithFields<T extends Record<string, unknown>>(
       .map((header) => {
         const value =
           row[header] === null || row[header] === undefined ? "" : row[header];
-        const escaped = String(value).replace(/"/g, '""');
+        const escaped = String(value).replaceAll('"', '""');
         return `"${escaped}"`;
       })
       .join(",");
