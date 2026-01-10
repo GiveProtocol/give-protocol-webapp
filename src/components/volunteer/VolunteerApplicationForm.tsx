@@ -845,10 +845,10 @@ export const VolunteerApplicationForm: React.FC<
                     >
                       legal@giveprotocol.io <Mail className="w-3 h-3" />
                     </a>
-                    {", "}though this will not affect the lawfulness of processing
-                    based on my consent before withdrawal. Withdrawing consent
-                    may impact the organization&apos;s ability to consider my
-                    volunteer application.
+                    {", "}though this will not affect the lawfulness of
+                    processing based on my consent before withdrawal.
+                    Withdrawing consent may impact the organization&apos;s
+                    ability to consider my volunteer application.
                   </li>
                 </ol>
               </div>
@@ -907,7 +907,9 @@ export const VolunteerApplicationForm: React.FC<
             {validationErrors.consent && (
               <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-start">
                 <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
-                <p className="text-red-700 dark:text-red-400">{validationErrors.consent}</p>
+                <p className="text-red-700 dark:text-red-400">
+                  {validationErrors.consent}
+                </p>
               </div>
             )}
           </section>
