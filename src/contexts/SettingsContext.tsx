@@ -49,6 +49,40 @@ const SettingsContext = createContext<SettingsContextType | undefined>(
   undefined,
 );
 
+const languageOptions: { value: Language; label: string }[] = [
+  { value: "en", label: "English" },
+  { value: "es", label: "Español" },
+  { value: "de", label: "Deutsch" },
+  { value: "fr", label: "Français" },
+  { value: "ja", label: "日本語" },
+  { value: "zh-CN", label: "简体中文" },
+  { value: "zh-TW", label: "繁體中文" },
+  { value: "th", label: "ไทย" },
+  { value: "vi", label: "Tiếng Việt" },
+  { value: "ko", label: "한국어" },
+  { value: "ar", label: "العربية" },
+  { value: "hi", label: "हिन्दी" },
+];
+
+const currencyOptions: { value: Currency; label: string; symbol: string }[] = [
+  { value: "USD", label: "US Dollar", symbol: "$" },
+  { value: "CAD", label: "Canadian Dollar", symbol: "C$" },
+  { value: "EUR", label: "Euro", symbol: "€" },
+  { value: "CNY", label: "Chinese Yuan", symbol: "¥" },
+  { value: "JPY", label: "Japanese Yen", symbol: "¥" },
+  { value: "KRW", label: "Korean Won", symbol: "₩" },
+  { value: "AED", label: "UAE Dirham", symbol: "د.إ" },
+  { value: "AUD", label: "Australian Dollar", symbol: "A$" },
+  { value: "CHF", label: "Swiss Franc", symbol: "CHF" },
+  { value: "GBP", label: "British Pound", symbol: "£" },
+  { value: "INR", label: "Indian Rupee", symbol: "₹" },
+  { value: "MXP", label: "Mexican Peso", symbol: "Mex$" },
+  { value: "ILS", label: "Israeli Shekel", symbol: "₪" },
+  { value: "NGN", label: "Nigerian Naira", symbol: "₦" },
+  { value: "HKD", label: "Hong Kong Dollar", symbol: "HK$" },
+  { value: "PKR", label: "Pakistani Rupee", symbol: "₨" },
+];
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSettings = () => {
   const context = useContext(SettingsContext);
@@ -146,40 +180,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
-
-  const languageOptions = [
-    { value: "en", label: "English" },
-    { value: "es", label: "Español" },
-    { value: "de", label: "Deutsch" },
-    { value: "fr", label: "Français" },
-    { value: "ja", label: "日本語" },
-    { value: "zh-CN", label: "简体中文" },
-    { value: "zh-TW", label: "繁體中文" },
-    { value: "th", label: "ไทย" },
-    { value: "vi", label: "Tiếng Việt" },
-    { value: "ko", label: "한국어" },
-    { value: "ar", label: "العربية" },
-    { value: "hi", label: "हिन्दी" },
-  ];
-
-  const currencyOptions = [
-    { value: "USD", label: "US Dollar", symbol: "$" },
-    { value: "CAD", label: "Canadian Dollar", symbol: "C$" },
-    { value: "EUR", label: "Euro", symbol: "€" },
-    { value: "CNY", label: "Chinese Yuan", symbol: "¥" },
-    { value: "JPY", label: "Japanese Yen", symbol: "¥" },
-    { value: "KRW", label: "Korean Won", symbol: "₩" },
-    { value: "AED", label: "UAE Dirham", symbol: "د.إ" },
-    { value: "AUD", label: "Australian Dollar", symbol: "A$" },
-    { value: "CHF", label: "Swiss Franc", symbol: "CHF" },
-    { value: "GBP", label: "British Pound", symbol: "£" },
-    { value: "INR", label: "Indian Rupee", symbol: "₹" },
-    { value: "MXP", label: "Mexican Peso", symbol: "Mex$" },
-    { value: "ILS", label: "Israeli Shekel", symbol: "₪" },
-    { value: "NGN", label: "Nigerian Naira", symbol: "₦" },
-    { value: "HKD", label: "Hong Kong Dollar", symbol: "HK$" },
-    { value: "PKR", label: "Pakistani Rupee", symbol: "₨" },
-  ];
 
   const contextValue = React.useMemo(
     () => ({
