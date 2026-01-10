@@ -839,15 +839,13 @@ export const VolunteerApplicationForm: React.FC<
                   </li>
                   <li>
                     I can withdraw my consent at any time by contacting{" "}
-                    <span>
-                      <a
-                        href="mailto:legal@giveprotocol.io"
-                        className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
-                      >
-                        legal@giveprotocol.io <Mail className="w-3 h-3" />
-                      </a>
-                    </span>{", "}
-                    though this will not affect the lawfulness of processing
+                    <a
+                      href="mailto:legal@giveprotocol.io"
+                      className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
+                    >
+                      legal@giveprotocol.io <Mail className="w-3 h-3" />
+                    </a>
+                    {", "}though this will not affect the lawfulness of processing
                     based on my consent before withdrawal. Withdrawing consent
                     may impact the organization&apos;s ability to consider my
                     volunteer application.

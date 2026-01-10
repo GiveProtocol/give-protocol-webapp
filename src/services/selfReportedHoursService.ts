@@ -137,6 +137,47 @@ function validateInput(input: SelfReportedHoursInput): {
 }
 
 /**
+ * Creates a validation request for a self-reported hours record
+ * @param selfReportedHoursId - ID of the hours record
+ * @param organizationId - ID of the organization
+ * @param volunteerId - ID of the volunteer
+ * @param activityDate - Date of the activity
+ * @returns The created validation request ID
+ */
+async function createValidationRequest(
+  selfReportedHoursId: string,
+  organizationId: string,
+  volunteerId: string,
+  activityDate: string,
+): Promise<string> {
+  const expiresAt = new Date(activityDate);
+  expiresAt.setDate(expiresAt.getDate() + VALIDATION_WINDOW_DAYS);
+
+  const { data, error } = await supabase
+    .from("validation_requests")
+    .insert({
+      self_reported_hours_id: selfReportedHoursId,
+      organization_id: organizationId,
+      volunteer_id: volunteerId,
+      expires_at: expiresAt.toISOString(),
+    })
+    .select("id")
+    .single();
+
+  if (error) {
+    throw new Error(`Failed to create validation request: ${error.message}`);
+  }
+
+  // Update the hours record with the request ID
+  await supabase
+    .from("self_reported_hours")
+    .update({ validation_request_id: data.id })
+    .eq("id", selfReportedHoursId);
+
+  return data.id;
+}
+
+/**
  * Creates a new self-reported volunteer hours record
  * @param volunteerId - The user ID of the volunteer
  * @param input - The hours record input
@@ -230,47 +271,6 @@ export async function createSelfReportedHours(
   }
 
   return record;
-}
-
-/**
- * Creates a validation request for a self-reported hours record
- * @param selfReportedHoursId - ID of the hours record
- * @param organizationId - ID of the organization
- * @param volunteerId - ID of the volunteer
- * @param activityDate - Date of the activity
- * @returns The created validation request ID
- */
-async function createValidationRequest(
-  selfReportedHoursId: string,
-  organizationId: string,
-  volunteerId: string,
-  activityDate: string,
-): Promise<string> {
-  const expiresAt = new Date(activityDate);
-  expiresAt.setDate(expiresAt.getDate() + VALIDATION_WINDOW_DAYS);
-
-  const { data, error } = await supabase
-    .from("validation_requests")
-    .insert({
-      self_reported_hours_id: selfReportedHoursId,
-      organization_id: organizationId,
-      volunteer_id: volunteerId,
-      expires_at: expiresAt.toISOString(),
-    })
-    .select("id")
-    .single();
-
-  if (error) {
-    throw new Error(`Failed to create validation request: ${error.message}`);
-  }
-
-  // Update the hours record with the request ID
-  await supabase
-    .from("self_reported_hours")
-    .update({ validation_request_id: data.id })
-    .eq("id", selfReportedHoursId);
-
-  return data.id;
 }
 
 /**
