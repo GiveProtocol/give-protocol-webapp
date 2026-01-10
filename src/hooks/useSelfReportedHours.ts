@@ -1,12 +1,12 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useToast } from '@/contexts/ToastContext';
+import React, { useState, useCallback, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/contexts/ToastContext";
 import {
   SelfReportedHoursDisplay,
   SelfReportedHoursInput,
   SelfReportedHoursFilters,
   VolunteerHoursStats,
-} from '@/types/selfReportedHours';
+} from "@/types/selfReportedHours";
 import {
   createSelfReportedHours,
   getVolunteerSelfReportedHours,
@@ -15,9 +15,12 @@ import {
   updateSelfReportedHours,
   deleteSelfReportedHours,
   requestValidation,
-} from '@/services/selfReportedHoursService';
-import { cancelValidationRequest, resubmitValidationRequest } from '@/services/validationRequestService';
-import { Logger } from '@/utils/logger';
+} from "@/services/selfReportedHoursService";
+import {
+  cancelValidationRequest,
+  resubmitValidationRequest,
+} from "@/services/validationRequestService";
+import { Logger } from "@/utils/logger";
 
 interface UseSelfReportedHoursReturn {
   hours: SelfReportedHoursDisplay[];
@@ -27,9 +30,15 @@ interface UseSelfReportedHoursReturn {
   filters: SelfReportedHoursFilters;
   setFilters: React.Dispatch<React.SetStateAction<SelfReportedHoursFilters>>;
   createHours: (_input: SelfReportedHoursInput) => Promise<boolean>;
-  updateHours: (_id: string, _input: Partial<SelfReportedHoursInput>) => Promise<boolean>;
+  updateHours: (
+    _id: string,
+    _input: Partial<SelfReportedHoursInput>,
+  ) => Promise<boolean>;
   deleteHours: (_id: string) => Promise<boolean>;
-  requestHoursValidation: (_id: string, _organizationId: string) => Promise<boolean>;
+  requestHoursValidation: (
+    _id: string,
+    _organizationId: string,
+  ) => Promise<boolean>;
   cancelRequest: (_requestId: string) => Promise<boolean>;
   resubmitRequest: (_requestId: string) => Promise<boolean>;
   refetch: () => Promise<void>;
@@ -70,9 +79,13 @@ export function useSelfReportedHours(): UseSelfReportedHoursReturn {
       setHours(hoursData);
       setStats(statsData);
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to fetch hours';
+      const message =
+        err instanceof Error ? err.message : "Failed to fetch hours";
       setError(message);
-      Logger.error('Error fetching self-reported hours', { error: err, userId: user.id });
+      Logger.error("Error fetching self-reported hours", {
+        error: err,
+        userId: user.id,
+      });
     } finally {
       setLoading(false);
     }
@@ -82,133 +95,157 @@ export function useSelfReportedHours(): UseSelfReportedHoursReturn {
     fetchData();
   }, [fetchData]);
 
-  const createHours = useCallback(async (input: SelfReportedHoursInput): Promise<boolean> => {
-    if (!user?.id) {
-      showToast('error', 'Error', 'You must be logged in to log hours');
-      return false;
-    }
+  const createHours = useCallback(
+    async (input: SelfReportedHoursInput): Promise<boolean> => {
+      if (!user?.id) {
+        showToast("error", "Error", "You must be logged in to log hours");
+        return false;
+      }
 
-    try {
-      await createSelfReportedHours(user.id, input);
-      showToast('success', 'Success', 'Volunteer hours logged successfully');
-      await fetchData();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to create record';
-      showToast('error', 'Error', message);
-      Logger.error('Error creating self-reported hours', { error: err });
-      return false;
-    }
-  }, [user?.id, showToast, fetchData]);
+      try {
+        await createSelfReportedHours(user.id, input);
+        showToast("success", "Success", "Volunteer hours logged successfully");
+        await fetchData();
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to create record";
+        showToast("error", "Error", message);
+        Logger.error("Error creating self-reported hours", { error: err });
+        return false;
+      }
+    },
+    [user?.id, showToast, fetchData],
+  );
 
-  const updateHours = useCallback(async (
-    id: string,
-    input: Partial<SelfReportedHoursInput>
-  ): Promise<boolean> => {
-    if (!user?.id) {
-      showToast('error', 'Error', 'You must be logged in');
-      return false;
-    }
+  const updateHours = useCallback(
+    async (
+      id: string,
+      input: Partial<SelfReportedHoursInput>,
+    ): Promise<boolean> => {
+      if (!user?.id) {
+        showToast("error", "Error", "You must be logged in");
+        return false;
+      }
 
-    try {
-      await updateSelfReportedHours(id, user.id, input);
-      showToast('success', 'Success', 'Record updated successfully');
-      await fetchData();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to update record';
-      showToast('error', 'Error', message);
-      return false;
-    }
-  }, [user?.id, showToast, fetchData]);
+      try {
+        await updateSelfReportedHours(id, user.id, input);
+        showToast("success", "Success", "Record updated successfully");
+        await fetchData();
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to update record";
+        showToast("error", "Error", message);
+        return false;
+      }
+    },
+    [user?.id, showToast, fetchData],
+  );
 
-  const deleteHours = useCallback(async (id: string): Promise<boolean> => {
-    if (!user?.id) {
-      showToast('error', 'Error', 'You must be logged in');
-      return false;
-    }
+  const deleteHours = useCallback(
+    async (id: string): Promise<boolean> => {
+      if (!user?.id) {
+        showToast("error", "Error", "You must be logged in");
+        return false;
+      }
 
-    try {
-      await deleteSelfReportedHours(id, user.id);
-      showToast('success', 'Success', 'Record deleted successfully');
-      await fetchData();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to delete record';
-      showToast('error', 'Error', message);
-      return false;
-    }
-  }, [user?.id, showToast, fetchData]);
+      try {
+        await deleteSelfReportedHours(id, user.id);
+        showToast("success", "Success", "Record deleted successfully");
+        await fetchData();
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to delete record";
+        showToast("error", "Error", message);
+        return false;
+      }
+    },
+    [user?.id, showToast, fetchData],
+  );
 
-  const requestHoursValidation = useCallback(async (
-    id: string,
-    organizationId: string
-  ): Promise<boolean> => {
-    if (!user?.id) {
-      showToast('error', 'Error', 'You must be logged in');
-      return false;
-    }
+  const requestHoursValidation = useCallback(
+    async (id: string, organizationId: string): Promise<boolean> => {
+      if (!user?.id) {
+        showToast("error", "Error", "You must be logged in");
+        return false;
+      }
 
-    try {
-      await requestValidation(id, user.id, organizationId);
-      showToast('success', 'Success', 'Validation request sent');
-      await fetchData();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to request validation';
-      showToast('error', 'Error', message);
-      return false;
-    }
-  }, [user?.id, showToast, fetchData]);
+      try {
+        await requestValidation(id, user.id, organizationId);
+        showToast("success", "Success", "Validation request sent");
+        await fetchData();
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to request validation";
+        showToast("error", "Error", message);
+        return false;
+      }
+    },
+    [user?.id, showToast, fetchData],
+  );
 
-  const cancelRequest = useCallback(async (requestId: string): Promise<boolean> => {
-    if (!user?.id) {
-      showToast('error', 'Error', 'You must be logged in');
-      return false;
-    }
+  const cancelRequest = useCallback(
+    async (requestId: string): Promise<boolean> => {
+      if (!user?.id) {
+        showToast("error", "Error", "You must be logged in");
+        return false;
+      }
 
-    try {
-      await cancelValidationRequest(requestId, user.id);
-      showToast('success', 'Success', 'Validation request cancelled');
-      await fetchData();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to cancel request';
-      showToast('error', 'Error', message);
-      return false;
-    }
-  }, [user?.id, showToast, fetchData]);
+      try {
+        await cancelValidationRequest(requestId, user.id);
+        showToast("success", "Success", "Validation request cancelled");
+        await fetchData();
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to cancel request";
+        showToast("error", "Error", message);
+        return false;
+      }
+    },
+    [user?.id, showToast, fetchData],
+  );
 
-  const resubmitRequest = useCallback(async (requestId: string): Promise<boolean> => {
-    if (!user?.id) {
-      showToast('error', 'Error', 'You must be logged in');
-      return false;
-    }
+  const resubmitRequest = useCallback(
+    async (requestId: string): Promise<boolean> => {
+      if (!user?.id) {
+        showToast("error", "Error", "You must be logged in");
+        return false;
+      }
 
-    try {
-      await resubmitValidationRequest(requestId, user.id);
-      showToast('success', 'Success', 'Appeal submitted successfully');
-      await fetchData();
-      return true;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to submit appeal';
-      showToast('error', 'Error', message);
-      return false;
-    }
-  }, [user?.id, showToast, fetchData]);
+      try {
+        await resubmitValidationRequest(requestId, user.id);
+        showToast("success", "Success", "Appeal submitted successfully");
+        await fetchData();
+        return true;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to submit appeal";
+        showToast("error", "Error", message);
+        return false;
+      }
+    },
+    [user?.id, showToast, fetchData],
+  );
 
-  const getHoursById = useCallback(async (id: string): Promise<SelfReportedHoursDisplay | null> => {
-    if (!user?.id) {
-      return null;
-    }
+  const getHoursById = useCallback(
+    async (id: string): Promise<SelfReportedHoursDisplay | null> => {
+      if (!user?.id) {
+        return null;
+      }
 
-    try {
-      return await getSelfReportedHoursById(id, user.id);
-    } catch (err) {
-      Logger.error('Error fetching hours by ID', { error: err, id });
-      return null;
-    }
-  }, [user?.id]);
+      try {
+        return await getSelfReportedHoursById(id, user.id);
+      } catch (err) {
+        Logger.error("Error fetching hours by ID", { error: err, id });
+        return null;
+      }
+    },
+    [user?.id],
+  );
 
   return {
     hours,

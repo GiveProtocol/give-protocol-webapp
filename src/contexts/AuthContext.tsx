@@ -276,79 +276,83 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     initializeAuth();
   }, [refreshSession, showToast]);
 
-  const login = useCallback(async (
-    email: string,
-    password: string,
-    accountType: "donor" | "charity",
-  ) => {
-    try {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
+  const login = useCallback(
+    async (
+      email: string,
+      password: string,
+      accountType: "donor" | "charity",
+    ) => {
+      try {
+        setState((prev) => ({ ...prev, loading: true, error: null }));
 
-      // First, check if the user exists
-      const {
-        data: { user },
-        error: checkError,
-      } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (checkError) {
-        Logger.error("Login error from Supabase", {
-          error: checkError.message,
-          code: checkError.status,
+        // First, check if the user exists
+        const {
+          data: { user },
+          error: checkError,
+        } = await supabase.auth.signInWithPassword({
           email,
+          password,
         });
-        throw checkError;
-      }
 
-      // Verify the user has the correct account type
-      // First check user metadata
-      let userType = user?.user_metadata?.type;
-
-      // If not in metadata, check the profile table
-      if (!userType && user) {
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("type")
-          .eq("user_id", user.id)
-          .single();
-
-        if (!profileError && profile) {
-          userType = profile.type;
+        if (checkError) {
+          Logger.error("Login error from Supabase", {
+            error: checkError.message,
+            code: checkError.status,
+            email,
+          });
+          throw checkError;
         }
+
+        // Verify the user has the correct account type
+        // First check user metadata
+        let userType = user?.user_metadata?.type;
+
+        // If not in metadata, check the profile table
+        if (!userType && user) {
+          const { data: profile, error: profileError } = await supabase
+            .from("profiles")
+            .select("type")
+            .eq("user_id", user.id)
+            .single();
+
+          if (!profileError && profile) {
+            userType = profile.type;
+          }
+        }
+
+        // Check account type compatibility
+        // - Donor login: only allows 'donor' users
+        // - Charity login: allows both 'charity' and 'admin' users
+        const isValidLogin =
+          (accountType === "donor" && userType === "donor") ||
+          (accountType === "charity" &&
+            (userType === "charity" || userType === "admin"));
+
+        if (!isValidLogin) {
+          // Sign out the user immediately to prevent session creation
+          await supabase.auth.signOut();
+          throw new Error(
+            "Account not found. Please check your email and password.",
+          );
+        }
+
+        // Don't redirect here - let the Login component handle it via <Navigate>
+        // The auth state will update, triggering the redirect in Login.tsx
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to sign in";
+        showToast("error", "Authentication Error", message);
+        setState((prev) => ({
+          ...prev,
+          error: err instanceof Error ? err : new Error(message),
+        }));
+        throw err;
+      } finally {
+        setState((prev) => ({ ...prev, loading: false }));
       }
-
-      // Check account type compatibility
-      // - Donor login: only allows 'donor' users
-      // - Charity login: allows both 'charity' and 'admin' users
-      const isValidLogin =
-        (accountType === "donor" && userType === "donor") ||
-        (accountType === "charity" &&
-          (userType === "charity" || userType === "admin"));
-
-      if (!isValidLogin) {
-        // Sign out the user immediately to prevent session creation
-        await supabase.auth.signOut();
-        throw new Error(
-          "Account not found. Please check your email and password.",
-        );
-      }
-
-      // Don't redirect here - let the Login component handle it via <Navigate>
-      // The auth state will update, triggering the redirect in Login.tsx
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to sign in";
-      showToast("error", "Authentication Error", message);
-      setState((prev) => ({
-        ...prev,
-        error: err instanceof Error ? err : new Error(message),
-      }));
-      throw err;
-    } finally {
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  }, [showToast]);
+    },
+    [showToast],
+  );
 
   const loginWithGoogle = useCallback(async () => {
     try {
@@ -422,143 +426,157 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [showToast]);
 
-  const resetPassword = useCallback(async (email: string) => {
-    try {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        Logger.error("Password reset error", {
-          error: error.message,
-          code: error.status,
-          email,
+  const resetPassword = useCallback(
+    async (email: string) => {
+      try {
+        setState((prev) => ({ ...prev, loading: true, error: null }));
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/reset-password`,
         });
-        throw error;
-      }
-      showToast("success", "Password reset email sent");
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to send reset email";
-      showToast("error", "Reset Password Error", message);
-      setState((prev) => ({
-        ...prev,
-        error: err instanceof Error ? err : new Error(message),
-      }));
-      throw err;
-    } finally {
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  }, [showToast]);
 
-  const register = useCallback(async (
-    email: string,
-    password: string,
-    type: "donor" | "charity",
-    metadata = {},
-  ) => {
-    try {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
-
-      // Attempt to sign up the user
-      // If the email is already registered, Supabase will return an error
-      // This approach avoids using dummy credentials for checking
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            type,
-            ...metadata,
-          },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (error) {
-        // Check if error is because user already exists
-        if (
-          error.message?.toLowerCase().includes("already registered") ||
-          error.message?.toLowerCase().includes("already exists") ||
-          error.message?.toLowerCase().includes("user already registered")
-        ) {
-          // For better UX, we don't reveal which account type the email is registered with
-          throw new Error(
-            "This email is already registered. Please sign in or use a different email.",
-          );
+        if (error) {
+          Logger.error("Password reset error", {
+            error: error.message,
+            code: error.status,
+            email,
+          });
+          throw error;
         }
-        Logger.error("Registration error", {
-          error: error.message,
-          code: error.status,
-          email,
-          type,
-        });
-        throw error;
+        showToast("success", "Password reset email sent");
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to send reset email";
+        showToast("error", "Reset Password Error", message);
+        setState((prev) => ({
+          ...prev,
+          error: err instanceof Error ? err : new Error(message),
+        }));
+        throw err;
+      } finally {
+        setState((prev) => ({ ...prev, loading: false }));
       }
+    },
+    [showToast],
+  );
 
-      if (data.user) {
-        const { error: profileError } = await supabase.from("profiles").insert({
-          user_id: data.user.id,
-          type,
+  const register = useCallback(
+    async (
+      email: string,
+      password: string,
+      type: "donor" | "charity",
+      metadata = {},
+    ) => {
+      try {
+        setState((prev) => ({ ...prev, loading: true, error: null }));
+
+        // Attempt to sign up the user
+        // If the email is already registered, Supabase will return an error
+        // This approach avoids using dummy credentials for checking
+        const { data, error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              type,
+              ...metadata,
+            },
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
         });
 
-        if (profileError) {
-          Logger.error("Profile creation error", {
-            error: profileError.message,
-            code: profileError.code,
-            userId: data.user.id,
+        if (error) {
+          // Check if error is because user already exists
+          if (
+            error.message?.toLowerCase().includes("already registered") ||
+            error.message?.toLowerCase().includes("already exists") ||
+            error.message?.toLowerCase().includes("user already registered")
+          ) {
+            // For better UX, we don't reveal which account type the email is registered with
+            throw new Error(
+              "This email is already registered. Please sign in or use a different email.",
+            );
+          }
+          Logger.error("Registration error", {
+            error: error.message,
+            code: error.status,
+            email,
             type,
           });
-          throw profileError;
+          throw error;
         }
+
+        if (data.user) {
+          const { error: profileError } = await supabase
+            .from("profiles")
+            .insert({
+              user_id: data.user.id,
+              type,
+            });
+
+          if (profileError) {
+            Logger.error("Profile creation error", {
+              error: profileError.message,
+              code: profileError.code,
+              userId: data.user.id,
+              type,
+            });
+            throw profileError;
+          }
+        }
+
+        showToast(
+          "success",
+          "Registration successful",
+          "Please check your email to verify your account",
+        );
+
+        // Redirect to the appropriate login page
+        window.location.href = `/login?type=${type}`;
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to register";
+        showToast("error", "Registration Error", message);
+        setState((prev) => ({
+          ...prev,
+          error: err instanceof Error ? err : new Error(message),
+        }));
+        throw err;
+      } finally {
+        setState((prev) => ({ ...prev, loading: false }));
       }
+    },
+    [showToast],
+  );
 
-      showToast(
-        "success",
-        "Registration successful",
-        "Please check your email to verify your account",
-      );
-
-      // Redirect to the appropriate login page
-      window.location.href = `/login?type=${type}`;
-    } catch (err) {
-      const message = err instanceof Error ? err.message : "Failed to register";
-      showToast("error", "Registration Error", message);
-      setState((prev) => ({
-        ...prev,
-        error: err instanceof Error ? err : new Error(message),
-      }));
-      throw err;
-    } finally {
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  }, [showToast]);
-
-  const sendUsernameReminder = useCallback(async (_email: string) => {
-    try {
-      setState((prev) => ({ ...prev, loading: true, error: null }));
-      // In a real app, this would send an email with the username
-      // For this demo, we'll just show a success message
-      showToast(
-        "success",
-        "Username reminder sent",
-        "If an account exists with this email, a reminder will be sent",
-      );
-      return;
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to send username reminder";
-      showToast("error", "Username Reminder Error", message);
-      setState((prev) => ({
-        ...prev,
-        error: err instanceof Error ? err : new Error(message),
-      }));
-      throw err;
-    } finally {
-      setState((prev) => ({ ...prev, loading: false }));
-    }
-  }, [showToast]);
+  const sendUsernameReminder = useCallback(
+    async (_email: string) => {
+      try {
+        setState((prev) => ({ ...prev, loading: true, error: null }));
+        // In a real app, this would send an email with the username
+        // For this demo, we'll just show a success message
+        showToast(
+          "success",
+          "Username reminder sent",
+          "If an account exists with this email, a reminder will be sent",
+        );
+        return;
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to send username reminder";
+        showToast("error", "Username Reminder Error", message);
+        setState((prev) => ({
+          ...prev,
+          error: err instanceof Error ? err : new Error(message),
+        }));
+        throw err;
+      } finally {
+        setState((prev) => ({ ...prev, loading: false }));
+      }
+    },
+    [showToast],
+  );
 
   const contextValue = React.useMemo(
     () => ({
