@@ -58,9 +58,9 @@ export function FiatPresets({
 
   return (
     <div className="space-y-2">
-      <div className="block text-sm font-medium text-gray-700" role="heading" aria-level={3}>
+      <h3 className="block text-sm font-medium text-gray-700">
         Quick Amounts
-      </div>
+      </h3>
       <div className="grid grid-cols-4 gap-3">
         {PRESET_AMOUNTS.map((amount) => {
           const isSelected = selectedAmount === amount;

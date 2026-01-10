@@ -196,7 +196,7 @@ export const SelfReportedHoursDashboard: React.FC<SelfReportedHoursDashboardProp
         {viewMode === 'list' && (
           <>
             {/* Stats */}
-            {stats && stats.recordCount > 0 && (
+            {stats?.recordCount > 0 && (
               <div className="mb-6">
                 <SelfReportedHoursStats stats={stats} />
               </div>

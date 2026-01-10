@@ -179,7 +179,7 @@ export const RecentContributions: React.FC = () => {
         </div>
       </div>
 
-      {contributions && contributions.length > 0 ? (
+      {contributions?.length > 0 ? (
         <div className="space-y-3">
           {contributions.slice(0, 10).map((contribution) => (
             <div

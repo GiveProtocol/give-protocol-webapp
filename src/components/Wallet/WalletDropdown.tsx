@@ -50,7 +50,7 @@ const WalletAvatar: React.FC<WalletAvatarInternalProps> = ({
  * Section divider component
  */
 const Divider: React.FC = () => (
-  <div className="h-px bg-gray-200 dark:bg-gray-700 my-2" role="separator" />
+  <hr className="h-px bg-gray-200 dark:bg-gray-700 my-2 border-0" />
 );
 
 /**

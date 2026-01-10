@@ -22,7 +22,7 @@ function tryGetCachedPrices(
 
   for (const tokenId of tokenIds) {
     const cached = priceCache[`${tokenId}_${targetCurrency}`];
-    if (cached && cached.currency === targetCurrency) {
+    if (cached?.currency === targetCurrency) {
       cachedPrices[tokenId] = cached.price;
     } else {
       return null;
