@@ -298,8 +298,8 @@ const ValidationPreview: React.FC<ValidationPreviewProps> = ({
   if (orgMode === "other") {
     return (
       <div className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-4 py-3">
-        <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0" />{" "}
-        This record will be saved as unvalidated
+        <span className="w-2 h-2 bg-gray-400 rounded-full flex-shrink-0" /> This
+        record will be saved as unvalidated
       </div>
     );
   }
@@ -477,140 +477,138 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
       className="bg-white rounded-2xl shadow-lg shadow-gray-200/50 overflow-hidden p-8 space-y-8"
     >
       {/* Date, Hours, Location Row */}
-          <DateHoursLocationRow
-            activityDate={formData.activityDate}
-            hours={formData.hours}
-            location={formData.location ?? ""}
-            today={today}
-            errors={errors}
-            showExpirationWarning={showExpirationWarning}
-            daysLeft={daysInfo.daysLeft}
-            isExpired={daysInfo.isExpired}
-            onInputChange={handleInputChange}
+      <DateHoursLocationRow
+        activityDate={formData.activityDate}
+        hours={formData.hours}
+        location={formData.location ?? ""}
+        today={today}
+        errors={errors}
+        showExpirationWarning={showExpirationWarning}
+        daysLeft={daysInfo.daysLeft}
+        isExpired={daysInfo.isExpired}
+        onInputChange={handleInputChange}
+      />
+
+      {/* Activity Type Dropdown */}
+      <ActivityTypeDropdown
+        value={formData.activityType}
+        isOpen={activityDropdownOpen}
+        onToggle={toggleDropdown}
+        onSelect={handleActivityTypeSelect}
+        dropdownRef={dropdownRef}
+      />
+
+      {/* Description */}
+      <div>
+        <label
+          htmlFor="description"
+          className="block text-sm font-medium text-gray-700 mb-2"
+        >
+          Description <span className="text-red-500">*</span>
+        </label>
+        <div className="relative">
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleInputChange}
+            rows={4}
+            className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent ${
+              errors.description !== undefined
+                ? "border-red-300"
+                : "border-gray-200"
+            }`}
+            required
+            minLength={MIN_DESCRIPTION_LENGTH}
+            maxLength={MAX_DESCRIPTION_LENGTH}
+            placeholder="Describe the activities you performed..."
           />
-
-          {/* Activity Type Dropdown */}
-          <ActivityTypeDropdown
-            value={formData.activityType}
-            isOpen={activityDropdownOpen}
-            onToggle={toggleDropdown}
-            onSelect={handleActivityTypeSelect}
-            dropdownRef={dropdownRef}
-          />
-
-          {/* Description */}
-          <div>
-            <label
-              htmlFor="description"
-              className="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Description <span className="text-red-500">*</span>
-            </label>
-            <div className="relative">
-              <textarea
-                id="description"
-                name="description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows={4}
-                className={`w-full rounded-lg border bg-white px-4 py-3 text-sm text-gray-900 placeholder-gray-400 resize-none transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent ${
-                  errors.description !== undefined
-                    ? "border-red-300"
-                    : "border-gray-200"
-                }`}
-                required
-                minLength={MIN_DESCRIPTION_LENGTH}
-                maxLength={MAX_DESCRIPTION_LENGTH}
-                placeholder="Describe the activities you performed..."
-              />
-              {/* Character counter inside textarea */}
-              <span
-                className={`absolute bottom-3 right-3 text-xs pointer-events-none transition-colors ${charCountStatus}`}
-              >
-                {charCount}/{MAX_DESCRIPTION_LENGTH}
-              </span>
-            </div>
-            {errors.description !== undefined && (
-              <p className="mt-1.5 text-xs text-red-600">
-                {errors.description}
-              </p>
-            )}
-            {charCount < MIN_DESCRIPTION_LENGTH && charCount > 0 && (
-              <p className="mt-1.5 text-xs text-gray-500">
-                {MIN_DESCRIPTION_LENGTH - charCount} more characters needed
-              </p>
-            )}
-          </div>
-
-          {/* Organization Selection */}
-          <OrganizationSelector
-            orgMode={orgMode}
-            organizationName={formData.organizationName ?? ""}
-            organizationContactEmail={formData.organizationContactEmail ?? ""}
-            errors={errors}
-            onModeChange={handleOrgModeChange}
-            onOrgSelect={handleOrganizationSelect}
-            onInputChange={handleInputChange}
-          />
-
-          {/* Validation Status Preview */}
-          <div className="pt-2">
-            <ValidationPreview
-              orgMode={orgMode}
-              hasOrganization={
-                Boolean(formData.organizationId) || Boolean(selectedOrgName)
-              }
-              selectedOrgName={selectedOrgName}
-              isExpired={daysInfo.isExpired}
-            />
-          </div>
-
-        {/* Form Actions */}
-        <div className="flex items-center justify-end gap-4 px-8 py-5 bg-gray-50/50 border-t border-gray-100">
-          <button
-            type="button"
-            onClick={onCancel}
-            disabled={submitting || isLoading}
-            className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
+          {/* Character counter inside textarea */}
+          <span
+            className={`absolute bottom-3 right-3 text-xs pointer-events-none transition-colors ${charCountStatus}`}
           >
-            Cancel
-          </button>
-          <Button
-            type="submit"
-            disabled={
-              submitting ||
-              isLoading ||
-              (daysInfo.isExpired && orgMode === "verified")
-            }
-            className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {submitting || isLoading ? (
-              <span className="flex items-center gap-2">
-                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                    fill="none"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-                {isEdit ? "Updating..." : "Logging..."}
-              </span>
-            ) : isEdit ? (
-              "Update Hours"
-            ) : (
-              "Log Hours"
-            )}
-          </Button>
+            {charCount}/{MAX_DESCRIPTION_LENGTH}
+          </span>
         </div>
+        {errors.description !== undefined && (
+          <p className="mt-1.5 text-xs text-red-600">{errors.description}</p>
+        )}
+        {charCount < MIN_DESCRIPTION_LENGTH && charCount > 0 && (
+          <p className="mt-1.5 text-xs text-gray-500">
+            {MIN_DESCRIPTION_LENGTH - charCount} more characters needed
+          </p>
+        )}
+      </div>
+
+      {/* Organization Selection */}
+      <OrganizationSelector
+        orgMode={orgMode}
+        organizationName={formData.organizationName ?? ""}
+        organizationContactEmail={formData.organizationContactEmail ?? ""}
+        errors={errors}
+        onModeChange={handleOrgModeChange}
+        onOrgSelect={handleOrganizationSelect}
+        onInputChange={handleInputChange}
+      />
+
+      {/* Validation Status Preview */}
+      <div className="pt-2">
+        <ValidationPreview
+          orgMode={orgMode}
+          hasOrganization={
+            Boolean(formData.organizationId) || Boolean(selectedOrgName)
+          }
+          selectedOrgName={selectedOrgName}
+          isExpired={daysInfo.isExpired}
+        />
+      </div>
+
+      {/* Form Actions */}
+      <div className="flex items-center justify-end gap-4 px-8 py-5 bg-gray-50/50 border-t border-gray-100">
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={submitting || isLoading}
+          className="px-5 py-2.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
+        >
+          Cancel
+        </button>
+        <Button
+          type="submit"
+          disabled={
+            submitting ||
+            isLoading ||
+            (daysInfo.isExpired && orgMode === "verified")
+          }
+          className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {submitting || isLoading ? (
+            <span className="flex items-center gap-2">
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                  fill="none"
+                />
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+                />
+              </svg>
+              {isEdit ? "Updating..." : "Logging..."}
+            </span>
+          ) : isEdit ? (
+            "Update Hours"
+          ) : (
+            "Log Hours"
+          )}
+        </Button>
+      </div>
     </form>
   );
 };

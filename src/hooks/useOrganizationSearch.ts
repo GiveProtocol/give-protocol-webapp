@@ -1,6 +1,9 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
-import { OrganizationSearchResult } from '@/types/selfReportedHours';
-import { searchOrganizations, getOrganizationById } from '@/services/organizationSearchService';
+import { useState, useCallback, useEffect, useRef } from "react";
+import { OrganizationSearchResult } from "@/types/selfReportedHours";
+import {
+  searchOrganizations,
+  getOrganizationById,
+} from "@/services/organizationSearchService";
 
 interface UseOrganizationSearchReturn {
   query: string;
@@ -19,11 +22,14 @@ interface UseOrganizationSearchReturn {
  * @param debounceMs - Debounce delay in milliseconds (default: 300)
  * @returns Object with search state and functions
  */
-export function useOrganizationSearch(debounceMs = 300): UseOrganizationSearchReturn {
-  const [query, setQueryInternal] = useState('');
+export function useOrganizationSearch(
+  debounceMs = 300,
+): UseOrganizationSearchReturn {
+  const [query, setQueryInternal] = useState("");
   const [results, setResults] = useState<OrganizationSearchResult[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedOrg, setSelectedOrg] = useState<OrganizationSearchResult | null>(null);
+  const [selectedOrg, setSelectedOrg] =
+    useState<OrganizationSearchResult | null>(null);
 
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -48,7 +54,7 @@ export function useOrganizationSearch(debounceMs = 300): UseOrganizationSearchRe
       setResults(data);
     } catch (error) {
       // Ignore abort errors
-      if (error instanceof Error && error.name !== 'AbortError') {
+      if (error instanceof Error && error.name !== "AbortError") {
         setResults([]);
       }
     } finally {
@@ -56,41 +62,50 @@ export function useOrganizationSearch(debounceMs = 300): UseOrganizationSearchRe
     }
   }, []);
 
-  const setQuery = useCallback((newQuery: string) => {
-    setQueryInternal(newQuery);
+  const setQuery = useCallback(
+    (newQuery: string) => {
+      setQueryInternal(newQuery);
 
-    // Clear previous timer
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
+      // Clear previous timer
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+      }
 
-    // Set new debounced search
-    debounceTimerRef.current = setTimeout(() => {
-      performSearch(newQuery);
-    }, debounceMs);
-  }, [debounceMs, performSearch]);
+      // Set new debounced search
+      debounceTimerRef.current = setTimeout(() => {
+        performSearch(newQuery);
+      }, debounceMs);
+    },
+    [debounceMs, performSearch],
+  );
 
-  const selectOrganization = useCallback((org: OrganizationSearchResult | null) => {
-    setSelectedOrg(org);
-    if (org) {
-      setQueryInternal(org.name);
-      setResults([]);
-    }
-  }, []);
+  const selectOrganization = useCallback(
+    (org: OrganizationSearchResult | null) => {
+      setSelectedOrg(org);
+      if (org) {
+        setQueryInternal(org.name);
+        setResults([]);
+      }
+    },
+    [],
+  );
 
   const clearSelection = useCallback(() => {
     setSelectedOrg(null);
-    setQueryInternal('');
+    setQueryInternal("");
     setResults([]);
   }, []);
 
-  const fetchOrganization = useCallback(async (id: string): Promise<OrganizationSearchResult | null> => {
-    try {
-      return await getOrganizationById(id);
-    } catch {
-      return null;
-    }
-  }, []);
+  const fetchOrganization = useCallback(
+    async (id: string): Promise<OrganizationSearchResult | null> => {
+      try {
+        return await getOrganizationById(id);
+      } catch {
+        return null;
+      }
+    },
+    [],
+  );
 
   // Cleanup on unmount
   useEffect(() => {
