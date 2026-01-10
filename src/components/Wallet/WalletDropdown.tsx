@@ -129,7 +129,9 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
         <div className="flex items-center gap-3">
           <WalletAvatar address={address} size={48} />
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{providerName}</p>
+            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+              {providerName}
+            </p>
             <p
               className="text-sm font-mono text-gray-900 dark:text-gray-100 truncate"
               title={address}
@@ -151,7 +153,9 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
           {copied ? (
             <>
               <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <span className="text-green-600 dark:text-green-400">Copied!</span>
+              <span className="text-green-600 dark:text-green-400">
+                Copied!
+              </span>
             </>
           ) : (
             <>
@@ -175,7 +179,9 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
 
       {/* Balance Display */}
       <div className="px-4 py-3">
-        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">Balances</p>
+        <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">
+          Balances
+        </p>
         {balances.isLoading ? (
           <div className="flex items-center gap-2 text-gray-400">
             <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-green-500 rounded-full animate-spin" />
