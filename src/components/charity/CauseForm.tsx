@@ -30,7 +30,10 @@ interface CauseFormProps {
   onCancel?: () => void;
 }
 
-export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => {
+export const CauseForm: React.FC<CauseFormProps> = ({
+  onSuccess,
+  onCancel,
+}) => {
   const { profile } = useProfile();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -112,7 +115,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
     (
       e: React.ChangeEvent<
         HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-      >
+      >,
     ) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
@@ -125,7 +128,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
         });
       }
     },
-    [validationErrors]
+    [validationErrors],
   );
 
   const handleImageChange = useCallback(
@@ -136,7 +139,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
         imagePath: path ?? "",
       }));
     },
-    []
+    [],
   );
 
   /**
@@ -229,7 +232,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
         setLoading(false);
       }
     },
-    [formData, profile?.id, onSuccess, navigate, validateField]
+    [formData, profile?.id, onSuccess, navigate, validateField],
   );
 
   const getSubmitButtonText = (): string => {
@@ -258,7 +261,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
             <span className="text-sm mt-1 block">
               {t(
                 "cause.limitReachedMessage",
-                `You have reached the maximum of ${MAX_CAUSES_PER_CHARITY} active causes. Please complete or pause an existing cause before creating a new one.`
+                `You have reached the maximum of ${MAX_CAUSES_PER_CHARITY} active causes. Please complete or pause an existing cause before creating a new one.`,
               )}
             </span>
           </p>
@@ -269,7 +272,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
         <div className="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm">
           {t(
             "cause.causeCount",
-            `You have ${activeCauseCount} of ${MAX_CAUSES_PER_CHARITY} active causes.`
+            `You have ${activeCauseCount} of ${MAX_CAUSES_PER_CHARITY} active causes.`,
           )}
         </div>
       )}
@@ -324,7 +327,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
           label={t("cause.headerImage", "Header Image")}
           helpText={t(
             "cause.headerImageHelp",
-            "Upload an image to display at the top of your cause page"
+            "Upload an image to display at the top of your cause page",
           )}
         />
 
@@ -356,7 +359,10 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
             >
               {CAUSE_CATEGORIES.map((category) => (
                 <option key={category} value={category}>
-                  {t(`cause.category.${category.toLowerCase().replaceAll(" & ", "_")}`, category)}
+                  {t(
+                    `cause.category.${category.toLowerCase().replaceAll(" & ", "_")}`,
+                    category,
+                  )}
                 </option>
               ))}
             </select>
@@ -391,7 +397,9 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             {t("cause.impact", "Impact Highlights")}
-            <span className="text-gray-500 font-normal ml-1">(one per line)</span>
+            <span className="text-gray-500 font-normal ml-1">
+              (one per line)
+            </span>
           </label>
           <textarea
             id="cause-impact"
@@ -413,7 +421,9 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
             className="block text-sm font-medium text-gray-700 mb-1"
           >
             {t("cause.partners", "Key Partners")}
-            <span className="text-gray-500 font-normal ml-1">(one per line)</span>
+            <span className="text-gray-500 font-normal ml-1">
+              (one per line)
+            </span>
           </label>
           <textarea
             id="cause-partners"
@@ -425,7 +435,10 @@ export const CauseForm: React.FC<CauseFormProps> = ({ onSuccess, onCancel }) => 
             placeholder="UNICEF&#10;Local Government&#10;Community Organizations"
           />
           <p className="mt-1 text-sm text-gray-500">
-            {t("cause.partnersHelp", "Enter each partner organization on a new line")}
+            {t(
+              "cause.partnersHelp",
+              "Enter each partner organization on a new line",
+            )}
           </p>
         </div>
 
