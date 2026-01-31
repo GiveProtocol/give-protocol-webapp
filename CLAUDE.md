@@ -197,6 +197,7 @@ npm test -- --coverage   # Ensure new code has tests
 SonarCloud requires test coverage on all new code. Without tests, builds will fail.
 
 **Write tests for:**
+
 - New utility functions (`src/utils/`)
 - New business logic, validation, formatting/parsing functions
 - New services and API integrations
@@ -213,18 +214,18 @@ npm test -- --watch                   # Watch mode
 ### Example Test Structure
 
 ```typescript
-describe('myFunction', () => {
-  it('should handle valid input', () => {
-    expect(myFunction('valid')).toBe('expected');
+describe("myFunction", () => {
+  it("should handle valid input", () => {
+    expect(myFunction("valid")).toBe("expected");
   });
 
-  it('should handle edge cases', () => {
-    expect(myFunction('')).toBe('default');
-    expect(myFunction(null)).toBe('default');
+  it("should handle edge cases", () => {
+    expect(myFunction("")).toBe("default");
+    expect(myFunction(null)).toBe("default");
   });
 
-  it('should throw on invalid input', () => {
-    expect(() => myFunction('invalid')).toThrow();
+  it("should throw on invalid input", () => {
+    expect(() => myFunction("invalid")).toThrow();
   });
 });
 ```
@@ -232,20 +233,24 @@ describe('myFunction', () => {
 ## Behavioral Guidelines
 
 **Think before coding:**
+
 - State assumptions explicitly. If uncertain, ask.
 - If multiple interpretations exist, present them.
 - If a simpler approach exists, say so.
 
 **Simplicity first:**
+
 - No features beyond what was asked.
 - No abstractions for single-use code.
 - No error handling for impossible scenarios.
 
 **Surgical changes:**
+
 - Don't "improve" adjacent code, comments, or formatting.
 - Match existing style.
 - Remove only imports/variables that YOUR changes made unused.
 
 **Goal-driven execution:**
+
 - Transform tasks into verifiable goals.
 - For multi-step tasks, state a brief plan with verification steps.
