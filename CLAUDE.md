@@ -36,9 +36,9 @@ npm run test:e2e     # Run Cypress end-to-end tests
 - `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`
 - `VITE_MOONBASE_RPC_URL`
 
-## CRITICAL: Code Quality Rules
+## Code Quality Rules
 
-### Top 10 DeepSource Violations (CI/CD Failures)
+### DeepSource Violations (CI/CD Failures)
 
 1. **JS-0356: Unused variables** - Prefix with `_` or use the variable
 
@@ -140,47 +140,20 @@ npm run test:e2e     # Run Cypress end-to-end tests
    url = `/${url}`;
    ```
 
-10. **JS-0066: `!!` type coercion** - Use explicit conversion
+10. **JS-0066: `!!` type coercion** - Use `Boolean()`
 
-    ```typescript
-    // WRONG
-    const isConnected = !!address;
-
-    // CORRECT
-    const isConnected = Boolean(address);
-    ```
-
-11. **React Context Provider values must be memoized** - Wrap in useMemo
+11. **Context Provider values** - Wrap in `useMemo`
 
     ```typescript
     // WRONG - Creates new object every render
     <MyContext.Provider value={{ foo, bar }}>
-      {children}
-    </MyContext.Provider>
 
-    // CORRECT - Memoized with useMemo
-    const contextValue = React.useMemo(
-      () => ({ foo, bar }),
-      [foo, bar]
-    );
+    // CORRECT
+    const contextValue = React.useMemo(() => ({ foo, bar }), [foo, bar]);
     <MyContext.Provider value={contextValue}>
-      {children}
-    </MyContext.Provider>
     ```
 
-12. **Use Number static methods** - Prefer explicit Number methods
-
-    ```typescript
-    // WRONG - Global functions
-    const num = parseFloat("3.14");
-    const int = parseInt("42", 10);
-    const invalid = isNaN(value);
-
-    // CORRECT - Number static methods
-    const num = Number.parseFloat("3.14");
-    const int = Number.parseInt("42", 10);
-    const invalid = Number.isNaN(value);
-    ```
+12. **Number static methods** - Use `Number.parseFloat()`, `Number.parseInt()`, `Number.isNaN()`
 
 ### Security Patterns
 
@@ -194,17 +167,7 @@ const sanitized = input.replace(/<[^>]*>/g, "");
 const sanitized = input.replace(/[<>]/g, "");
 ```
 
-### React-Specific Rules
-
-- **Always import React when using JSX**
-- **Use `import type` for type-only imports**
-- **Export functions need JSDoc** with `@param` and `@returns`
-- **Use `useCallback` for ALL functions passed to JSX props**
-- **Flatten JSX to ≤4 levels by combining CSS classes**
-- **ALWAYS wrap Context Provider values in `useMemo`** to maintain stable identities
-- **Use explicit boolean checks in conditional rendering** (e.g., `value !== undefined` instead of `value`)
-
-### Additional Important Rules
+### Additional Rules
 
 - **JS-0320**: Use destructuring instead of `delete` operator
 - **JS-0054**: Wrap switch case bodies in braces for `const`/`let`
@@ -215,81 +178,37 @@ const sanitized = input.replace(/[<>]/g, "");
 - **JS-0052**: Replace `alert`/`confirm`/`prompt` with custom modals
 - **JS-0242**: Always use `const` for never-reassigned variables
 
+### React-Specific Rules
+
+- Always import React when using JSX
+- Use `import type` for type-only imports
+- Export functions need JSDoc with `@param` and `@returns`
+- Use explicit boolean checks in conditional rendering (`value !== undefined` not `value`)
+
 ## Pre-Commit Checklist
 
-- [ ] Run `npm run lint` and fix ALL errors
-- [ ] Run `npm test -- --coverage` and ensure new code has tests
-- [ ] No `any` types
-- [ ] All variables used or prefixed with `_`
-- [ ] Only ES6 imports
-- [ ] All JSX event handlers wrapped in `useCallback`
-- [ ] JSX nesting ≤4 levels
-- [ ] Template literals instead of string concatenation
-- [ ] `Boolean()` instead of `!!`
-- [ ] `Number.parseFloat()` / `Number.parseInt()` instead of global functions
-- [ ] Context Provider values wrapped in `useMemo`
-- [ ] Explicit boolean checks in conditional rendering (`value !== undefined` not `value`)
-- [ ] Write tests for all new utility functions and business logic
-- [ ] Ensure test coverage is generated before committing
-
-## JSX Nesting Verification
-
 ```bash
-# Find potential deep nesting violations
-rg "<th.*>\s*<div" src/ --type tsx  # Table headers with wrapper divs
-rg "<Card.*>[\s\S]*?<div.*>[\s\S]*?<div.*>[\s\S]*?<div" src/ --type tsx  # Deep card nesting
+npm run lint         # Fix ALL errors
+npm test -- --coverage   # Ensure new code has tests
 ```
-
-## Session-Learned Pitfalls
-
-1. **Task Agent Verification**: Always verify agent claims with `git diff` or `npm run lint`
-2. **Component Extraction Anti-Pattern**: ALWAYS memoize callbacks BEFORE extracting components to avoid creating more violations
-3. **React Import Consistency**: Keep `import React from 'react'` when using JSX
-4. **useCallback Dependencies**: Only include dependencies that exist in scope
-5. **Promise Misuse**: `await` Promise-returning methods in conditions
-6. **Array.reduce() Safety**: Always provide initial value
 
 ## Testing Requirements
 
-### Why Tests Are Required
+SonarCloud requires test coverage on all new code. Without tests, builds will fail.
 
-SonarCloud requires test coverage on all new code. Without tests, builds will fail with "Coverage on New Code: 0.0%" errors.
-
-### When to Write Tests
-
-**ALWAYS write tests for:**
+**Write tests for:**
 - New utility functions (`src/utils/`)
-- New business logic
-- New validation functions
-- New formatting/parsing functions
+- New business logic, validation, formatting/parsing functions
 - New services and API integrations
 
-**Test file naming:**
-- Place tests next to the source file: `foo.ts` → `foo.test.ts`
-- Use descriptive test names: `it('should format USD currency correctly')`
-
-### Running Tests
+**Test file naming:** Place tests next to the source file: `foo.ts` → `foo.test.ts`
 
 ```bash
-# Run all tests
-npm test
-
-# Run tests with coverage
-npm test -- --coverage
-
-# Run specific test file
-npm test src/utils/formatters.test.ts
-
-# Run tests in watch mode during development
-npm test -- --watch
+npm test                              # Run all tests
+npm test -- --coverage                # Run with coverage
+npm test src/utils/formatters.test.ts # Run specific file
+npm test -- --watch                   # Watch mode
 ```
-
-### Test Coverage Requirements
-
-- All new utility functions must have tests
-- Aim for >80% coverage on new code
-- Tests run automatically in CI/CD before SonarQube scan
-- Coverage reports are generated in `coverage/` directory
 
 ### Example Test Structure
 
@@ -310,11 +229,23 @@ describe('myFunction', () => {
 });
 ```
 
-## Git Workflow
+## Behavioral Guidelines
 
-1. Run `npm run lint` before committing
-2. Run `npm test -- --coverage` before committing
-3. Write descriptive commit messages
-4. Keep commits focused on single logical changes
-5. Group related DeepSource fixes in single commits
-6. Ensure tests exist for all new business logic
+**Think before coding:**
+- State assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them.
+- If a simpler approach exists, say so.
+
+**Simplicity first:**
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No error handling for impossible scenarios.
+
+**Surgical changes:**
+- Don't "improve" adjacent code, comments, or formatting.
+- Match existing style.
+- Remove only imports/variables that YOUR changes made unused.
+
+**Goal-driven execution:**
+- Transform tasks into verifiable goals.
+- For multi-step tasks, state a brief plan with verification steps.
