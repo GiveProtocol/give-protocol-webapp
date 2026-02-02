@@ -114,12 +114,9 @@ export const ChainProvider: React.FC<ChainProviderProps> = ({ children }) => {
   }, []);
 
   // Get chain by ID
-  const getChain = useCallback(
-    (chainId: ChainId): ChainConfig | undefined => {
-      return CHAIN_CONFIGS[chainId];
-    },
-    [],
-  );
+  const getChain = useCallback((chainId: ChainId): ChainConfig | undefined => {
+    return CHAIN_CONFIGS[chainId];
+  }, []);
 
   const contextValue = React.useMemo(
     () => ({

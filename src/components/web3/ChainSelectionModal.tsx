@@ -2,7 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Check, Wallet, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useChain, type ChainConfig, type ChainId } from "@/contexts/ChainContext";
+import {
+  useChain,
+  type ChainConfig,
+  type ChainId,
+} from "@/contexts/ChainContext";
 
 interface ChainSelectionModalProps {
   /** Whether the modal is open */
@@ -55,7 +59,8 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
       selectChain(selectedId);
       onComplete();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to select network";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to select network";
       setError(errorMessage);
     } finally {
       setIsProcessing(false);
@@ -80,10 +85,7 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Wallet className="w-8 h-8" />
           </div>
-          <h2
-            id="chain-selection-title"
-            className="text-2xl font-bold mb-2"
-          >
+          <h2 id="chain-selection-title" className="text-2xl font-bold mb-2">
             Welcome to Give Protocol
           </h2>
           <p className="text-indigo-100">
@@ -157,48 +159,48 @@ const ChainOption: React.FC<ChainOptionProps> = ({
     type="button"
     onClick={onSelect}
     data-chain-id={chain.id}
-      className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
-        isSelected
-          ? "border-indigo-500 bg-indigo-50"
-          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+    className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
+      isSelected
+        ? "border-indigo-500 bg-indigo-50"
+        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+    }`}
+  >
+    {/* Chain Icon */}
+    <div
+      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+      style={{ backgroundColor: chain.color }}
+    >
+      {chain.shortName.charAt(0).toUpperCase()}
+    </div>
+
+    {/* Chain Info */}
+    <div className="flex-1">
+      <div className="flex items-center gap-2">
+        <span className="font-semibold text-gray-900">{chain.name}</span>
+        <span
+          className="text-xs px-2 py-0.5 rounded-full"
+          style={{
+            backgroundColor: `${chain.color}20`,
+            color: chain.color,
+          }}
+        >
+          {chain.ecosystem}
+        </span>
+      </div>
+      <p className="text-sm text-gray-500 mt-1">
+        {getChainDescription(chain.id)}
+      </p>
+    </div>
+
+    {/* Selection Indicator */}
+    <div
+      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+        isSelected ? "border-indigo-500 bg-indigo-500" : "border-gray-300"
       }`}
     >
-      {/* Chain Icon */}
-      <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-        style={{ backgroundColor: chain.color }}
-      >
-        {chain.shortName.charAt(0).toUpperCase()}
-      </div>
-
-      {/* Chain Info */}
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-900">{chain.name}</span>
-          <span
-            className="text-xs px-2 py-0.5 rounded-full"
-            style={{
-              backgroundColor: `${chain.color}20`,
-              color: chain.color,
-            }}
-          >
-            {chain.ecosystem}
-          </span>
-        </div>
-        <p className="text-sm text-gray-500 mt-1">
-          {getChainDescription(chain.id)}
-        </p>
-      </div>
-
-      {/* Selection Indicator */}
-      <div
-        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-          isSelected ? "border-indigo-500 bg-indigo-500" : "border-gray-300"
-        }`}
-      >
-        {isSelected && <Check className="w-4 h-4 text-white" />}
-      </div>
-    </button>
+      {isSelected && <Check className="w-4 h-4 text-white" />}
+    </div>
+  </button>
 );
 
 /**
