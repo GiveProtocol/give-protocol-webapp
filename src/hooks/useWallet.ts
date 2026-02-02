@@ -115,6 +115,53 @@ class EVMWalletBase implements WalletProvider {
       this.chainParams = {};
     }
     const chains = {
+      // Base
+      [CHAIN_IDS.BASE_SEPOLIA]: {
+        chainId: `0x${CHAIN_IDS.BASE_SEPOLIA.toString(16)}`,
+        chainName: "Base Sepolia",
+        nativeCurrency: {
+          name: "ETH",
+          symbol: "ETH",
+          decimals: 18,
+        },
+        rpcUrls: ["https://sepolia.base.org"],
+        blockExplorerUrls: ["https://sepolia.basescan.org/"],
+      },
+      [CHAIN_IDS.BASE]: {
+        chainId: `0x${CHAIN_IDS.BASE.toString(16)}`,
+        chainName: "Base",
+        nativeCurrency: {
+          name: "ETH",
+          symbol: "ETH",
+          decimals: 18,
+        },
+        rpcUrls: ["https://mainnet.base.org"],
+        blockExplorerUrls: ["https://basescan.org/"],
+      },
+      // Optimism
+      [CHAIN_IDS.OPTIMISM_SEPOLIA]: {
+        chainId: `0x${CHAIN_IDS.OPTIMISM_SEPOLIA.toString(16)}`,
+        chainName: "Optimism Sepolia",
+        nativeCurrency: {
+          name: "ETH",
+          symbol: "ETH",
+          decimals: 18,
+        },
+        rpcUrls: ["https://sepolia.optimism.io"],
+        blockExplorerUrls: ["https://sepolia-optimistic.etherscan.io/"],
+      },
+      [CHAIN_IDS.OPTIMISM]: {
+        chainId: `0x${CHAIN_IDS.OPTIMISM.toString(16)}`,
+        chainName: "Optimism",
+        nativeCurrency: {
+          name: "ETH",
+          symbol: "ETH",
+          decimals: 18,
+        },
+        rpcUrls: ["https://mainnet.optimism.io"],
+        blockExplorerUrls: ["https://optimistic.etherscan.io/"],
+      },
+      // Moonbeam
       [CHAIN_IDS.MOONBASE]: {
         chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}`,
         chainName: "Moonbase Alpha",
@@ -137,6 +184,7 @@ class EVMWalletBase implements WalletProvider {
         rpcUrls: ["https://rpc.api.moonbeam.network"],
         blockExplorerUrls: ["https://moonbeam.moonscan.io/"],
       },
+      // Legacy
       [CHAIN_IDS.ASTAR]: {
         chainId: `0x${CHAIN_IDS.ASTAR.toString(16)}`,
         chainName: "Astar",
@@ -354,6 +402,45 @@ class TalismanWallet extends EVMWalletBase {
 }
 
 /**
+ * Coinbase Wallet provider implementation
+ * @class CoinbaseWallet
+ * @extends EVMWalletBase
+ * @description Integrates with Coinbase Wallet for Base ecosystem support.
+ * Coinbase Wallet is recommended for Base chain users with seamless integration.
+ * @example
+ * ```typescript
+ * const coinbase = new CoinbaseWallet();
+ * if (coinbase.isInstalled()) {
+ *   const address = await coinbase.connect();
+ *   await coinbase.switchChain(8453); // Base
+ * }
+ * ```
+ */
+class CoinbaseWallet extends EVMWalletBase {
+  private installationChecks = 0;
+
+  constructor() {
+    // Coinbase Wallet injects as window.ethereum with isCoinbaseWallet flag
+    // or as window.coinbaseWalletExtension
+    const provider =
+      typeof window !== "undefined"
+        ? window.coinbaseWalletExtension ||
+          (window.ethereum?.isCoinbaseWallet ? window.ethereum : null)
+        : null;
+
+    super("Coinbase Wallet", "coinbase", provider);
+  }
+
+  isInstalled(): boolean {
+    this.installationChecks++;
+    if (typeof window === "undefined") return false;
+    return Boolean(
+      window.coinbaseWalletExtension || window.ethereum?.isCoinbaseWallet,
+    );
+  }
+}
+
+/**
  * React hook for managing multiple cryptocurrency wallets
  * @function useWallet
  * @description Provides access to various wallet providers including MetaMask, Coinbase, Tally, Brave, and Polkadot.
@@ -382,6 +469,7 @@ class TalismanWallet extends EVMWalletBase {
 export function useWallet() {
   const wallets: WalletProvider[] = [
     new MetaMaskWallet(),
+    new CoinbaseWallet(),
     new SubWallet(),
     new TalismanWallet(),
     new WalletConnect(),

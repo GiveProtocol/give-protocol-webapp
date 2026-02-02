@@ -4,11 +4,14 @@ import * as Sentry from "@sentry/react";
 import { ToastProvider } from "./contexts/ToastContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Web3Provider } from "./contexts/Web3Context";
+import { ChainProvider } from "./contexts/ChainContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { CurrencyProvider } from "./contexts/CurrencyContext";
 import { AppRoutes } from "./routes";
 import { Layout } from "./components/layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { ChainSelectionModal } from "./components/web3/ChainSelectionModal";
+import { useOnboarding } from "./hooks/useOnboarding";
 import { MonitoringService } from "./utils/monitoring";
 import { ENV } from "./config/env";
 
@@ -46,7 +49,9 @@ const AuthWeb3Providers = ({ children }: { children: React.ReactNode }) => (
   <AuthProvider>
     <SettingsProvider>
       <CurrencyProvider>
-        <Web3Provider>{children}</Web3Provider>
+        <ChainProvider>
+          <Web3Provider>{children}</Web3Provider>
+        </ChainProvider>
       </CurrencyProvider>
     </SettingsProvider>
   </AuthProvider>
@@ -59,11 +64,26 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
   </CoreProviders>
 );
 
+// Chain selection wrapper for onboarding
+const ChainOnboarding = () => {
+  const { showChainSelection, completeOnboarding } = useOnboarding();
+
+  return (
+    <ChainSelectionModal
+      isOpen={showChainSelection}
+      onComplete={completeOnboarding}
+    />
+  );
+};
+
 // Router wrapper component (Router is now provided by entry files)
 const AppRouter = () => (
-  <Layout>
-    <AppRoutes />
-  </Layout>
+  <>
+    <Layout>
+      <AppRoutes />
+    </Layout>
+    <ChainOnboarding />
+  </>
 );
 
 /**
