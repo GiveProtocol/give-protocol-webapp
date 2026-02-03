@@ -4,6 +4,84 @@ import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { useChain, type ChainConfig, type ChainId } from "@/contexts/ChainContext";
 
+/**
+ * Get description for a chain
+ * @param chainId - The chain ID
+ * @returns Description string for the chain
+ */
+function getChainDescription(chainId: number): string {
+  const descriptions: Record<number, string> = {
+    8453: "Best for Coinbase users. Low fees, fast transactions.",
+    10: "Ethereum Layer 2 with strong DeFi ecosystem.",
+    1284: "Polkadot ecosystem with cross-chain compatibility.",
+  };
+  return descriptions[chainId] || "Blockchain network";
+}
+
+interface ChainOptionProps {
+  chain: ChainConfig;
+  isSelected: boolean;
+  onSelect: (_e: React.MouseEvent<HTMLButtonElement>) => void;
+}
+
+/**
+ * Individual chain option button
+ * @param props - Component props
+ * @returns Chain option button component
+ */
+const ChainOption: React.FC<ChainOptionProps> = ({
+  chain,
+  isSelected,
+  onSelect,
+}) => (
+  <button
+    type="button"
+    onClick={onSelect}
+    data-chain-id={chain.id}
+    className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
+      isSelected
+        ? "border-indigo-500 bg-indigo-50"
+        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+    }`}
+  >
+    {/* Chain Icon */}
+    <div
+      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
+      style={{ backgroundColor: chain.color }}
+    >
+      {chain.shortName.charAt(0).toUpperCase()}
+    </div>
+
+    {/* Chain Info */}
+    <div className="flex-1">
+      <div className="flex items-center gap-2">
+        <span className="font-semibold text-gray-900">{chain.name}</span>
+        <span
+          className="text-xs px-2 py-0.5 rounded-full"
+          style={{
+            backgroundColor: `${chain.color}20`,
+            color: chain.color,
+          }}
+        >
+          {chain.ecosystem}
+        </span>
+      </div>
+      <p className="text-sm text-gray-500 mt-1">
+        {getChainDescription(chain.id)}
+      </p>
+    </div>
+
+    {/* Selection Indicator */}
+    <div
+      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
+        isSelected ? "border-indigo-500 bg-indigo-500" : "border-gray-300"
+      }`}
+    >
+      {isSelected && <Check className="w-4 h-4 text-white" />}
+    </div>
+  </button>
+);
+
 interface ChainSelectionModalProps {
   /** Whether the modal is open */
   isOpen: boolean;
@@ -138,77 +216,3 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
     </div>
   );
 };
-
-interface ChainOptionProps {
-  chain: ChainConfig;
-  isSelected: boolean;
-  onSelect: (_e: React.MouseEvent<HTMLButtonElement>) => void;
-}
-
-/**
- * Individual chain option button
- */
-const ChainOption: React.FC<ChainOptionProps> = ({
-  chain,
-  isSelected,
-  onSelect,
-}) => (
-  <button
-    type="button"
-    onClick={onSelect}
-    data-chain-id={chain.id}
-      className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
-        isSelected
-          ? "border-indigo-500 bg-indigo-50"
-          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-      }`}
-    >
-      {/* Chain Icon */}
-      <div
-        className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-        style={{ backgroundColor: chain.color }}
-      >
-        {chain.shortName.charAt(0).toUpperCase()}
-      </div>
-
-      {/* Chain Info */}
-      <div className="flex-1">
-        <div className="flex items-center gap-2">
-          <span className="font-semibold text-gray-900">{chain.name}</span>
-          <span
-            className="text-xs px-2 py-0.5 rounded-full"
-            style={{
-              backgroundColor: `${chain.color}20`,
-              color: chain.color,
-            }}
-          >
-            {chain.ecosystem}
-          </span>
-        </div>
-        <p className="text-sm text-gray-500 mt-1">
-          {getChainDescription(chain.id)}
-        </p>
-      </div>
-
-      {/* Selection Indicator */}
-      <div
-        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-          isSelected ? "border-indigo-500 bg-indigo-500" : "border-gray-300"
-        }`}
-      >
-        {isSelected && <Check className="w-4 h-4 text-white" />}
-      </div>
-    </button>
-);
-
-/**
- * Get description for a chain
- */
-function getChainDescription(chainId: number): string {
-  const descriptions: Record<number, string> = {
-    8453: "Best for Coinbase users. Low fees, fast transactions.",
-    10: "Ethereum Layer 2 with strong DeFi ecosystem.",
-    1284: "Polkadot ecosystem with cross-chain compatibility.",
-  };
-  return descriptions[chainId] || "Blockchain network";
-}

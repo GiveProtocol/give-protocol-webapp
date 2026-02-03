@@ -7,7 +7,8 @@ import React, {
 } from "react";
 import { ethers } from "ethers";
 import { Logger } from "@/utils/logger";
-import { CHAIN_IDS } from "@/config/contracts";
+import { CHAIN_CONFIGS, type ChainId } from "@/config/contracts";
+import { useChain } from "./ChainContext";
 
 // EIP-1193 Provider interface
 interface EIP1193Provider {
@@ -83,50 +84,61 @@ function isEventObject(value: unknown): boolean {
 }
 
 /**
- * Moonbase Alpha chain configuration for wallet_addEthereumChain
+ * Builds wallet_addEthereumChain params from chain config
+ * @param chainId - The chain ID to get params for
+ * @returns Chain params for wallet_addEthereumChain or null if unsupported
  */
-const MOONBASE_CHAIN_INFO = {
-  chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}`,
-  chainName: "Moonbase Alpha",
-  nativeCurrency: {
-    name: "DEV",
-    symbol: "DEV",
-    decimals: 18,
-  },
-  rpcUrls: ["https://rpc.api.moonbase.moonbeam.network"],
-  blockExplorerUrls: ["https://moonbase.moonscan.io/"],
-};
+function getChainParams(chainId: ChainId) {
+  const config = CHAIN_CONFIGS[chainId];
+  if (!config) return null;
+
+  return {
+    chainId: `0x${chainId.toString(16)}`,
+    chainName: config.name,
+    nativeCurrency: config.nativeCurrency,
+    rpcUrls: config.rpcUrls,
+    blockExplorerUrls: config.blockExplorerUrls,
+  };
+}
 
 /**
- * Attempts to switch to Moonbase Alpha network
+ * Attempts to switch to a specified network
  * @param walletProvider - The EIP-1193 wallet provider
+ * @param chainId - The target chain ID
  * @throws Error if user rejects or switch fails
  */
-async function switchToMoonbaseAlpha(
+async function switchToChain(
   walletProvider: EIP1193Provider,
+  chainId: ChainId,
 ): Promise<void> {
+  const chainParams = getChainParams(chainId);
+  if (!chainParams) {
+    throw new Error(`Unsupported chain: ${chainId}`);
+  }
+
   try {
     await walletProvider.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: `0x${CHAIN_IDS.MOONBASE.toString(16)}` }],
+      params: [{ chainId: chainParams.chainId }],
     });
-    Logger.info("Switched network", { chainId: CHAIN_IDS.MOONBASE });
+    Logger.info("Switched network", { chainId });
   } catch (switchError: unknown) {
     // Chain not added - try to add it
     if (hasErrorCode(switchError, 4902)) {
       await walletProvider.request({
         method: "wallet_addEthereumChain",
-        params: [MOONBASE_CHAIN_INFO],
+        params: [chainParams],
       });
-      Logger.info("Added Moonbase Alpha network");
+      Logger.info("Added network", { chainId, name: chainParams.chainName });
       return;
     }
     // User rejected
     if (hasErrorCode(switchError, 4001)) {
-      throw new Error("Please switch to Moonbase Alpha (TestNet)");
+      const config = CHAIN_CONFIGS[chainId];
+      throw new Error(`Please switch to ${config?.name || "the selected network"}`);
     }
     // Other errors
-    Logger.error("Failed to switch to Moonbase Alpha", { error: switchError });
+    Logger.error("Failed to switch network", { error: switchError, chainId });
     throw new Error("Failed to switch network. Please try again.");
   }
 }
@@ -152,6 +164,9 @@ const Web3Context = createContext<Web3ContextType | undefined>(undefined);
  * @param children - React components to wrap with Web3 context
  */
 export function Web3Provider({ children }: { children: React.ReactNode }) {
+  // Get selected chain from ChainContext
+  const { selectedChainId } = useChain();
+
   const [provider, setProvider] = useState<ethers.Provider | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [address, setAddress] = useState<string | null>(null);
@@ -320,30 +335,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         throw new Error("No wallet provider found");
       }
 
-      try {
-        await walletProvider.request({
-          method: "wallet_switchEthereumChain",
-          params: [{ chainId: `0x${targetChainId.toString(16)}` }],
-        });
-        Logger.info("Switched network", { chainId: targetChainId });
-      } catch (error: unknown) {
-        // If the chain hasn't been added to wallet
-        if (hasErrorCode(error, 4902)) {
-          try {
-            await walletProvider.request({
-              method: "wallet_addEthereumChain",
-              params: [MOONBASE_CHAIN_INFO],
-            });
-            Logger.info("Added Moonbase Alpha network");
-          } catch (addError) {
-            Logger.error("Failed to add network", { error: addError });
-            throw new Error("Failed to add Moonbase Alpha network");
-          }
-        } else {
-          Logger.error("Failed to switch network", { error });
-          throw error;
-        }
+      if (!isEIP1193Provider(walletProvider)) {
+        throw new Error("Invalid wallet provider");
       }
+
+      await switchToChain(walletProvider, targetChainId as ChainId);
     },
     [currentWalletProvider],
   );
@@ -394,9 +390,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       const initialNetwork = await initialProvider.getNetwork();
       const currentChainId = Number(initialNetwork.chainId);
 
-      // Switch to Moonbase Alpha if on wrong network
-      if (currentChainId !== CHAIN_IDS.MOONBASE) {
-        await switchToMoonbaseAlpha(walletProvider);
+      // Switch to selected chain if on wrong network
+      if (currentChainId !== selectedChainId) {
+        await switchToChain(walletProvider, selectedChainId);
       }
 
       // Create provider AFTER chain switch is complete
@@ -442,7 +438,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       setIsConnecting(false);
       isConnectingRef.current = false;
     }
-  }, []);
+  }, [selectedChainId]);
 
   const disconnect = useCallback(async () => {
     try {

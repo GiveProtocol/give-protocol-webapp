@@ -44,17 +44,27 @@ const CoreProviders = ({ children }: { children: React.ReactNode }) => (
   </QueryClientProvider>
 );
 
-// Auth and Web3 providers
-const AuthWeb3Providers = ({ children }: { children: React.ReactNode }) => (
+// Auth and settings providers (max 4 levels)
+const AuthSettingsProviders = ({ children }: { children: React.ReactNode }) => (
   <AuthProvider>
     <SettingsProvider>
-      <CurrencyProvider>
-        <ChainProvider>
-          <Web3Provider>{children}</Web3Provider>
-        </ChainProvider>
-      </CurrencyProvider>
+      <CurrencyProvider>{children}</CurrencyProvider>
     </SettingsProvider>
   </AuthProvider>
+);
+
+// Chain and Web3 providers (max 2 levels)
+const ChainWeb3Providers = ({ children }: { children: React.ReactNode }) => (
+  <ChainProvider>
+    <Web3Provider>{children}</Web3Provider>
+  </ChainProvider>
+);
+
+// Auth and Web3 providers combined
+const AuthWeb3Providers = ({ children }: { children: React.ReactNode }) => (
+  <AuthSettingsProviders>
+    <ChainWeb3Providers>{children}</ChainWeb3Providers>
+  </AuthSettingsProviders>
 );
 
 // Combined providers component
