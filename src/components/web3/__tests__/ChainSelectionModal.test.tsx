@@ -54,9 +54,7 @@ describe("ChainSelectionModal", () => {
         </TestWrapper>,
       );
 
-      expect(
-        screen.getByText("Welcome to Give Protocol"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Welcome to Give Protocol")).toBeInTheDocument();
     });
   });
 
@@ -185,7 +183,10 @@ describe("ChainSelectionModal", () => {
 
       const dialog = screen.getByRole("dialog");
       expect(dialog).toHaveAttribute("aria-modal", "true");
-      expect(dialog).toHaveAttribute("aria-labelledby", "chain-selection-title");
+      expect(dialog).toHaveAttribute(
+        "aria-labelledby",
+        "chain-selection-title",
+      );
     });
 
     it("has accessible chain selection buttons", () => {
@@ -221,9 +222,7 @@ describe("ChainSelectionModal", () => {
         </TestWrapper>,
       );
 
-      expect(
-        screen.getByText(/Best for Coinbase users/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Best for Coinbase users/i)).toBeInTheDocument();
     });
   });
 });

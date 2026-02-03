@@ -2,7 +2,11 @@ import React, { useCallback, useState } from "react";
 import { Check, Wallet, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { useChain, type ChainConfig, type ChainId } from "@/contexts/ChainContext";
+import {
+  useChain,
+  type ChainConfig,
+  type ChainId,
+} from "@/contexts/ChainContext";
 
 /**
  * Get description for a chain
@@ -133,7 +137,8 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
       selectChain(selectedId);
       onComplete();
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : "Failed to select network";
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to select network";
       setError(errorMessage);
     } finally {
       setIsProcessing(false);
@@ -158,10 +163,7 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
           <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
             <Wallet className="w-8 h-8" />
           </div>
-          <h2
-            id="chain-selection-title"
-            className="text-2xl font-bold mb-2"
-          >
+          <h2 id="chain-selection-title" className="text-2xl font-bold mb-2">
             Welcome to Give Protocol
           </h2>
           <p className="text-indigo-100">

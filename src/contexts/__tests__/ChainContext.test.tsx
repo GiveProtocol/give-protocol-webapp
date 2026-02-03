@@ -136,7 +136,8 @@ describe("ChainContext", () => {
         </ChainProvider>,
       );
 
-      const availableChains = screen.getByTestId("available-chains").textContent;
+      const availableChains =
+        screen.getByTestId("available-chains").textContent;
       // Should include mainnet chains
       expect(availableChains).toContain("8453"); // Base
       expect(availableChains).toContain("10"); // Optimism
