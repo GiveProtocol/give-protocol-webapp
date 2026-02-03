@@ -135,7 +135,9 @@ async function switchToChain(
     // User rejected
     if (hasErrorCode(switchError, 4001)) {
       const config = CHAIN_CONFIGS[chainId];
-      throw new Error(`Please switch to ${config?.name || "the selected network"}`);
+      throw new Error(
+        `Please switch to ${config?.name || "the selected network"}`,
+      );
     }
     // Other errors
     Logger.error("Failed to switch network", { error: switchError, chainId });
@@ -344,101 +346,104 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     [currentWalletProvider],
   );
 
-  const connect = useCallback(async (_walletProvider?: unknown) => {
-    // Resolve wallet provider (ignore events from onClick={connect})
-    const walletProvider = isEventObject(_walletProvider)
-      ? window.ethereum
-      : _walletProvider || window.ethereum;
+  const connect = useCallback(
+    async (_walletProvider?: unknown) => {
+      // Resolve wallet provider (ignore events from onClick={connect})
+      const walletProvider = isEventObject(_walletProvider)
+        ? window.ethereum
+        : _walletProvider || window.ethereum;
 
-    if (!walletProvider) {
-      const error = new Error(
-        "No wallet provider found. Please install a wallet extension.",
-      );
-      Logger.error("Wallet provider not found", { error });
-      setError(error);
-      throw error;
-    }
-
-    if (!isEIP1193Provider(walletProvider)) {
-      const error = new Error(
-        "Wallet provider is not EIP-1193 compliant. Please try refreshing the page.",
-      );
-      Logger.error("Invalid wallet provider", {
-        hasRequest: typeof (walletProvider as { request?: unknown }).request,
-        providerType: typeof walletProvider,
-      });
-      setError(error);
-      throw error;
-    }
-
-    try {
-      setIsConnecting(true);
-      isConnectingRef.current = true;
-      setError(null);
-
-      // Request account access
-      const accounts = (await walletProvider.request({
-        method: "eth_requestAccounts",
-      })) as string[];
-
-      if (!accounts || accounts.length === 0) {
-        throw new Error("No accounts found");
-      }
-
-      // Check if we need to switch networks
-      const initialProvider = new ethers.BrowserProvider(walletProvider);
-      const initialNetwork = await initialProvider.getNetwork();
-      const currentChainId = Number(initialNetwork.chainId);
-
-      // Switch to selected chain if on wrong network
-      if (currentChainId !== selectedChainId) {
-        await switchToChain(walletProvider, selectedChainId);
-      }
-
-      // Create provider AFTER chain switch is complete
-      const provider = new ethers.BrowserProvider(walletProvider);
-      const signer = await provider.getSigner();
-      const finalNetwork = await provider.getNetwork();
-      const finalChainId = Number(finalNetwork.chainId);
-
-      // Set all state atomically after all operations succeed
-      setProvider(provider);
-      setSigner(signer);
-      setCurrentWalletProvider(walletProvider);
-      setChainId(finalChainId);
-      setAddress(accounts[0]);
-
-      Logger.info("Wallet connected successfully", {
-        address: accounts[0],
-        chainId: finalChainId,
-      });
-    } catch (err: unknown) {
-      // Clear any partial state on error
-      setProvider(null);
-      setSigner(null);
-      setCurrentWalletProvider(null);
-      setChainId(null);
-      setAddress(null);
-
-      // Handle user rejected request
-      if (hasErrorCode(err, 4001)) {
-        const error = new Error("User rejected wallet connection");
+      if (!walletProvider) {
+        const error = new Error(
+          "No wallet provider found. Please install a wallet extension.",
+        );
+        Logger.error("Wallet provider not found", { error });
         setError(error);
         throw error;
       }
 
-      // Handle other errors
-      const message =
-        err instanceof Error ? err.message : "Failed to connect wallet";
-      const error = new Error(message);
-      Logger.error("Wallet connection failed", { error });
-      setError(error);
-      throw error;
-    } finally {
-      setIsConnecting(false);
-      isConnectingRef.current = false;
-    }
-  }, [selectedChainId]);
+      if (!isEIP1193Provider(walletProvider)) {
+        const error = new Error(
+          "Wallet provider is not EIP-1193 compliant. Please try refreshing the page.",
+        );
+        Logger.error("Invalid wallet provider", {
+          hasRequest: typeof (walletProvider as { request?: unknown }).request,
+          providerType: typeof walletProvider,
+        });
+        setError(error);
+        throw error;
+      }
+
+      try {
+        setIsConnecting(true);
+        isConnectingRef.current = true;
+        setError(null);
+
+        // Request account access
+        const accounts = (await walletProvider.request({
+          method: "eth_requestAccounts",
+        })) as string[];
+
+        if (!accounts || accounts.length === 0) {
+          throw new Error("No accounts found");
+        }
+
+        // Check if we need to switch networks
+        const initialProvider = new ethers.BrowserProvider(walletProvider);
+        const initialNetwork = await initialProvider.getNetwork();
+        const currentChainId = Number(initialNetwork.chainId);
+
+        // Switch to selected chain if on wrong network
+        if (currentChainId !== selectedChainId) {
+          await switchToChain(walletProvider, selectedChainId);
+        }
+
+        // Create provider AFTER chain switch is complete
+        const provider = new ethers.BrowserProvider(walletProvider);
+        const signer = await provider.getSigner();
+        const finalNetwork = await provider.getNetwork();
+        const finalChainId = Number(finalNetwork.chainId);
+
+        // Set all state atomically after all operations succeed
+        setProvider(provider);
+        setSigner(signer);
+        setCurrentWalletProvider(walletProvider);
+        setChainId(finalChainId);
+        setAddress(accounts[0]);
+
+        Logger.info("Wallet connected successfully", {
+          address: accounts[0],
+          chainId: finalChainId,
+        });
+      } catch (err: unknown) {
+        // Clear any partial state on error
+        setProvider(null);
+        setSigner(null);
+        setCurrentWalletProvider(null);
+        setChainId(null);
+        setAddress(null);
+
+        // Handle user rejected request
+        if (hasErrorCode(err, 4001)) {
+          const error = new Error("User rejected wallet connection");
+          setError(error);
+          throw error;
+        }
+
+        // Handle other errors
+        const message =
+          err instanceof Error ? err.message : "Failed to connect wallet";
+        const error = new Error(message);
+        Logger.error("Wallet connection failed", { error });
+        setError(error);
+        throw error;
+      } finally {
+        setIsConnecting(false);
+        isConnectingRef.current = false;
+      }
+    },
+    [selectedChainId],
+  );
 
   const disconnect = useCallback(async () => {
     try {
