@@ -3,6 +3,7 @@ import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ChainSelectionModal } from "../ChainSelectionModal";
 import { ChainProvider, CHAIN_IDS } from "@/contexts/ChainContext";
+import { Web3Provider } from "@/contexts/Web3Context";
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -23,9 +24,11 @@ const localStorageMock = (() => {
 
 Object.defineProperty(window, "localStorage", { value: localStorageMock });
 
-// Wrapper component with ChainProvider
+// Wrapper component with ChainProvider and Web3Provider
 const TestWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <ChainProvider>{children}</ChainProvider>
+  <ChainProvider>
+    <Web3Provider>{children}</Web3Provider>
+  </ChainProvider>
 );
 
 describe("ChainSelectionModal", () => {
@@ -222,7 +225,7 @@ describe("ChainSelectionModal", () => {
         </TestWrapper>,
       );
 
-      expect(screen.getByText(/Best for Coinbase users/i)).toBeInTheDocument();
+      expect(screen.getByText(/Fast, secure, and powered by Coinbase/i)).toBeInTheDocument();
     });
   });
 });

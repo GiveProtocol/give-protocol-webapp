@@ -1,90 +1,11 @@
 import React, { useCallback, useState } from "react";
-import { Check, Wallet, ArrowRight } from "lucide-react";
-import { Card } from "@/components/ui/Card";
-import { Button } from "@/components/ui/Button";
+import { Wallet, ArrowRight } from "lucide-react";
+import { NetworkGrid } from "./NetworkGrid";
 import {
   useChain,
-  type ChainConfig,
   type ChainId,
 } from "@/contexts/ChainContext";
-
-/**
- * Get description for a chain
- * @param chainId - The chain ID
- * @returns Description string for the chain
- */
-function getChainDescription(chainId: number): string {
-  const descriptions: Record<number, string> = {
-    8453: "Best for Coinbase users. Low fees, fast transactions.",
-    10: "Ethereum Layer 2 with strong DeFi ecosystem.",
-    1284: "Polkadot ecosystem with cross-chain compatibility.",
-  };
-  return descriptions[chainId] || "Blockchain network";
-}
-
-interface ChainOptionProps {
-  chain: ChainConfig;
-  isSelected: boolean;
-  onSelect: (_e: React.MouseEvent<HTMLButtonElement>) => void;
-}
-
-/**
- * Individual chain option button
- * @param props - Component props
- * @returns Chain option button component
- */
-const ChainOption: React.FC<ChainOptionProps> = ({
-  chain,
-  isSelected,
-  onSelect,
-}) => (
-  <button
-    type="button"
-    onClick={onSelect}
-    data-chain-id={chain.id}
-    className={`w-full p-4 rounded-xl border-2 transition-all duration-200 text-left flex items-center gap-4 ${
-      isSelected
-        ? "border-indigo-500 bg-indigo-50"
-        : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-    }`}
-  >
-    {/* Chain Icon */}
-    <div
-      className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg"
-      style={{ backgroundColor: chain.color }}
-    >
-      {chain.shortName.charAt(0).toUpperCase()}
-    </div>
-
-    {/* Chain Info */}
-    <div className="flex-1">
-      <div className="flex items-center gap-2">
-        <span className="font-semibold text-gray-900">{chain.name}</span>
-        <span
-          className="text-xs px-2 py-0.5 rounded-full"
-          style={{
-            backgroundColor: `${chain.color}20`,
-            color: chain.color,
-          }}
-        >
-          {chain.ecosystem}
-        </span>
-      </div>
-      <p className="text-sm text-gray-500 mt-1">
-        {getChainDescription(chain.id)}
-      </p>
-    </div>
-
-    {/* Selection Indicator */}
-    <div
-      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
-        isSelected ? "border-indigo-500 bg-indigo-500" : "border-gray-300"
-      }`}
-    >
-      {isSelected && <Check className="w-4 h-4 text-white" />}
-    </div>
-  </button>
-);
+import { useWeb3 } from "@/contexts/Web3Context";
 
 interface ChainSelectionModalProps {
   /** Whether the modal is open */
@@ -106,6 +27,7 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
   detectedChainId,
 }) => {
   const { availableChains, selectChain, isSupported } = useChain();
+  const { isConnected, switchChain, chainId: walletChainId } = useWeb3();
 
   // Initialize with detected chain if supported, otherwise null
   const [selectedId, setSelectedId] = useState<ChainId | null>(() => {
@@ -134,7 +56,14 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
     setError(null);
 
     try {
+      // Store the selection in app state
       selectChain(selectedId);
+
+      // If wallet is connected and on a different chain, switch to selected network
+      if (isConnected && walletChainId !== selectedId) {
+        await switchChain(selectedId);
+      }
+
       onComplete();
     } catch (err) {
       const errorMessage =
@@ -143,7 +72,7 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedId, selectChain, onComplete]);
+  }, [selectedId, selectChain, onComplete, isConnected, walletChainId, switchChain]);
 
   if (!isOpen) return null;
 
@@ -157,36 +86,37 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
       aria-modal="true"
       aria-labelledby="chain-selection-title"
     >
-      <Card className="w-full max-w-lg shadow-2xl rounded-2xl animate-slideIn overflow-hidden">
+      <div
+        className="w-full max-w-2xl rounded-2xl animate-slideIn overflow-hidden
+          bg-white/[0.05] backdrop-blur-xl border border-white/[0.10]
+          shadow-[0_8px_32px_rgba(0,0,0,0.4)]"
+      >
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-8 text-white text-center">
-          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Wallet className="w-8 h-8" />
+        <div className="px-6 pt-8 pb-6 text-center border-b border-white/[0.08]">
+          <div className="w-14 h-14 bg-white/[0.08] border border-white/[0.12] rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Wallet className="w-7 h-7 text-gray-300" />
           </div>
-          <h2 id="chain-selection-title" className="text-2xl font-bold mb-2">
+          <h2 id="chain-selection-title" className="text-xl font-semibold text-white mb-1">
             Welcome to Give Protocol
           </h2>
-          <p className="text-indigo-100">
+          <p className="text-sm text-gray-400">
             Choose your preferred network to get started
           </p>
         </div>
 
-        {/* Chain Options */}
-        <div className="p-6 space-y-3">
-          {mainnetChains.map((chain) => (
-            <ChainOption
-              key={chain.id}
-              chain={chain}
-              isSelected={selectedId === chain.id}
-              onSelect={handleChainSelect}
-            />
-          ))}
+        {/* Network Grid */}
+        <div className="p-6">
+          <NetworkGrid
+            chains={mainnetChains}
+            selectedChainId={selectedId}
+            onChainSelect={handleChainSelect}
+          />
         </div>
 
         {/* Footer */}
         <div className="px-6 pb-6">
           {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+            <div className="mb-4 p-3 bg-red-500/[0.1] border border-red-500/[0.2] rounded-lg text-sm text-red-300">
               {error}
             </div>
           )}
@@ -195,11 +125,17 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
             You can switch networks anytime from the menu
           </p>
 
-          <Button
+          <button
+            type="button"
             onClick={handleContinue}
             disabled={!selectedId || isProcessing}
-            className="w-full"
-            size="lg"
+            className="w-full py-3 text-base font-medium rounded-xl
+              bg-white/[0.08] backdrop-blur-sm border border-white/[0.12]
+              text-white transition-all duration-200
+              hover:bg-white/[0.14] hover:border-white/[0.20]
+              focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+              disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white/[0.08]
+              inline-flex items-center justify-center"
           >
             {isProcessing ? (
               <>
@@ -212,9 +148,9 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
                 <ArrowRight className="w-5 h-5 ml-2" />
               </>
             )}
-          </Button>
+          </button>
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

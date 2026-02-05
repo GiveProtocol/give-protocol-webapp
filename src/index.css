@@ -74,6 +74,22 @@
   -webkit-backdrop-filter: blur(var(--backdropBackgroundBlur));
 }
 
+@layer utilities {
+  .scrollbar-styled {
+    scrollbar-width: thin;
+    scrollbar-color: #6366f1 transparent;
+  }
+  .scrollbar-styled::-webkit-scrollbar { width: 6px; }
+  .scrollbar-styled::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-styled::-webkit-scrollbar-thumb {
+    background-color: #6366f1;
+    border-radius: 3px;
+  }
+  .scrollbar-styled::-webkit-scrollbar-thumb:hover {
+    background-color: #818cf8;
+  }
+}
+
 /* Smooth animations */
 @layer utilities {
   /* Fade in animations */

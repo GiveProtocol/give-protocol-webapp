@@ -55,6 +55,7 @@ export interface ChainConfig {
   color: string;
   ecosystem: string;
   isTestnet: boolean;
+  description: string;
 }
 
 /**
@@ -73,6 +74,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     color: "#0052FF",
     ecosystem: "Coinbase",
     isTestnet: true,
+    description: "Base testnet for development and testing.",
   },
   [CHAIN_IDS.OPTIMISM_SEPOLIA]: {
     id: CHAIN_IDS.OPTIMISM_SEPOLIA,
@@ -85,6 +87,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     color: "#FF0420",
     ecosystem: "Ethereum L2",
     isTestnet: true,
+    description: "Optimism testnet for development and testing.",
   },
   [CHAIN_IDS.MOONBASE]: {
     id: CHAIN_IDS.MOONBASE,
@@ -97,6 +100,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     color: "#53CBC8",
     ecosystem: "Polkadot",
     isTestnet: true,
+    description: "Moonbeam testnet for development and testing.",
   },
 
   // ========== MAINNETS ==========
@@ -111,6 +115,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     color: "#0052FF",
     ecosystem: "Coinbase",
     isTestnet: false,
+    description: "Fast, secure, and powered by Coinbase.",
   },
   [CHAIN_IDS.OPTIMISM]: {
     id: CHAIN_IDS.OPTIMISM,
@@ -123,6 +128,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     color: "#FF0420",
     ecosystem: "Ethereum L2",
     isTestnet: false,
+    description: "Ethereum Layer 2 with strong DeFi ecosystem.",
   },
   [CHAIN_IDS.MOONBEAM]: {
     id: CHAIN_IDS.MOONBEAM,
@@ -135,6 +141,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     color: "#53CBC8",
     ecosystem: "Polkadot",
     isTestnet: false,
+    description: "Polkadot ecosystem with cross-chain compatibility.",
   },
 };
 

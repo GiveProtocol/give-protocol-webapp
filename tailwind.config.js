@@ -34,6 +34,8 @@ export default {
       animation: {
         fadeIn: "fadeIn 0.3s ease-in-out",
         slideIn: "slideIn 0.3s ease-out",
+        breathe: "breathe 2.5s ease-in-out infinite",
+        staggerIn: "staggerIn 0.4s ease-out forwards",
       },
       keyframes: {
         fadeIn: {
@@ -43,6 +45,14 @@ export default {
         slideIn: {
           "0%": { opacity: "0", transform: "scale(0.95) translateY(-20px)" },
           "100%": { opacity: "1", transform: "scale(1) translateY(0)" },
+        },
+        breathe: {
+          "0%, 100%": { opacity: "0.4" },
+          "50%": { opacity: "0.8" },
+        },
+        staggerIn: {
+          "0%": { opacity: "0", transform: "translateY(12px) scale(0.96)" },
+          "100%": { opacity: "1", transform: "translateY(0) scale(1)" },
         },
       },
       typography: {
