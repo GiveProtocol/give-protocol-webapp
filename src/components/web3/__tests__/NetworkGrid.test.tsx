@@ -77,7 +77,9 @@ describe("NetworkGrid", () => {
       />,
     );
 
-    const comingSoonButtons = screen.getAllByRole("button", { name: /Coming Soon/i });
+    const comingSoonButtons = screen.getAllByRole("button", {
+      name: /Coming Soon/i,
+    });
     expect(comingSoonButtons).toHaveLength(2);
   });
 
@@ -91,7 +93,9 @@ describe("NetworkGrid", () => {
     );
 
     // 3 chains fills a row of 3, so auto-fill adds 1 placeholder
-    const comingSoonButtons = screen.getAllByRole("button", { name: /Coming Soon/i });
+    const comingSoonButtons = screen.getAllByRole("button", {
+      name: /Coming Soon/i,
+    });
     expect(comingSoonButtons).toHaveLength(1);
   });
 

@@ -79,8 +79,12 @@
     scrollbar-width: thin;
     scrollbar-color: #6366f1 transparent;
   }
-  .scrollbar-styled::-webkit-scrollbar { width: 6px; }
-  .scrollbar-styled::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-styled::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-styled::-webkit-scrollbar-track {
+    background: transparent;
+  }
   .scrollbar-styled::-webkit-scrollbar-thumb {
     background-color: #6366f1;
     border-radius: 3px;

@@ -1,10 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Wallet, ArrowRight } from "lucide-react";
 import { NetworkGrid } from "./NetworkGrid";
-import {
-  useChain,
-  type ChainId,
-} from "@/contexts/ChainContext";
+import { useChain, type ChainId } from "@/contexts/ChainContext";
 import { useWeb3 } from "@/contexts/Web3Context";
 
 interface ChainSelectionModalProps {
@@ -72,7 +69,14 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
     } finally {
       setIsProcessing(false);
     }
-  }, [selectedId, selectChain, onComplete, isConnected, walletChainId, switchChain]);
+  }, [
+    selectedId,
+    selectChain,
+    onComplete,
+    isConnected,
+    walletChainId,
+    switchChain,
+  ]);
 
   if (!isOpen) return null;
 
@@ -96,7 +100,10 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
           <div className="w-14 h-14 bg-white/[0.08] border border-white/[0.12] rounded-2xl flex items-center justify-center mx-auto mb-4">
             <Wallet className="w-7 h-7 text-gray-300" />
           </div>
-          <h2 id="chain-selection-title" className="text-xl font-semibold text-white mb-1">
+          <h2
+            id="chain-selection-title"
+            className="text-xl font-semibold text-white mb-1"
+          >
             Welcome to Give Protocol
           </h2>
           <p className="text-sm text-gray-400">

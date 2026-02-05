@@ -28,7 +28,11 @@ describe("NetworkCard", () => {
   describe("rendering", () => {
     it("renders chain name", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={false} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />,
       );
 
       expect(screen.getByText("Base")).toBeInTheDocument();
@@ -36,7 +40,11 @@ describe("NetworkCard", () => {
 
     it("renders ecosystem badge", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={false} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />,
       );
 
       expect(screen.getByText("Coinbase")).toBeInTheDocument();
@@ -44,15 +52,25 @@ describe("NetworkCard", () => {
 
     it("renders description", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={false} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />,
       );
 
-      expect(screen.getByText(/Fast, secure, and powered by Coinbase/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Fast, secure, and powered by Coinbase/i),
+      ).toBeInTheDocument();
     });
 
     it("renders chain icon", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={false} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />,
       );
 
       const icon = screen.getByAltText("Base icon");
@@ -64,7 +82,11 @@ describe("NetworkCard", () => {
   describe("selected state", () => {
     it("shows checkmark when selected", () => {
       const { container } = render(
-        <NetworkCard chain={mockChain} isSelected={true} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={true}
+          onSelect={mockOnSelect}
+        />,
       );
 
       // lucide-react Check icon renders as an SVG
@@ -74,7 +96,11 @@ describe("NetworkCard", () => {
 
     it("shows glow overlay when selected", () => {
       const { container } = render(
-        <NetworkCard chain={mockChain} isSelected={true} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={true}
+          onSelect={mockOnSelect}
+        />,
       );
 
       const glowDiv = container.querySelector(".animate-breathe");
@@ -83,7 +109,11 @@ describe("NetworkCard", () => {
 
     it("has aria-pressed true when selected", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={true} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={true}
+          onSelect={mockOnSelect}
+        />,
       );
 
       const button = screen.getByRole("button", { name: /Base/i });
@@ -94,7 +124,11 @@ describe("NetworkCard", () => {
   describe("interaction", () => {
     it("fires onSelect when clicked", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={false} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />,
       );
 
       const button = screen.getByRole("button", { name: /Base/i });
@@ -104,7 +138,11 @@ describe("NetworkCard", () => {
 
     it("passes chain id as data attribute", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={false} onSelect={mockOnSelect} />,
+        <NetworkCard
+          chain={mockChain}
+          isSelected={false}
+          onSelect={mockOnSelect}
+        />,
       );
 
       const button = screen.getByRole("button", { name: /Base/i });
