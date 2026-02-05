@@ -100,12 +100,12 @@ describe("authTestHelpers", () => {
   });
 
   describe("testAuthFlow", () => {
-    it("testAuthFlow function exists and is callable", () => {
+    it("testAuthFlow function exists and is callable", async () => {
       // testAuthFlow uses dynamic import('@testing-library/react') internally
       // which registers hooks and cannot be called inside test bodies.
       // We verify it exists and has the correct signature instead.
-      const { testAuthFlow } = require("../authTestHelpers");
-      expect(typeof testAuthFlow).toBe("function");
+      const mod = await import("../authTestHelpers");
+      expect(typeof mod.testAuthFlow).toBe("function");
     });
 
     it("sets up mock responses correctly for success flow", () => {

@@ -99,7 +99,8 @@ describe("CharityVettingForm", () => {
   it("validates required fields", async () => {
     renderForm();
     const form = screen.getByRole("button", { name: /submit/i }).closest("form");
-    fireEvent.submit(form!);
+    if (!form) throw new Error("Could not find form element");
+    fireEvent.submit(form);
 
     await waitFor(() => {
       expect(
@@ -114,7 +115,8 @@ describe("CharityVettingForm", () => {
 
     fireEvent.change(emailInput, { target: { value: "invalid-email" } });
     const form = screen.getByRole("button", { name: /submit/i }).closest("form");
-    fireEvent.submit(form!);
+    if (!form) throw new Error("Could not find form element");
+    fireEvent.submit(form);
 
     await waitFor(() => {
       expect(screen.getByText(/please enter a valid email address/i)).toBeInTheDocument();
@@ -131,7 +133,8 @@ describe("CharityVettingForm", () => {
       target: { value: "Different123!" },
     });
     const form = screen.getByRole("button", { name: /submit/i }).closest("form");
-    fireEvent.submit(form!);
+    if (!form) throw new Error("Could not find form element");
+    fireEvent.submit(form);
 
     await waitFor(() => {
       expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
@@ -181,7 +184,8 @@ describe("CharityVettingForm", () => {
     });
 
     const form = screen.getByRole("button", { name: /submit/i }).closest("form");
-    fireEvent.submit(form!);
+    if (!form) throw new Error("Could not find form element");
+    fireEvent.submit(form);
 
     await waitFor(() => {
       expect(screen.getByText(/registration failed/i)).toBeInTheDocument();
