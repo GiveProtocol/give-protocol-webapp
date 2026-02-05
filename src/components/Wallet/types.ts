@@ -15,7 +15,13 @@ export type WalletProviderType =
 /**
  * Supported network types
  */
-export type NetworkType = "polkadot" | "kusama" | "moonbeam" | "moonbase";
+export type NetworkType =
+  | "base"
+  | "optimism"
+  | "moonbeam"
+  | "base-sepolia"
+  | "optimism-sepolia"
+  | "moonbase";
 
 /**
  * Wallet balance information
@@ -129,10 +135,14 @@ export interface NetworkConfig {
  * Available networks configuration
  */
 export const NETWORKS: NetworkConfig[] = [
-  { id: "moonbase", name: "Moonbase Alpha", token: "DEV", color: "#53CBC8" },
+  // Mainnets
+  { id: "base", name: "Base", token: "ETH", color: "#0052FF" },
+  { id: "optimism", name: "Optimism", token: "ETH", color: "#FF0420" },
   { id: "moonbeam", name: "Moonbeam", token: "GLMR", color: "#53CBC8" },
-  { id: "polkadot", name: "Polkadot", token: "DOT", color: "#E6007A" },
-  { id: "kusama", name: "Kusama", token: "KSM", color: "#000000" },
+  // Testnets
+  { id: "base-sepolia", name: "Base Sepolia", token: "ETH", color: "#0052FF" },
+  { id: "optimism-sepolia", name: "OP Sepolia", token: "ETH", color: "#FF0420" },
+  { id: "moonbase", name: "Moonbase Alpha", token: "DEV", color: "#53CBC8" },
 ];
 
 /**

@@ -64,7 +64,7 @@ describe("NetworkCard", () => {
   describe("selected state", () => {
     it("shows checkmark when selected", () => {
       const { container } = render(
-        <NetworkCard chain={mockChain} isSelected={true} onSelect={mockOnSelect} />,
+        <NetworkCard chain={mockChain} isSelected onSelect={mockOnSelect} />,
       );
 
       // lucide-react Check icon renders as an SVG
@@ -74,7 +74,7 @@ describe("NetworkCard", () => {
 
     it("shows glow overlay when selected", () => {
       const { container } = render(
-        <NetworkCard chain={mockChain} isSelected={true} onSelect={mockOnSelect} />,
+        <NetworkCard chain={mockChain} isSelected onSelect={mockOnSelect} />,
       );
 
       const glowDiv = container.querySelector(".animate-breathe");
@@ -83,7 +83,7 @@ describe("NetworkCard", () => {
 
     it("has aria-pressed true when selected", () => {
       render(
-        <NetworkCard chain={mockChain} isSelected={true} onSelect={mockOnSelect} />,
+        <NetworkCard chain={mockChain} isSelected onSelect={mockOnSelect} />,
       );
 
       const button = screen.getByRole("button", { name: /Base/i });

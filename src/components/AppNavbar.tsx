@@ -325,25 +325,58 @@ export const AppNavbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [network, setNetwork] = useState<NetworkType>("moonbase");
+  const [network, setNetwork] = useState<NetworkType>("base");
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const { t } = useTranslation();
   const { userType, logout, user } = useAuth();
-  const { isConnected, address, disconnect, chainId } = useWeb3();
+  const { isConnected, address, disconnect, chainId, switchChain } = useWeb3();
 
   // Sync network state with chainId from Web3 context
   useEffect(() => {
-    if (chainId === 1284) {
-      setNetwork("moonbeam");
-    } else if (chainId === 1287) {
-      setNetwork("moonbase");
+    const chainIdToNetwork: Record<number, NetworkType> = {
+      // Mainnets
+      8453: "base",
+      10: "optimism",
+      1284: "moonbeam",
+      // Testnets
+      84532: "base-sepolia",
+      11155420: "optimism-sepolia",
+      1287: "moonbase",
+    };
+    const networkType = chainIdToNetwork[chainId ?? 0];
+    if (networkType) {
+      setNetwork(networkType);
     }
   }, [chainId]);
 
-  const handleNetworkChange = useCallback((_network: NetworkType) => {
-    setNetwork(_network);
-    // Network switching is handled by Web3Context's switchChain
-  }, []);
+  const handleNetworkChange = useCallback(
+    async (_network: NetworkType) => {
+      // Map network type to chain ID
+      const chainIds: Record<NetworkType, number> = {
+        // Mainnets
+        base: 8453,
+        optimism: 10,
+        moonbeam: 1284,
+        // Testnets
+        "base-sepolia": 84532,
+        "optimism-sepolia": 11155420,
+        moonbase: 1287,
+      };
+
+      const targetChainId = chainIds[_network];
+      if (targetChainId && isConnected) {
+        try {
+          await switchChain(targetChainId);
+          setNetwork(_network);
+        } catch (err) {
+          console.error("Failed to switch network:", err);
+        }
+      } else {
+        setNetwork(_network);
+      }
+    },
+    [isConnected, switchChain],
+  );
 
   const handleDisconnect = useCallback(async () => {
     try {
