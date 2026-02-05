@@ -1,4 +1,4 @@
-import { ENV } from "./env";
+import { getChainContractAddresses, type ChainContractAddresses } from "@/config/env";
 
 export const SUPPORTED_NETWORKS = {
   POLKADOT: "polkadot",
@@ -30,9 +30,6 @@ export const CHAIN_IDS = {
   BASE: 8453,
   OPTIMISM: 10,
   MOONBEAM: 1284,
-  // Legacy (to be removed)
-  ASTAR: 592,
-  POLYGON: 137,
 } as const;
 
 export type ChainId = (typeof CHAIN_IDS)[keyof typeof CHAIN_IDS];
@@ -136,32 +133,6 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     ecosystem: "Polkadot",
     isTestnet: false,
   },
-
-  // ========== LEGACY (placeholders) ==========
-  [CHAIN_IDS.ASTAR]: {
-    id: CHAIN_IDS.ASTAR,
-    name: "Astar",
-    shortName: "astar",
-    nativeCurrency: { name: "Astar", symbol: "ASTR", decimals: 18 },
-    rpcUrls: ["https://evm.astar.network"],
-    blockExplorerUrls: ["https://astar.subscan.io"],
-    iconPath: "/chains/astar.svg",
-    color: "#00BFFF",
-    ecosystem: "Polkadot",
-    isTestnet: false,
-  },
-  [CHAIN_IDS.POLYGON]: {
-    id: CHAIN_IDS.POLYGON,
-    name: "Polygon",
-    shortName: "polygon",
-    nativeCurrency: { name: "MATIC", symbol: "MATIC", decimals: 18 },
-    rpcUrls: ["https://polygon-rpc.com"],
-    blockExplorerUrls: ["https://polygonscan.com"],
-    iconPath: "/chains/polygon.svg",
-    color: "#8247E5",
-    ecosystem: "Polygon",
-    isTestnet: false,
-  },
 };
 
 /**
@@ -213,90 +184,26 @@ export function getAvailableChains(showTestnets: boolean): ChainConfig[] {
   return mainnetChains;
 }
 
-// Contract addresses for each network
-export const CONTRACT_ADDRESSES: Record<
-  ChainId,
-  {
-    DONATION: string | undefined;
-    VERIFICATION: string | undefined;
-    DISTRIBUTION: string | undefined;
-    TOKEN: string | undefined;
-    PORTFOLIO_FUNDS: string | undefined;
-    EXECUTOR: string | undefined;
-  }
-> = {
+// Contract addresses loaded from environment variables per chain
+export const CONTRACT_ADDRESSES: Record<ChainId, ChainContractAddresses> = {
   // Testnets
-  [CHAIN_IDS.BASE_SEPOLIA]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
-  [CHAIN_IDS.OPTIMISM_SEPOLIA]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
-  [CHAIN_IDS.MOONBASE]: {
-    DONATION: ENV.DONATION_CONTRACT_ADDRESS,
-    VERIFICATION: ENV.VERIFICATION_CONTRACT_ADDRESS,
-    DISTRIBUTION: ENV.DISTRIBUTION_CONTRACT_ADDRESS,
-    TOKEN: ENV.TOKEN_CONTRACT_ADDRESS,
-    PORTFOLIO_FUNDS: ENV.PORTFOLIO_FUNDS_CONTRACT_ADDRESS,
-    EXECUTOR: ENV.EXECUTOR_CONTRACT_ADDRESS,
-  },
+  [CHAIN_IDS.BASE_SEPOLIA]: getChainContractAddresses(CHAIN_IDS.BASE_SEPOLIA),
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: getChainContractAddresses(CHAIN_IDS.OPTIMISM_SEPOLIA),
+  [CHAIN_IDS.MOONBASE]: getChainContractAddresses(CHAIN_IDS.MOONBASE),
   // Mainnets
-  [CHAIN_IDS.BASE]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
-  [CHAIN_IDS.OPTIMISM]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
-  [CHAIN_IDS.MOONBEAM]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
-  // Legacy
-  [CHAIN_IDS.ASTAR]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
-  [CHAIN_IDS.POLYGON]: {
-    DONATION: undefined,
-    VERIFICATION: undefined,
-    DISTRIBUTION: undefined,
-    TOKEN: undefined,
-    PORTFOLIO_FUNDS: undefined,
-    EXECUTOR: undefined,
-  },
+  [CHAIN_IDS.BASE]: getChainContractAddresses(CHAIN_IDS.BASE),
+  [CHAIN_IDS.OPTIMISM]: getChainContractAddresses(CHAIN_IDS.OPTIMISM),
+  [CHAIN_IDS.MOONBEAM]: getChainContractAddresses(CHAIN_IDS.MOONBEAM),
 };
 
-// Helper to get contract address for current network
+/**
+ * Get contract address for a specific contract on a specific chain
+ * @param contractName - The contract name (DONATION, VERIFICATION, etc.)
+ * @param chainId - The chain ID (defaults to Moonbase for backward compat)
+ * @returns The contract address string
+ */
 export function getContractAddress(
-  contractName: keyof (typeof CONTRACT_ADDRESSES)[typeof CHAIN_IDS.MOONBASE],
+  contractName: keyof ChainContractAddresses,
   chainId: ChainId = CHAIN_IDS.MOONBASE,
 ): string {
   const addresses = CONTRACT_ADDRESSES[chainId];
@@ -307,10 +214,8 @@ export function getContractAddress(
   const address = addresses[contractName];
   if (!address) {
     // For development/test environments, return a dummy address
-    const isDev = typeof import.meta !== "undefined" && import.meta.env?.DEV;
-    const isTest =
-      typeof process !== "undefined" && process.env?.NODE_ENV === "test";
-    if (isDev || isTest) {
+    const nodeEnv = typeof process !== "undefined" ? process.env?.NODE_ENV : undefined;
+    if (nodeEnv !== "production") {
       // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
       return "0x1234567890123456789012345678901234567890";
     }

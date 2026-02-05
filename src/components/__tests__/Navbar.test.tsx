@@ -1,167 +1,104 @@
-import React from 'react'; // eslint-disable-line no-unused-vars
+import React from 'react';
 import { jest } from '@jest/globals';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Navbar } from '../Navbar';
-import { useAuth } from '@/contexts/AuthContext';
-import { useWeb3 } from '@/contexts/Web3Context';
-import { createMockAuth, createMockWeb3, setupCommonMocks } from '@/test-utils/mockSetup';
-import { MemoryRouter } from 'react-router-dom';
 
-// Setup common mocks
-setupCommonMocks();
-
-// Mock dependencies
-jest.mock('@/contexts/AuthContext');
-jest.mock('@/contexts/Web3Context');
-
-// Mock React Router
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  Link: ({ to, children, className }: { to: string; children: React.ReactNode; className?: string }) => (
-    <a href={to} className={className} data-testid="nav-link">{children}</a>
-  ),
-  useNavigate: () => jest.fn(),
+jest.mock('@/hooks/useTranslation', () => ({
+  useTranslation: jest.fn(() => ({
+    t: jest.fn((key: string, _fallback?: string) => key),
+  })),
 }));
 
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
-const mockUseWeb3 = useWeb3 as jest.MockedFunction<typeof useWeb3>;
+jest.mock('@/contexts/SettingsContext', () => ({
+  useSettings: jest.fn(() => ({
+    language: 'en',
+    setLanguage: jest.fn(),
+    currency: 'USD',
+    setCurrency: jest.fn(),
+    theme: 'light',
+    setTheme: jest.fn(),
+    languageOptions: [],
+    currencyOptions: [],
+  })),
+}));
 
-const renderNavbar = () => {
-  return render(
-    <MemoryRouter>
-      <Navbar />
-    </MemoryRouter>
-  );
-};
+jest.mock('@/contexts/CurrencyContext', () => ({
+  useCurrencyContext: jest.fn(() => ({
+    setSelectedCurrency: jest.fn(),
+  })),
+}));
+
+jest.mock('@/config/docs', () => ({
+  DOCS_CONFIG: { url: 'https://docs.example.com' },
+}));
+
+jest.mock('../Logo', () => ({
+  Logo: ({ className }: { className?: string }) => <div data-testid="logo" className={className}>Logo</div>,
+}));
+
+jest.mock('../SettingsMenu', () => ({
+  SettingsMenu: () => <div data-testid="settings-menu">Settings</div>,
+}));
+
+jest.mock('lucide-react', () => ({
+  Menu: ({ className }: { className?: string }) => <span data-testid="menu-icon" className={className}>Menu</span>,
+  X: ({ className }: { className?: string }) => <span data-testid="x-icon" className={className}>X</span>,
+}));
+
+jest.mock('react-router-dom', () => ({
+  Link: ({ to, children, className, onClick }: { to: string; children: React.ReactNode; className?: string; onClick?: () => void }) => (
+    <a href={to} className={className} data-testid="nav-link" onClick={onClick}>{children}</a>
+  ),
+  useLocation: jest.fn(() => ({ pathname: '/' })),
+}));
 
 describe('Navbar', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe('unauthenticated state', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue(createMockAuth({ user: null }));
-      mockUseWeb3.mockReturnValue(createMockWeb3({ isConnected: false }));
-    });
-
-    it('renders logo and brand name', () => {
-      renderNavbar();
-      
-      expect(screen.getByText('Duration')).toBeInTheDocument();
-    });
-
-    it('shows login and signup buttons', () => {
-      renderNavbar();
-      
-      expect(screen.getByText(/sign in/i)).toBeInTheDocument();
-      expect(screen.getByText(/get started/i)).toBeInTheDocument();
-    });
-
-    it('displays public navigation links', () => {
-      renderNavbar();
-      
-      expect(screen.getByText(/about/i)).toBeInTheDocument();
-      expect(screen.getByText(/charities/i)).toBeInTheDocument();
-    });
+  it('renders the "Give Protocol" brand name', () => {
+    render(<Navbar />);
+    expect(screen.getByText('Give Protocol')).toBeInTheDocument();
   });
 
-  describe('authenticated state', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue(createMockAuth({
-        user: { id: 'user-123' },
-        userType: 'donor',
-      }));
-      mockUseWeb3.mockReturnValue(createMockWeb3({ 
-        isConnected: true,
-        address: '0x1234567890123456789012345678901234567890'
-      }));
-    });
-
-    it('shows user dashboard link', () => {
-      renderNavbar();
-      
-      expect(screen.getByText(/dashboard/i)).toBeInTheDocument();
-    });
-
-    it('displays wallet connection status', () => {
-      renderNavbar();
-      
-      expect(screen.getByText(/0x1234...7890/)).toBeInTheDocument();
-    });
-
-    it('shows logout option', () => {
-      renderNavbar();
-      
-      expect(screen.getByText(/sign out/i)).toBeInTheDocument();
-    });
+  it('renders the logo', () => {
+    render(<Navbar />);
+    expect(screen.getByTestId('logo')).toBeInTheDocument();
   });
 
-  describe('charity user state', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue(createMockAuth({
-        user: { id: 'charity-123' },
-        userType: 'charity',
-      }));
-      mockUseWeb3.mockReturnValue(createMockWeb3({ isConnected: true }));
-    });
-
-    it('shows charity-specific navigation', () => {
-      renderNavbar();
-      
-      expect(screen.getByText(/charity portal/i)).toBeInTheDocument();
-    });
+  it('renders desktop navigation links', () => {
+    render(<Navbar />);
+    expect(screen.getByText('nav.about')).toBeInTheDocument();
+    expect(screen.getByText('nav.docs')).toBeInTheDocument();
+    expect(screen.getByText('nav.legal')).toBeInTheDocument();
   });
 
-  describe('mobile navigation', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue(createMockAuth({ user: null }));
-      mockUseWeb3.mockReturnValue(createMockWeb3({ isConnected: false }));
-    });
-
-    it('shows mobile menu toggle', () => {
-      renderNavbar();
-      
-      const menuButton = screen.getByRole('button');
-      expect(menuButton).toBeInTheDocument();
-    });
-
-    it('toggles mobile menu on click', () => {
-      renderNavbar();
-      
-      const menuButton = screen.getByRole('button');
-      fireEvent.click(menuButton);
-      
-      // Mobile menu should be visible
-      expect(screen.getByTestId).toBeTruthy();
-    });
+  it('renders the "Launch App" link', () => {
+    render(<Navbar />);
+    expect(screen.getByText('nav.launchApp')).toBeInTheDocument();
   });
 
-  describe('wallet connection', () => {
-    beforeEach(() => {
-      mockUseAuth.mockReturnValue(createMockAuth({
-        user: { id: 'user-123' },
-        userType: 'donor',
-      }));
-    });
+  it('renders a mobile menu button', () => {
+    render(<Navbar />);
+    const menuButton = screen.getByRole('button');
+    expect(menuButton).toBeInTheDocument();
+  });
 
-    it('shows connect wallet button when not connected', () => {
-      mockUseWeb3.mockReturnValue(createMockWeb3({ isConnected: false }));
-      
-      renderNavbar();
-      
-      expect(screen.getByText(/connect wallet/i)).toBeInTheDocument();
-    });
+  it('toggles mobile menu on button click', () => {
+    render(<Navbar />);
+    const menuButton = screen.getByRole('button');
 
-    it('shows wallet address when connected', () => {
-      mockUseWeb3.mockReturnValue(createMockWeb3({ 
-        isConnected: true,
-        address: '0xabcdef1234567890123456789012345678901234'
-      }));
-      
-      renderNavbar();
-      
-      expect(screen.getByText(/0xabcd...1234/)).toBeInTheDocument();
-    });
+    expect(screen.queryByText('nav.launchApp')).toBeInTheDocument();
+
+    fireEvent.click(menuButton);
+
+    const mobileMenu = document.getElementById('mobile-menu');
+    expect(mobileMenu).toBeInTheDocument();
+  });
+
+  it('renders the settings menu', () => {
+    render(<Navbar />);
+    expect(screen.getByTestId('settings-menu')).toBeInTheDocument();
   });
 });

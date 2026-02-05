@@ -35,3 +35,11 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
 })) as unknown as typeof ResizeObserver;
+
+// Mock PerformanceObserver
+global.PerformanceObserver = jest.fn().mockImplementation(() => ({
+  disconnect: jest.fn(),
+  observe: jest.fn(),
+  takeRecords: jest.fn(() => []),
+})) as unknown as typeof PerformanceObserver;
+(global.PerformanceObserver as unknown as { supportedEntryTypes: string[] }).supportedEntryTypes = [];

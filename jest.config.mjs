@@ -11,7 +11,7 @@ export default {
     '^.+\\.(ts|tsx)$': ['ts-jest', {
       useESM: true,
       tsconfig: {
-        jsx: 'react',
+        jsx: 'react-jsx',
         esModuleInterop: true,
         allowSyntheticDefaultImports: true,
         isolatedModules: true,
@@ -26,9 +26,13 @@ export default {
   moduleNameMapper: {
     // Config and library mocks
     '^@/config/env$': '<rootDir>/src/test-utils/envMock.js',
+    '^@/config/docs$': '<rootDir>/src/test-utils/docsMock.js',
     '^@/lib/supabase$': '<rootDir>/src/test-utils/supabaseMock.js',
+    '^@/lib/sentry$': '<rootDir>/src/test-utils/sentryMock.js',
     '(.*)/config/env(\\.ts)?$': '<rootDir>/src/test-utils/envMock.js',
+    '(.*)/config/docs(\\.ts)?$': '<rootDir>/src/test-utils/docsMock.js',
     '(.*)/lib/supabase(\\.ts)?$': '<rootDir>/src/test-utils/supabaseMock.js',
+    '(.*)/lib/sentry(\\.ts)?$': '<rootDir>/src/test-utils/sentryMock.js',
     // Generic path mapping
     '^@/(.*)$': '<rootDir>/src/$1',
     '\\.(css|less|scss|sass)$': '<rootDir>/src/test-utils/styleMock.js',

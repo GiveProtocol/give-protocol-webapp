@@ -50,6 +50,7 @@ jest.mock("@tiptap/starter-kit", () => ({
 }));
 
 jest.mock("@tiptap/extension-link", () => ({
+  __esModule: true,
   default: {
     configure: () => ({}),
   },
@@ -101,8 +102,8 @@ describe("Editor Component", () => {
     const linkButton = screen.getByTitle("Add Link");
     fireEvent.click(linkButton);
 
-    // The link modal should appear
-    expect(screen.getByText("Add Link")).toBeInTheDocument();
+    // The link modal should appear - use getAllByText since both h3 and submit button say "Add Link"
+    expect(screen.getAllByText("Add Link").length).toBeGreaterThanOrEqual(2);
     expect(
       screen.getByPlaceholderText("https://example.com"),
     ).toBeInTheDocument();

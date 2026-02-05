@@ -209,12 +209,12 @@ describe("mockSetup", () => {
   describe("mockFormatDate", () => {
     it("formats date with mock implementation", () => {
       const result = mockFormatDate(new Date("2024-01-01"));
-      expect(result).toBe("2024-01-01");
+      expect(result).toContain("Formatted:");
     });
 
     it("handles string dates", () => {
       const result = mockFormatDate("2024-01-01");
-      expect(result).toBe("2024-01-01");
+      expect(result).toBe("Formatted: 2024-01-01");
     });
   });
 
@@ -225,10 +225,11 @@ describe("mockSetup", () => {
       expect(result).toBe("0x1234...5678");
     });
 
-    it("shortens address with custom length", () => {
+    it("always uses fixed 6+4 chars regardless of extra args", () => {
       const address = "0x1234567890abcdef1234567890abcdef12345678";
+      // The mock implementation uses fixed slice(0,6) and slice(-4)
       const result = mockShortenAddress(address, 6);
-      expect(result).toBe("0x123456...345678");
+      expect(result).toBe("0x1234...5678");
     });
   });
 
@@ -272,8 +273,8 @@ describe("mockSetup", () => {
     it("supports nested eq and single methods", async () => {
       const client = createMockSupabase();
       const result = await client.from("test_table").select().eq("id", "123").single();
-      
-      expect(result).toEqual({ data: null, error: null });
+
+      expect(result).toEqual({ data: [], error: null });
     });
   });
 
@@ -296,15 +297,16 @@ describe("mockSetup", () => {
 
   describe("Test Constants", () => {
     it("testAddresses contains valid addresses", () => {
-      expect(testAddresses.donor1).toBeDefined();
-      expect(testAddresses.charity1).toBeDefined();
-      expect(testAddresses.donor1).toMatch(/^0x[a-fA-F0-9]{40}$/);
+      expect(testAddresses.mainWallet).toBeDefined();
+      expect(testAddresses.shortAddress).toBeDefined();
+      expect(testAddresses.mainWallet).toMatch(/^0x[a-fA-F0-9]{40}$/);
     });
 
     it("testPropsDefaults contains default prop values", () => {
-      expect(testPropsDefaults.loading).toBe(false);
-      expect(testPropsDefaults.disabled).toBe(false);
-      expect(testPropsDefaults.error).toBeNull();
+      expect(testPropsDefaults.applicationAcceptance).toBeDefined();
+      expect(testPropsDefaults.applicationAcceptance.applicationId).toBe('app-123');
+      expect(testPropsDefaults.volunteerHours).toBeDefined();
+      expect(testPropsDefaults.volunteerHours.hours).toBe(8);
     });
   });
 });

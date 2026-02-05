@@ -184,29 +184,6 @@ class EVMWalletBase implements WalletProvider {
         rpcUrls: ["https://rpc.api.moonbeam.network"],
         blockExplorerUrls: ["https://moonbeam.moonscan.io/"],
       },
-      // Legacy
-      [CHAIN_IDS.ASTAR]: {
-        chainId: `0x${CHAIN_IDS.ASTAR.toString(16)}`,
-        chainName: "Astar",
-        nativeCurrency: {
-          name: "ASTR",
-          symbol: "ASTR",
-          decimals: 18,
-        },
-        rpcUrls: ["https://astar.api.onfinality.io/public"],
-        blockExplorerUrls: ["https://blockscout.com/astar"],
-      },
-      [CHAIN_IDS.POLYGON]: {
-        chainId: `0x${CHAIN_IDS.POLYGON.toString(16)}`,
-        chainName: "Polygon",
-        nativeCurrency: {
-          name: "MATIC",
-          symbol: "MATIC",
-          decimals: 18,
-        },
-        rpcUrls: ["https://polygon-rpc.com"],
-        blockExplorerUrls: ["https://polygonscan.com/"],
-      },
     };
     return chains[chainId as keyof typeof chains];
   }

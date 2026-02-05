@@ -15,6 +15,7 @@ jest.mock("@/contexts/Web3Context");
 jest.mock("@/contexts/AuthContext", () => ({
   useAuth: jest.fn(() => ({
     user: null,
+    logout: jest.fn(),
     signOut: jest.fn(),
   })),
 }));
@@ -42,8 +43,9 @@ jest.mock("@/utils/logger", () => ({
 }));
 jest.mock("@/config/contracts", () => ({
   CHAIN_IDS: {
-    moonbase: 1287,
+    MOONBASE: 1287,
   },
+  CHAIN_CONFIGS: {},
 }));
 
 describe("ConnectButton", () => {
@@ -61,21 +63,25 @@ describe("ConnectButton", () => {
         switchChain: mockSwitchChain,
       }),
     );
+
+    (useWalletAlias as jest.Mock).mockReturnValue(
+      createMockWalletAlias(),
+    );
   });
 
   describe("when wallet is not connected", () => {
-    it("renders connect wallet button", () => {
+    it("renders connect button", () => {
       renderWithRouter(<ConnectButton />);
 
-      expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
+      expect(screen.getByText("Connect")).toBeInTheDocument();
     });
 
-    it("calls connect when connect button is clicked", async () => {
+    it("shows wallet selection when connect button is clicked", async () => {
       renderWithRouter(<ConnectButton />);
 
-      fireEvent.click(screen.getByText("Connect Wallet"));
+      fireEvent.click(screen.getByText("Connect"));
       await waitFor(() => {
-        expect(mockConnect).toHaveBeenCalled();
+        expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
       });
     });
   });
@@ -142,19 +148,19 @@ describe("ConnectButton", () => {
       );
     });
 
-    it("renders switch network button", () => {
+    it("still renders wallet address button when on wrong network", () => {
       renderWithRouter(<ConnectButton />);
 
-      expect(screen.getByText("Switch Network")).toBeInTheDocument();
+      expect(screen.getByText(testAddresses.shortAddress)).toBeInTheDocument();
     });
 
-    it("calls switchChain when switch network is clicked", async () => {
+    it("shows account menu when wallet button is clicked on wrong network", async () => {
       renderWithRouter(<ConnectButton />);
 
-      fireEvent.click(screen.getByText("Switch Network"));
+      fireEvent.click(screen.getByText(testAddresses.shortAddress));
 
       await waitFor(() => {
-        expect(mockSwitchChain).toHaveBeenCalledWith(1287);
+        expect(screen.getByText("Disconnect")).toBeInTheDocument();
       });
     });
   });
@@ -221,24 +227,29 @@ describe("ConnectButton", () => {
     it("shows wallet selection when connecting", async () => {
       renderWithRouter(<ConnectButton />);
 
-      fireEvent.click(screen.getByText("Connect Wallet"));
+      fireEvent.click(screen.getByText("Connect"));
 
-      // The component should trigger wallet connection logic
-      expect(mockConnect).toHaveBeenCalled();
+      // The component should show wallet selection dropdown
+      await waitFor(() => {
+        expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
+      });
     });
   });
 
   describe("error handling", () => {
     it("handles connection errors gracefully", async () => {
-      mockConnect.mockRejectedValue(new Error("Connection failed"));
+      (useWeb3 as jest.Mock).mockReturnValue(
+        createMockWeb3({
+          error: new Error("Connection failed"),
+          connect: mockConnect,
+          disconnect: mockDisconnect,
+          switchChain: mockSwitchChain,
+        }),
+      );
 
       renderWithRouter(<ConnectButton />);
 
-      fireEvent.click(screen.getByText("Connect Wallet"));
-
-      await waitFor(() => {
-        expect(mockConnect).toHaveBeenCalled();
-      });
+      expect(screen.getByText("Error")).toBeInTheDocument();
     });
   });
 });

@@ -13,7 +13,7 @@ import { useWallet, type WalletProvider } from "@/hooks/useWallet";
 import { Button } from "../ui/Button";
 import { shortenAddress } from "@/utils/web3";
 import { Logger } from "@/utils/logger";
-import { CHAIN_IDS } from "@/config/contracts";
+import { CHAIN_IDS, CHAIN_CONFIGS, type ChainId } from "@/config/contracts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
@@ -402,14 +402,10 @@ export function ConnectButton() {
   const getExplorerUrl = useCallback(() => {
     if (!address) return "#";
 
-    const explorers = {
-      [CHAIN_IDS.MOONBASE]: "https://moonbase.moonscan.io/address/",
-      [CHAIN_IDS.MOONBEAM]: "https://moonscan.io/address/",
-      [CHAIN_IDS.ASTAR]: "https://blockscout.com/astar/address/",
-      [CHAIN_IDS.POLYGON]: "https://polygonscan.com/address/",
-    };
+    const config = CHAIN_CONFIGS[chainId as ChainId];
+    const baseUrl = config?.blockExplorerUrls[0] || "https://moonbase.moonscan.io";
 
-    return `${explorers[chainId as keyof typeof explorers] || explorers[CHAIN_IDS.MOONBASE]}${address}`;
+    return `${baseUrl}/address/${address}`;
   }, [address, chainId]);
 
   if (connectionError || error) {

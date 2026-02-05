@@ -33,8 +33,9 @@ describe("SearchBar", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders country and category dropdowns", () => {
+  it("renders country and category dropdowns after opening filters", () => {
     render(<SearchBar {...mockProps} />);
+    fireEvent.click(screen.getByText("Filters"));
     expect(screen.getByText("All Countries")).toBeInTheDocument();
     expect(screen.getByText("All Categories")).toBeInTheDocument();
   });
@@ -46,23 +47,24 @@ describe("SearchBar", () => {
     fireEvent.change(searchInput, { target: { value: "test charity" } });
 
     await waitFor(() => {
-      expect(mockProps.onSearch).toHaveBeenCalledWith("test charity", {});
+      expect(mockProps.onSearch).toHaveBeenCalledWith("test charity", expect.objectContaining({
+        status: "active",
+        sortBy: "popularity",
+      }));
     });
   });
 
-  it("opens country dropdown when clicked", () => {
+  it("shows country options in filter dropdown", () => {
     render(<SearchBar {...mockProps} />);
-
-    fireEvent.click(screen.getByText("All Countries"));
+    fireEvent.click(screen.getByText("Filters"));
 
     expect(screen.getByText("United States")).toBeInTheDocument();
     expect(screen.getByText("Canada")).toBeInTheDocument();
   });
 
-  it("opens category dropdown when clicked", () => {
+  it("shows category options in filter dropdown", () => {
     render(<SearchBar {...mockProps} />);
-
-    fireEvent.click(screen.getByText("All Categories"));
+    fireEvent.click(screen.getByText("Filters"));
 
     expect(screen.getByText("Education")).toBeInTheDocument();
     expect(screen.getByText("Healthcare")).toBeInTheDocument();
@@ -70,9 +72,12 @@ describe("SearchBar", () => {
 
   it("selects country and calls onCountrySelect", () => {
     render(<SearchBar {...mockProps} />);
+    fireEvent.click(screen.getByText("Filters"));
 
-    fireEvent.click(screen.getByText("All Countries"));
-    fireEvent.click(screen.getByText("United States"));
+    const countrySelect = screen.getByLabelText("Country").closest("label")?.querySelector("select");
+    if (countrySelect) {
+      fireEvent.change(countrySelect, { target: { value: "US" } });
+    }
 
     expect(mockProps.onCountrySelect).toHaveBeenCalledWith({
       id: "1",
@@ -83,9 +88,12 @@ describe("SearchBar", () => {
 
   it("selects category and calls onCategorySelect", () => {
     render(<SearchBar {...mockProps} />);
+    fireEvent.click(screen.getByText("Filters"));
 
-    fireEvent.click(screen.getByText("All Categories"));
-    fireEvent.click(screen.getByText("Education"));
+    const categorySelect = screen.getByLabelText("Category").closest("label")?.querySelector("select");
+    if (categorySelect) {
+      fireEvent.change(categorySelect, { target: { value: "1" } });
+    }
 
     expect(mockProps.onCategorySelect).toHaveBeenCalledWith({
       id: "1",
@@ -110,17 +118,27 @@ describe("SearchBar", () => {
     const searchInput = screen.getByRole("textbox");
 
     fireEvent.change(searchInput, { target: { value: "test" } });
-    fireEvent.click(screen.getByLabelText("Clear search"));
+    // The clear button is the button inside the search input area
+    const clearButton = searchInput.parentElement?.querySelector("button");
+    if (clearButton) {
+      fireEvent.click(clearButton);
+    }
 
     expect(searchInput).toHaveValue("");
-    expect(mockProps.onSearch).toHaveBeenCalledWith("", {});
+    expect(mockProps.onSearch).toHaveBeenCalledWith("", expect.objectContaining({
+      status: "active",
+      sortBy: "popularity",
+    }));
   });
 
   it("handles default country selection", () => {
     const defaultCountry = { id: "1", name: "United States", code: "US" };
     render(<SearchBar {...mockProps} defaultCountry={defaultCountry} />);
+    fireEvent.click(screen.getByText("Filters"));
 
-    expect(screen.getByText("United States")).toBeInTheDocument();
+    // The country select should have US pre-selected
+    const countrySelect = screen.getByLabelText("Country").closest("label")?.querySelector("select") as HTMLSelectElement;
+    expect(countrySelect?.value).toBe("US");
   });
 
   it("applies custom className", () => {
@@ -132,6 +150,7 @@ describe("SearchBar", () => {
 
   it("handles status filter changes", () => {
     render(<SearchBar {...mockProps} />);
+    fireEvent.click(screen.getByText("Filters"));
 
     // This test covers conditional UI behavior
     expect(screen.getByText("All Countries")).toBeInTheDocument();

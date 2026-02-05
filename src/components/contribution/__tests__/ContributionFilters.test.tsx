@@ -4,11 +4,12 @@ import { ContributionFilters } from "../ContributionFilters";
 
 const mockProps = {
   filters: {
-    timeRange: "all" as const,
-    sortBy: "date" as const,
-    sortOrder: "desc" as const,
+    organization: "",
+    category: "",
+    region: "",
+    timeRange: "30d",
   },
-  onFiltersChange: jest.fn(),
+  onChange: jest.fn(),
 };
 
 describe("ContributionFilters", () => {
@@ -18,47 +19,48 @@ describe("ContributionFilters", () => {
 
   it("renders filter controls", () => {
     render(<ContributionFilters {...mockProps} />);
-    expect(screen.getByLabelText(/time range/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/sort by/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/sort order/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/select time range/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/select organization/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/select category/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/select region/i)).toBeInTheDocument();
   });
 
-  it("calls onFiltersChange when time range changes", () => {
+  it("calls onChange when time range changes", () => {
     render(<ContributionFilters {...mockProps} />);
 
-    fireEvent.change(screen.getByLabelText(/time range/i), {
-      target: { value: "week" },
+    fireEvent.change(screen.getByLabelText(/select time range/i), {
+      target: { value: "7d" },
     });
 
-    expect(mockProps.onFiltersChange).toHaveBeenCalledWith({
+    expect(mockProps.onChange).toHaveBeenCalledWith({
       ...mockProps.filters,
-      timeRange: "week",
-    });
-  });
-
-  it("calls onFiltersChange when sort by changes", () => {
-    render(<ContributionFilters {...mockProps} />);
-
-    fireEvent.change(screen.getByLabelText(/sort by/i), {
-      target: { value: "amount" },
-    });
-
-    expect(mockProps.onFiltersChange).toHaveBeenCalledWith({
-      ...mockProps.filters,
-      sortBy: "amount",
+      timeRange: "7d",
     });
   });
 
-  it("calls onFiltersChange when sort order changes", () => {
+  it("calls onChange when organization changes", () => {
     render(<ContributionFilters {...mockProps} />);
 
-    fireEvent.change(screen.getByLabelText(/sort order/i), {
-      target: { value: "asc" },
+    fireEvent.change(screen.getByLabelText(/select organization/i), {
+      target: { value: "org1" },
     });
 
-    expect(mockProps.onFiltersChange).toHaveBeenCalledWith({
+    expect(mockProps.onChange).toHaveBeenCalledWith({
       ...mockProps.filters,
-      sortOrder: "asc",
+      organization: "org1",
+    });
+  });
+
+  it("calls onChange when category changes", () => {
+    render(<ContributionFilters {...mockProps} />);
+
+    fireEvent.change(screen.getByLabelText(/select category/i), {
+      target: { value: "education" },
+    });
+
+    expect(mockProps.onChange).toHaveBeenCalledWith({
+      ...mockProps.filters,
+      category: "education",
     });
   });
 });

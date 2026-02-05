@@ -1,60 +1,114 @@
+import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import { GlobalContributions } from "../GlobalContributions";
+import { useGlobalContributionStats } from "@/hooks/useContributionStats";
 
-jest.mock("@/lib/supabase", () => ({
-  supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() =>
-        Promise.resolve({
-          data: [
-            { amount: "100", created_at: "2024-01-01" },
-            { amount: "200", created_at: "2024-01-02" },
-          ],
-          error: null,
-        }),
-      ),
-    })),
-  },
+jest.mock("@/hooks/useContributionStats", () => ({
+  useGlobalContributionStats: jest.fn(),
 }));
 
+jest.mock("../DonationStats", () => ({
+  DonationStats: ({ stats }: { stats?: object }) => (
+    <div data-testid="donation-stats">
+      {stats ? "Stats loaded" : "No stats"}
+    </div>
+  ),
+}));
+
+jest.mock("../DonationLeaderboard", () => ({
+  DonationLeaderboard: () => (
+    <div data-testid="donation-leaderboard">Donation Leaderboard</div>
+  ),
+}));
+
+jest.mock("../VolunteerLeaderboard", () => ({
+  VolunteerLeaderboard: () => (
+    <div data-testid="volunteer-leaderboard">Volunteer Leaderboard</div>
+  ),
+}));
+
+jest.mock("@/components/ui/LoadingSpinner", () => ({
+  LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
+}));
+
+const mockUseGlobalContributionStats = jest.mocked(
+  useGlobalContributionStats,
+);
+
+const mockGlobalStats = {
+  totalDonationAmount: 1000,
+  totalFormalVolunteerHours: 50,
+  totalSelfReportedHours: { validated: 20, pending: 5, total: 25 },
+  totalVolunteerHours: 75,
+};
+
 describe("GlobalContributions", () => {
-  it("renders global contributions data", async () => {
-    render(<GlobalContributions />);
-
-    // Should show loading state initially
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  beforeEach(() => {
+    mockUseGlobalContributionStats.mockReturnValue({
+      data: null,
+      isLoading: true,
+      error: null,
+    } as ReturnType<typeof useGlobalContributionStats>);
   });
 
-  it("displays contributions total", async () => {
+  it("renders loading spinner when loading", () => {
     render(<GlobalContributions />);
 
-    await screen.findByText(/total/i);
-    expect(screen.getByText(/300/)).toBeInTheDocument(); // 100 + 200
+    expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
-  it("handles empty data", async () => {
-    const mockSupabase = jest.requireMock("@/lib/supabase").supabase;
-    mockSupabase.from.mockReturnValueOnce({
-      select: () => Promise.resolve({ data: [], error: null }),
-    });
+  it("renders donation stats when data is loaded", () => {
+    mockUseGlobalContributionStats.mockReturnValue({
+      data: mockGlobalStats,
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof useGlobalContributionStats>);
 
     render(<GlobalContributions />);
 
-    const noContributions = await screen.findByText(/no contributions/i);
-    expect(noContributions).toBeInTheDocument();
+    expect(screen.getByTestId("donation-stats")).toBeInTheDocument();
+    expect(screen.getByText("Stats loaded")).toBeInTheDocument();
   });
 
-  it("handles error state", async () => {
-    const mockSupabase = jest.requireMock("@/lib/supabase").supabase;
-    mockSupabase.from.mockReturnValueOnce({
-      select: () =>
-        Promise.resolve({ data: null, error: { message: "Error" } }),
-    });
+  it("renders leaderboards when data is loaded", () => {
+    mockUseGlobalContributionStats.mockReturnValue({
+      data: mockGlobalStats,
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof useGlobalContributionStats>);
 
     render(<GlobalContributions />);
 
-    const errorMessage = await screen.findByText(/error/i);
-    expect(errorMessage).toBeInTheDocument();
+    expect(screen.getByTestId("donation-leaderboard")).toBeInTheDocument();
+    expect(screen.getByTestId("volunteer-leaderboard")).toBeInTheDocument();
+  });
+
+  it("renders error message when there is an error", () => {
+    mockUseGlobalContributionStats.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: new Error("Failed to load"),
+    } as ReturnType<typeof useGlobalContributionStats>);
+
+    render(<GlobalContributions />);
+
+    expect(
+      screen.getByText("Error loading global stats. Please try again."),
+    ).toBeInTheDocument();
+  });
+
+  it("renders DonationStats with no stats when data is null", () => {
+    mockUseGlobalContributionStats.mockReturnValue({
+      data: null,
+      isLoading: false,
+      error: null,
+    } as ReturnType<typeof useGlobalContributionStats>);
+
+    render(<GlobalContributions />);
+
+    expect(screen.getByTestId("donation-stats")).toBeInTheDocument();
+    expect(screen.getByText("No stats")).toBeInTheDocument();
   });
 });

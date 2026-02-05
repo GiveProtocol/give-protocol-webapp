@@ -9,7 +9,7 @@ describe('jestSetup', () => {
     });
 
     it('formatDate mock formats dates correctly', () => {
-      const result = commonMocks.formatDate('2024-01-15');
+      const result = commonMocks.formatDate('2024-01-15T12:00:00');
       expect(result).toBe('1/15/2024');
     });
 
@@ -112,8 +112,8 @@ describe('jestSetup', () => {
       // Test with empty key
       expect(mocks.translation.t('')).toBe('');
       
-      // Test with empty fallback
-      expect(mocks.translation.t('key', '')).toBe('');
+      // Test with empty fallback - empty string is falsy, so || returns the key
+      expect(mocks.translation.t('key', '')).toBe('key');
       
       // Test with undefined fallback
       expect(mocks.translation.t('key', undefined)).toBe('key');

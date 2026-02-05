@@ -5,15 +5,11 @@ export const ENV = {
   SUPABASE_URL: 'https://mock-supabase-url.supabase.co',
   SUPABASE_ANON_KEY: 'mock-supabase-anon-key',
   APP_DOMAIN: 'localhost',
-  DONATION_CONTRACT_ADDRESS: '0x1234567890123456789012345678901234567890',
-  TOKEN_CONTRACT_ADDRESS: '0x4567890123456789012345678901234567890123',
-  VERIFICATION_CONTRACT_ADDRESS: '0x2345678901234567890123456789012345678901',
-  DISTRIBUTION_CONTRACT_ADDRESS: '0x3456789012345678901234567890123456789012',
-  PORTFOLIO_FUNDS_CONTRACT_ADDRESS: '0x5678901234567890123456789012345678901234',
   NETWORK: 'moonbase',
   NETWORK_ENDPOINT: 'wss://wss.api.moonbase.moonbeam.network',
   ENABLE_GOOGLE_AUTH: false,
   ENABLE_MAGIC_LINKS: false,
+  SHOW_TESTNETS: true,
   MAX_LOGIN_ATTEMPTS: 5,
   LOGIN_COOLDOWN_MINUTES: 15,
   CACHE_TTL_MINUTES: 5,
@@ -25,3 +21,20 @@ export const ENV = {
   MONITORING_ENVIRONMENT: 'test',
   MONITORING_ENABLED_MONITORS: ['webVital', 'error', 'resource', 'navigation', 'paint', 'api', 'custom', 'userAction'],
 };
+
+/**
+ * Get contract addresses for a specific chain from environment variables.
+ * Test mock returns undefined addresses (tests use dev fallback).
+ * @param {number} _chainId - The chain ID
+ * @returns {object} Contract addresses for the chain
+ */
+export function getChainContractAddresses(_chainId) {
+  return {
+    DONATION: undefined,
+    VERIFICATION: undefined,
+    DISTRIBUTION: undefined,
+    PORTFOLIO_FUNDS: undefined,
+    EXECUTOR: undefined,
+    TOKEN: undefined,
+  };
+}

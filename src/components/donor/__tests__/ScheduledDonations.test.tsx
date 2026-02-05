@@ -63,7 +63,8 @@ describe("ScheduledDonations", () => {
     {
       id: 1,
       charity: "0x1234567890123456789012345678901234567890",
-      token: "USDC",
+      token: "0xABCDEF1234567890123456789012345678901234",
+      tokenSymbol: "USDC",
       totalAmount: "1000",
       amountPerMonth: "100",
       monthsRemaining: 10,
@@ -73,7 +74,8 @@ describe("ScheduledDonations", () => {
     {
       id: 2,
       charity: "0x9876543210987654321098765432109876543210",
-      token: "DAI",
+      token: "0xFEDCBA0987654321098765432109876543210987",
+      tokenSymbol: "DAI",
       totalAmount: "500",
       amountPerMonth: "50",
       monthsRemaining: 10,
@@ -134,8 +136,8 @@ describe("ScheduledDonations", () => {
 
       await waitFor(() => {
         // Check that donation information is displayed
-        expect(screen.getByText("USDC")).toBeInTheDocument();
-        expect(screen.getByText("DAI")).toBeInTheDocument();
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
+        expect(screen.getByText("500 DAI")).toBeInTheDocument();
       });
     });
 
@@ -154,10 +156,10 @@ describe("ScheduledDonations", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText("Monthly Payment: 100 tokens"),
+          screen.getByText("100 USDC"),
         ).toBeInTheDocument();
         expect(
-          screen.getByText("Monthly Payment: 50 tokens"),
+          screen.getByText("50 DAI"),
         ).toBeInTheDocument();
       });
     });
@@ -168,11 +170,11 @@ describe("ScheduledDonations", () => {
       render(<ScheduledDonations />);
 
       await waitFor(() => {
-        expect(screen.getByText("USDC")).toBeInTheDocument();
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
       });
 
-      const cancelButton = screen.getByText("Cancel Schedule");
-      fireEvent.click(cancelButton);
+      const cancelButtons = screen.getAllByText("Cancel Schedule");
+      fireEvent.click(cancelButtons[0]);
 
       await waitFor(() => {
         expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
@@ -186,18 +188,19 @@ describe("ScheduledDonations", () => {
       render(<ScheduledDonations />);
 
       await waitFor(() => {
-        expect(screen.getByText("USDC")).toBeInTheDocument();
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
       });
 
-      // Click cancel button
-      fireEvent.click(screen.getByText("Cancel Schedule"));
+      // Click cancel button on first schedule
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
 
       await waitFor(() => {
         expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
       });
 
-      // Click confirm in modal
-      fireEvent.click(screen.getByText("Cancel Schedule"));
+      // Click confirm in modal - the modal's Cancel Schedule button
+      const modalConfirmButtons = screen.getAllByText("Cancel Schedule");
+      fireEvent.click(modalConfirmButtons[modalConfirmButtons.length - 1]);
 
       await waitFor(() => {
         expect(mockCancelSchedule).toHaveBeenCalledWith(1);
@@ -229,17 +232,18 @@ describe("ScheduledDonations", () => {
       render(<ScheduledDonations />);
 
       await waitFor(() => {
-        expect(screen.getByText("USDC")).toBeInTheDocument();
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
       });
 
       // Open modal and attempt cancel
-      fireEvent.click(screen.getByText("Cancel Schedule"));
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
 
       await waitFor(() => {
         expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
       });
 
-      fireEvent.click(screen.getByText("Cancel Schedule"));
+      const modalConfirmButtons = screen.getAllByText("Cancel Schedule");
+      fireEvent.click(modalConfirmButtons[modalConfirmButtons.length - 1]);
 
       await waitFor(() => {
         expect(screen.getByText("Cancel failed")).toBeInTheDocument();
@@ -288,7 +292,7 @@ describe("ScheduledDonations", () => {
   });
 
   describe("error state", () => {
-    it("displays error message when hook returns error", () => {
+    it("displays error message when hook returns error", async () => {
       (useScheduledDonation as jest.Mock).mockReturnValue({
         getDonorSchedules: mockGetDonorSchedules,
         cancelSchedule: mockCancelSchedule,
@@ -298,9 +302,11 @@ describe("ScheduledDonations", () => {
 
       render(<ScheduledDonations />);
 
-      expect(
-        screen.getByText("Failed to connect to blockchain"),
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByText("Failed to connect to blockchain"),
+        ).toBeInTheDocument();
+      });
     });
   });
 
@@ -320,11 +326,11 @@ describe("ScheduledDonations", () => {
       render(<ScheduledDonations />);
 
       await waitFor(() => {
-        expect(screen.getByText("USDC")).toBeInTheDocument();
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
       });
 
       // Open modal
-      fireEvent.click(screen.getByText("Cancel Schedule"));
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
 
       await waitFor(() => {
         expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();

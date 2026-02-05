@@ -12,6 +12,22 @@ jest.mock("@/hooks/useAuth", () => ({
   }),
 }));
 
+jest.mock("@/contexts/Web3Context", () => ({
+  useWeb3: jest.fn(() => ({
+    address: null,
+    isConnected: false,
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+    switchChain: jest.fn(),
+  })),
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => jest.fn(),
+  useLocation: () => ({ state: null, pathname: "/login", search: "", hash: "", key: "test" }),
+}));
+
 describe("DonorLogin", () => {
   beforeEach(() => {
     mockLogin.mockClear();

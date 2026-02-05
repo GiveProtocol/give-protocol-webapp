@@ -1,5 +1,5 @@
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ForgotCredentials } from "../ForgotCredentials";
 
 const mockResetPassword = jest.fn();
@@ -13,42 +13,65 @@ jest.mock("@/hooks/useAuth", () => ({
   }),
 }));
 
+jest.mock("@/utils/validation", () => ({
+  validateEmail: jest.fn((email: string) => email.includes("@")),
+}));
+
 describe("ForgotCredentials", () => {
+  const mockOnBack = jest.fn();
+
   beforeEach(() => {
     mockResetPassword.mockClear();
     mockSendUsernameReminder.mockClear();
+    mockOnBack.mockClear();
+    mockResetPassword.mockResolvedValue(undefined);
+    mockSendUsernameReminder.mockResolvedValue(undefined);
   });
 
-  it("renders forgot credentials form", () => {
-    render(<ForgotCredentials />);
-    expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
+  it("renders forgot password form", () => {
+    render(<ForgotCredentials type="password" onBack={mockOnBack} />);
+    expect(screen.getByText("Reset Password")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /reset password/i }),
+      screen.getByPlaceholderText("Enter your email address"),
     ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /send reset link/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("renders forgot username form", () => {
+    render(<ForgotCredentials type="username" onBack={mockOnBack} />);
+    expect(screen.getByText("Forgot Username")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /send username/i }),
     ).toBeInTheDocument();
   });
 
-  it("calls resetPassword when reset button clicked", () => {
-    render(<ForgotCredentials />);
+  it("calls resetPassword when reset button clicked", async () => {
+    render(<ForgotCredentials type="password" onBack={mockOnBack} />);
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "test@example.com" },
+    fireEvent.change(
+      screen.getByPlaceholderText("Enter your email address"),
+      { target: { value: "test@example.com" } },
+    );
+    fireEvent.click(screen.getByRole("button", { name: /send reset link/i }));
+
+    await waitFor(() => {
+      expect(mockResetPassword).toHaveBeenCalledWith("test@example.com");
     });
-    fireEvent.click(screen.getByRole("button", { name: /reset password/i }));
-
-    expect(mockResetPassword).toHaveBeenCalledWith("test@example.com");
   });
 
-  it("calls sendUsernameReminder when username button clicked", () => {
-    render(<ForgotCredentials />);
+  it("calls sendUsernameReminder when username button clicked", async () => {
+    render(<ForgotCredentials type="username" onBack={mockOnBack} />);
 
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "test@example.com" },
-    });
+    fireEvent.change(
+      screen.getByPlaceholderText("Enter your email address"),
+      { target: { value: "test@example.com" } },
+    );
     fireEvent.click(screen.getByRole("button", { name: /send username/i }));
 
-    expect(mockSendUsernameReminder).toHaveBeenCalledWith("test@example.com");
+    await waitFor(() => {
+      expect(mockSendUsernameReminder).toHaveBeenCalledWith("test@example.com");
+    });
   });
 });

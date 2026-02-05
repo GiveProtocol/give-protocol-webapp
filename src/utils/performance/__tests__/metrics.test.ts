@@ -12,11 +12,7 @@ jest.mock('../../logger', () => ({
 }));
 
 // Mock performance.now()
-const mockPerformanceNow = jest.fn();
-global.performance = {
-  ...global.performance,
-  now: mockPerformanceNow,
-};
+const mockPerformanceNow = jest.spyOn(performance, 'now');
 
 describe('PerformanceMetrics', () => {
   let metrics: PerformanceMetrics;

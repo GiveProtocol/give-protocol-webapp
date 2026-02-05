@@ -20,20 +20,90 @@ const getEnv = (key: string): string | undefined => {
   return undefined;
 };
 
+/**
+ * Contract address set for a single chain
+ */
+export interface ChainContractAddresses {
+  DONATION: string | undefined;
+  VERIFICATION: string | undefined;
+  DISTRIBUTION: string | undefined;
+  PORTFOLIO_FUNDS: string | undefined;
+  EXECUTOR: string | undefined;
+  TOKEN: string | undefined;
+}
+
+// Env var prefix for each supported chain ID
+const CHAIN_ENV_PREFIX: Record<number, string> = {
+  // Testnets
+  84532: "VITE_BASE_SEPOLIA",
+  11155420: "VITE_OPTIMISM_SEPOLIA",
+  1287: "VITE_MOONBASE",
+  // Mainnets
+  8453: "VITE_BASE",
+  10: "VITE_OPTIMISM",
+  1284: "VITE_MOONBEAM",
+};
+
+// Legacy env var names (pre-multi-chain) map to Moonbase
+const LEGACY_CONTRACT_VARS: Record<string, string> = {
+  DONATION: "VITE_DONATION_CONTRACT_ADDRESS",
+  VERIFICATION: "VITE_VERIFICATION_CONTRACT_ADDRESS",
+  DISTRIBUTION: "VITE_DISTRIBUTION_CONTRACT_ADDRESS",
+  PORTFOLIO_FUNDS: "VITE_PORTFOLIO_FUNDS_CONTRACT_ADDRESS",
+  EXECUTOR: "VITE_EXECUTOR_CONTRACT_ADDRESS",
+  TOKEN: "VITE_TOKEN_CONTRACT_ADDRESS",
+};
+
+/**
+ * Get contract addresses for a specific chain from environment variables.
+ * For Moonbase (1287), falls back to legacy VITE_*_CONTRACT_ADDRESS vars.
+ * @param chainId - The chain ID to get addresses for
+ * @returns Contract addresses for the chain
+ */
+export function getChainContractAddresses(chainId: number): ChainContractAddresses {
+  const prefix = CHAIN_ENV_PREFIX[chainId];
+
+  const empty: ChainContractAddresses = {
+    DONATION: undefined,
+    VERIFICATION: undefined,
+    DISTRIBUTION: undefined,
+    PORTFOLIO_FUNDS: undefined,
+    EXECUTOR: undefined,
+    TOKEN: undefined,
+  };
+
+  if (!prefix) {
+    return empty;
+  }
+
+  const useLegacyFallback = chainId === 1287;
+
+  const getAddr = (suffix: string): string | undefined => {
+    const value = getEnv(`${prefix}_${suffix}_ADDRESS`);
+    if (value) return value;
+    // Fall back to legacy var names for Moonbase
+    if (useLegacyFallback) {
+      return getEnv(LEGACY_CONTRACT_VARS[suffix] || "");
+    }
+    return undefined;
+  };
+
+  return {
+    DONATION: getAddr("DONATION"),
+    VERIFICATION: getAddr("VERIFICATION"),
+    DISTRIBUTION: getAddr("DISTRIBUTION"),
+    PORTFOLIO_FUNDS: getAddr("PORTFOLIO_FUNDS"),
+    EXECUTOR: getAddr("EXECUTOR"),
+    TOKEN: getAddr("TOKEN"),
+  };
+}
+
 // Create and validate environment configuration
 export const ENV = {
   // Required variables
   SUPABASE_URL: getEnv('VITE_SUPABASE_URL'),
   SUPABASE_ANON_KEY: getEnv('VITE_SUPABASE_ANON_KEY'),
   APP_DOMAIN: getEnv('VITE_APP_DOMAIN') || "localhost",
-
-  // Contract addresses
-  DONATION_CONTRACT_ADDRESS: getEnv('VITE_DONATION_CONTRACT_ADDRESS'),
-  TOKEN_CONTRACT_ADDRESS: getEnv('VITE_TOKEN_CONTRACT_ADDRESS'),
-  VERIFICATION_CONTRACT_ADDRESS: getEnv('VITE_VERIFICATION_CONTRACT_ADDRESS'),
-  DISTRIBUTION_CONTRACT_ADDRESS: getEnv('VITE_DISTRIBUTION_CONTRACT_ADDRESS'),
-  PORTFOLIO_FUNDS_CONTRACT_ADDRESS: getEnv('VITE_PORTFOLIO_FUNDS_CONTRACT_ADDRESS'),
-  EXECUTOR_CONTRACT_ADDRESS: getEnv('VITE_EXECUTOR_CONTRACT_ADDRESS'),
 
   // Optional variables with defaults
   NETWORK: getEnv('VITE_NETWORK') || "moonbase",
@@ -72,58 +142,6 @@ if (!ENV.SUPABASE_URL || !ENV.SUPABASE_ANON_KEY) {
     SUPABASE_URL: ENV.SUPABASE_URL ? "defined" : "undefined",
     SUPABASE_ANON_KEY: ENV.SUPABASE_ANON_KEY ? "defined" : "undefined",
   });
-}
-
-// Validate contract addresses
-if (!ENV.DONATION_CONTRACT_ADDRESS) {
-  console.warn(
-    "Donation contract address not found in environment variables. Using development address.",
-  );
-  // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
-  ENV.DONATION_CONTRACT_ADDRESS = "0x1234567890123456789012345678901234567890";
-}
-
-if (!ENV.VERIFICATION_CONTRACT_ADDRESS) {
-  console.warn(
-    "Verification contract address not found in environment variables. Using development address.",
-  );
-  // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
-  ENV.VERIFICATION_CONTRACT_ADDRESS =
-    "0x2345678901234567890123456789012345678901";
-}
-
-if (
-  !ENV.DISTRIBUTION_CONTRACT_ADDRESS ||
-  ENV.DISTRIBUTION_CONTRACT_ADDRESS ===
-    "0x0000000000000000000000000000000000000000"
-) {
-  console.warn(
-    "Distribution contract address not found or invalid in environment variables. Using development address.",
-  );
-  // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
-  ENV.DISTRIBUTION_CONTRACT_ADDRESS =
-    "0x3456789012345678901234567890123456789012";
-}
-
-if (!ENV.TOKEN_CONTRACT_ADDRESS) {
-  console.warn(
-    "Token contract address not found in environment variables. Using development address.",
-  );
-  // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
-  ENV.TOKEN_CONTRACT_ADDRESS = "0x4567890123456789012345678901234567890123";
-}
-
-if (
-  !ENV.PORTFOLIO_FUNDS_CONTRACT_ADDRESS ||
-  ENV.PORTFOLIO_FUNDS_CONTRACT_ADDRESS ===
-    "0x0000000000000000000000000000000000000000"
-) {
-  console.warn(
-    "Portfolio Funds contract address not found or invalid in environment variables. Using development address.",
-  );
-  // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
-  ENV.PORTFOLIO_FUNDS_CONTRACT_ADDRESS =
-    "0x5678901234567890123456789012345678901234";
 }
 
 export type EnvVars = typeof ENV;
