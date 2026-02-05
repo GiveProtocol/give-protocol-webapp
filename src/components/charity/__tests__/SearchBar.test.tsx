@@ -47,10 +47,13 @@ describe("SearchBar", () => {
     fireEvent.change(searchInput, { target: { value: "test charity" } });
 
     await waitFor(() => {
-      expect(mockProps.onSearch).toHaveBeenCalledWith("test charity", expect.objectContaining({
-        status: "active",
-        sortBy: "popularity",
-      }));
+      expect(mockProps.onSearch).toHaveBeenCalledWith(
+        "test charity",
+        expect.objectContaining({
+          status: "active",
+          sortBy: "popularity",
+        }),
+      );
     });
   });
 
@@ -74,7 +77,10 @@ describe("SearchBar", () => {
     render(<SearchBar {...mockProps} />);
     fireEvent.click(screen.getByText("Filters"));
 
-    const countrySelect = screen.getByLabelText("Country").closest("label")?.querySelector("select");
+    const countrySelect = screen
+      .getByLabelText("Country")
+      .closest("label")
+      ?.querySelector("select");
     if (countrySelect) {
       fireEvent.change(countrySelect, { target: { value: "US" } });
     }
@@ -90,7 +96,10 @@ describe("SearchBar", () => {
     render(<SearchBar {...mockProps} />);
     fireEvent.click(screen.getByText("Filters"));
 
-    const categorySelect = screen.getByLabelText("Category").closest("label")?.querySelector("select");
+    const categorySelect = screen
+      .getByLabelText("Category")
+      .closest("label")
+      ?.querySelector("select");
     if (categorySelect) {
       fireEvent.change(categorySelect, { target: { value: "1" } });
     }
@@ -125,10 +134,13 @@ describe("SearchBar", () => {
     }
 
     expect(searchInput).toHaveValue("");
-    expect(mockProps.onSearch).toHaveBeenCalledWith("", expect.objectContaining({
-      status: "active",
-      sortBy: "popularity",
-    }));
+    expect(mockProps.onSearch).toHaveBeenCalledWith(
+      "",
+      expect.objectContaining({
+        status: "active",
+        sortBy: "popularity",
+      }),
+    );
   });
 
   it("handles default country selection", () => {
@@ -137,7 +149,10 @@ describe("SearchBar", () => {
     fireEvent.click(screen.getByText("Filters"));
 
     // The country select should have US pre-selected
-    const countrySelect = screen.getByLabelText("Country").closest("label")?.querySelector("select") as HTMLSelectElement;
+    const countrySelect = screen
+      .getByLabelText("Country")
+      .closest("label")
+      ?.querySelector("select") as HTMLSelectElement;
     expect(countrySelect?.value).toBe("US");
   });
 

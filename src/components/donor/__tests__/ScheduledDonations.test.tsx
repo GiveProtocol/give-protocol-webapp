@@ -155,12 +155,8 @@ describe("ScheduledDonations", () => {
       render(<ScheduledDonations />);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("100 USDC"),
-        ).toBeInTheDocument();
-        expect(
-          screen.getByText("50 DAI"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("100 USDC")).toBeInTheDocument();
+        expect(screen.getByText("50 DAI")).toBeInTheDocument();
       });
     });
   });

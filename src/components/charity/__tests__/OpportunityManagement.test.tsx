@@ -132,7 +132,9 @@ describe("OpportunityManagement", () => {
     await waitFor(() => {
       // The thrown error is a plain object (not Error instance), so the catch
       // block uses the fallback: "Failed to fetch opportunities"
-      expect(screen.getByText("Failed to fetch opportunities")).toBeInTheDocument();
+      expect(
+        screen.getByText("Failed to fetch opportunities"),
+      ).toBeInTheDocument();
     });
   });
 

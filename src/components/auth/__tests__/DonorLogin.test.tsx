@@ -25,7 +25,13 @@ jest.mock("@/contexts/Web3Context", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => jest.fn(),
-  useLocation: () => ({ state: null, pathname: "/login", search: "", hash: "", key: "test" }),
+  useLocation: () => ({
+    state: null,
+    pathname: "/login",
+    search: "",
+    hash: "",
+    key: "test",
+  }),
 }));
 
 describe("DonorLogin", () => {

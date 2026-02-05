@@ -403,7 +403,8 @@ export function ConnectButton() {
     if (!address) return "#";
 
     const config = CHAIN_CONFIGS[chainId as ChainId];
-    const baseUrl = config?.blockExplorerUrls[0] || "https://moonbase.moonscan.io";
+    const baseUrl =
+      config?.blockExplorerUrls[0] || "https://moonbase.moonscan.io";
 
     return `${baseUrl}/address/${address}`;
   }, [address, chainId]);

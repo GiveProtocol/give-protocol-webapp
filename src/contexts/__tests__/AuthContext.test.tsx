@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { jest } from '@jest/globals';
+import React, { useCallback } from "react";
+import { jest } from "@jest/globals";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import { AuthProvider, useAuth } from "../AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -32,12 +32,12 @@ const mockClearSentryUser = clearSentryUser as jest.MockedFunction<
 
 // MOCK_USER with user_metadata.type (not user_type) to match resolveUserType
 const MOCK_USER = {
-  id: '123',
-  email: 'test@example.com',
-  user_metadata: { type: 'donor' },
+  id: "123",
+  email: "test@example.com",
+  user_metadata: { type: "donor" },
   app_metadata: {},
-  aud: 'authenticated',
-  created_at: '2024-01-01',
+  aud: "authenticated",
+  created_at: "2024-01-01",
 };
 
 // Test component to access auth context
@@ -163,10 +163,10 @@ const setupMocks = () => {
   });
 
   // Silence console.error for expected errors
-  jest.spyOn(console, 'error').mockImplementation(() => {
+  jest.spyOn(console, "error").mockImplementation(() => {
     // Suppress console.error output during tests
   });
-  jest.spyOn(console, 'log').mockImplementation(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {
     // Suppress console.log output during tests
   });
 };

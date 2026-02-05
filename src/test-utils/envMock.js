@@ -2,11 +2,11 @@
 // This provides the ENV object that would normally come from import.meta.env
 
 export const ENV = {
-  SUPABASE_URL: 'https://mock-supabase-url.supabase.co',
-  SUPABASE_ANON_KEY: 'mock-supabase-anon-key',
-  APP_DOMAIN: 'localhost',
-  NETWORK: 'moonbase',
-  NETWORK_ENDPOINT: 'wss://wss.api.moonbase.moonbeam.network',
+  SUPABASE_URL: "https://mock-supabase-url.supabase.co",
+  SUPABASE_ANON_KEY: "mock-supabase-anon-key",
+  APP_DOMAIN: "localhost",
+  NETWORK: "moonbase",
+  NETWORK_ENDPOINT: "wss://wss.api.moonbase.moonbeam.network",
   ENABLE_GOOGLE_AUTH: false,
   ENABLE_MAGIC_LINKS: false,
   SHOW_TESTNETS: true,
@@ -16,10 +16,19 @@ export const ENV = {
   API_TIMEOUT_MS: 10000,
   ENABLE_ANALYTICS: false,
   ANALYTICS_SAMPLE_RATE: 0.1,
-  MONITORING_API_KEY: '',
-  MONITORING_APP_ID: '',
-  MONITORING_ENVIRONMENT: 'test',
-  MONITORING_ENABLED_MONITORS: ['webVital', 'error', 'resource', 'navigation', 'paint', 'api', 'custom', 'userAction'],
+  MONITORING_API_KEY: "",
+  MONITORING_APP_ID: "",
+  MONITORING_ENVIRONMENT: "test",
+  MONITORING_ENABLED_MONITORS: [
+    "webVital",
+    "error",
+    "resource",
+    "navigation",
+    "paint",
+    "api",
+    "custom",
+    "userAction",
+  ],
 };
 
 /**
