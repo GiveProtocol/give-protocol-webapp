@@ -141,7 +141,12 @@ export const NETWORKS: NetworkConfig[] = [
   { id: "moonbeam", name: "Moonbeam", token: "GLMR", color: "#53CBC8" },
   // Testnets
   { id: "base-sepolia", name: "Base Sepolia", token: "ETH", color: "#0052FF" },
-  { id: "optimism-sepolia", name: "OP Sepolia", token: "ETH", color: "#FF0420" },
+  {
+    id: "optimism-sepolia",
+    name: "OP Sepolia",
+    token: "ETH",
+    color: "#FF0420",
+  },
   { id: "moonbase", name: "Moonbase Alpha", token: "DEV", color: "#53CBC8" },
 ];
 
