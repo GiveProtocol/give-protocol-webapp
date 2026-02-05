@@ -1,4 +1,7 @@
-import { getChainContractAddresses, type ChainContractAddresses } from "@/config/env";
+import {
+  getChainContractAddresses,
+  type ChainContractAddresses,
+} from "@/config/env";
 
 export const SUPPORTED_NETWORKS = {
   POLKADOT: "polkadot",
@@ -188,7 +191,9 @@ export function getAvailableChains(showTestnets: boolean): ChainConfig[] {
 export const CONTRACT_ADDRESSES: Record<ChainId, ChainContractAddresses> = {
   // Testnets
   [CHAIN_IDS.BASE_SEPOLIA]: getChainContractAddresses(CHAIN_IDS.BASE_SEPOLIA),
-  [CHAIN_IDS.OPTIMISM_SEPOLIA]: getChainContractAddresses(CHAIN_IDS.OPTIMISM_SEPOLIA),
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: getChainContractAddresses(
+    CHAIN_IDS.OPTIMISM_SEPOLIA,
+  ),
   [CHAIN_IDS.MOONBASE]: getChainContractAddresses(CHAIN_IDS.MOONBASE),
   // Mainnets
   [CHAIN_IDS.BASE]: getChainContractAddresses(CHAIN_IDS.BASE),
@@ -214,7 +219,8 @@ export function getContractAddress(
   const address = addresses[contractName];
   if (!address) {
     // For development/test environments, return a dummy address
-    const nodeEnv = typeof process !== "undefined" ? process.env?.NODE_ENV : undefined;
+    const nodeEnv =
+      typeof process !== "undefined" ? process.env?.NODE_ENV : undefined;
     if (nodeEnv !== "production") {
       // skipcq: SCT-A000 - This is a placeholder development Ethereum address, not a real secret
       return "0x1234567890123456789012345678901234567890";

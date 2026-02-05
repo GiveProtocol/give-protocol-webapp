@@ -107,9 +107,7 @@ describe("PersonalContributions", () => {
     render(<PersonalContributions />);
 
     expect(
-      screen.getByText(
-        "Error loading contribution stats. Please try again.",
-      ),
+      screen.getByText("Error loading contribution stats. Please try again."),
     ).toBeInTheDocument();
   });
 });

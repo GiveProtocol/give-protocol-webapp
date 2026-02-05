@@ -32,9 +32,7 @@ jest.mock("@/components/ui/LoadingSpinner", () => ({
   LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
 }));
 
-const mockUseGlobalContributionStats = jest.mocked(
-  useGlobalContributionStats,
-);
+const mockUseGlobalContributionStats = jest.mocked(useGlobalContributionStats);
 
 const mockGlobalStats = {
   totalDonationAmount: 1000,

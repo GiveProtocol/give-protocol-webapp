@@ -50,10 +50,9 @@ describe("ForgotCredentials", () => {
   it("calls resetPassword when reset button clicked", async () => {
     render(<ForgotCredentials type="password" onBack={mockOnBack} />);
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Enter your email address"),
-      { target: { value: "test@example.com" } },
-    );
+    fireEvent.change(screen.getByPlaceholderText("Enter your email address"), {
+      target: { value: "test@example.com" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /send reset link/i }));
 
     await waitFor(() => {
@@ -64,10 +63,9 @@ describe("ForgotCredentials", () => {
   it("calls sendUsernameReminder when username button clicked", async () => {
     render(<ForgotCredentials type="username" onBack={mockOnBack} />);
 
-    fireEvent.change(
-      screen.getByPlaceholderText("Enter your email address"),
-      { target: { value: "test@example.com" } },
-    );
+    fireEvent.change(screen.getByPlaceholderText("Enter your email address"), {
+      target: { value: "test@example.com" },
+    });
     fireEvent.click(screen.getByRole("button", { name: /send username/i }));
 
     await waitFor(() => {

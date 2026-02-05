@@ -64,9 +64,7 @@ describe("ConnectButton", () => {
       }),
     );
 
-    (useWalletAlias as jest.Mock).mockReturnValue(
-      createMockWalletAlias(),
-    );
+    (useWalletAlias as jest.Mock).mockReturnValue(createMockWalletAlias());
   });
 
   describe("when wallet is not connected", () => {

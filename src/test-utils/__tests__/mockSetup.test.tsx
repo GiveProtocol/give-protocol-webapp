@@ -1,6 +1,6 @@
-import React from 'react'; // eslint-disable-line no-unused-vars
-import { jest } from '@jest/globals';
-import { render } from '@testing-library/react';
+import React from "react"; // eslint-disable-line no-unused-vars
+import { jest } from "@jest/globals";
+import { render } from "@testing-library/react";
 import {
   createMockWeb3,
   createMockWalletAlias,
@@ -47,7 +47,7 @@ describe("mockSetup", () => {
       expect(result.address).toBe("0x123");
       expect(result.isConnected).toBe(true);
       expect(result.chainId).toBe(1287);
-      expect(typeof result.connect).toBe('function');
+      expect(typeof result.connect).toBe("function");
     });
   });
 
@@ -117,7 +117,7 @@ describe("mockSetup", () => {
 
     it("t function returns fallback or key", () => {
       const result = createMockTranslation();
-      
+
       expect(result.t("key")).toBe("key");
       expect(result.t("key", "fallback")).toBe("fallback");
     });
@@ -149,17 +149,17 @@ describe("mockSetup", () => {
     });
 
     it("applies overrides to default mock", () => {
-      const mockUser = { id: '123', email: 'test@example.com' };
+      const mockUser = { id: "123", email: "test@example.com" };
       const overrides = {
         user: mockUser,
-        userType: 'donor' as const,
+        userType: "donor" as const,
         loading: true,
       };
 
       const result = createMockAuth(overrides);
 
       expect(result.user).toBe(mockUser);
-      expect(result.userType).toBe('donor');
+      expect(result.userType).toBe("donor");
       expect(result.loading).toBe(true);
     });
   });
@@ -194,9 +194,9 @@ describe("mockSetup", () => {
 
   describe("mockLogger", () => {
     it("provides mock logger methods", () => {
-      expect(typeof mockLogger.error).toBe('function');
-      expect(typeof mockLogger.info).toBe('function');
-      expect(typeof mockLogger.warn).toBe('function');
+      expect(typeof mockLogger.error).toBe("function");
+      expect(typeof mockLogger.info).toBe("function");
+      expect(typeof mockLogger.warn).toBe("function");
     });
 
     it("logger methods can be called without errors", () => {
@@ -243,36 +243,40 @@ describe("mockSetup", () => {
   describe("createMockSupabase", () => {
     it("creates mock supabase client with default responses", () => {
       const client = createMockSupabase();
-      
-      expect(typeof client.from).toBe('function');
+
+      expect(typeof client.from).toBe("function");
 
       const result = client.from("test_table");
-      expect(typeof result.select).toBe('function');
+      expect(typeof result.select).toBe("function");
     });
 
     it("creates mock supabase client with custom responses", () => {
       const customResponses = {
         users: { data: [{ id: "123", name: "Test" }], error: null },
       };
-      
+
       const client = createMockSupabase(customResponses);
       const result = client.from("users");
-      
-      expect(typeof result.select).toBe('function');
+
+      expect(typeof result.select).toBe("function");
     });
 
     it("supports chained query methods", () => {
       const client = createMockSupabase();
       const query = client.from("test_table").select();
-      
-      expect(typeof query.eq).toBe('function');
-      expect(typeof query.order).toBe('function');
-      expect(typeof query.single).toBe('function');
+
+      expect(typeof query.eq).toBe("function");
+      expect(typeof query.order).toBe("function");
+      expect(typeof query.single).toBe("function");
     });
 
     it("supports nested eq and single methods", async () => {
       const client = createMockSupabase();
-      const result = await client.from("test_table").select().eq("id", "123").single();
+      const result = await client
+        .from("test_table")
+        .select()
+        .eq("id", "123")
+        .single();
 
       expect(result).toEqual({ data: [], error: null });
     });
@@ -285,7 +289,9 @@ describe("mockSetup", () => {
     });
 
     it("MockInput renders with placeholder", () => {
-      const { getByPlaceholderText } = render(<MockInput placeholder="Enter text" />);
+      const { getByPlaceholderText } = render(
+        <MockInput placeholder="Enter text" />,
+      );
       expect(getByPlaceholderText("Enter text")).toBeInTheDocument();
     });
 
@@ -304,7 +310,9 @@ describe("mockSetup", () => {
 
     it("testPropsDefaults contains default prop values", () => {
       expect(testPropsDefaults.applicationAcceptance).toBeDefined();
-      expect(testPropsDefaults.applicationAcceptance.applicationId).toBe('app-123');
+      expect(testPropsDefaults.applicationAcceptance.applicationId).toBe(
+        "app-123",
+      );
       expect(testPropsDefaults.volunteerHours).toBeDefined();
       expect(testPropsDefaults.volunteerHours.hours).toBe(8);
     });
