@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
-import type { Screen } from '@testing-library/react';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Screen } from "@testing-library/react";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // Type definitions for auth test helpers
 interface AuthError {
@@ -43,44 +43,50 @@ interface ScreenWithMock extends Screen {
 }
 
 // Shared test helpers to reduce duplication in auth tests
-export const createMockAuthFlow = (mockType: 'success' | 'error', errorDetails?: AuthError): AuthResponse => {
-  if (mockType === 'success') {
+export const createMockAuthFlow = (
+  mockType: "success" | "error",
+  errorDetails?: AuthError,
+): AuthResponse => {
+  if (mockType === "success") {
     return {
-      data: { user: { id: '123', email: 'test@example.com' }, session: {} },
-      error: null
+      data: { user: { id: "123", email: "test@example.com" }, session: {} },
+      error: null,
     };
   }
   return {
     data: { user: null, session: null },
-    error: errorDetails || { message: 'Test error' }
+    error: errorDetails || { message: "Test error" },
   };
 };
 
-export const createMockWeb3Flow = (mockType: 'success' | 'error', errorDetails?: Error): string[] => {
-  if (mockType === 'success') {
-    return ['0x1234567890123456789012345678901234567890'];
+export const createMockWeb3Flow = (
+  mockType: "success" | "error",
+  errorDetails?: Error,
+): string[] => {
+  if (mockType === "success") {
+    return ["0x1234567890123456789012345678901234567890"];
   }
-  throw errorDetails || new Error('Test error');
+  throw errorDetails || new Error("Test error");
 };
 
 // Shared mock user object
 export const MOCK_USER = {
-  id: '123',
-  email: 'test@example.com',
-  user_metadata: { user_type: 'donor' },
+  id: "123",
+  email: "test@example.com",
+  user_metadata: { user_type: "donor" },
   app_metadata: {},
-  aud: 'authenticated',
-  created_at: '2024-01-01'
+  aud: "authenticated",
+  created_at: "2024-01-01",
 };
 
 // Common Supabase auth method mocks
 export const createAuthMocks = () => ({
-  getSession: jest.fn().mockResolvedValue({ 
-    data: { session: null }, 
-    error: null 
+  getSession: jest.fn().mockResolvedValue({
+    data: { session: null },
+    error: null,
   }),
   onAuthStateChange: jest.fn().mockReturnValue({
-    data: { subscription: { unsubscribe: jest.fn() } }
+    data: { subscription: { unsubscribe: jest.fn() } },
   }),
   signInWithPassword: jest.fn(),
   signInWithOAuth: jest.fn(),
@@ -91,9 +97,12 @@ export const createAuthMocks = () => ({
 });
 
 // Standard auth test patterns
-export const setupAuthTest = (mockSupabase: MockSupabase, mockUseToast: jest.Mock): { mockShowToast: jest.Mock } => {
+export const setupAuthTest = (
+  mockSupabase: MockSupabase,
+  mockUseToast: jest.Mock,
+): { mockShowToast: jest.Mock } => {
   const mockShowToast = jest.fn();
-  
+
   mockUseToast.mockReturnValue({
     showToast: mockShowToast,
   });
@@ -101,10 +110,10 @@ export const setupAuthTest = (mockSupabase: MockSupabase, mockUseToast: jest.Moc
   mockSupabase.auth = createAuthMocks();
 
   // Mock console methods to avoid test output noise
-  jest.spyOn(console, 'error').mockImplementation(() => {
+  jest.spyOn(console, "error").mockImplementation(() => {
     // Empty mock to suppress console.error output during tests
   });
-  jest.spyOn(console, 'log').mockImplementation(() => {
+  jest.spyOn(console, "log").mockImplementation(() => {
     // Empty mock to suppress console.log output during tests
   });
 
@@ -118,7 +127,7 @@ export const testAuthFlow = async (
   mockResponse: AuthResponse | Error,
   screen: ScreenWithMock,
   buttonTestId: string,
-  expectedToast: [string, string]
+  expectedToast: [string, string],
 ) => {
   if (mockResponse instanceof Error) {
     mockSupabase.auth[method].mockRejectedValue(mockResponse);
@@ -126,28 +135,30 @@ export const testAuthFlow = async (
     mockSupabase.auth[method].mockResolvedValue(mockResponse);
   }
 
-  const { act, waitFor } = await import('@testing-library/react');
+  const { act, waitFor } = await import("@testing-library/react");
   const mockShowToast = screen.__mockShowToast;
-  
+
   if (!mockShowToast) {
-    throw new Error('mockShowToast not found on screen object');
+    throw new Error("mockShowToast not found on screen object");
   }
-  
+
   await act(async () => screen.getByTestId(buttonTestId).click());
-  await waitFor(() => expect(mockShowToast).toHaveBeenCalledWith(...expectedToast));
+  await waitFor(() =>
+    expect(mockShowToast).toHaveBeenCalledWith(...expectedToast),
+  );
 };
 
 export const commonExpectations = {
   authSuccess: (screen: Screen) => {
-    expect(screen.getByTestId('user')).toHaveTextContent('test@example.com');
+    expect(screen.getByTestId("user")).toHaveTextContent("test@example.com");
   },
   authError: (screen: Screen, message: string) => {
-    expect(screen.getByTestId('error')).toHaveTextContent(message);
+    expect(screen.getByTestId("error")).toHaveTextContent(message);
   },
   web3Connected: (screen: Screen) => {
-    expect(screen.getByTestId('connected')).toHaveTextContent('connected');
+    expect(screen.getByTestId("connected")).toHaveTextContent("connected");
   },
   web3Disconnected: (screen: Screen) => {
-    expect(screen.getByTestId('connected')).toHaveTextContent('disconnected');
-  }
+    expect(screen.getByTestId("connected")).toHaveTextContent("disconnected");
+  },
 };
