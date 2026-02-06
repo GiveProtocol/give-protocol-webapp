@@ -54,7 +54,10 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
 
   // Reset selected token when chain changes
   React.useEffect(() => {
-    if (availableTokens.length > 0 && !availableTokens.includes(selectedToken)) {
+    if (
+      availableTokens.length > 0 &&
+      !availableTokens.includes(selectedToken)
+    ) {
       setSelectedToken(availableTokens[0]);
       setAmount(0);
     }
