@@ -1,6 +1,8 @@
 export default {
   preset: "ts-jest/presets/default-esm",
   testEnvironment: "jsdom",
+  // Run tests sequentially to prevent ESM module mocking isolation issues
+  maxWorkers: 1,
   extensionsToTreatAsEsm: [".ts", ".tsx"],
   roots: ["<rootDir>/src"],
   testMatch: [

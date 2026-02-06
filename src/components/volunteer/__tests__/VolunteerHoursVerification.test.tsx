@@ -14,9 +14,13 @@ import {
 // Setup common mocks to reduce duplication
 setupCommonMocks();
 
-// Mock the specific dependencies
-jest.mock("@/hooks/useVolunteerVerification");
-jest.mock("@/hooks/useTranslation");
+// Mock the specific dependencies with explicit factories for ESM compatibility
+jest.mock("@/hooks/useVolunteerVerification", () => ({
+  useVolunteerVerification: jest.fn(),
+}));
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(),
+}));
 
 describe("VolunteerHoursVerification", () => {
   const mockVerifyHours = jest.fn();

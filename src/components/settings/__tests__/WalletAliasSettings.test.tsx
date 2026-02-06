@@ -12,10 +12,16 @@ import {
   testAddresses,
 } from "@/test-utils/mockSetup";
 
-// Top-level mocks (hoisted by babel-jest)
-jest.mock("@/hooks/useWalletAlias");
-jest.mock("@/contexts/Web3Context");
-jest.mock("@/contexts/AuthContext");
+// Top-level mocks with explicit factories for ESM compatibility
+jest.mock("@/hooks/useWalletAlias", () => ({
+  useWalletAlias: jest.fn(),
+}));
+jest.mock("@/contexts/Web3Context", () => ({
+  useWeb3: jest.fn(),
+}));
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: jest.fn(),
+}));
 jest.mock("@/hooks/useToast", () => ({
   useToast: jest.fn(() => ({
     showToast: jest.fn(),

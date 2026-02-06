@@ -1,11 +1,21 @@
 import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
-import { GlobalContributions } from "../GlobalContributions";
-import { useGlobalContributionStats } from "@/hooks/useContributionStats";
 
+// Define mock return value holder
+let mockReturnValue: {
+  data: object | null;
+  isLoading: boolean;
+  error: Error | null;
+} = {
+  data: null,
+  isLoading: true,
+  error: null,
+};
+
+// Mock the hook module before importing the component
 jest.mock("@/hooks/useContributionStats", () => ({
-  useGlobalContributionStats: jest.fn(),
+  useGlobalContributionStats: () => mockReturnValue,
 }));
 
 jest.mock("../DonationStats", () => ({
@@ -32,7 +42,8 @@ jest.mock("@/components/ui/LoadingSpinner", () => ({
   LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
 }));
 
-const mockUseGlobalContributionStats = jest.mocked(useGlobalContributionStats);
+// Import component AFTER mocks are set up
+import { GlobalContributions } from "../GlobalContributions";
 
 const mockGlobalStats = {
   totalDonationAmount: 1000,
@@ -43,11 +54,12 @@ const mockGlobalStats = {
 
 describe("GlobalContributions", () => {
   beforeEach(() => {
-    mockUseGlobalContributionStats.mockReturnValue({
+    // Reset to default loading state before each test
+    mockReturnValue = {
       data: null,
       isLoading: true,
       error: null,
-    } as ReturnType<typeof useGlobalContributionStats>);
+    };
   });
 
   it("renders loading spinner when loading", () => {
@@ -58,11 +70,11 @@ describe("GlobalContributions", () => {
   });
 
   it("renders donation stats when data is loaded", () => {
-    mockUseGlobalContributionStats.mockReturnValue({
+    mockReturnValue = {
       data: mockGlobalStats,
       isLoading: false,
       error: null,
-    } as ReturnType<typeof useGlobalContributionStats>);
+    };
 
     render(<GlobalContributions />);
 
@@ -71,11 +83,11 @@ describe("GlobalContributions", () => {
   });
 
   it("renders leaderboards when data is loaded", () => {
-    mockUseGlobalContributionStats.mockReturnValue({
+    mockReturnValue = {
       data: mockGlobalStats,
       isLoading: false,
       error: null,
-    } as ReturnType<typeof useGlobalContributionStats>);
+    };
 
     render(<GlobalContributions />);
 
@@ -84,11 +96,11 @@ describe("GlobalContributions", () => {
   });
 
   it("renders error message when there is an error", () => {
-    mockUseGlobalContributionStats.mockReturnValue({
+    mockReturnValue = {
       data: null,
       isLoading: false,
       error: new Error("Failed to load"),
-    } as ReturnType<typeof useGlobalContributionStats>);
+    };
 
     render(<GlobalContributions />);
 
@@ -98,11 +110,11 @@ describe("GlobalContributions", () => {
   });
 
   it("renders DonationStats with no stats when data is null", () => {
-    mockUseGlobalContributionStats.mockReturnValue({
+    mockReturnValue = {
       data: null,
       isLoading: false,
       error: null,
-    } as ReturnType<typeof useGlobalContributionStats>);
+    };
 
     render(<GlobalContributions />);
 

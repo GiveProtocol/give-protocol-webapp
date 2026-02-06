@@ -12,10 +12,16 @@ import {
 } from "@/test-utils/mockSetup";
 import { MemoryRouter } from "react-router-dom";
 
-// Top-level mocks (must be hoisted)
-jest.mock("@/contexts/AuthContext");
-jest.mock("@/hooks/useProfile");
-jest.mock("@/hooks/useTranslation");
+// Top-level mocks with explicit factories for ESM compatibility
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: jest.fn(),
+}));
+jest.mock("@/hooks/useProfile", () => ({
+  useProfile: jest.fn(),
+}));
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(),
+}));
 jest.mock("@/utils/logger", () => ({
   Logger: {
     error: jest.fn(),

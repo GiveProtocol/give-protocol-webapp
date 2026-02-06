@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals";
 import type { Screen } from '@testing-library/react';
 import type { SupabaseClient } from '@supabase/supabase-js';
 

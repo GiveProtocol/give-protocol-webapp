@@ -12,10 +12,16 @@ import {
   createMockTranslation,
 } from "@/test-utils/mockSetup";
 
-// Top-level mocks (hoisted by babel-jest)
-jest.mock("@/contexts/AuthContext");
-jest.mock("@/contexts/Web3Context");
-jest.mock("@/hooks/useTranslation");
+// Top-level mocks with explicit factories for ESM compatibility
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: jest.fn(),
+}));
+jest.mock("@/contexts/Web3Context", () => ({
+  useWeb3: jest.fn(),
+}));
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(),
+}));
 
 jest.mock("@/utils/date", () => ({
   formatDate: jest.fn((date: string) => date),

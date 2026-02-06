@@ -10,8 +10,10 @@ import {
   testAddresses,
 } from "@/test-utils/mockSetup";
 
-// Setup common mocks using shared utilities
-jest.mock("@/contexts/Web3Context");
+// Setup common mocks using shared utilities with explicit factories for ESM compatibility
+jest.mock("@/contexts/Web3Context", () => ({
+  useWeb3: jest.fn(),
+}));
 jest.mock("@/contexts/AuthContext", () => ({
   useAuth: jest.fn(() => ({
     user: null,
@@ -28,7 +30,9 @@ jest.mock("@/hooks/useWallet", () => ({
     connectWallet: jest.fn(),
   })),
 }));
-jest.mock("@/hooks/useWalletAlias");
+jest.mock("@/hooks/useWalletAlias", () => ({
+  useWalletAlias: jest.fn(),
+}));
 jest.mock("@/utils/web3", () => ({
   shortenAddress: jest.fn(
     (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,

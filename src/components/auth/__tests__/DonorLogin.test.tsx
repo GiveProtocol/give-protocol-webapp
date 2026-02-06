@@ -1,14 +1,32 @@
+import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DonorLogin } from "../DonorLogin";
 
 const mockLogin = jest.fn();
 
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: () => ({
+    login: mockLogin,
+    loading: false,
+    error: null,
+    user: null,
+    isAuthenticated: false,
+    logout: jest.fn(),
+    register: jest.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
 jest.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({
     login: mockLogin,
     loading: false,
     error: null,
+    user: null,
+    isAuthenticated: false,
+    logout: jest.fn(),
+    register: jest.fn(),
   }),
 }));
 
