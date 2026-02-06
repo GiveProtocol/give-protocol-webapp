@@ -151,18 +151,18 @@ Set minimum donations after deployment:
 
 ```javascript
 // Base deployment
-await contract.setMinDonation(USDC_BASE, parseUnits("1", 6));      // $1 minimum
-await contract.setMinDonation(DAI_BASE, parseUnits("1", 18));      // $1 minimum
+await contract.setMinDonation(USDC_BASE, parseUnits("1", 6)); // $1 minimum
+await contract.setMinDonation(DAI_BASE, parseUnits("1", 18)); // $1 minimum
 await contract.setMinDonation(WETH_BASE, parseUnits("0.0003", 18)); // ~$1 at $3k ETH
 
 // Optimism deployment
 await contract.setMinDonation(USDC_OP, parseUnits("1", 6));
 await contract.setMinDonation(DAI_OP, parseUnits("1", 18));
-await contract.setMinDonation(OP_TOKEN, parseUnits("1", 18));      // ~$1.50
+await contract.setMinDonation(OP_TOKEN, parseUnits("1", 18)); // ~$1.50
 
 // Moonbeam deployment (existing)
 await contract.setMinDonation(USDC_GLMR, parseUnits("1", 6));
-await contract.setMinDonation(DOT_XC, parseUnits("0.2", 10));      // ~$1 at $5 DOT
+await contract.setMinDonation(DOT_XC, parseUnits("0.2", 10)); // ~$1 at $5 DOT
 ```
 
 ---
@@ -171,32 +171,32 @@ await contract.setMinDonation(DOT_XC, parseUnits("0.2", 10));      // ~$1 at $5 
 
 #### Base Mainnet (Chain ID: 8453)
 
-| Token | Address | Decimals |
-|-------|---------|----------|
-| USDC | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | 6 |
-| USDT | `0xfde4C96c8593536E31F543578B4662D8151B0666` | 6 |
-| DAI | `0x50c5725949A6F0c72E6C4a641F24C8969B4dAd8F` | 18 |
-| WETH | `0x4200000000000000000000000000000000000006` | 18 |
+| Token | Address                                      | Decimals |
+| ----- | -------------------------------------------- | -------- |
+| USDC  | `0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913` | 6        |
+| USDT  | `0xfde4C96c8593536E31F543578B4662D8151B0666` | 6        |
+| DAI   | `0x50c5725949A6F0c72E6C4a641F24C8969B4dAd8F` | 18       |
+| WETH  | `0x4200000000000000000000000000000000000006` | 18       |
 
 #### Optimism Mainnet (Chain ID: 10)
 
-| Token | Address | Decimals |
-|-------|---------|----------|
-| USDC (Native) | `0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85` | 6 |
-| USDC.e (Bridged) | `0x7F5c764cBc14f9669B88837ca1490cCa17c31607` | 6 |
-| USDT | `0x94b008aA00579c1307B0EF2c499aD98a8ce58e58` | 6 |
-| DAI | `0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1` | 18 |
-| OP | `0x4200000000000000000000000000000000000042` | 18 |
-| WETH | `0x4200000000000000000000000000000000000006` | 18 |
+| Token            | Address                                      | Decimals |
+| ---------------- | -------------------------------------------- | -------- |
+| USDC (Native)    | `0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85` | 6        |
+| USDC.e (Bridged) | `0x7F5c764cBc14f9669B88837ca1490cCa17c31607` | 6        |
+| USDT             | `0x94b008aA00579c1307B0EF2c499aD98a8ce58e58` | 6        |
+| DAI              | `0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1` | 18       |
+| OP               | `0x4200000000000000000000000000000000000042` | 18       |
+| WETH             | `0x4200000000000000000000000000000000000006` | 18       |
 
 #### Moonbeam Mainnet (Chain ID: 1284)
 
-| Token | Address | Decimals |
-|-------|---------|----------|
-| USDC | `0x931715FEE2d06333043d11F658C8CE934aC61D0c` | 6 |
-| USDT | `0xc30E9cA94CF52f3Bf5692aaCF81353a27052c46f` | 6 |
-| xcDOT | `0xFfFFfFff1FcaCBd218EDc0EbA20Fc2308C778080` | 10 |
-| WGLMR | `0xAcc15dC74880C9944775448304B263D191c6077F` | 18 |
+| Token | Address                                      | Decimals |
+| ----- | -------------------------------------------- | -------- |
+| USDC  | `0x931715FEE2d06333043d11F658C8CE934aC61D0c` | 6        |
+| USDT  | `0xc30E9cA94CF52f3Bf5692aaCF81353a27052c46f` | 6        |
+| xcDOT | `0xFfFFfFff1FcaCBd218EDc0EbA20Fc2308C778080` | 10       |
+| WGLMR | `0xAcc15dC74880C9944775448304B263D191c6077F` | 18       |
 
 ---
 

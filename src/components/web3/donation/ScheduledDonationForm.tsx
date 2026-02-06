@@ -435,7 +435,10 @@ export function ScheduledDonationForm({
 
   // Reset selected token when chain changes
   React.useEffect(() => {
-    if (availableTokens.length > 0 && !availableTokens.includes(selectedToken)) {
+    if (
+      availableTokens.length > 0 &&
+      !availableTokens.includes(selectedToken)
+    ) {
       setSelectedToken(availableTokens[0]);
       setAmount(0);
     }
