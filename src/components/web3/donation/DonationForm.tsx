@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Button } from "@/components/ui/Button";
 import { validateAmount } from "@/utils/validation";
@@ -8,11 +8,9 @@ import { Logger } from "@/utils/logger";
 import { TokenSelector } from "./TokenSelector";
 import { DualAmountInput } from "./DualAmountInput";
 import { FiatPresets } from "./FiatPresets";
-import { MOONBEAM_TOKENS, TokenConfig } from "@/config/tokens";
+import { getERC20TokensForChain, type TokenConfig } from "@/config/tokens";
+import { CHAIN_IDS } from "@/config/contracts";
 import { Loader2, CheckCircle2, AlertCircle } from "lucide-react";
-
-// Filter to only ERC20 tokens (native tokens not yet supported by the contract)
-const ERC20_TOKENS = MOONBEAM_TOKENS.filter((token) => !token.isNative);
 
 interface DonationFormProps {
   charityAddress: string;
@@ -37,14 +35,30 @@ interface DonationFormProps {
  * ```
  */
 export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
-  const [amount, setAmount] = useState(0);
-  const [selectedToken, setSelectedToken] = useState(ERC20_TOKENS[0]); // Default to first ERC20 token (WGLMR)
+  const { isConnected, connect, chainId } = useWeb3();
   const { donate, loading, approving, error: donationError } = useDonation();
-  const { isConnected, connect } = useWeb3();
+
+  // Get ERC20 tokens available for the current chain
+  const availableTokens = useMemo(() => {
+    return getERC20TokensForChain(chainId ?? CHAIN_IDS.BASE);
+  }, [chainId]);
+
+  const [amount, setAmount] = useState(0);
+  const [selectedToken, setSelectedToken] = useState<TokenConfig>(
+    availableTokens[0],
+  );
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { balance, isLoading: isLoadingBalance } =
     useTokenBalance(selectedToken);
+
+  // Reset selected token when chain changes
+  React.useEffect(() => {
+    if (availableTokens.length > 0 && !availableTokens.includes(selectedToken)) {
+      setSelectedToken(availableTokens[0]);
+      setAmount(0);
+    }
+  }, [availableTokens, selectedToken]);
 
   const handleAmountChange = useCallback((newAmount: number) => {
     setAmount(newAmount);
@@ -146,7 +160,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
         onSelectToken={handleTokenSelect}
         walletBalance={balance}
         isLoadingBalance={isLoadingBalance}
-        availableTokens={ERC20_TOKENS}
+        availableTokens={availableTokens}
       />
 
       <FiatPresets

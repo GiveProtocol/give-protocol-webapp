@@ -1,14 +1,16 @@
 /**
- * Token configuration for Moonbeam-based donations
- * Defines supported tokens, their metadata, and contract addresses
+ * Token configuration for multi-chain donations
+ * Defines supported tokens, their metadata, and contract addresses per chain
  */
+
+import { CHAIN_IDS, type ChainId } from "./contracts";
 
 export interface TokenConfig {
   /** Token symbol (e.g., "GLMR", "USDC") */
   symbol: string;
   /** Full token name */
   name: string;
-  /** Smart contract address on Moonbeam */
+  /** Smart contract address */
   address: string;
   /** Number of decimal places */
   decimals: number;
@@ -18,6 +20,8 @@ export interface TokenConfig {
   icon: string;
   /** Whether this is the native token */
   isNative: boolean;
+  /** Minimum donation amount in token units (optional, for dust prevention) */
+  minDonation?: number;
 }
 
 export interface FiatCurrency {
@@ -112,6 +116,197 @@ export const MOONBEAM_TOKENS: TokenConfig[] = [
 ];
 
 /**
+ * Supported tokens on Base mainnet
+ */
+export const BASE_TOKENS: TokenConfig[] = [
+  {
+    symbol: "ETH",
+    name: "Ethereum",
+    address: "0x0000000000000000000000000000000000000000", // Native token
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: true,
+  },
+  {
+    symbol: "WETH",
+    name: "Wrapped Ether",
+    address: "0x4200000000000000000000000000000000000006", // Base WETH
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: false,
+  },
+  {
+    symbol: "USDC",
+    name: "USD Coin",
+    address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // Native Circle USDC on Base
+    decimals: 6,
+    coingeckoId: "usd-coin",
+    icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
+    isNative: false,
+    minDonation: 1, // $1 minimum
+  },
+  {
+    symbol: "USDT",
+    name: "Tether USD",
+    address: "0xfde4C96c8593536E31F543578B4662D8151B0666", // USDT on Base
+    decimals: 6,
+    coingeckoId: "tether",
+    icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
+    isNative: false,
+    minDonation: 1,
+  },
+  {
+    symbol: "DAI",
+    name: "Dai Stablecoin",
+    address: "0x50c5725949A6F0c72E6C4a641F24C8969B4dAd8F", // DAI on Base
+    decimals: 18,
+    coingeckoId: "dai",
+    icon: "https://assets.coingecko.com/coins/images/9956/small/4943.png",
+    isNative: false,
+    minDonation: 1,
+  },
+];
+
+/**
+ * Supported tokens on Base Sepolia testnet
+ */
+export const BASE_SEPOLIA_TOKENS: TokenConfig[] = [
+  {
+    symbol: "ETH",
+    name: "Ethereum (Testnet)",
+    address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: true,
+  },
+  {
+    symbol: "WETH",
+    name: "Wrapped Ether (Testnet)",
+    address: "0x4200000000000000000000000000000000000006",
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: false,
+  },
+];
+
+/**
+ * Supported tokens on Optimism mainnet
+ */
+export const OPTIMISM_TOKENS: TokenConfig[] = [
+  {
+    symbol: "ETH",
+    name: "Ethereum",
+    address: "0x0000000000000000000000000000000000000000", // Native token
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: true,
+  },
+  {
+    symbol: "WETH",
+    name: "Wrapped Ether",
+    address: "0x4200000000000000000000000000000000000006", // Optimism WETH
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: false,
+  },
+  {
+    symbol: "USDC.e",
+    name: "Bridged USD Coin",
+    address: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // Bridged USDC on Optimism
+    decimals: 6,
+    coingeckoId: "usd-coin",
+    icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
+    isNative: false,
+    minDonation: 1,
+  },
+  {
+    symbol: "USDC",
+    name: "USD Coin",
+    address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // Native Circle USDC on Optimism
+    decimals: 6,
+    coingeckoId: "usd-coin",
+    icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
+    isNative: false,
+    minDonation: 1,
+  },
+  {
+    symbol: "USDT",
+    name: "Tether USD",
+    address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", // USDT on Optimism
+    decimals: 6,
+    coingeckoId: "tether",
+    icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
+    isNative: false,
+    minDonation: 1,
+  },
+  {
+    symbol: "DAI",
+    name: "Dai Stablecoin",
+    address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // DAI on Optimism
+    decimals: 18,
+    coingeckoId: "dai",
+    icon: "https://assets.coingecko.com/coins/images/9956/small/4943.png",
+    isNative: false,
+    minDonation: 1,
+  },
+  {
+    symbol: "OP",
+    name: "Optimism",
+    address: "0x4200000000000000000000000000000000000042", // OP token
+    decimals: 18,
+    coingeckoId: "optimism",
+    icon: "https://assets.coingecko.com/coins/images/25244/small/Optimism.png",
+    isNative: false,
+    minDonation: 10, // 10 OP minimum
+  },
+];
+
+/**
+ * Supported tokens on Optimism Sepolia testnet
+ */
+export const OPTIMISM_SEPOLIA_TOKENS: TokenConfig[] = [
+  {
+    symbol: "ETH",
+    name: "Ethereum (Testnet)",
+    address: "0x0000000000000000000000000000000000000000",
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: true,
+  },
+  {
+    symbol: "WETH",
+    name: "Wrapped Ether (Testnet)",
+    address: "0x4200000000000000000000000000000000000006",
+    decimals: 18,
+    coingeckoId: "ethereum",
+    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+    isNative: false,
+  },
+];
+
+/**
+ * Chain-indexed token configurations
+ * Maps each supported chain to its available tokens
+ */
+export const CHAIN_TOKENS: Record<ChainId, TokenConfig[]> = {
+  // Mainnets
+  [CHAIN_IDS.BASE]: BASE_TOKENS,
+  [CHAIN_IDS.OPTIMISM]: OPTIMISM_TOKENS,
+  [CHAIN_IDS.MOONBEAM]: MOONBEAM_TOKENS,
+  // Testnets
+  [CHAIN_IDS.BASE_SEPOLIA]: BASE_SEPOLIA_TOKENS,
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: OPTIMISM_SEPOLIA_TOKENS,
+  [CHAIN_IDS.MOONBASE]: MOONBEAM_TOKENS, // Moonbase uses same tokens as Moonbeam
+};
+
+/**
  * Supported fiat currencies for display
  * Matches the currencies defined in SettingsContext
  */
@@ -164,5 +359,41 @@ export function getTokenByAddress(address: string): TokenConfig | undefined {
 export function getCurrencyByCode(code: string): FiatCurrency | undefined {
   return SUPPORTED_CURRENCIES.find(
     (currency) => currency.code.toLowerCase() === code.toLowerCase(),
+  );
+}
+
+/**
+ * Get tokens available for a specific chain
+ * @param chainId Chain ID to get tokens for
+ * @returns Array of token configurations for the chain, or Moonbeam tokens as fallback
+ */
+export function getTokensForChain(chainId: ChainId | number): TokenConfig[] {
+  return CHAIN_TOKENS[chainId as ChainId] || MOONBEAM_TOKENS;
+}
+
+/**
+ * Get ERC20 tokens (non-native) for a specific chain
+ * @param chainId Chain ID to get tokens for
+ * @returns Array of ERC20 token configurations (excludes native tokens)
+ */
+export function getERC20TokensForChain(
+  chainId: ChainId | number,
+): TokenConfig[] {
+  return getTokensForChain(chainId).filter((token) => !token.isNative);
+}
+
+/**
+ * Get token configuration by address for a specific chain
+ * @param address Token contract address
+ * @param chainId Chain ID to search in
+ * @returns Token configuration or undefined if not found
+ */
+export function getTokenByAddressOnChain(
+  address: string,
+  chainId: ChainId | number,
+): TokenConfig | undefined {
+  const tokens = getTokensForChain(chainId);
+  return tokens.find(
+    (token) => token.address.toLowerCase() === address.toLowerCase(),
   );
 }

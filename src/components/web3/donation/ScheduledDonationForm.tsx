@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useCurrencyContext } from "@/contexts/CurrencyContext";
 import { Button } from "@/components/ui/Button";
@@ -7,8 +7,8 @@ import { validateAmount } from "@/utils/validation";
 import { useToast } from "@/contexts/ToastContext";
 import { Logger } from "@/utils/logger";
 import { ethers } from "ethers";
-import { getContractAddress } from "@/config/contracts";
-import { MOONBEAM_TOKENS, TokenConfig } from "@/config/tokens";
+import { getContractAddress, CHAIN_IDS } from "@/config/contracts";
+import { getERC20TokensForChain, type TokenConfig } from "@/config/tokens";
 import { TokenSelector } from "./TokenSelector";
 import { DualAmountInput } from "./DualAmountInput";
 import { FiatPresets } from "./FiatPresets";
@@ -20,9 +20,6 @@ import {
   AlertTriangle,
 } from "lucide-react";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
-
-// Filter to only ERC20 tokens (native tokens not supported by the distribution contract)
-const ERC20_TOKENS = MOONBEAM_TOKENS.filter((token) => !token.isNative);
 
 // Error type guards for transaction errors
 interface TransactionError {
@@ -414,19 +411,35 @@ export function ScheduledDonationForm({
   onSuccess,
   onClose: _onClose,
 }: ScheduledDonationFormProps) {
+  const { provider, address, isConnected, connect, chainId } = useWeb3();
+  const { showToast: _showToast } = useToast();
+  const { convertToFiat: _convertToFiat, tokenPrices } = useCurrencyContext();
+
+  // Get ERC20 tokens available for the current chain
+  const availableTokens = useMemo(() => {
+    return getERC20TokensForChain(chainId ?? CHAIN_IDS.BASE);
+  }, [chainId]);
+
   const [amount, setAmount] = useState(0);
-  const [selectedToken, setSelectedToken] = useState(ERC20_TOKENS[0]);
+  const [selectedToken, setSelectedToken] = useState<TokenConfig>(
+    availableTokens[0],
+  );
   const [numberOfMonths, setNumberOfMonths] = useState(12);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [transactionHash, setTransactionHash] = useState<string | null>(null);
   const [transactionFee, setTransactionFee] = useState<string | null>(null);
-  const { provider, address, isConnected, connect } = useWeb3();
-  const { showToast: _showToast } = useToast();
   const { balance, isLoading: isLoadingBalance } =
     useTokenBalance(selectedToken);
-  const { convertToFiat: _convertToFiat, tokenPrices } = useCurrencyContext();
+
+  // Reset selected token when chain changes
+  React.useEffect(() => {
+    if (availableTokens.length > 0 && !availableTokens.includes(selectedToken)) {
+      setSelectedToken(availableTokens[0]);
+      setAmount(0);
+    }
+  }, [availableTokens, selectedToken]);
 
   // Calculate start and end dates for the donation schedule
   const startDate = new Date();
@@ -632,7 +645,7 @@ export function ScheduledDonationForm({
         onSelectToken={handleTokenSelect}
         walletBalance={balance}
         isLoadingBalance={isLoadingBalance}
-        availableTokens={ERC20_TOKENS}
+        availableTokens={availableTokens}
       />
 
       <FiatPresets
