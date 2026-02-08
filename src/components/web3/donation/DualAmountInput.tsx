@@ -72,7 +72,7 @@ export function DualAmountInput({
         onChange(cryptoAmount);
       }
     },
-    [inputMode, onChange, convertFromFiat, token.coingeckoId]
+    [inputMode, onChange, convertFromFiat, token.coingeckoId],
   );
 
   const handleMaxClick = useCallback(() => {
@@ -91,7 +91,10 @@ export function DualAmountInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label htmlFor="donation-amount-input" className="block text-sm font-medium text-gray-700">
+        <label
+          htmlFor="donation-amount-input"
+          className="block text-sm font-medium text-gray-700"
+        >
           Donation Amount
         </label>
         {hasPrice && (
@@ -102,7 +105,8 @@ export function DualAmountInput({
           >
             <ArrowLeftRight className="w-4 h-4" />
             <span>
-              Switch to {inputMode === "crypto" ? selectedCurrency.code : token.symbol}
+              Switch to{" "}
+              {inputMode === "crypto" ? selectedCurrency.code : token.symbol}
             </span>
           </button>
         )}
@@ -127,7 +131,7 @@ export function DualAmountInput({
             "pl-4 pr-32",
             value > 0 && maxBalance !== undefined && value > maxBalance
               ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
-              : "border-gray-300"
+              : "border-gray-300",
           )}
         />
         <div className="absolute right-3 top-0 h-full flex items-center gap-2 pointer-events-none">
@@ -149,12 +153,13 @@ export function DualAmountInput({
       <div className="flex items-center justify-between text-sm">
         {maxBalance !== undefined && (
           <div className="text-gray-600">
-            <span className="font-medium">Balance:</span>
-            {' '}
-            <span className={cn(
-              "font-semibold",
-              value > maxBalance ? "text-red-600" : "text-gray-900"
-            )}>
+            <span className="font-medium">Balance:</span>{" "}
+            <span
+              className={cn(
+                "font-semibold",
+                value > maxBalance ? "text-red-600" : "text-gray-900",
+              )}
+            >
               {maxBalance.toFixed(6)} {token.symbol}
             </span>
           </div>
@@ -177,7 +182,8 @@ export function DualAmountInput({
 
       {value > 0 && maxBalance !== undefined && value > maxBalance && (
         <div className="text-sm text-red-600 font-medium">
-          Insufficient balance. Maximum available: {maxBalance.toFixed(6)} {token.symbol}
+          Insufficient balance. Maximum available: {maxBalance.toFixed(6)}{" "}
+          {token.symbol}
         </div>
       )}
 
