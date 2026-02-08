@@ -109,11 +109,6 @@ export function DualAmountInput({
       </div>
 
       <div className="relative">
-        <div className="absolute left-4 top-0 h-full flex items-center pointer-events-none">
-          <span className="text-lg font-semibold text-gray-400">
-            {inputMode === "crypto" ? token.symbol : selectedCurrency.symbol}
-          </span>
-        </div>
         <input
           id="donation-amount-input"
           type="number"
@@ -125,22 +120,25 @@ export function DualAmountInput({
           className={cn(
             "w-full py-4 border-2 rounded-xl transition-all duration-200",
             "focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500",
-            "text-lg font-semibold",
-            inputMode === "crypto" ? "pl-16 pr-24" : "pl-12 pr-24",
+            "text-lg font-semibold text-right",
+            // Hide native number input spin buttons to avoid clash with suffix
+            "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
+            // Left padding for input, right padding for suffix (symbol + MAX button)
+            "pl-4 pr-32",
             value > 0 && maxBalance !== undefined && value > maxBalance
               ? "border-red-400 focus:border-red-500 focus:ring-red-500/30"
               : "border-gray-300"
           )}
         />
-        <div className="absolute right-3 top-0 h-full flex items-center space-x-2">
-          <span className="text-sm font-medium text-gray-500">
+        <div className="absolute right-3 top-0 h-full flex items-center gap-2 pointer-events-none">
+          <span className="text-sm font-medium text-gray-500 min-w-[3rem] text-right">
             {inputMode === "crypto" ? token.symbol : selectedCurrency.code}
           </span>
           {maxBalance !== undefined && (
             <button
               type="button"
               onClick={handleMaxClick}
-              className="px-3 py-1 text-xs font-bold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 rounded-md uppercase transition-all duration-200 hover:shadow-md"
+              className="px-3 py-1 text-xs font-bold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 rounded-md uppercase transition-all duration-200 hover:shadow-md pointer-events-auto"
             >
               Max
             </button>
