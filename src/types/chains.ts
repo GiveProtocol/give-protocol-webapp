@@ -91,7 +91,10 @@ export interface PolkadotChainConfig extends BaseChainConfig {
 /**
  * Union type for all chain configurations
  */
-export type AnyChainConfig = EVMChainConfig | SolanaClusterConfig | PolkadotChainConfig;
+export type AnyChainConfig =
+  | EVMChainConfig
+  | SolanaClusterConfig
+  | PolkadotChainConfig;
 
 /**
  * Multi-chain registry holding all chain configurations
@@ -116,7 +119,9 @@ export function isEVMChain(config: AnyChainConfig): config is EVMChainConfig {
  * @param config - Chain configuration to check
  * @returns True if Solana chain
  */
-export function isSolanaChain(config: AnyChainConfig): config is SolanaClusterConfig {
+export function isSolanaChain(
+  config: AnyChainConfig,
+): config is SolanaClusterConfig {
   return config.type === "solana";
 }
 
@@ -125,6 +130,8 @@ export function isSolanaChain(config: AnyChainConfig): config is SolanaClusterCo
  * @param config - Chain configuration to check
  * @returns True if Polkadot chain
  */
-export function isPolkadotChain(config: AnyChainConfig): config is PolkadotChainConfig {
+export function isPolkadotChain(
+  config: AnyChainConfig,
+): config is PolkadotChainConfig {
   return config.type === "polkadot";
 }

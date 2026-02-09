@@ -38,7 +38,7 @@ export function useMultiChain() {
     (chainType: ChainType): UnifiedAccount[] => {
       return context.accounts.filter((a) => a.chainType === chainType);
     },
-    [context.accounts]
+    [context.accounts],
   );
 
   /**
@@ -50,7 +50,7 @@ export function useMultiChain() {
     (chainType: ChainType): boolean => {
       return context.wallet?.supportedChainTypes.includes(chainType) ?? false;
     },
-    [context.wallet]
+    [context.wallet],
   );
 
   /**
@@ -98,7 +98,8 @@ export function useMultiChain() {
             id?: string;
           };
           const baseUrl = "https://explorer.solana.com";
-          const cluster = config.id === "mainnet-beta" ? "" : `?cluster=${config.id}`;
+          const cluster =
+            config.id === "mainnet-beta" ? "" : `?cluster=${config.id}`;
           return `${baseUrl}/${type}/${value}${cluster}`;
         }
         case "polkadot": {
@@ -110,7 +111,7 @@ export function useMultiChain() {
           return "#";
       }
     },
-    [context.activeAccount, activeChainConfig]
+    [context.activeAccount, activeChainConfig],
   );
 
   /**
@@ -122,7 +123,7 @@ export function useMultiChain() {
     async (wallet: UnifiedWalletProvider, chainType?: ChainType) => {
       await context.connect(wallet, chainType);
     },
-    [context]
+    [context],
   );
 
   return {

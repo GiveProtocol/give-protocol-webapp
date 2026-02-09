@@ -12,7 +12,8 @@ import { Logger } from "@/utils/logger";
 const WALLET_PROMPT_DISMISSED_KEY = "give_protocol_wallet_prompt_dismissed";
 
 /** Storage key for the timestamp when prompt was dismissed */
-const WALLET_PROMPT_DISMISSED_AT_KEY = "give_protocol_wallet_prompt_dismissed_at";
+const WALLET_PROMPT_DISMISSED_AT_KEY =
+  "give_protocol_wallet_prompt_dismissed_at";
 
 /** How long to remember the dismissal (24 hours in ms) */
 const DISMISSAL_DURATION = 24 * 60 * 60 * 1000;
@@ -80,7 +81,9 @@ export function useWalletPrompt(): WalletPromptState {
   // Track if modal has been dismissed this session
   const [modalDismissed, setModalDismissed] = useState(false);
   // Track if banner has been dismissed
-  const [bannerDismissed, setBannerDismissed] = useState(() => isDismissalActive());
+  const [bannerDismissed, setBannerDismissed] = useState(() =>
+    isDismissalActive(),
+  );
   // Track if this is the initial render after login
   const [hasShownPrompt, setHasShownPrompt] = useState(false);
 
@@ -130,7 +133,10 @@ export function useWalletPrompt(): WalletPromptState {
     setBannerDismissed(true);
     try {
       localStorage.setItem(WALLET_PROMPT_DISMISSED_KEY, "true");
-      localStorage.setItem(WALLET_PROMPT_DISMISSED_AT_KEY, Date.now().toString());
+      localStorage.setItem(
+        WALLET_PROMPT_DISMISSED_AT_KEY,
+        Date.now().toString(),
+      );
       Logger.info("Wallet reminder banner dismissed, saved to localStorage");
     } catch (err) {
       Logger.warn("Failed to save wallet prompt dismissal to localStorage", {

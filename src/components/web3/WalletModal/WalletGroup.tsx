@@ -4,7 +4,11 @@
  */
 
 import React from "react";
-import type { ChainType, UnifiedWalletProvider, WalletCategory } from "@/types/wallet";
+import type {
+  ChainType,
+  UnifiedWalletProvider,
+  WalletCategory,
+} from "@/types/wallet";
 import { WalletOption } from "./WalletOption";
 
 /**

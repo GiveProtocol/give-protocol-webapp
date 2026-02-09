@@ -58,7 +58,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClose();
       }
     },
-    [closeOnEscape, onClose]
+    [closeOnEscape, onClose],
   );
 
   // Handle backdrop click
@@ -68,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({
         onClose();
       }
     },
-    [closeOnBackdrop, onClose]
+    [closeOnBackdrop, onClose],
   );
 
   // Handle focus trap and keyboard events

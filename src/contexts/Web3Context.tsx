@@ -571,7 +571,7 @@ export function useWeb3MultiChain() {
         const evmProvider = multiChain.wallet.providers.evm;
         if (isEIP1193Provider(evmProvider)) {
           const ethersProvider = new ethers.BrowserProvider(
-            evmProvider as ethers.Eip1193Provider
+            evmProvider as ethers.Eip1193Provider,
           );
           const ethersSigner = await ethersProvider.getSigner();
           setProvider(ethersProvider);
@@ -633,14 +633,14 @@ export function useWeb3MultiChain() {
       // No provider passed, throw error
       throw new Error("No wallet provider specified");
     },
-    [multiChain, chainId]
+    [multiChain, chainId],
   );
 
   const switchChain = useCallback(
     async (targetChainId: number) => {
       await multiChain.switchChain(targetChainId, "evm");
     },
-    [multiChain]
+    [multiChain],
   );
 
   return {

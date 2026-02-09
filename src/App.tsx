@@ -91,7 +91,11 @@ const ChainOnboarding = () => {
 };
 
 // Safe auto-connect wrapper
-const SafeAutoConnectWrapper = ({ children }: { children: React.ReactNode }) => {
+const SafeAutoConnectWrapper = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
   useSafeAutoConnect();
   return <>{children}</>;
 };

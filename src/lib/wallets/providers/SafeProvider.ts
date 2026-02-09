@@ -30,7 +30,9 @@ interface SafeAppsSdk {
     getInfo: () => Promise<SafeInfo>;
   };
   txs: {
-    send: (_txs: { txs: SafeTransactionData[] }) => Promise<{ safeTxHash: string }>;
+    send: (_txs: {
+      txs: SafeTransactionData[];
+    }) => Promise<{ safeTxHash: string }>;
   };
 }
 
@@ -104,7 +106,8 @@ export class SafeProvider implements UnifiedWalletProvider {
 
     try {
       // Dynamically import Safe Apps SDK
-      const { default: SafeAppsSDK } = await import("@safe-global/safe-apps-sdk");
+      const { default: SafeAppsSDK } =
+        await import("@safe-global/safe-apps-sdk");
 
       this.sdk = new SafeAppsSDK() as unknown as SafeAppsSdk;
       this.safeInfo = await this.sdk.safe.getInfo();
@@ -153,9 +156,14 @@ export class SafeProvider implements UnifiedWalletProvider {
    * @param _chainId - Target chain ID (ignored)
    * @param _chainType - Chain type (must be EVM)
    */
-  async switchChain(_chainId: number | string, _chainType: ChainType): Promise<void> {
+  async switchChain(
+    _chainId: number | string,
+    _chainType: ChainType,
+  ): Promise<void> {
     // Safe Apps cannot switch chains - the chain is determined by the Safe
-    Logger.warn("Safe Apps cannot switch chains. Please switch in the Safe interface.");
+    Logger.warn(
+      "Safe Apps cannot switch chains. Please switch in the Safe interface.",
+    );
   }
 
   /**
@@ -197,7 +205,10 @@ export class SafeProvider implements UnifiedWalletProvider {
    * @param _chainType - Chain type (must be EVM)
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    _chainType: ChainType,
+  ): Promise<string> {
     if (!this.sdk) {
       throw new Error("Safe not connected");
     }
@@ -208,8 +219,11 @@ export class SafeProvider implements UnifiedWalletProvider {
 
     // For now, return a placeholder
     // In production, this would integrate with Safe's signing infrastructure
-    const messageStr = typeof message === "string" ? message : new TextDecoder().decode(message);
-    throw new Error(`Safe message signing not implemented. Message: ${messageStr.substring(0, 50)}...`);
+    const messageStr =
+      typeof message === "string" ? message : new TextDecoder().decode(message);
+    throw new Error(
+      `Safe message signing not implemented. Message: ${messageStr.substring(0, 50)}...`,
+    );
   }
 
   /**

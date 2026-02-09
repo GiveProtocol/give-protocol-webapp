@@ -16,7 +16,10 @@ export { PhantomProvider, createPhantomProvider } from "./PhantomProvider";
 export { TalismanProvider, createTalismanProvider } from "./TalismanProvider";
 
 // SubWallet - EVM + Polkadot
-export { SubWalletProvider, createSubWalletProvider } from "./SubWalletProvider";
+export {
+  SubWalletProvider,
+  createSubWalletProvider,
+} from "./SubWalletProvider";
 
 // Coinbase - EVM + Solana
 export { CoinbaseProvider, createCoinbaseProvider } from "./CoinbaseProvider";

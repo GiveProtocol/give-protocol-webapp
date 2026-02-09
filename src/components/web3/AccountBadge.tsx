@@ -78,7 +78,7 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     },
-    [account.address]
+    [account.address],
   );
 
   const handleClick = useCallback(() => {
@@ -213,7 +213,8 @@ export const ChainTypeBadge: React.FC<ChainTypeBadgeProps> = ({
   className = "",
 }) => {
   const styles = CHAIN_STYLES[chainType];
-  const sizeClasses = size === "sm" ? "text-xs px-1.5 py-0.5" : "text-sm px-2 py-1";
+  const sizeClasses =
+    size === "sm" ? "text-xs px-1.5 py-0.5" : "text-sm px-2 py-1";
 
   return (
     <span

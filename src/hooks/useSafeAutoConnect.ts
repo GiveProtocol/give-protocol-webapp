@@ -40,7 +40,9 @@ export function useSafeAutoConnect() {
 
         const safeProvider = createSafeProvider();
         if (!safeProvider) {
-          Logger.warn("Could not create Safe provider despite being in Safe context");
+          Logger.warn(
+            "Could not create Safe provider despite being in Safe context",
+          );
           return;
         }
 

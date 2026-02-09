@@ -1,7 +1,11 @@
 import { useMemo } from "react";
 import { Logger } from "@/utils/logger";
 import { CHAIN_IDS } from "@/config/contracts";
-import type { UnifiedWalletProvider, WalletCategory, ChainType } from "@/types/wallet";
+import type {
+  UnifiedWalletProvider,
+  WalletCategory,
+  ChainType,
+} from "@/types/wallet";
 import {
   MetaMaskProvider,
   RabbyProvider,
@@ -522,7 +526,9 @@ export function useUnifiedWallets() {
    * @param category - Wallet category to filter by
    * @returns Array of wallets in the category
    */
-  const getWalletsByCategory = (category: WalletCategory): UnifiedWalletProvider[] => {
+  const getWalletsByCategory = (
+    category: WalletCategory,
+  ): UnifiedWalletProvider[] => {
     return unifiedWallets.filter((w) => w.category === category);
   };
 
@@ -531,8 +537,12 @@ export function useUnifiedWallets() {
    * @param chainType - Chain type to filter by
    * @returns Array of wallets supporting the chain type
    */
-  const getWalletsByChainType = (chainType: ChainType): UnifiedWalletProvider[] => {
-    return unifiedWallets.filter((w) => w.supportedChainTypes.includes(chainType));
+  const getWalletsByChainType = (
+    chainType: ChainType,
+  ): UnifiedWalletProvider[] => {
+    return unifiedWallets.filter((w) =>
+      w.supportedChainTypes.includes(chainType),
+    );
   };
 
   /**

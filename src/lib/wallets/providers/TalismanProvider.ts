@@ -67,7 +67,9 @@ export class TalismanProvider implements UnifiedWalletProvider {
    * @returns True if Talisman EVM provider exists
    */
   hasEVMSupport(): boolean {
-    return typeof window !== "undefined" && typeof window.talismanEth !== "undefined";
+    return (
+      typeof window !== "undefined" && typeof window.talismanEth !== "undefined"
+    );
   }
 
   /**
@@ -205,7 +207,10 @@ export class TalismanProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param chainType - Chain type
    */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    chainType: ChainType,
+  ): Promise<void> {
     if (chainType === "evm" && this.evmAdapter) {
       await this.evmAdapter.switchChain(chainId as number);
     } else if (chainType === "polkadot" && this.polkadotAdapter) {
@@ -238,7 +243,10 @@ export class TalismanProvider implements UnifiedWalletProvider {
    * @param chainType - Chain type for signing
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    chainType: ChainType,
+  ): Promise<string> {
     if (chainType === "evm" && this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }

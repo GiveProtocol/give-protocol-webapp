@@ -46,7 +46,7 @@ export class RabbyProvider implements UnifiedWalletProvider {
     // Rabby injects as window.rabby or sets isRabby flag on window.ethereum
     const hasRabby = Boolean(
       (window as { rabby?: unknown }).rabby ||
-      (window.ethereum as { isRabby?: boolean })?.isRabby
+      (window.ethereum as { isRabby?: boolean })?.isRabby,
     );
 
     return hasRabby;
@@ -116,7 +116,10 @@ export class RabbyProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param _chainType - Chain type (only EVM supported)
    */
-  async switchChain(chainId: number | string, _chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    _chainType: ChainType,
+  ): Promise<void> {
     if (this.evmAdapter) {
       await this.evmAdapter.switchChain(chainId as number);
     } else {
@@ -142,7 +145,10 @@ export class RabbyProvider implements UnifiedWalletProvider {
    * @param _chainType - Chain type (only EVM supported)
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    _chainType: ChainType,
+  ): Promise<string> {
     if (this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }

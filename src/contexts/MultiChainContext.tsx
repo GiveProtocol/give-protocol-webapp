@@ -75,7 +75,9 @@ function savePersistedState(state: PersistedState): void {
   }
 }
 
-const MultiChainContext = createContext<MultiChainContextType | undefined>(undefined);
+const MultiChainContext = createContext<MultiChainContextType | undefined>(
+  undefined,
+);
 
 /**
  * MultiChain Provider Props
@@ -96,9 +98,11 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
   // State
   const [wallet, setWallet] = useState<UnifiedWalletProvider | null>(null);
   const [accounts, setAccounts] = useState<UnifiedAccount[]>([]);
-  const [activeAccount, setActiveAccount] = useState<UnifiedAccount | null>(null);
+  const [activeAccount, setActiveAccount] = useState<UnifiedAccount | null>(
+    null,
+  );
   const [activeChainType, setActiveChainType] = useState<ChainType>(
-    initialState.activeChainType
+    initialState.activeChainType,
   );
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -143,7 +147,7 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
         // Verify wallet supports the chain type
         if (!walletProvider.supportedChainTypes.includes(targetChainType)) {
           throw new Error(
-            `${walletProvider.name} does not support ${targetChainType} chains`
+            `${walletProvider.name} does not support ${targetChainType} chains`,
           );
         }
 
@@ -166,7 +170,8 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
           accountCount: connectedAccounts.length,
         });
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Failed to connect wallet";
+        const message =
+          err instanceof Error ? err.message : "Failed to connect wallet";
         const connectError = new Error(message);
         setError(connectError);
         Logger.error("MultiChain connection failed", { error: err });
@@ -176,7 +181,7 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
         isConnectingRef.current = false;
       }
     },
-    [activeChainType]
+    [activeChainType],
   );
 
   /**
@@ -212,7 +217,9 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
       // Verify account is in our list
       const found = accounts.find((a) => a.id === account.id);
       if (!found) {
-        Logger.warn("Account not found in connected accounts", { accountId: account.id });
+        Logger.warn("Account not found in connected accounts", {
+          accountId: account.id,
+        });
         return;
       }
 
@@ -222,7 +229,7 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
         chainType: account.chainType,
       });
     },
-    [accounts]
+    [accounts],
   );
 
   /**
@@ -248,7 +255,7 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
         setActiveAccount(accountOfType);
       }
     },
-    [wallet, accounts]
+    [wallet, accounts],
   );
 
   /**
@@ -278,7 +285,7 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
         throw err;
       }
     },
-    [wallet]
+    [wallet],
   );
 
   /**
@@ -320,7 +327,7 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
       switchChainType,
       switchChain,
       clearError,
-    ]
+    ],
   );
 
   return (
@@ -339,7 +346,9 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
 export function useMultiChainContext(): MultiChainContextType {
   const context = useContext(MultiChainContext);
   if (!context) {
-    throw new Error("useMultiChainContext must be used within a MultiChainProvider");
+    throw new Error(
+      "useMultiChainContext must be used within a MultiChainProvider",
+    );
   }
   return context;
 }
@@ -356,8 +365,7 @@ export function useMultiChainEVM() {
   const evmAccount =
     context.activeAccount?.chainType === "evm" ? context.activeAccount : null;
 
-  const evmChainId =
-    evmAccount?.chainId ?? DEFAULT_EVM_CHAIN_ID;
+  const evmChainId = evmAccount?.chainId ?? DEFAULT_EVM_CHAIN_ID;
 
   return {
     address: evmAccount?.address ?? null,
@@ -386,7 +394,7 @@ export function useMultiChainSigner() {
       }
       return wallet.signTransaction(tx);
     },
-    [wallet]
+    [wallet],
   );
 
   const signMessage = useCallback(
@@ -396,7 +404,7 @@ export function useMultiChainSigner() {
       }
       return wallet.signMessage(message, activeChainType);
     },
-    [wallet, activeChainType]
+    [wallet, activeChainType],
   );
 
   return {

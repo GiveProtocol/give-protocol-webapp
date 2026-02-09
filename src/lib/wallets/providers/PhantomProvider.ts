@@ -47,8 +47,9 @@ export class PhantomProvider implements UnifiedWalletProvider {
     if (typeof window === "undefined") return false;
 
     // Check for Phantom's multi-chain providers
-    const phantom = (window as { phantom?: { ethereum?: unknown; solana?: unknown } })
-      .phantom;
+    const phantom = (
+      window as { phantom?: { ethereum?: unknown; solana?: unknown } }
+    ).phantom;
 
     return Boolean(phantom?.ethereum || phantom?.solana);
   }
@@ -118,7 +119,10 @@ export class PhantomProvider implements UnifiedWalletProvider {
       throw new Error("Phantom Solana provider not available");
     }
 
-    this.solanaAdapter = new SolanaAdapter(solanaProvider, DEFAULT_SOLANA_CLUSTER);
+    this.solanaAdapter = new SolanaAdapter(
+      solanaProvider,
+      DEFAULT_SOLANA_CLUSTER,
+    );
     return this.solanaAdapter.connect();
   }
 
@@ -171,7 +175,10 @@ export class PhantomProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param chainType - Chain type
    */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    chainType: ChainType,
+  ): Promise<void> {
     if (chainType === "evm" && this.evmAdapter) {
       await this.evmAdapter.switchChain(chainId as number);
     } else if (chainType === "solana" && this.solanaAdapter) {
@@ -204,7 +211,10 @@ export class PhantomProvider implements UnifiedWalletProvider {
    * @param chainType - Chain type for signing
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    chainType: ChainType,
+  ): Promise<string> {
     if (chainType === "evm" && this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }

@@ -34,14 +34,16 @@ interface PolkadotExtension {
   accounts: {
     get: (_anyType?: boolean) => Promise<InjectedAccountWithMeta[]>;
     subscribe: (
-      _callback: (_accounts: InjectedAccountWithMeta[]) => void
+      _callback: (_accounts: InjectedAccountWithMeta[]) => void,
     ) => () => void;
   };
   signer: {
     signPayload: (_payload: unknown) => Promise<{ signature: string }>;
-    signRaw: (
-      _raw: { address: string; data: string; type: "bytes" | "payload" }
-    ) => Promise<{ signature: string }>;
+    signRaw: (_raw: {
+      address: string;
+      data: string;
+      type: "bytes" | "payload";
+    }) => Promise<{ signature: string }>;
   };
 }
 
@@ -50,7 +52,9 @@ interface PolkadotExtension {
  * @param provider - Provider to check
  * @returns True if provider has Polkadot extension interface
  */
-export function isPolkadotExtension(provider: unknown): provider is PolkadotExtension {
+export function isPolkadotExtension(
+  provider: unknown,
+): provider is PolkadotExtension {
   return (
     typeof provider === "object" &&
     provider !== null &&
@@ -73,7 +77,7 @@ export class PolkadotAdapter {
   constructor(
     extension: PolkadotExtension,
     extensionName: string,
-    chain: PolkadotChainId = DEFAULT_POLKADOT_CHAIN
+    chain: PolkadotChainId = DEFAULT_POLKADOT_CHAIN,
   ) {
     this.extension = extension;
     this.extensionName = extensionName;
@@ -196,7 +200,7 @@ export class PolkadotAdapter {
 
     // Use the signer to sign the payload
     const { signature } = await this.extension.signer.signPayload(
-      tx.polkadotExtrinsic
+      tx.polkadotExtrinsic,
     );
 
     Logger.info("Polkadot extrinsic signed");
@@ -209,16 +213,17 @@ export class PolkadotAdapter {
    * @param address - Address to sign with
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, address?: string): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    address?: string,
+  ): Promise<string> {
     const signerAddress = address || this.accounts[0]?.address;
     if (!signerAddress) {
       throw new Error("No account available for signing");
     }
 
     const data =
-      typeof message === "string"
-        ? message
-        : this.bytesToHex(message);
+      typeof message === "string" ? message : this.bytesToHex(message);
 
     const { signature } = await this.extension.signer.signRaw({
       address: signerAddress,
@@ -236,7 +241,7 @@ export class PolkadotAdapter {
    * @returns Cleanup function
    */
   subscribeAccounts(
-    callback: (_accounts: UnifiedAccount[]) => void
+    callback: (_accounts: UnifiedAccount[]) => void,
   ): () => void {
     const handleAccountsChanged = (accounts: InjectedAccountWithMeta[]) => {
       this.accounts = accounts;
@@ -258,7 +263,9 @@ export class PolkadotAdapter {
    * @param accounts - Array of Polkadot injected accounts
    * @returns Array of unified accounts
    */
-  private toUnifiedAccounts(accounts: InjectedAccountWithMeta[]): UnifiedAccount[] {
+  private toUnifiedAccounts(
+    accounts: InjectedAccountWithMeta[],
+  ): UnifiedAccount[] {
     const chainConfig = getPolkadotChainConfig(this.currentChain);
 
     return accounts.map((account) => ({
@@ -296,7 +303,7 @@ export class PolkadotAdapter {
  */
 export async function enablePolkadotExtension(
   extensionName: string,
-  appName: string
+  appName: string,
 ): Promise<PolkadotAdapter | null> {
   try {
     // Check if injectedWeb3 is available
@@ -323,7 +330,10 @@ export async function enablePolkadotExtension(
 
     return new PolkadotAdapter(extension, extensionName);
   } catch (error) {
-    Logger.error("Failed to enable Polkadot extension", { extensionName, error });
+    Logger.error("Failed to enable Polkadot extension", {
+      extensionName,
+      error,
+    });
     return null;
   }
 }

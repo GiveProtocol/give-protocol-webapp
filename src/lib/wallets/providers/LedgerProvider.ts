@@ -12,7 +12,11 @@ import type {
   UnifiedTransactionRequest,
   WalletCategory,
 } from "@/types/wallet";
-import { getEVMChainConfig, DEFAULT_EVM_CHAIN_ID, type EVMChainId } from "@/config/chains";
+import {
+  getEVMChainConfig,
+  DEFAULT_EVM_CHAIN_ID,
+  type EVMChainId,
+} from "@/config/chains";
 
 /**
  * Ledger DMK types (simplified)
@@ -115,11 +119,14 @@ export class LedgerProvider implements UnifiedWalletProvider {
 
     try {
       // Initialize DMK
-      const { DeviceManagementKit } = await import("@ledgerhq/device-management-kit");
+      const { DeviceManagementKit } =
+        await import("@ledgerhq/device-management-kit");
       this.dmk = new DeviceManagementKit() as unknown as DeviceManagementKit;
 
       // Start device discovery
-      Logger.info("Starting Ledger device discovery", { transport: this.transportType });
+      Logger.info("Starting Ledger device discovery", {
+        transport: this.transportType,
+      });
       this.device = await this.discoverDevice();
 
       if (!this.device) {
@@ -161,7 +168,9 @@ export class LedgerProvider implements UnifiedWalletProvider {
       return device;
     } catch (error) {
       Logger.error("Device discovery failed", { error });
-      throw new Error("Could not find Ledger device. Make sure it's connected and unlocked.");
+      throw new Error(
+        "Could not find Ledger device. Make sure it's connected and unlocked.",
+      );
     }
   }
 
@@ -176,11 +185,12 @@ export class LedgerProvider implements UnifiedWalletProvider {
 
     try {
       // Initialize Ethereum signer
-      const { EthereumSignerKit } = await import("@ledgerhq/device-signer-kit-ethereum");
+      const { EthereumSignerKit } =
+        await import("@ledgerhq/device-signer-kit-ethereum");
 
       this.evmSigner = new EthereumSignerKit(
         this.dmk,
-        this.device.id
+        this.device.id,
       ) as unknown as EthereumSignerKit;
 
       // Get address with on-device verification
@@ -255,7 +265,10 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param chainType - Chain type
    */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    chainType: ChainType,
+  ): Promise<void> {
     if (chainType !== "evm") {
       throw new Error("Ledger chain switching only supported for EVM");
     }
@@ -306,7 +319,10 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * @param chainType - Chain type
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    chainType: ChainType,
+  ): Promise<string> {
     if (chainType !== "evm") {
       throw new Error("Ledger only supports EVM message signing currently");
     }
@@ -357,10 +373,12 @@ export class LedgerProvider implements UnifiedWalletProvider {
    */
   private toUnifiedAccounts(
     addresses: string[],
-    chainType: ChainType
+    chainType: ChainType,
   ): UnifiedAccount[] {
     const chainConfig =
-      chainType === "evm" ? getEVMChainConfig(this.currentChainId as EVMChainId) : null;
+      chainType === "evm"
+        ? getEVMChainConfig(this.currentChainId as EVMChainId)
+        : null;
 
     return addresses.map((address, index) => ({
       id: `ledger-${chainType}-${this.currentChainId}-${address}`,

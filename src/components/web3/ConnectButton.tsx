@@ -23,7 +23,11 @@ import { getEVMChainConfig, type EVMChainId } from "@/config/chains";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
-import type { ChainType, UnifiedWalletProvider, UnifiedAccount } from "@/types/wallet";
+import type {
+  ChainType,
+  UnifiedWalletProvider,
+  UnifiedAccount,
+} from "@/types/wallet";
 
 /**
  * Account dropdown menu for connected wallet
@@ -109,7 +113,9 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({
       <div className="px-4 py-3 bg-gray-50">
         <div className="flex items-center justify-between">
           <span className="text-xs text-gray-500">Network</span>
-          <span className="text-sm font-medium text-gray-900">{account.chainName}</span>
+          <span className="text-sm font-medium text-gray-900">
+            {account.chainName}
+          </span>
         </div>
       </div>
 
@@ -239,7 +245,7 @@ export function ConnectButton() {
         throw err;
       }
     },
-    [multiChain]
+    [multiChain],
   );
 
   // Handle disconnect
@@ -260,7 +266,7 @@ export function ConnectButton() {
         } catch (logoutError) {
           Logger.warn(
             "Logout failed during wallet disconnect, redirecting anyway",
-            { error: logoutError }
+            { error: logoutError },
           );
           window.location.href = `${window.location.origin}/login`;
         }

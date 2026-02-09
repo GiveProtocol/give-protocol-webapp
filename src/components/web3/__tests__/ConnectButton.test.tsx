@@ -43,7 +43,11 @@ const defaultMultiChainMock = {
 
 let web3MockValue = { ...defaultWeb3Mock };
 let multiChainMockValue = { ...defaultMultiChainMock };
-let walletAliasMockValue = { alias: null, setAlias: jest.fn(), isLoading: false };
+let walletAliasMockValue = {
+  alias: null,
+  setAlias: jest.fn(),
+  isLoading: false,
+};
 
 jest.mock("@/contexts/Web3Context", () => ({
   useWeb3: () => web3MockValue,
@@ -95,7 +99,8 @@ jest.mock("@/hooks/useWalletAlias", () => ({
 }));
 
 jest.mock("@/utils/web3", () => ({
-  shortenAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
+  shortenAddress: (address: string) =>
+    `${address.slice(0, 6)}...${address.slice(-4)}`,
 }));
 
 jest.mock("@/utils/logger", () => ({
@@ -112,7 +117,10 @@ jest.mock("@/config/contracts", () => ({
     BASE: 8453,
   },
   CHAIN_CONFIGS: {
-    1287: { name: "Moonbase Alpha", blockExplorerUrls: ["https://moonbase.moonscan.io"] },
+    1287: {
+      name: "Moonbase Alpha",
+      blockExplorerUrls: ["https://moonbase.moonscan.io"],
+    },
     8453: { name: "Base", blockExplorerUrls: ["https://basescan.org"] },
   },
 }));
@@ -121,7 +129,10 @@ jest.mock("@/config/chains", () => ({
   getEVMChainConfig: (chainId: number) => ({
     id: chainId,
     name: chainId === 1287 ? "Moonbase Alpha" : "Base",
-    blockExplorerUrls: chainId === 1287 ? ["https://moonbase.moonscan.io"] : ["https://basescan.org"],
+    blockExplorerUrls:
+      chainId === 1287
+        ? ["https://moonbase.moonscan.io"]
+        : ["https://basescan.org"],
   }),
   DEFAULT_EVM_CHAIN_ID: 8453,
 }));
@@ -133,7 +144,11 @@ describe("ConnectButton", () => {
     // Reset mock values
     web3MockValue = { ...defaultWeb3Mock };
     multiChainMockValue = { ...defaultMultiChainMock };
-    walletAliasMockValue = { alias: null, setAlias: jest.fn(), isLoading: false };
+    walletAliasMockValue = {
+      alias: null,
+      setAlias: jest.fn(),
+      isLoading: false,
+    };
   });
 
   describe("when wallet is not connected", () => {
@@ -161,7 +176,9 @@ describe("ConnectButton", () => {
         // (tabs and wallet badges), so we use getAllByText
         expect(screen.getAllByText("EVM").length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText("Solana").length).toBeGreaterThanOrEqual(1);
-        expect(screen.getAllByText("Polkadot").length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText("Polkadot").length).toBeGreaterThanOrEqual(
+          1,
+        );
       });
     });
   });

@@ -105,14 +105,24 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
     if (isInstalled && !isDisabled && !isThisConnecting && !isComingSoon) {
       onSelect(wallet);
     }
-  }, [wallet, onSelect, isDisabled, isThisConnecting, isInstalled, isComingSoon]);
+  }, [
+    wallet,
+    onSelect,
+    isDisabled,
+    isThisConnecting,
+    isInstalled,
+    isComingSoon,
+  ]);
 
-  const handleInstallClick = useCallback((e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (installUrl) {
-      window.open(installUrl, "_blank", "noopener,noreferrer");
-    }
-  }, [installUrl]);
+  const handleInstallClick = useCallback(
+    (e: React.MouseEvent) => {
+      e.stopPropagation();
+      if (installUrl) {
+        window.open(installUrl, "_blank", "noopener,noreferrer");
+      }
+    },
+    [installUrl],
+  );
 
   return (
     <button
@@ -144,7 +154,9 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
       {/* Wallet Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <span className={`font-medium ${isInstalled ? "text-gray-900" : "text-gray-500"}`}>
+          <span
+            className={`font-medium ${isInstalled ? "text-gray-900" : "text-gray-500"}`}
+          >
             {wallet.name}
           </span>
           {isThisConnecting && (

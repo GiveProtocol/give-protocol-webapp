@@ -1,13 +1,13 @@
-import React from 'react';
-import { Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
-import { useWeb3 } from '@/contexts/Web3Context';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Logger } from '@/utils/logger';
-import { WalletConnectionModal } from '@/components/wallet/WalletConnectionModal';
-import { WalletReminderBanner } from '@/components/wallet/WalletReminderBanner';
-import { useWalletPrompt } from '@/hooks/useWalletPrompt';
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Logger } from "@/utils/logger";
+import { WalletConnectionModal } from "@/components/wallet/WalletConnectionModal";
+import { WalletReminderBanner } from "@/components/wallet/WalletReminderBanner";
+import { useWalletPrompt } from "@/hooks/useWalletPrompt";
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -50,28 +50,32 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Check authentication - allow wallet-only access if specified
   if (!user && !(allowWalletOnly && isWalletConnected)) {
-    Logger.info('Unauthorized access attempt', {
+    Logger.info("Unauthorized access attempt", {
       path: location.pathname,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Check role requirements (skip if wallet-only access without user)
-  if (requiredRoles.length > 0 && user && !requiredRoles.includes(userType || '')) {
-    Logger.warn('Invalid role access attempt', {
+  if (
+    requiredRoles.length > 0 &&
+    user &&
+    !requiredRoles.includes(userType || "")
+  ) {
+    Logger.warn("Invalid role access attempt", {
       path: location.pathname,
       userRole: userType,
       requiredRoles,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     });
 
     // Redirect to appropriate dashboard based on user type
-    if (userType === 'donor') {
+    if (userType === "donor") {
       return <Navigate to="/give-dashboard" replace />;
-    } else if (userType === 'charity') {
+    } else if (userType === "charity") {
       return <Navigate to="/charity-portal" replace />;
-    } else if (userType === 'admin') {
+    } else if (userType === "admin") {
       return <Navigate to="/admin" replace />;
     }
 

@@ -5,7 +5,11 @@
 
 import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { X, AlertCircle } from "lucide-react";
-import type { ChainType, UnifiedWalletProvider, WalletCategory } from "@/types/wallet";
+import type {
+  ChainType,
+  UnifiedWalletProvider,
+  WalletCategory,
+} from "@/types/wallet";
 import { WalletGroup } from "./WalletGroup";
 import { Logger } from "@/utils/logger";
 
@@ -32,7 +36,10 @@ interface WalletModalProps {
   isOpen: boolean;
   onClose: () => void;
   wallets: UnifiedWalletProvider[];
-  onConnect: (_wallet: UnifiedWalletProvider, _chainType: ChainType) => Promise<void>;
+  onConnect: (
+    _wallet: UnifiedWalletProvider,
+    _chainType: ChainType,
+  ) => Promise<void>;
   initialChainType?: ChainType;
 }
 
@@ -52,7 +59,8 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   onConnect,
   initialChainType = "evm",
 }) => {
-  const [selectedChainType, setSelectedChainType] = useState<ChainType>(initialChainType);
+  const [selectedChainType, setSelectedChainType] =
+    useState<ChainType>(initialChainType);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,7 +78,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   // Filter wallets by selected chain type
   const filteredWallets = useMemo(() => {
     return wallets.filter((w) =>
-      w.supportedChainTypes.includes(selectedChainType)
+      w.supportedChainTypes.includes(selectedChainType),
     );
   }, [wallets, selectedChainType]);
 
@@ -107,15 +115,19 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         await onConnect(wallet, selectedChainType);
         onClose();
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Connection failed";
+        const message =
+          err instanceof Error ? err.message : "Connection failed";
         setError(message);
-        Logger.error("Wallet connection failed in modal", { wallet: wallet.name, error: err });
+        Logger.error("Wallet connection failed in modal", {
+          wallet: wallet.name,
+          error: err,
+        });
       } finally {
         setIsConnecting(false);
         setConnectingWallet(null);
       }
     },
-    [onConnect, selectedChainType, onClose]
+    [onConnect, selectedChainType, onClose],
   );
 
   // Handle backdrop click
@@ -125,7 +137,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         onClose();
       }
     },
-    [onClose, isConnecting]
+    [onClose, isConnecting],
   );
 
   // Handle escape key
@@ -157,7 +169,10 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       <div className="relative w-full max-w-md mx-4 bg-white rounded-xl shadow-xl">
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
+          <h3
+            id="wallet-modal-title"
+            className="text-lg font-semibold text-gray-900"
+          >
             Connect Wallet
           </h3>
           <button
@@ -203,7 +218,8 @@ export const WalletModal: React.FC<WalletModalProps> = ({
           {filteredWallets.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <p className="text-gray-500">
-                No wallets available for {selectedChainType.toUpperCase()} chains.
+                No wallets available for {selectedChainType.toUpperCase()}{" "}
+                chains.
               </p>
               <p className="text-sm text-gray-400 mt-1">
                 Try selecting a different chain type.

@@ -50,12 +50,14 @@ export class SubWalletProvider implements UnifiedWalletProvider {
     // Check for SubWallet's EVM provider
     const hasEVM = Boolean(
       (window as { SubWallet?: unknown }).SubWallet ||
-      (window as { injectedWeb3?: { "subwallet-js"?: unknown } }).injectedWeb3?.["subwallet-js"]
+      (window as { injectedWeb3?: { "subwallet-js"?: unknown } })
+        .injectedWeb3?.["subwallet-js"],
     );
 
     // Check for SubWallet's Polkadot provider
     const hasPolkadot = Boolean(
-      (window as { injectedWeb3?: { "subwallet-js"?: unknown } }).injectedWeb3?.["subwallet-js"]
+      (window as { injectedWeb3?: { "subwallet-js"?: unknown } })
+        .injectedWeb3?.["subwallet-js"],
     );
 
     return hasEVM || hasPolkadot;
@@ -179,7 +181,10 @@ export class SubWalletProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param chainType - Chain type
    */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    chainType: ChainType,
+  ): Promise<void> {
     if (chainType === "evm" && this.evmAdapter) {
       await this.evmAdapter.switchChain(chainId as number);
     } else if (chainType === "polkadot" && this.polkadotAdapter) {
@@ -213,7 +218,10 @@ export class SubWalletProvider implements UnifiedWalletProvider {
    * @param chainType - Chain type for signing
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    chainType: ChainType,
+  ): Promise<string> {
     if (chainType === "evm" && this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }
@@ -244,7 +252,8 @@ export class SubWalletProvider implements UnifiedWalletProvider {
   private getPolkadotExtensionName(): string | null {
     if (typeof window === "undefined") return null;
 
-    const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> }).injectedWeb3;
+    const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> })
+      .injectedWeb3;
     if (injectedWeb3?.["subwallet-js"]) {
       return "subwallet-js";
     }

@@ -62,7 +62,7 @@ async function fetchTokenPrice(coingeckoId: string): Promise<number | null> {
         headers: {
           Accept: "application/json",
         },
-      }
+      },
     );
 
     if (!response.ok) {
@@ -95,7 +95,8 @@ function formatBalance(balance: number): string {
   if (balance < 0.0001) return "< 0.0001";
   if (balance < 1) return balance.toFixed(4);
   if (balance < 1000) return balance.toFixed(4);
-  if (balance < 1000000) return balance.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  if (balance < 1000000)
+    return balance.toLocaleString(undefined, { maximumFractionDigits: 2 });
   return balance.toLocaleString(undefined, { maximumFractionDigits: 0 });
 }
 
@@ -148,7 +149,7 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
       // Fetch native balance
       const balanceWei = await provider.getBalance(address);
       const balanceFormatted = Number.parseFloat(
-        ethers.formatUnits(balanceWei, config.decimals)
+        ethers.formatUnits(balanceWei, config.decimals),
       );
 
       if (!isMountedRef.current) return;
@@ -190,7 +191,14 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
         setIsLoading(false);
       }
     }
-  }, [provider, address, isConnected, network, config.decimals, config.coingeckoId]);
+  }, [
+    provider,
+    address,
+    isConnected,
+    network,
+    config.decimals,
+    config.coingeckoId,
+  ]);
 
   // Fetch balance on mount and when dependencies change
   useEffect(() => {

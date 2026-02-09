@@ -108,7 +108,10 @@ export class MetaMaskProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param _chainType - Chain type (only EVM supported)
    */
-  async switchChain(chainId: number | string, _chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    _chainType: ChainType,
+  ): Promise<void> {
     if (this.evmAdapter) {
       await this.evmAdapter.switchChain(chainId as number);
     } else {
@@ -134,7 +137,10 @@ export class MetaMaskProvider implements UnifiedWalletProvider {
    * @param _chainType - Chain type (only EVM supported)
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    _chainType: ChainType,
+  ): Promise<string> {
     if (this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }

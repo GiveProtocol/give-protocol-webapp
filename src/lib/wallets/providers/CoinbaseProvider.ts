@@ -52,7 +52,8 @@ export class CoinbaseProvider implements UnifiedWalletProvider {
 
     // Check for Coinbase injected into ethereum
     const hasCoinbaseInEthereum =
-      typeof window.ethereum !== "undefined" && window.ethereum.isCoinbaseWallet;
+      typeof window.ethereum !== "undefined" &&
+      window.ethereum.isCoinbaseWallet;
 
     return hasCoinbaseExtension || hasCoinbaseInEthereum;
   }
@@ -139,7 +140,10 @@ export class CoinbaseProvider implements UnifiedWalletProvider {
       throw new Error("Coinbase Wallet Solana provider not available");
     }
 
-    this.solanaAdapter = new SolanaAdapter(solanaProvider, DEFAULT_SOLANA_CLUSTER);
+    this.solanaAdapter = new SolanaAdapter(
+      solanaProvider,
+      DEFAULT_SOLANA_CLUSTER,
+    );
     return this.solanaAdapter.connect();
   }
 
@@ -192,7 +196,10 @@ export class CoinbaseProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param chainType - Chain type
    */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
+  async switchChain(
+    chainId: number | string,
+    chainType: ChainType,
+  ): Promise<void> {
     if (chainType === "evm" && this.evmAdapter) {
       await this.evmAdapter.switchChain(chainId as number);
     } else if (chainType === "solana" && this.solanaAdapter) {
@@ -225,7 +232,10 @@ export class CoinbaseProvider implements UnifiedWalletProvider {
    * @param chainType - Chain type for signing
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    chainType: ChainType,
+  ): Promise<string> {
     if (chainType === "evm" && this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }
@@ -264,7 +274,8 @@ export class CoinbaseProvider implements UnifiedWalletProvider {
     if (typeof window === "undefined") return null;
 
     // Check for Coinbase-specific Solana provider
-    const solana = (window as { solana?: { isCoinbaseWallet?: boolean } }).solana;
+    const solana = (window as { solana?: { isCoinbaseWallet?: boolean } })
+      .solana;
     if (solana?.isCoinbaseWallet) {
       return solana;
     }
