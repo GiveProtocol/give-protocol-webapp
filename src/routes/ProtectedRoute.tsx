@@ -5,24 +5,39 @@ import { useProfile } from '@/hooks/useProfile';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Logger } from '@/utils/logger';
+import { WalletConnectionModal } from '@/components/wallet/WalletConnectionModal';
+import { WalletReminderBanner } from '@/components/wallet/WalletReminderBanner';
+import { useWalletPrompt } from '@/hooks/useWalletPrompt';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
   requiredRoles?: string[];
+  /** Block access until wallet is connected (shows full-page prompt) */
   requireWallet?: boolean;
+  /** Allow access with just a connected wallet (no user auth needed) */
   allowWalletOnly?: boolean;
+  /** Show wallet connection modal/banner after login (non-blocking) */
+  promptWallet?: boolean;
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRoles = [],
   requireWallet = false,
-  allowWalletOnly = false
+  allowWalletOnly = false,
+  promptWallet = false,
 }) => {
   const location = useLocation();
   const { user, userType } = useAuth();
-  const { loading: profileLoading } = useProfile(); // profile variable prefixed as unused
+  const { loading: profileLoading } = useProfile();
   const { isConnected: isWalletConnected, connect } = useWeb3();
+  const {
+    showModal,
+    showBanner,
+    dismissModal,
+    dismissBanner,
+    onWalletConnected,
+  } = useWalletPrompt();
 
   // Handle loading states - only show loading if we need user auth and profile is loading
   if (profileLoading && !allowWalletOnly) {
@@ -63,7 +78,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     return <Navigate to="/" replace />;
   }
 
-  // Check wallet connection
+  // Check wallet connection (blocking requirement)
   if (requireWallet && !isWalletConnected) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center space-y-4">
@@ -76,6 +91,30 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           Connect Wallet
         </button>
       </div>
+    );
+  }
+
+  // Render with optional wallet prompt (non-blocking)
+  if (promptWallet) {
+    return (
+      <>
+        {/* Wallet connection modal - shown after login if wallet not connected */}
+        <WalletConnectionModal
+          isOpen={showModal}
+          onClose={dismissModal}
+          onConnected={onWalletConnected}
+        />
+
+        {/* Wallet reminder banner - shown if modal was dismissed */}
+        {showBanner && (
+          <WalletReminderBanner
+            onDismiss={dismissBanner}
+            onConnected={onWalletConnected}
+          />
+        )}
+
+        {children}
+      </>
     );
   }
 

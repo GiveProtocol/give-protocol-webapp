@@ -1,0 +1,10 @@
+<svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="32" height="32" rx="8" fill="#E5E7EB"/>
+  <!-- Wallet shape -->
+  <rect x="6" y="10" width="20" height="14" rx="2" fill="#9CA3AF"/>
+  <!-- Wallet flap -->
+  <path d="M6 12C6 10.8954 6.89543 10 8 10H24C25.1046 10 26 10.8954 26 12V14H6V12Z" fill="#6B7280"/>
+  <!-- Card slot -->
+  <rect x="18" y="16" width="6" height="4" rx="1" fill="#E5E7EB"/>
+  <circle cx="21" cy="18" r="1" fill="#9CA3AF"/>
+</svg>

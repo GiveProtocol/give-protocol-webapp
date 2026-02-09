@@ -1,5 +1,38 @@
 import "@testing-library/jest-dom";
 import { jest } from "@jest/globals";
+import type React from "react";
+
+// Mock MultiChainContext to prevent errors in tests
+jest.mock("@/contexts/MultiChainContext", () => ({
+  useMultiChainContext: () => ({
+    wallet: null,
+    accounts: [],
+    activeAccount: null,
+    activeChainType: "evm",
+    isConnected: false,
+    isConnecting: false,
+    error: null,
+    connect: jest.fn(),
+    disconnect: jest.fn(),
+    switchAccount: jest.fn(),
+    switchChainType: jest.fn(),
+    switchChain: jest.fn(),
+    clearError: jest.fn(),
+  }),
+  MultiChainProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+// Mock useUnifiedWallets hook
+jest.mock("@/hooks/useWallet", () => {
+  const originalModule = jest.requireActual("@/hooks/useWallet");
+  return {
+    ...originalModule,
+    useUnifiedWallets: () => ({
+      wallets: [],
+      isLoading: false,
+    }),
+  };
+});
 
 // Set required environment variables for tests
 process.env.VITE_SUPABASE_URL =

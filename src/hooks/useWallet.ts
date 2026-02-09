@@ -1,5 +1,17 @@
+import { useMemo } from "react";
 import { Logger } from "@/utils/logger";
 import { CHAIN_IDS } from "@/config/contracts";
+import type { UnifiedWalletProvider, WalletCategory, ChainType } from "@/types/wallet";
+import {
+  MetaMaskProvider,
+  RabbyProvider,
+  PhantomProvider,
+  TalismanProvider,
+  SubWalletProvider,
+  CoinbaseProvider,
+  LedgerProvider,
+  createSafeProvider,
+} from "@/lib/wallets";
 
 export interface WalletProvider {
   name: string;
@@ -460,5 +472,90 @@ export function useWallet() {
   return {
     getInstalledWallets,
     wallets,
+  };
+}
+
+/**
+ * Hook for unified multi-chain wallet providers
+ * Provides access to new wallet providers with multi-chain support
+ * @returns Object containing unified wallet providers
+ */
+export function useUnifiedWallets() {
+  const unifiedWallets = useMemo<UnifiedWalletProvider[]>(() => {
+    const wallets: UnifiedWalletProvider[] = [];
+
+    // Browser wallets (EVM-only)
+    const metamask = new MetaMaskProvider();
+    wallets.push(metamask);
+
+    const rabby = new RabbyProvider();
+    wallets.push(rabby);
+
+    // Multi-chain wallets - always add them so they show in the UI
+    const phantom = new PhantomProvider();
+    wallets.push(phantom);
+
+    const talisman = new TalismanProvider();
+    wallets.push(talisman);
+
+    const subwallet = new SubWalletProvider();
+    wallets.push(subwallet);
+
+    const coinbase = new CoinbaseProvider();
+    wallets.push(coinbase);
+
+    // Hardware wallet - always available (connects via USB/Bluetooth)
+    const ledger = new LedgerProvider();
+    wallets.push(ledger);
+
+    // Smart wallet (Safe) - only show if in Safe App iframe context
+    const safe = createSafeProvider();
+    if (safe) {
+      wallets.push(safe);
+    }
+
+    return wallets;
+  }, []);
+
+  /**
+   * Get wallets by category
+   * @param category - Wallet category to filter by
+   * @returns Array of wallets in the category
+   */
+  const getWalletsByCategory = (category: WalletCategory): UnifiedWalletProvider[] => {
+    return unifiedWallets.filter((w) => w.category === category);
+  };
+
+  /**
+   * Get wallets that support a specific chain type
+   * @param chainType - Chain type to filter by
+   * @returns Array of wallets supporting the chain type
+   */
+  const getWalletsByChainType = (chainType: ChainType): UnifiedWalletProvider[] => {
+    return unifiedWallets.filter((w) => w.supportedChainTypes.includes(chainType));
+  };
+
+  /**
+   * Get all available unified wallets
+   * @returns Array of all unified wallet providers
+   */
+  const getAllWallets = (): UnifiedWalletProvider[] => {
+    return unifiedWallets;
+  };
+
+  /**
+   * Check if Safe wallet is available (running in Safe App context)
+   * @returns True if in Safe context
+   */
+  const isSafeAvailable = (): boolean => {
+    return unifiedWallets.some((w) => w.name === "Safe");
+  };
+
+  return {
+    wallets: unifiedWallets,
+    getWalletsByCategory,
+    getWalletsByChainType,
+    getAllWallets,
+    isSafeAvailable,
   };
 }

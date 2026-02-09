@@ -1,0 +1,59 @@
+/**
+ * useSafeAutoConnect - Auto-connect to Safe wallet when in Safe App context
+ * Detects Safe iframe environment and automatically initiates connection
+ */
+
+import { useEffect, useRef } from "react";
+import { Logger } from "@/utils/logger";
+import { useMultiChainContext } from "@/contexts/MultiChainContext";
+import { createSafeProvider, isInSafeAppContext } from "@/lib/wallets";
+
+/**
+ * Hook that automatically connects to Safe wallet when running in Safe App iframe
+ * Should be used at the app root level
+ */
+export function useSafeAutoConnect() {
+  const { connect, isConnected, isConnecting } = useMultiChainContext();
+  const hasAttemptedRef = useRef(false);
+
+  useEffect(() => {
+    // Only attempt once
+    if (hasAttemptedRef.current) {
+      return;
+    }
+
+    // Skip if already connected or connecting
+    if (isConnected || isConnecting) {
+      return;
+    }
+
+    // Check if we're in Safe App context
+    if (!isInSafeAppContext()) {
+      return;
+    }
+
+    hasAttemptedRef.current = true;
+
+    const autoConnect = async () => {
+      try {
+        Logger.info("Safe App context detected, auto-connecting...");
+
+        const safeProvider = createSafeProvider();
+        if (!safeProvider) {
+          Logger.warn("Could not create Safe provider despite being in Safe context");
+          return;
+        }
+
+        await connect(safeProvider, "evm");
+        Logger.info("Successfully auto-connected to Safe");
+      } catch (error) {
+        Logger.error("Failed to auto-connect to Safe", { error });
+        // Don't throw - auto-connect failure shouldn't break the app
+      }
+    };
+
+    autoConnect();
+  }, [connect, isConnected, isConnecting]);
+}
+
+export default useSafeAutoConnect;

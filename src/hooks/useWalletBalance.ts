@@ -1,0 +1,250 @@
+/**
+ * Hook for fetching wallet balance and USD value
+ * Provides real-time balance data for the wallet dropdown display
+ */
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import { ethers } from "ethers";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { Logger } from "@/utils/logger";
+import type { NetworkType } from "@/components/Wallet/types";
+
+interface WalletBalanceResult {
+  /** Native token balance formatted as string */
+  native: string | undefined;
+  /** Native token symbol */
+  nativeSymbol: string;
+  /** USD value of native balance */
+  usdValue: string | undefined;
+  /** Whether balances are currently loading */
+  isLoading: boolean;
+  /** Any error that occurred */
+  error: Error | null;
+  /** Function to manually refetch balances */
+  refetch: () => Promise<void>;
+}
+
+/**
+ * Network configuration for balance fetching
+ */
+const NETWORK_CONFIG: Record<
+  NetworkType,
+  { symbol: string; coingeckoId: string; decimals: number }
+> = {
+  base: { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
+  optimism: { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
+  moonbeam: { symbol: "GLMR", coingeckoId: "moonbeam", decimals: 18 },
+  "base-sepolia": { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
+  "optimism-sepolia": { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
+  moonbase: { symbol: "DEV", coingeckoId: "moonbeam", decimals: 18 },
+};
+
+/** Cache for token prices to reduce API calls */
+const priceCache: Record<string, { price: number; timestamp: number }> = {};
+const PRICE_CACHE_TTL = 60000; // 1 minute cache
+
+/**
+ * Fetch token price from CoinGecko API
+ * @param coingeckoId - CoinGecko token ID
+ * @returns USD price or null if fetch fails
+ */
+async function fetchTokenPrice(coingeckoId: string): Promise<number | null> {
+  // Check cache first
+  const cached = priceCache[coingeckoId];
+  if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
+    return cached.price;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd`,
+      {
+        headers: {
+          Accept: "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`CoinGecko API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    const price = data[coingeckoId]?.usd;
+
+    if (typeof price === "number") {
+      // Cache the price
+      priceCache[coingeckoId] = { price, timestamp: Date.now() };
+      return price;
+    }
+
+    return null;
+  } catch (error) {
+    Logger.warn("Failed to fetch token price", { coingeckoId, error });
+    return null;
+  }
+}
+
+/**
+ * Format balance for display
+ * @param balance - Balance as number
+ * @returns Formatted balance string
+ */
+function formatBalance(balance: number): string {
+  if (balance === 0) return "0";
+  if (balance < 0.0001) return "< 0.0001";
+  if (balance < 1) return balance.toFixed(4);
+  if (balance < 1000) return balance.toFixed(4);
+  if (balance < 1000000) return balance.toLocaleString(undefined, { maximumFractionDigits: 2 });
+  return balance.toLocaleString(undefined, { maximumFractionDigits: 0 });
+}
+
+/**
+ * Format USD value for display
+ * @param value - USD value as number
+ * @returns Formatted USD string
+ */
+function formatUsdValue(value: number): string {
+  if (value === 0) return "$0.00";
+  if (value < 0.01) return "< $0.01";
+  return value.toLocaleString(undefined, {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+}
+
+/**
+ * Hook to fetch and monitor wallet balance
+ * @param network - Current network type
+ * @returns Wallet balance data and utilities
+ */
+export function useWalletBalance(network: NetworkType): WalletBalanceResult {
+  const { provider, address, isConnected, chainId } = useWeb3();
+  const [native, setNative] = useState<string | undefined>(undefined);
+  const [usdValue, setUsdValue] = useState<string | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  // Use ref to track if component is mounted
+  const isMountedRef = useRef(true);
+
+  // Get network config
+  const config = NETWORK_CONFIG[network] || NETWORK_CONFIG.moonbase;
+
+  const fetchBalance = useCallback(async () => {
+    if (!provider || !address || !isConnected) {
+      setNative(undefined);
+      setUsdValue(undefined);
+      setIsLoading(false);
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      // Fetch native balance
+      const balanceWei = await provider.getBalance(address);
+      const balanceFormatted = Number.parseFloat(
+        ethers.formatUnits(balanceWei, config.decimals)
+      );
+
+      if (!isMountedRef.current) return;
+
+      setNative(formatBalance(balanceFormatted));
+
+      // Fetch price for USD value (don't block on this)
+      fetchTokenPrice(config.coingeckoId).then((price) => {
+        if (!isMountedRef.current) return;
+
+        if (price !== null) {
+          const usd = balanceFormatted * price;
+          setUsdValue(formatUsdValue(usd));
+        } else {
+          setUsdValue(undefined);
+        }
+      });
+
+      Logger.info("Wallet balance fetched", {
+        address,
+        network,
+        balance: formatBalance(balanceFormatted),
+      });
+    } catch (err) {
+      if (!isMountedRef.current) return;
+
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to fetch balance";
+      Logger.error("Failed to fetch wallet balance", {
+        address,
+        network,
+        error: errorMessage,
+      });
+      setError(err instanceof Error ? err : new Error(errorMessage));
+      setNative(undefined);
+      setUsdValue(undefined);
+    } finally {
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
+    }
+  }, [provider, address, isConnected, network, config.decimals, config.coingeckoId]);
+
+  // Fetch balance on mount and when dependencies change
+  useEffect(() => {
+    isMountedRef.current = true;
+    fetchBalance();
+
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, [fetchBalance]);
+
+  // Refetch when chain changes
+  useEffect(() => {
+    if (chainId) {
+      fetchBalance();
+    }
+  }, [chainId, fetchBalance]);
+
+  // Set up polling for balance updates (every 30 seconds)
+  useEffect(() => {
+    if (!isConnected) return;
+
+    const intervalId = setInterval(() => {
+      fetchBalance();
+    }, 30000);
+
+    return () => clearInterval(intervalId);
+  }, [isConnected, fetchBalance]);
+
+  // Listen for block updates to refresh balance after transactions
+  useEffect(() => {
+    if (!provider || !isConnected) return;
+
+    const handleBlock = () => {
+      // Debounce block updates - only fetch every few blocks
+      fetchBalance();
+    };
+
+    // Subscribe to new blocks
+    provider.on("block", handleBlock);
+
+    return () => {
+      provider.off("block", handleBlock);
+    };
+  }, [provider, isConnected, fetchBalance]);
+
+  return {
+    native,
+    nativeSymbol: config.symbol,
+    usdValue,
+    isLoading,
+    error,
+    refetch: fetchBalance,
+  };
+}
+
+export default useWalletBalance;

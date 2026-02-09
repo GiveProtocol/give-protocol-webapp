@@ -1,9 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import type { WalletButtonProps, WalletBalances } from "./types";
 import { WalletDropdown } from "./WalletDropdown";
 import { formatAddress, getAddressGradient, copyToClipboard } from "./utils";
+import { useWalletBalance } from "@/hooks/useWalletBalance";
 
 /**
  * Wallet avatar component with gradient background based on address
@@ -94,42 +95,41 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [copied, setCopied] = useState(false);
-  const [balances, setBalances] = useState<WalletBalances>(
-    externalBalances || { isLoading: true },
-  );
   const containerRef = useRef<HTMLDivElement>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
   const navigate = useNavigate();
 
-  // Update balances when external balances change
-  useEffect(() => {
-    if (externalBalances) {
-      setBalances(externalBalances);
-    }
-  }, [externalBalances]);
+  // Fetch real wallet balance using hook
+  const {
+    native: fetchedNative,
+    usdValue: fetchedUsdValue,
+    isLoading: balanceLoading,
+  } = useWalletBalance(network);
 
-  // Simulate balance fetching if not provided externally
-  useEffect(() => {
-    if (!externalBalances) {
-      const timer = setTimeout(() => {
-        setBalances({
-          native: "125.4523",
-          glmr: network === "moonbeam" ? "1250.00" : undefined,
-          usdValue: "2,450.00",
-          isLoading: false,
-        });
-      }, 1000);
-      return () => clearTimeout(timer);
+  // Combine external balances with fetched balances
+  const balances: WalletBalances = useMemo(() => {
+    // If external balances provided, use those
+    if (externalBalances) {
+      return externalBalances;
     }
-    return undefined;
-  }, [externalBalances, network]);
+
+    // Otherwise use fetched balances
+    return {
+      native: fetchedNative,
+      usdValue: fetchedUsdValue,
+      isLoading: balanceLoading,
+    };
+  }, [externalBalances, fetchedNative, fetchedUsdValue, balanceLoading]);
 
   // Close dropdown when clicking outside
+  // Must check both the button container and portal-rendered dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node)
-      ) {
+      const target = event.target as HTMLElement;
+      const isInsideContainer = containerRef.current?.contains(target);
+      const isInsidePortalMenu = target.closest("[data-wallet-menu]");
+
+      if (!isInsideContainer && !isInsidePortalMenu) {
         setIsDropdownOpen(false);
       }
     };
@@ -188,6 +188,7 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
     <div ref={containerRef} className={`relative ${className}`}>
       {/* Main Wallet Button */}
       <button
+        ref={buttonRef}
         type="button"
         onClick={handleToggleDropdown}
         className={`
@@ -246,6 +247,7 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
           onSwitchAccount={handleSwitchAccount}
           onSettings={handleSettings}
           hasMultipleAccounts={hasMultipleAccounts}
+          anchorRef={buttonRef}
         />
       )}
     </div>

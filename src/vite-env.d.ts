@@ -1,36 +1,85 @@
 /// <reference types="vite/client" />
 /* eslint-disable no-unused-vars */
 
+/** EIP-1193 compatible provider interface */
+interface EIP1193Provider {
+  isMetaMask?: boolean;
+  isCoinbaseWallet?: boolean;
+  isPhantom?: boolean;
+  isTalisman?: boolean;
+  request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>;
+  on: (_event: string, _callback: (..._args: unknown[]) => void) => void;
+  removeListener: (_event: string, _callback: (..._args: unknown[]) => void) => void;
+  removeAllListeners: (_event: string) => void;
+  disconnect?: () => Promise<void>;
+}
+
+/** Solana wallet standard interface */
+interface SolanaWalletProvider {
+  isPhantom?: boolean;
+  isCoinbaseWallet?: boolean;
+  publicKey: { toBase58(): string } | null;
+  isConnected: boolean;
+  connect: (_opts?: { onlyIfTrusted?: boolean }) => Promise<{ publicKey: { toBase58(): string } }>;
+  disconnect: () => Promise<void>;
+  signTransaction: (_transaction: unknown) => Promise<unknown>;
+  signAllTransactions: (_transactions: unknown[]) => Promise<unknown[]>;
+  signMessage: (_message: Uint8Array) => Promise<{ signature: Uint8Array }>;
+  on: (_event: string, _callback: (..._args: unknown[]) => void) => void;
+  off: (_event: string, _callback: (..._args: unknown[]) => void) => void;
+}
+
+/** Polkadot extension injected accounts interface */
+interface InjectedAccountWithMeta {
+  address: string;
+  meta: {
+    name?: string;
+    source: string;
+    genesisHash?: string | null;
+  };
+  type?: string;
+}
+
+/** Polkadot wallet extension interface */
+interface PolkadotWalletProvider {
+  name: string;
+  version: string;
+  accounts: {
+    get: (_anyType?: boolean) => Promise<InjectedAccountWithMeta[]>;
+    subscribe: (_callback: (_accounts: InjectedAccountWithMeta[]) => void) => () => void;
+  };
+  signer: {
+    signPayload: (_payload: unknown) => Promise<{ signature: string }>;
+    signRaw: (_raw: { address: string; data: string; type: "bytes" | "payload" }) => Promise<{ signature: string }>;
+  };
+}
+
 interface Window {
-  ethereum?: {
-    isMetaMask?: boolean;
-    request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>; // Prefixed as unused
-    on: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeListener: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeAllListeners: (_event: string) => void; // Prefixed as unused
-    disconnect?: () => Promise<void>;
+  /** MetaMask and generic EVM providers */
+  ethereum?: EIP1193Provider;
+  /** Coinbase Wallet extension */
+  coinbaseWalletExtension?: EIP1193Provider;
+  /** SubWallet EVM provider */
+  SubWallet?: EIP1193Provider;
+  /** Talisman EVM provider */
+  talismanEth?: EIP1193Provider;
+  /** Talisman Polkadot extension */
+  talismanSub?: PolkadotWalletProvider;
+  /** Nova Wallet provider */
+  nova?: EIP1193Provider;
+  /** Phantom wallet (multi-chain) */
+  phantom?: {
+    ethereum?: EIP1193Provider;
+    solana?: SolanaWalletProvider;
   };
-  SubWallet?: {
-    request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>; // Prefixed as unused
-    on: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeListener: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeAllListeners: (_event: string) => void; // Prefixed as unused
-    disconnect?: () => Promise<void>;
-  };
-  talismanEth?: {
-    request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>; // Prefixed as unused
-    on: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeListener: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeAllListeners: (_event: string) => void; // Prefixed as unused
-    disconnect?: () => Promise<void>;
-  };
-  nova?: {
-    request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>; // Prefixed as unused
-    on: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeListener: (_event: string, _callback: (..._args: unknown[]) => void) => void; // Prefixed as unused
-    removeAllListeners: (_event: string) => void; // Prefixed as unused
-    disconnect?: () => Promise<void>;
-  };
+  /** Solana wallet providers */
+  solana?: SolanaWalletProvider;
+  solflare?: SolanaWalletProvider;
+  /** Polkadot extension injected wallets */
+  injectedWeb3?: Record<string, {
+    enable: (_origin: string) => Promise<PolkadotWalletProvider>;
+    version: string;
+  }>;
 }
 
 interface ImportMetaEnv {

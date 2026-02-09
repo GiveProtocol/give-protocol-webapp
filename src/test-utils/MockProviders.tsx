@@ -67,6 +67,25 @@ export const mockWeb3ContextValue = {
 };
 
 /**
+ * Default mock values for MultiChainContext
+ */
+export const mockMultiChainContextValue = {
+  wallet: null,
+  accounts: [],
+  activeAccount: null,
+  activeChainType: "evm" as const,
+  isConnected: false,
+  isConnecting: false,
+  error: null,
+  connect: jest.fn(),
+  disconnect: jest.fn(),
+  switchAccount: jest.fn(),
+  switchChainType: jest.fn(),
+  switchChain: jest.fn(),
+  clearError: jest.fn(),
+};
+
+/**
  * Default mock values for CurrencyContext
  */
 export const mockCurrencyContextValue = {
@@ -93,6 +112,7 @@ const MockSettingsContext = createContext(mockSettingsContextValue);
 const MockToastContext = createContext(mockToastContextValue);
 const MockAuthContext = createContext(mockAuthContextValue);
 const MockWeb3Context = createContext(mockWeb3ContextValue);
+const MockMultiChainContext = createContext(mockMultiChainContextValue);
 const MockCurrencyContext = createContext(mockCurrencyContextValue);
 
 // Export context hooks for use in tests
@@ -100,6 +120,7 @@ export const MockSettingsProvider = MockSettingsContext.Provider;
 export const MockToastProvider = MockToastContext.Provider;
 export const MockAuthProvider = MockAuthContext.Provider;
 export const MockWeb3Provider = MockWeb3Context.Provider;
+export const MockMultiChainProvider = MockMultiChainContext.Provider;
 export const MockCurrencyProvider = MockCurrencyContext.Provider;
 
 // ============================================================================
@@ -134,6 +155,7 @@ interface AllProvidersProps {
   toast?: Partial<typeof mockToastContextValue>;
   auth?: Partial<typeof mockAuthContextValue>;
   web3?: Partial<typeof mockWeb3ContextValue>;
+  multiChain?: Partial<typeof mockMultiChainContextValue>;
   currency?: Partial<typeof mockCurrencyContextValue>;
   queryClient?: QueryClient;
   initialEntries?: string[];
@@ -162,6 +184,7 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
   toast = {},
   auth = {},
   web3 = {},
+  multiChain = {},
   currency = {},
   queryClient,
   initialEntries,
@@ -172,6 +195,7 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
   const toastValue = { ...mockToastContextValue, ...toast };
   const authValue = { ...mockAuthContextValue, ...auth };
   const web3Value = { ...mockWeb3ContextValue, ...web3 };
+  const multiChainValue = { ...mockMultiChainContextValue, ...multiChain };
   const currencyValue = { ...mockCurrencyContextValue, ...currency };
 
   const Router = initialEntries ? MemoryRouter : BrowserRouter;
@@ -184,6 +208,7 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
     [MockToastContext.Provider as React.Provider<unknown>, toastValue],
     [MockAuthContext.Provider as React.Provider<unknown>, authValue],
     [MockWeb3Context.Provider as React.Provider<unknown>, web3Value],
+    [MockMultiChainContext.Provider as React.Provider<unknown>, multiChainValue],
     [MockCurrencyContext.Provider as React.Provider<unknown>, currencyValue],
   ];
 
@@ -222,6 +247,13 @@ export const createMockUseWeb3 =
   (overrides = {}) =>
   () => ({
     ...mockWeb3ContextValue,
+    ...overrides,
+  });
+
+export const createMockUseMultiChain =
+  (overrides = {}) =>
+  () => ({
+    ...mockMultiChainContextValue,
     ...overrides,
   });
 

@@ -58,6 +58,10 @@ const EXPLORER_URLS: Record<string, string> = {
   kusama: "https://kusama.subscan.io/account/",
   moonbeam: "https://moonbeam.moonscan.io/address/",
   moonbase: "https://moonbase.moonscan.io/address/",
+  base: "https://basescan.org/address/",
+  "base-sepolia": "https://sepolia.basescan.org/address/",
+  optimism: "https://optimistic.etherscan.io/address/",
+  "optimism-sepolia": "https://sepolia-optimistic.etherscan.io/address/",
 };
 
 /**
@@ -79,6 +83,10 @@ export const NETWORK_NAMES: Record<string, string> = {
   kusama: "Kusama",
   moonbeam: "Moonbeam",
   moonbase: "Moonbase Alpha",
+  base: "Base",
+  "base-sepolia": "Base Sepolia",
+  optimism: "Optimism",
+  "optimism-sepolia": "OP Sepolia",
 };
 
 /**
@@ -89,6 +97,10 @@ export const NETWORK_TOKENS: Record<string, string> = {
   kusama: "KSM",
   moonbeam: "GLMR",
   moonbase: "DEV",
+  base: "ETH",
+  "base-sepolia": "ETH",
+  optimism: "ETH",
+  "optimism-sepolia": "ETH",
 };
 
 /**

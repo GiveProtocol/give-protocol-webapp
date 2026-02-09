@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { cn } from "../../utils/cn";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -11,7 +11,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 /**
  * Reusable button component with multiple variants, sizes, and animation effects.
- * Supports icons, full-width styling, and accessibility features.
+ * Supports icons, full-width styling, accessibility features, and ref forwarding.
  *
  * @function Button
  * @param {ButtonProps} props - Component props extending HTML button attributes
@@ -22,6 +22,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  * @param {'left' | 'right'} [props.iconPosition='left'] - Icon placement
  * @param {string} [props.className] - Additional CSS classes
  * @param {React.ReactNode} props.children - Button content
+ * @param {React.Ref<HTMLButtonElement>} ref - Forwarded ref to the button element
  * @returns {JSX.Element} The rendered button component
  * @example
  * ```typescript
@@ -39,18 +40,25 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
  * <Button variant="danger" icon={<TrashIcon />} iconPosition="right">
  *   Delete
  * </Button>
+ *
+ * // Button with ref for positioning
+ * const buttonRef = useRef<HTMLButtonElement>(null);
+ * <Button ref={buttonRef}>Click me</Button>
  * ```
  */
-export function Button({
-  variant = "primary",
-  size = "md",
-  fullWidth = false,
-  icon,
-  iconPosition = "left",
-  className,
-  children,
-  ...props
-}: ButtonProps) {
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
+  {
+    variant = "primary",
+    size = "md",
+    fullWidth = false,
+    icon,
+    iconPosition = "left",
+    className,
+    children,
+    ...props
+  },
+  ref
+) {
   const baseStyles =
     "inline-flex items-center justify-center font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 ease-in-out";
 
@@ -73,6 +81,7 @@ export function Button({
 
   return (
     <button
+      ref={ref}
       className={cn(
         baseStyles,
         variants[variant],
@@ -90,4 +99,4 @@ export function Button({
       {icon && iconPosition === "right" && <span className="ml-2">{icon}</span>}
     </button>
   );
-}
+});

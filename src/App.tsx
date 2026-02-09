@@ -5,6 +5,7 @@ import { ToastProvider } from "./contexts/ToastContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { Web3Provider } from "./contexts/Web3Context";
 import { ChainProvider } from "./contexts/ChainContext";
+import { MultiChainProvider } from "./contexts/MultiChainContext";
 import { SettingsProvider } from "./contexts/SettingsContext";
 import { CurrencyProvider } from "./contexts/CurrencyContext";
 import { AppRoutes } from "./routes";
@@ -12,6 +13,7 @@ import { Layout } from "./components/layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChainSelectionModal } from "./components/web3/ChainSelectionModal";
 import { useOnboarding } from "./hooks/useOnboarding";
+import { useSafeAutoConnect } from "./hooks/useSafeAutoConnect";
 import { MonitoringService } from "./utils/monitoring";
 import { ENV } from "./config/env";
 
@@ -53,10 +55,12 @@ const AuthSettingsProviders = ({ children }: { children: React.ReactNode }) => (
   </AuthProvider>
 );
 
-// Chain and Web3 providers (max 2 levels)
+// Chain and Web3 providers (max 3 levels)
 const ChainWeb3Providers = ({ children }: { children: React.ReactNode }) => (
   <ChainProvider>
-    <Web3Provider>{children}</Web3Provider>
+    <MultiChainProvider>
+      <Web3Provider>{children}</Web3Provider>
+    </MultiChainProvider>
   </ChainProvider>
 );
 
@@ -86,14 +90,20 @@ const ChainOnboarding = () => {
   );
 };
 
+// Safe auto-connect wrapper
+const SafeAutoConnectWrapper = ({ children }: { children: React.ReactNode }) => {
+  useSafeAutoConnect();
+  return <>{children}</>;
+};
+
 // Router wrapper component (Router is now provided by entry files)
 const AppRouter = () => (
-  <>
+  <SafeAutoConnectWrapper>
     <Layout>
       <AppRoutes />
     </Layout>
     <ChainOnboarding />
-  </>
+  </SafeAutoConnectWrapper>
 );
 
 /**

@@ -7,217 +7,137 @@ import {
   ExternalLink,
   RefreshCw,
   User,
+  Copy,
+  Check,
 } from "lucide-react";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { useWallet, type WalletProvider } from "@/hooks/useWallet";
+import { useUnifiedWallets } from "@/hooks/useWallet";
+import { useMultiChainContext } from "@/contexts/MultiChainContext";
 import { Button } from "../ui/Button";
+import { WalletModal } from "./WalletModal/WalletModal";
+import { ChainTypeBadge } from "./AccountBadge";
 import { shortenAddress } from "@/utils/web3";
 import { Logger } from "@/utils/logger";
 import { CHAIN_IDS, CHAIN_CONFIGS, type ChainId } from "@/config/contracts";
+import { getEVMChainConfig, type EVMChainId } from "@/config/chains";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
-
-interface AccountMenuHeaderProps {
-  address: string;
-  getInstalledWallets: () => WalletProvider[];
-  getExplorerUrl: () => string;
-  onCopyAddress: () => void;
-}
+import type { ChainType, UnifiedWalletProvider, UnifiedAccount } from "@/types/wallet";
 
 /**
- * Header section of the account menu showing wallet connection info
- * @param address - The connected wallet address
- * @param getInstalledWallets - Function to get list of installed wallets
- * @param getExplorerUrl - Function to get blockchain explorer URL
- * @param onCopyAddress - Callback to copy wallet address
+ * Account dropdown menu for connected wallet
  */
-const AccountMenuHeader: React.FC<AccountMenuHeaderProps> = ({
-  address,
-  getInstalledWallets,
-  getExplorerUrl,
-  onCopyAddress,
-}) => (
-  <div className="p-4">
-    <div className="flex items-center justify-between mb-2">
-      <span className="text-sm text-gray-500">
-        Connected with {getInstalledWallets()[0]?.name || "Wallet"}
-      </span>
-    </div>
-    <div className="flex items-center justify-between">
-      <span className="font-medium">{shortenAddress(address)}</span>
-      <div className="flex items-center space-x-2">
-        <button
-          onClick={onCopyAddress}
-          className="text-sm text-indigo-600 hover:text-indigo-500 font-medium transition-colors"
-        >
-          Copy
-        </button>
-        <a
-          href={getExplorerUrl()}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-indigo-600 hover:text-indigo-500 transition-colors"
-        >
-          <ExternalLink className="h-4 w-4" />
-        </a>
-      </div>
-    </div>
-  </div>
-);
-
-interface AccountMenuActionsProps {
+interface AccountDropdownProps {
+  account: UnifiedAccount;
+  wallet: UnifiedWalletProvider | null;
   alias: string | null;
-  onManageAlias: () => void;
-  onDisconnect: () => void;
-}
-
-/**
- * Actions section of the account menu with manage alias and disconnect buttons
- * @param alias - Optional user-defined alias for the wallet
- * @param onManageAlias - Callback to manage wallet alias
- * @param onDisconnect - Callback to disconnect the wallet
- */
-const AccountMenuActions: React.FC<AccountMenuActionsProps> = ({
-  alias,
-  onManageAlias,
-  onDisconnect,
-}) => (
-  <div className="p-2">
-    <button
-      onClick={onManageAlias}
-      className="flex w-full items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-md"
-      role="menuitem"
-    >
-      <User className="h-4 w-4 mr-2" />
-      {alias ? "Change Wallet Alias" : "Set Wallet Alias"}
-    </button>
-    <button
-      onClick={onDisconnect}
-      className="flex w-full items-center px-4 py-3 text-sm text-red-600 hover:bg-gray-50 transition-colors rounded-md"
-      role="menuitem"
-    >
-      <LogOut className="h-4 w-4 mr-2" />
-      Disconnect
-    </button>
-  </div>
-);
-
-interface AccountMenuProps {
-  address: string;
-  alias: string | null;
-  getInstalledWallets: () => WalletProvider[];
-  getExplorerUrl: () => string;
   onDisconnect: () => void;
   onManageAlias: () => void;
 }
 
-/**
- * Dropdown menu component displayed when a wallet is connected
- * @param address - The connected wallet address
- * @param alias - Optional user-defined alias for the wallet
- * @param getInstalledWallets - Function to get list of installed wallets
- * @param getExplorerUrl - Function to get blockchain explorer URL for the address
- * @param onDisconnect - Callback to disconnect the wallet
- * @param onManageAlias - Callback to manage wallet alias
- */
-const AccountMenu: React.FC<AccountMenuProps> = ({
-  address,
+const AccountDropdown: React.FC<AccountDropdownProps> = ({
+  account,
+  wallet,
   alias,
-  getInstalledWallets,
-  getExplorerUrl,
   onDisconnect,
   onManageAlias,
 }) => {
+  const [copied, setCopied] = useState(false);
+
   const handleCopyAddress = useCallback(() => {
-    navigator.clipboard.writeText(address);
-  }, [address]);
+    navigator.clipboard.writeText(account.address);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }, [account.address]);
+
+  const getExplorerUrl = useCallback(() => {
+    if (account.chainType === "evm" && typeof account.chainId === "number") {
+      const config = getEVMChainConfig(account.chainId as EVMChainId);
+      if (config) {
+        return `${config.blockExplorerUrls[0]}/address/${account.address}`;
+      }
+    }
+    return "#";
+  }, [account]);
 
   return (
-    <div className="absolute right-0 mt-2 w-72 rounded-lg shadow-lg bg-white ring-1 ring-gray-200 divide-y divide-gray-100 z-50">
-      <AccountMenuHeader
-        address={address}
-        getInstalledWallets={getInstalledWallets}
-        getExplorerUrl={getExplorerUrl}
-        onCopyAddress={handleCopyAddress}
-      />
-      <AccountMenuActions
-        alias={alias}
-        onManageAlias={onManageAlias}
-        onDisconnect={onDisconnect}
-      />
-    </div>
-  );
-};
-
-interface WalletSelectMenuProps {
-  getInstalledWallets: () => WalletProvider[];
-  onWalletSelect: (_wallet: WalletProvider) => void;
-}
-
-/**
- * Dropdown menu component for selecting a wallet to connect
- * @param getInstalledWallets - Function to get list of installed wallets
- * @param onWalletSelect - Callback when a wallet is selected for connection
- */
-const WalletSelectMenu: React.FC<WalletSelectMenuProps> = ({
-  getInstalledWallets,
-  onWalletSelect,
-}) => {
-  const handleWalletSelect = useCallback(
-    (_wallet: WalletProvider) => () => {
-      onWalletSelect(_wallet);
-    },
-    [onWalletSelect],
-  );
-
-  return (
-    <div className="absolute right-0 mt-2 w-72 rounded-lg shadow-lg bg-white ring-1 ring-gray-200 z-50">
-      <div className="p-4 border-b border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900">Connect Wallet</h3>
-        <p className="text-sm text-gray-500 mt-1">
-          Choose your preferred wallet provider
-        </p>
-      </div>
-      <div className="p-2">
-        {getInstalledWallets().map((wallet) => (
-          <button
-            key={wallet.name}
-            onClick={handleWalletSelect(wallet)}
-            className="flex items-center w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-md"
-            role="menuitem"
-          >
-            <img
-              src={`/icons/${wallet.icon}.svg`}
-              alt=""
-              className="w-8 h-8 mr-3"
-              aria-hidden="true"
-            />
-            <div className="flex flex-col items-start">
-              <span className="font-medium text-gray-900">{wallet.name}</span>
-              <span className="text-xs text-gray-500">
-                Connect to your {wallet.name} wallet
-              </span>
-            </div>
-          </button>
-        ))}
-        {getInstalledWallets().length === 0 && (
-          <div className="px-4 py-4 text-sm">
-            <p className="font-medium text-gray-900 mb-1">No wallets found</p>
-            <p className="text-gray-500">Install MetaMask to continue</p>
+    <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-lg bg-white ring-1 ring-gray-200 divide-y divide-gray-100 z-50">
+      {/* Header */}
+      <div className="p-4">
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm text-gray-500">
+            Connected via {wallet?.name || "Wallet"}
+          </span>
+          <ChainTypeBadge chainType={account.chainType} size="sm" />
+        </div>
+        <div className="flex items-center justify-between">
+          <div className="flex flex-col">
+            {alias && (
+              <span className="text-sm font-medium text-gray-900">{alias}</span>
+            )}
+            <span className="font-mono text-sm text-gray-600">
+              {shortenAddress(account.address)}
+            </span>
           </div>
-        )}
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={handleCopyAddress}
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              aria-label="Copy address"
+            >
+              {copied ? (
+                <Check className="h-4 w-4 text-green-500" />
+              ) : (
+                <Copy className="h-4 w-4" />
+              )}
+            </button>
+            <a
+              href={getExplorerUrl()}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+              aria-label="View in explorer"
+            >
+              <ExternalLink className="h-4 w-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Chain Info */}
+      <div className="px-4 py-3 bg-gray-50">
+        <div className="flex items-center justify-between">
+          <span className="text-xs text-gray-500">Network</span>
+          <span className="text-sm font-medium text-gray-900">{account.chainName}</span>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="p-2">
+        <button
+          onClick={onManageAlias}
+          className="flex w-full items-center px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 transition-colors rounded-lg"
+          role="menuitem"
+        >
+          <User className="h-4 w-4 mr-3 text-gray-400" />
+          {alias ? "Change Wallet Alias" : "Set Wallet Alias"}
+        </button>
+        <button
+          onClick={onDisconnect}
+          className="flex w-full items-center px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition-colors rounded-lg"
+          role="menuitem"
+        >
+          <LogOut className="h-4 w-4 mr-3" />
+          Disconnect
+        </button>
       </div>
     </div>
   );
 };
 
-const CONNECTION_TIMEOUT = 30000; // 30 seconds
-const RETRY_DELAY = 2000; // 2 seconds
-const MAX_RETRIES = 3;
-
-// Helper function to check if chain ID is supported
-function isSupportedChainId(chainId: number | string): boolean {
+// Helper function to check if chain ID is supported (kept for potential future use)
+function _isSupportedChainId(chainId: number | string): boolean {
   return Object.values(CHAIN_IDS).includes(Number(chainId));
 }
 
@@ -225,8 +145,8 @@ function isSupportedChainId(chainId: number | string): boolean {
  * Primary wallet connection component for the application
  * @function ConnectButton
  * @description Comprehensive Web3 wallet connection button that handles wallet selection, connection states,
- * network switching, error handling, and account management. Supports multiple wallet providers and provides
- * a complete user experience for blockchain interactions.
+ * network switching, error handling, and account management. Supports multiple wallet providers across
+ * EVM, Solana, and Polkadot chains.
  * @returns {React.ReactElement} Dynamic button component that shows different states:
  *   - Connect button when no wallet is connected
  *   - Account dropdown with address/alias when connected
@@ -245,36 +165,36 @@ function isSupportedChainId(chainId: number | string): boolean {
  * ```
  */
 export function ConnectButton() {
-  const {
-    isConnected,
-    isConnecting,
-    connect,
-    disconnect,
-    address,
-    error,
-    chainId,
-    switchChain,
-  } = useWeb3();
-  const { getInstalledWallets } = useWallet();
+  // Multi-chain context for unified wallet management
+  const multiChain = useMultiChainContext();
+
+  // Legacy Web3 context for backward compatibility
+  const web3 = useWeb3();
+
+  // Get unified wallet providers
+  const { wallets: unifiedWallets } = useUnifiedWallets();
+
   const { logout, user } = useAuth();
   const { alias } = useWalletAlias();
   const navigate = useNavigate();
 
-  const [showWalletSelect, setShowWalletSelect] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
   const [showAccountMenu, setShowAccountMenu] = useState(false);
   const [connectionError, setConnectionError] = useState<string | null>(null);
-  const [_retryCount, setRetryCount] = useState(0);
-  const [isRetrying, setIsRetrying] = useState(false);
-  // Use ref to track retry count for exponential backoff calculation
-  const retryCountRef = React.useRef(0);
 
-  // Close dropdowns when clicking outside
+  // Determine connection state from either context
+  const isConnected = multiChain.isConnected || web3.isConnected;
+  const isConnecting = multiChain.isConnecting || web3.isConnecting;
+  const activeAccount = multiChain.activeAccount;
+  const address = activeAccount?.address || web3.address;
+  const error = multiChain.error || web3.error;
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (showWalletSelect || showAccountMenu) {
+      if (showAccountMenu) {
         const target = event.target as HTMLElement;
         if (!target.closest(".wallet-dropdown")) {
-          setShowWalletSelect(false);
           setShowAccountMenu(false);
         }
       }
@@ -282,159 +202,128 @@ export function ConnectButton() {
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [showWalletSelect, showAccountMenu]);
+  }, [showAccountMenu]);
 
-  const handleConnect = useCallback(() => {
+  // Handle opening wallet modal
+  const handleOpenModal = useCallback(() => {
     setConnectionError(null);
-    setRetryCount(0);
-    retryCountRef.current = 0;
-    setIsRetrying(false);
-    setShowWalletSelect(true);
+    setShowWalletModal(true);
   }, []);
 
-  const handleWalletSelect = useCallback(
-    async (_wallet: { name: string; provider: unknown }) => {
+  // Handle closing wallet modal
+  const handleCloseModal = useCallback(() => {
+    setShowWalletModal(false);
+  }, []);
+
+  // Handle wallet connection from modal
+  const handleConnect = useCallback(
+    async (wallet: UnifiedWalletProvider, chainType: ChainType) => {
       try {
         setConnectionError(null);
-        setIsRetrying(false);
+        await multiChain.connect(wallet, chainType);
+        setShowWalletModal(false);
 
-        const timeoutId = setTimeout(() => {
-          setConnectionError("Connection timeout. Please try again.");
-          setShowWalletSelect(false);
-        }, CONNECTION_TIMEOUT);
-
-        await connect(_wallet.provider);
-        clearTimeout(timeoutId);
-        setShowWalletSelect(false);
-        // Reset retry count on successful connection
-        retryCountRef.current = 0;
-        setRetryCount(0);
-
-        // Check if connected to supported network
-        if (chainId && !isSupportedChainId(chainId)) {
-          try {
-            await switchChain(CHAIN_IDS.MOONBASE);
-          } catch (switchError) {
-            throw new Error("Please switch to Moonbase Alpha (TestNet)");
-          }
-        }
+        Logger.info("Wallet connected via modal", {
+          wallet: wallet.name,
+          chainType,
+        });
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to connect wallet";
-        setConnectionError(`Wallet connection failed: ${message}`);
+        setConnectionError(message);
         Logger.error("Wallet connection failed", {
-          wallet: _wallet.name,
+          wallet: wallet.name,
+          chainType,
           error: err,
-          retryCount: retryCountRef.current,
         });
-
-        // Only retry if not user rejected and under max retries
-        if (
-          retryCountRef.current < MAX_RETRIES &&
-          !message.toLowerCase().includes("user rejected")
-        ) {
-          setIsRetrying(true);
-          // Calculate delay using current ref value before incrementing
-          const currentRetryCount = retryCountRef.current;
-          const delay = RETRY_DELAY * Math.pow(2, currentRetryCount);
-          // Increment both ref and state
-          retryCountRef.current += 1;
-          setRetryCount(retryCountRef.current);
-          setTimeout(() => handleWalletSelect(_wallet), delay);
-        }
+        throw err;
       }
     },
-    [connect, chainId, switchChain],
+    [multiChain]
   );
 
+  // Handle disconnect
   const handleDisconnect = useCallback(async () => {
     try {
-      // Always disconnect wallet first
-      await disconnect();
+      // Disconnect from both contexts
+      await multiChain.disconnect();
+      await web3.disconnect();
 
       setShowAccountMenu(false);
       setConnectionError(null);
-      setRetryCount(0);
-      retryCountRef.current = 0;
-      setIsRetrying(false);
 
       // Only try to logout if user is actually logged in
       if (user) {
         try {
           await logout();
-          // Use window.location to stay on the same domain
           window.location.href = `${window.location.origin}/login`;
         } catch (logoutError) {
-          // If logout fails, redirect anyway
           Logger.warn(
             "Logout failed during wallet disconnect, redirecting anyway",
-            { error: logoutError },
+            { error: logoutError }
           );
           window.location.href = `${window.location.origin}/login`;
         }
       } else {
-        // If not logged in, just refresh to clear any stale state
         Logger.info("Wallet disconnected while not logged in, refreshing page");
         window.location.reload();
       }
     } catch (err) {
       Logger.error("Wallet disconnection failed", { error: err });
       setShowAccountMenu(false);
-      // Even if disconnect fails, reset the UI state and refresh
       setConnectionError(null);
-      setRetryCount(0);
-      retryCountRef.current = 0;
-      setIsRetrying(false);
-      // Force refresh to clear any stale state
       window.location.reload();
     }
-  }, [disconnect, logout, user]);
+  }, [multiChain, web3, logout, user]);
 
+  // Handle manage alias
   const handleManageAlias = useCallback(() => {
     setShowAccountMenu(false);
     navigate("/give-dashboard", { state: { showWalletSettings: true } });
   }, [navigate]);
 
+  // Handle toggle account menu
   const handleToggleAccountMenu = useCallback(() => {
-    setShowAccountMenu(!showAccountMenu);
-  }, [showAccountMenu]);
+    setShowAccountMenu((prev) => !prev);
+  }, []);
 
-  const getExplorerUrl = useCallback(() => {
-    if (!address) return "#";
-
-    const config = CHAIN_CONFIGS[chainId as ChainId];
-    const baseUrl =
-      config?.blockExplorerUrls[0] || "https://moonbase.moonscan.io";
-
-    return `${baseUrl}/address/${address}`;
-  }, [address, chainId]);
-
+  // Error state
   if (connectionError || error) {
     return (
       <Button
-        onClick={handleConnect}
+        onClick={handleOpenModal}
         variant="secondary"
         size="sm"
-        className="text-red-600 shadow-sm hover:shadow-md rounded-md px-4 py-2 transition-all duration-200"
+        className="text-red-600 shadow-sm hover:shadow-md rounded-lg px-4 py-2 transition-all duration-200"
       >
         <AlertTriangle className="h-4 w-4 mr-2" />
-        <span className="hidden sm:inline">
-          {connectionError || error.message}
+        <span className="hidden sm:inline max-w-32 truncate">
+          {connectionError || error?.message || "Connection Error"}
         </span>
         <span className="sm:hidden">Error</span>
-        {isRetrying && <RefreshCw className="h-4 w-4 ml-2 animate-spin" />}
       </Button>
     );
   }
 
+  // Connected state
   if (isConnected && address) {
+    // Create a fallback account if multichain context doesn't have one
+    const displayAccount: UnifiedAccount = activeAccount || {
+      id: `legacy-evm-${address}`,
+      address,
+      chainType: "evm" as const,
+      chainId: web3.chainId || CHAIN_IDS.BASE,
+      chainName: CHAIN_CONFIGS[web3.chainId as ChainId]?.name || "Unknown",
+      source: "Legacy",
+    };
+
     return (
       <div className="relative wallet-dropdown">
         <Button
           onClick={handleToggleAccountMenu}
           variant="secondary"
           size="sm"
-          className="flex items-center shadow-sm hover:shadow-md rounded-md px-4 py-2 transition-all duration-200"
+          className="flex items-center shadow-sm hover:shadow-md rounded-lg px-4 py-2 transition-all duration-200"
           aria-expanded={showAccountMenu}
           aria-haspopup="true"
         >
@@ -444,11 +333,10 @@ export function ConnectButton() {
         </Button>
 
         {showAccountMenu && (
-          <AccountMenu
-            address={address}
+          <AccountDropdown
+            account={displayAccount}
+            wallet={multiChain.wallet}
             alias={alias}
-            getInstalledWallets={getInstalledWallets}
-            getExplorerUrl={getExplorerUrl}
             onDisconnect={handleDisconnect}
             onManageAlias={handleManageAlias}
           />
@@ -457,28 +345,28 @@ export function ConnectButton() {
     );
   }
 
+  // Disconnected state
   return (
-    <div className="relative wallet-dropdown">
+    <>
       <Button
-        onClick={handleConnect}
+        onClick={handleOpenModal}
         variant="primary"
         size="sm"
         disabled={isConnecting}
-        className="flex items-center shadow-sm hover:shadow-md rounded-md px-4 py-2 transition-all duration-200"
-        aria-expanded={showWalletSelect}
-        aria-haspopup="true"
+        className="flex items-center shadow-sm hover:shadow-md rounded-lg px-4 py-2 transition-all duration-200"
       >
         <Wallet className="h-4 w-4 mr-2" />
         <span>{isConnecting ? "Connecting..." : "Connect"}</span>
-        {isRetrying && <RefreshCw className="h-4 w-4 ml-2 animate-spin" />}
+        {isConnecting && <RefreshCw className="h-4 w-4 ml-2 animate-spin" />}
       </Button>
 
-      {showWalletSelect && (
-        <WalletSelectMenu
-          getInstalledWallets={getInstalledWallets}
-          onWalletSelect={handleWalletSelect}
-        />
-      )}
-    </div>
+      <WalletModal
+        isOpen={showWalletModal}
+        onClose={handleCloseModal}
+        wallets={unifiedWallets}
+        onConnect={handleConnect}
+        initialChainType="evm"
+      />
+    </>
   );
 }

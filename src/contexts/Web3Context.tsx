@@ -9,6 +9,8 @@ import { ethers } from "ethers";
 import { Logger } from "@/utils/logger";
 import { CHAIN_CONFIGS, type ChainId } from "@/config/contracts";
 import { useChain } from "./ChainContext";
+import { useMultiChainContext } from "./MultiChainContext";
+import type { UnifiedWalletProvider } from "@/types/wallet";
 
 // EIP-1193 Provider interface
 interface EIP1193Provider {
@@ -535,4 +537,122 @@ export function useWeb3() {
     throw new Error("useWeb3 must be used within a Web3Provider");
   }
   return context;
+}
+
+/**
+ * Bridge hook that uses MultiChainContext but provides Web3Context interface
+ * Use this for new code that needs backward compatibility during migration
+ * @returns Web3ContextType-compatible interface backed by MultiChainContext
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useWeb3MultiChain() {
+  const multiChain = useMultiChainContext();
+
+  // Only get EVM account
+  const evmAccount = multiChain.accounts.find((a) => a.chainType === "evm");
+  const chainId =
+    evmAccount && typeof evmAccount.chainId === "number"
+      ? evmAccount.chainId
+      : null;
+
+  // Create ethers provider from the unified wallet if available
+  const [provider, setProvider] = useState<ethers.Provider | null>(null);
+  const [signer, setSigner] = useState<ethers.Signer | null>(null);
+
+  useEffect(() => {
+    const setupEthers = async () => {
+      if (!multiChain.wallet?.providers.evm) {
+        setProvider(null);
+        setSigner(null);
+        return;
+      }
+
+      try {
+        const evmProvider = multiChain.wallet.providers.evm;
+        if (isEIP1193Provider(evmProvider)) {
+          const ethersProvider = new ethers.BrowserProvider(
+            evmProvider as ethers.Eip1193Provider
+          );
+          const ethersSigner = await ethersProvider.getSigner();
+          setProvider(ethersProvider);
+          setSigner(ethersSigner);
+        }
+      } catch (error) {
+        Logger.error("Failed to setup ethers provider", { error });
+        setProvider(null);
+        setSigner(null);
+      }
+    };
+
+    setupEthers();
+  }, [multiChain.wallet?.providers.evm]);
+
+  const connect = useCallback(
+    async (walletProvider?: unknown) => {
+      // If a wallet provider is passed, wrap it in a UnifiedWalletProvider
+      if (walletProvider && isEIP1193Provider(walletProvider)) {
+        // Create a minimal unified provider for backward compatibility
+        const unifiedProvider: UnifiedWalletProvider = {
+          name: "Legacy EVM Wallet",
+          icon: "wallet",
+          category: "browser",
+          supportedChainTypes: ["evm"],
+          providers: { evm: walletProvider },
+          isInstalled: () => true,
+          connect: async () => {
+            const accounts = (await walletProvider.request({
+              method: "eth_requestAccounts",
+            })) as string[];
+            return accounts.map((addr) => ({
+              id: `evm-legacy-${addr}`,
+              address: addr,
+              chainType: "evm" as const,
+              chainId: chainId || 1,
+              chainName: "EVM",
+              source: "Legacy",
+            }));
+          },
+          disconnect: async () => {
+            // EVM wallets typically don't have disconnect
+          },
+          getAccounts: async () => [],
+          switchChain: async (newChainId: number | string) => {
+            await walletProvider.request({
+              method: "wallet_switchEthereumChain",
+              params: [{ chainId: `0x${Number(newChainId).toString(16)}` }],
+            });
+          },
+          signTransaction: async () => "",
+          signMessage: async () => "",
+        };
+
+        await multiChain.connect(unifiedProvider, "evm");
+        return;
+      }
+
+      // No provider passed, throw error
+      throw new Error("No wallet provider specified");
+    },
+    [multiChain, chainId]
+  );
+
+  const switchChain = useCallback(
+    async (targetChainId: number) => {
+      await multiChain.switchChain(targetChainId, "evm");
+    },
+    [multiChain]
+  );
+
+  return {
+    provider,
+    signer,
+    address: evmAccount?.address ?? null,
+    chainId,
+    isConnected: evmAccount !== null,
+    isConnecting: multiChain.isConnecting,
+    connect,
+    disconnect: multiChain.disconnect,
+    error: multiChain.error,
+    switchChain,
+  };
 }

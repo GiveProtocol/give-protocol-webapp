@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import {
   Copy,
   Check,
@@ -8,6 +8,7 @@ import {
   LogOut,
   Wallet,
 } from "lucide-react";
+import { Portal } from "@/components/ui/Portal";
 import type { WalletDropdownProps } from "./types";
 import {
   formatAddress,
@@ -94,6 +95,7 @@ const MenuItem: React.FC<MenuItemProps> = ({
 
 /**
  * WalletDropdown component - Displays wallet info and actions in a dropdown menu
+ * Uses Portal to render outside parent overflow constraints
  * @param props - WalletDropdownProps
  * @returns Dropdown menu JSX element
  */
@@ -108,18 +110,59 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
   onSwitchAccount,
   onSettings,
   hasMultipleAccounts = false,
+  anchorRef,
 }) => {
   const tokenSymbol = NETWORK_TOKENS[network] || "DEV";
   const providerName = PROVIDER_NAMES[provider] || provider;
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = useState({ top: 0, right: 0 });
+
+  // Calculate position based on anchor element
+  useEffect(() => {
+    const updatePosition = () => {
+      if (anchorRef?.current) {
+        const rect = anchorRef.current.getBoundingClientRect();
+        setPosition({
+          top: rect.bottom + 8, // 8px gap below button
+          right: window.innerWidth - rect.right,
+        });
+      }
+    };
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [anchorRef]);
 
   const handleViewOnExplorer = useCallback(() => {
     const url = getExplorerUrl(network, address);
     window.open(url, "_blank", "noopener,noreferrer");
   }, [network, address]);
 
-  return (
+  const dropdownContent = (
     <div
-      className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
+      ref={dropdownRef}
+      data-wallet-menu
+      className="w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
+      style={
+        anchorRef
+          ? {
+              position: "fixed",
+              top: position.top,
+              right: position.right,
+            }
+          : {
+              position: "absolute",
+              right: 0,
+              top: "100%",
+              marginTop: 8,
+            }
+      }
       role="menu"
       aria-orientation="vertical"
       aria-label="Wallet menu"
@@ -250,6 +293,13 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
       </div>
     </div>
   );
+
+  // Use Portal when anchorRef is provided to escape parent overflow constraints
+  if (anchorRef) {
+    return <Portal>{dropdownContent}</Portal>;
+  }
+
+  return dropdownContent;
 };
 
 export default WalletDropdown;

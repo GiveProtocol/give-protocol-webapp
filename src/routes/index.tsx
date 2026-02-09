@@ -344,11 +344,13 @@ export function AppRoutes() {
         <Route
           path="/give-dashboard/*"
           element={
-            <RouteTransition>
-              <Suspense fallback={<LoadingFallback />}>
-                <GiveDashboard />
-              </Suspense>
-            </RouteTransition>
+            <ProtectedRoute requiredRoles={["donor"]} promptWallet>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <GiveDashboard />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
           }
         />
         <Route

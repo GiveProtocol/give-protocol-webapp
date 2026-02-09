@@ -2,6 +2,8 @@
  * TypeScript interfaces for Give Protocol wallet components
  */
 
+import type { RefObject } from "react";
+
 /**
  * Supported wallet provider types
  */
@@ -101,6 +103,8 @@ export interface WalletDropdownProps {
   onSettings: () => void;
   /** Whether multiple accounts are available */
   hasMultipleAccounts?: boolean;
+  /** Reference to anchor element for positioning (used with Portal) */
+  anchorRef?: RefObject<HTMLElement>;
 }
 
 /**
