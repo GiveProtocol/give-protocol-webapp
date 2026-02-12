@@ -88,6 +88,12 @@ export class SecurityManager {
       "api.coingecko.com",
       "secure.helcim.app",
       "api.helcim.com",
+      "mainnet.base.org",
+      "mainnet.optimism.io",
+      "rpc.api.moonbeam.network",
+      "sepolia.base.org",
+      "sepolia.optimism.io",
+      "rpc.api.moonbase.moonbeam.network",
     ];
   }
 
