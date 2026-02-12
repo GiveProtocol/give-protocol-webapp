@@ -1,12 +1,15 @@
 /**
  * Hook for fetching wallet balance and USD value
  * Provides real-time balance data for the wallet dropdown display
+ * Uses Chainlink price feeds for decentralized, rate-limit-free pricing
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { ethers } from "ethers";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Logger } from "@/utils/logger";
+import { chainlinkPriceFeedService } from "@/services/chainlinkPriceFeed";
+import { CHAIN_IDS } from "@/config/contracts";
 import type { NetworkType } from "@/components/Wallet/types";
 
 interface WalletBalanceResult {
@@ -29,58 +32,47 @@ interface WalletBalanceResult {
  */
 const NETWORK_CONFIG: Record<
   NetworkType,
-  { symbol: string; coingeckoId: string; decimals: number }
+  { symbol: string; chainId: number; decimals: number }
 > = {
-  base: { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
-  optimism: { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
-  moonbeam: { symbol: "GLMR", coingeckoId: "moonbeam", decimals: 18 },
-  "base-sepolia": { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
-  "optimism-sepolia": { symbol: "ETH", coingeckoId: "ethereum", decimals: 18 },
-  moonbase: { symbol: "DEV", coingeckoId: "moonbeam", decimals: 18 },
+  base: { symbol: "ETH", chainId: CHAIN_IDS.BASE, decimals: 18 },
+  optimism: { symbol: "ETH", chainId: CHAIN_IDS.OPTIMISM, decimals: 18 },
+  moonbeam: { symbol: "GLMR", chainId: CHAIN_IDS.MOONBEAM, decimals: 18 },
+  "base-sepolia": { symbol: "ETH", chainId: CHAIN_IDS.BASE_SEPOLIA, decimals: 18 },
+  "optimism-sepolia": { symbol: "ETH", chainId: CHAIN_IDS.OPTIMISM_SEPOLIA, decimals: 18 },
+  moonbase: { symbol: "DEV", chainId: CHAIN_IDS.MOONBASE, decimals: 18 },
 };
 
-/** Cache for token prices to reduce API calls */
+/** Cache for token prices */
 const priceCache: Record<string, { price: number; timestamp: number }> = {};
-const PRICE_CACHE_TTL = 60000; // 1 minute cache
+const PRICE_CACHE_TTL = 30000; // 30 second cache (Chainlink is fast, no rate limits)
 
 /**
- * Fetch token price from CoinGecko API
- * @param coingeckoId - CoinGecko token ID
+ * Fetch token price from Chainlink (primary) or cache
+ * @param symbol - Token symbol (e.g., "ETH", "GLMR")
+ * @param chainId - Chain ID for the price feed
  * @returns USD price or null if fetch fails
  */
-async function fetchTokenPrice(coingeckoId: string): Promise<number | null> {
+async function fetchTokenPrice(symbol: string, chainId: number): Promise<number | null> {
+  const cacheKey = `${chainId}_${symbol}`;
+
   // Check cache first
-  const cached = priceCache[coingeckoId];
+  const cached = priceCache[cacheKey];
   if (cached && Date.now() - cached.timestamp < PRICE_CACHE_TTL) {
     return cached.price;
   }
 
   try {
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoId}&vs_currencies=usd`,
-      {
-        headers: {
-          Accept: "application/json",
-        },
-      }
-    );
+    const priceData = await chainlinkPriceFeedService.getPrice(chainId, symbol);
 
-    if (!response.ok) {
-      throw new Error(`CoinGecko API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const price = data[coingeckoId]?.usd;
-
-    if (typeof price === "number") {
+    if (priceData?.price) {
       // Cache the price
-      priceCache[coingeckoId] = { price, timestamp: Date.now() };
-      return price;
+      priceCache[cacheKey] = { price: priceData.price, timestamp: Date.now() };
+      return priceData.price;
     }
 
     return null;
   } catch (error) {
-    Logger.warn("Failed to fetch token price", { coingeckoId, error });
+    Logger.warn("Failed to fetch token price from Chainlink", { symbol, chainId, error });
     return null;
   }
 }
@@ -155,8 +147,8 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
 
       setNative(formatBalance(balanceFormatted));
 
-      // Fetch price for USD value (don't block on this)
-      fetchTokenPrice(config.coingeckoId).then((price) => {
+      // Fetch price for USD value from Chainlink (don't block on this)
+      fetchTokenPrice(config.symbol, config.chainId).then((price) => {
         if (!isMountedRef.current) return;
 
         if (price !== null) {
@@ -190,7 +182,7 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
         setIsLoading(false);
       }
     }
-  }, [provider, address, isConnected, network, config.decimals, config.coingeckoId]);
+  }, [provider, address, isConnected, network, config.decimals, config.symbol, config.chainId]);
 
   // Fetch balance on mount and when dependencies change
   useEffect(() => {

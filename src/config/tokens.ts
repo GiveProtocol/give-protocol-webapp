@@ -150,7 +150,7 @@ export const BASE_TOKENS: TokenConfig[] = [
   {
     symbol: "USDT",
     name: "Tether USD",
-    address: "0xfde4C96c8593536E31F543578B4662D8151B0666", // USDT on Base
+    address: "0xfde4C96c8593536E31F229d6156B4d8D02642F84", // USDT on Base (bridged)
     decimals: 6,
     coingeckoId: "tether",
     icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
@@ -160,7 +160,7 @@ export const BASE_TOKENS: TokenConfig[] = [
   {
     symbol: "DAI",
     name: "Dai Stablecoin",
-    address: "0x50c5725949A6F0c72E6C4a641F24C8969B4dAd8F", // DAI on Base
+    address: "0x50c5725949A6F0c72E6C4a641F24049B1AE50db8", // DAI on Base
     decimals: 18,
     coingeckoId: "dai",
     icon: "https://assets.coingecko.com/coins/images/9956/small/4943.png",

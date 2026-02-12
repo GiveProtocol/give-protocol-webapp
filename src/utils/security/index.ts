@@ -85,6 +85,9 @@ export class SecurityManager {
       "westend-rpc.polkadot.io",
       "api.giveprotocol.io",
       "images.unsplash.com",
+      "api.coingecko.com",
+      "secure.helcim.app",
+      "api.helcim.com",
     ];
   }
 

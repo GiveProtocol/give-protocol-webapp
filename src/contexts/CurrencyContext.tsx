@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { FiatCurrency, SUPPORTED_CURRENCIES, getCurrencyByCode } from "@/config/tokens";
 import { priceFeedService } from "@/services/priceFeed";
+import { useWeb3 } from "@/contexts/Web3Context";
 import { Logger } from "@/utils/logger";
 
 interface CurrencyContextType {
@@ -39,6 +40,8 @@ interface CurrencyProviderProps {
  * ```
  */
 export function CurrencyProvider({ children }: CurrencyProviderProps): React.ReactElement {
+  const { chainId } = useWeb3();
+
   const [selectedCurrency, setSelectedCurrencyState] = useState<FiatCurrency>(() => {
     if (typeof window === "undefined") {
       return SUPPORTED_CURRENCIES[0]; // USD default
@@ -61,20 +64,29 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
   const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);
 
+  // Update price feed service with current chain ID for Chainlink lookups
+  useEffect(() => {
+    if (chainId) {
+      priceFeedService.setChainId(chainId);
+    }
+  }, [chainId]);
+
   const refreshPrices = useCallback(async () => {
     setIsLoading(true);
     try {
       // Fetch all token prices in the selected currency
-      // CoinGecko uses lowercase currency codes
       const currencyCode = selectedCurrency.coingeckoId.toLowerCase();
 
-      // Get prices for all tokens we support
+      // Get prices for all tokens we support (including ethereum for ETH/WETH)
       const tokenIds = [
+        "ethereum",
         "moonbeam",
         "wrapped-moonbeam",
         "polkadot",
         "usd-coin",
         "tether",
+        "dai",
+        "optimism",
       ];
 
       const prices = await priceFeedService.getTokenPrices(tokenIds, currencyCode);
@@ -84,6 +96,7 @@ export function CurrencyProvider({ children }: CurrencyProviderProps): React.Rea
       Logger.info("Currency context: Prices refreshed", {
         currency: selectedCurrency.code,
         priceCount: Object.keys(prices).length,
+        source: currencyCode === "usd" ? "chainlink" : "coingecko",
       });
     } catch (error) {
       Logger.error("Currency context: Failed to refresh prices", { error });

@@ -1,22 +1,25 @@
 /**
- * Price feed service for fetching cryptocurrency prices from CoinGecko API
+ * Unified Price Feed Service
+ * Primary: Chainlink on-chain price feeds (decentralized, no rate limits)
+ * Fallback: CoinGecko API (for unsupported tokens or chains)
  */
 
 import type { PriceCache, TokenPrice } from "@/types/blockchain";
 import { Logger } from "@/utils/logger";
+import { chainlinkPriceFeedService } from "./chainlinkPriceFeed";
+import { CHAIN_IDS, type ChainId } from "@/config/contracts";
 
-// Use local proxy to avoid CORS issues
+// CoinGecko fallback endpoint (through local proxy to avoid CORS)
 const COINGECKO_API_BASE = "/api/coingecko";
 const CACHE_DURATION_MS = 60000; // 1 minute
 
 /**
  * Attempts to get all prices from cache
- * @returns Cached prices if all tokens found, null otherwise
  */
 function tryGetCachedPrices(
   priceCache: Record<string, TokenPrice>,
   tokenIds: string[],
-  targetCurrency: string,
+  targetCurrency: string
 ): Record<string, number> | null {
   const cachedPrices: Record<string, number> = {};
 
@@ -38,7 +41,7 @@ function tryGetCachedPrices(
 function getStalePrices(
   priceCache: Record<string, TokenPrice>,
   tokenIds: string[],
-  targetCurrency: string,
+  targetCurrency: string
 ): Record<string, number> {
   const stalePrices: Record<string, number> = {};
 
@@ -53,7 +56,8 @@ function getStalePrices(
 }
 
 /**
- * Service for fetching and caching cryptocurrency prices from CoinGecko
+ * Unified Price Feed Service
+ * Uses Chainlink for USD prices, with CoinGecko fallback
  */
 export class PriceFeedService {
   private priceCache: PriceCache = {
@@ -61,18 +65,29 @@ export class PriceFeedService {
     lastUpdate: 0,
   };
 
+  /** Current chain ID for Chainlink lookups */
+  private chainId: ChainId = CHAIN_IDS.BASE;
+
   /**
-   * Fetch current prices for multiple tokens in a target currency
-   * @param tokenIds Array of CoinGecko token IDs (e.g., ["moonbeam", "polkadot"])
+   * Set the chain ID for Chainlink price lookups
+   * @param chainId - Chain ID to use
+   */
+  setChainId(chainId: ChainId | number): void {
+    this.chainId = chainId as ChainId;
+  }
+
+  /**
+   * Fetch current prices for multiple tokens
+   * Uses Chainlink for USD prices, CoinGecko for currency conversion
+   * @param tokenIds Array of CoinGecko token IDs (e.g., ["ethereum", "usd-coin"])
    * @param targetCurrency Target currency code (e.g., "usd", "eur")
    * @returns Record of token prices by token ID
    */
   async getTokenPrices(
     tokenIds: string[],
-    targetCurrency = "usd",
+    targetCurrency = "usd"
   ): Promise<Record<string, number>> {
     const now = Date.now();
-    const cacheKey = `${tokenIds.join(",")}_${targetCurrency}`;
 
     // Check cache validity
     if (
@@ -82,32 +97,112 @@ export class PriceFeedService {
       const cached = tryGetCachedPrices(
         this.priceCache.prices,
         tokenIds,
-        targetCurrency,
+        targetCurrency
       );
       if (cached) {
-        Logger.info("Price feed: Using cached prices", { cacheKey });
         return cached;
       }
     }
 
-    // Fetch fresh prices
-    try {
-      const prices = await this.fetchFreshPrices(tokenIds, targetCurrency, now);
-      return prices;
-    } catch (error) {
-      Logger.error("Price feed: Failed to fetch prices", { error });
-      return this.handleFetchError(tokenIds, targetCurrency);
+    // Try Chainlink first (for USD prices)
+    const prices: Record<string, number> = {};
+    const missingTokens: string[] = [];
+
+    // Attempt to get prices from Chainlink
+    if (targetCurrency.toLowerCase() === "usd") {
+      const chainlinkPrices = await this.fetchChainlinkPrices(tokenIds);
+
+      for (const tokenId of tokenIds) {
+        if (chainlinkPrices[tokenId] !== undefined) {
+          prices[tokenId] = chainlinkPrices[tokenId];
+          this.updateCache(tokenId, chainlinkPrices[tokenId], targetCurrency, now);
+        } else {
+          missingTokens.push(tokenId);
+        }
+      }
+    } else {
+      // For non-USD currencies, we need CoinGecko
+      missingTokens.push(...tokenIds);
     }
+
+    // Fallback to CoinGecko for missing tokens or non-USD currencies
+    if (missingTokens.length > 0) {
+      try {
+        const coingeckoPrices = await this.fetchCoingeckoPrices(
+          missingTokens,
+          targetCurrency
+        );
+
+        for (const tokenId of missingTokens) {
+          if (coingeckoPrices[tokenId] !== undefined) {
+            prices[tokenId] = coingeckoPrices[tokenId];
+            this.updateCache(tokenId, coingeckoPrices[tokenId], targetCurrency, now);
+          }
+        }
+      } catch (error) {
+        Logger.warn("Price feed: CoinGecko fallback failed", { error });
+
+        // Use stale cache if available
+        const stalePrices = getStalePrices(
+          this.priceCache.prices,
+          missingTokens,
+          targetCurrency
+        );
+        Object.assign(prices, stalePrices);
+      }
+    }
+
+    this.priceCache.lastUpdate = now;
+
+    Logger.info("Price feed: Fetched prices", {
+      source: missingTokens.length === 0 ? "chainlink" : "mixed",
+      priceCount: Object.keys(prices).length,
+      targetCurrency,
+    });
+
+    return prices;
   }
 
-  private async fetchFreshPrices(
+  /**
+   * Fetch prices from Chainlink
+   */
+  private async fetchChainlinkPrices(
+    tokenIds: string[]
+  ): Promise<Record<string, number>> {
+    const prices: Record<string, number> = {};
+
+    try {
+      // Get all prices from Chainlink
+      const chainlinkResults = await chainlinkPriceFeedService.getPricesByCoingeckoIds(
+        this.chainId,
+        tokenIds
+      );
+
+      Object.assign(prices, chainlinkResults);
+
+      if (Object.keys(prices).length > 0) {
+        Logger.info("Price feed: Chainlink prices fetched", {
+          chainId: this.chainId,
+          tokens: Object.keys(prices),
+        });
+      }
+    } catch (error) {
+      Logger.warn("Price feed: Chainlink fetch failed", { error });
+    }
+
+    return prices;
+  }
+
+  /**
+   * Fetch prices from CoinGecko API (fallback)
+   */
+  private async fetchCoingeckoPrices(
     tokenIds: string[],
-    targetCurrency: string,
-    now: number,
+    targetCurrency: string
   ): Promise<Record<string, number>> {
     const url = `${COINGECKO_API_BASE}/simple/price?ids=${tokenIds.join(",")}&vs_currencies=${targetCurrency}`;
 
-    Logger.info("Price feed: Fetching prices", { tokenIds, targetCurrency });
+    Logger.info("Price feed: Fetching from CoinGecko", { tokenIds, targetCurrency });
 
     const response = await fetch(url);
     if (!response.ok) {
@@ -121,42 +216,27 @@ export class PriceFeedService {
       const tokenData = data[tokenId];
       if (tokenData && tokenData[targetCurrency] !== undefined) {
         prices[tokenId] = tokenData[targetCurrency];
-        this.priceCache.prices[`${tokenId}_${targetCurrency}`] = {
-          tokenId,
-          price: tokenData[targetCurrency],
-          currency: targetCurrency,
-          timestamp: now,
-        };
-      } else {
-        Logger.warn("Price feed: Missing price data", {
-          tokenId,
-          targetCurrency,
-        });
       }
     }
-
-    this.priceCache.lastUpdate = now;
-    Logger.info("Price feed: Fetched fresh prices", { prices });
 
     return prices;
   }
 
-  private handleFetchError(
-    tokenIds: string[],
-    targetCurrency: string,
-  ): Record<string, number> {
-    const stalePrices = getStalePrices(
-      this.priceCache.prices,
-      tokenIds,
-      targetCurrency,
-    );
-
-    if (Object.keys(stalePrices).length > 0) {
-      Logger.warn("Price feed: Using stale cached prices", { stalePrices });
-      return stalePrices;
-    }
-
-    throw new Error("Failed to fetch token prices and no cache available");
+  /**
+   * Update the price cache
+   */
+  private updateCache(
+    tokenId: string,
+    price: number,
+    currency: string,
+    timestamp: number
+  ): void {
+    this.priceCache.prices[`${tokenId}_${currency}`] = {
+      tokenId,
+      price,
+      currency,
+      timestamp,
+    };
   }
 
   /**
@@ -165,10 +245,7 @@ export class PriceFeedService {
    * @param targetCurrency Target currency code
    * @returns Token price in target currency
    */
-  async getTokenPrice(
-    tokenId: string,
-    targetCurrency = "usd",
-  ): Promise<number> {
+  async getTokenPrice(tokenId: string, targetCurrency = "usd"): Promise<number> {
     const prices = await this.getTokenPrices([tokenId], targetCurrency);
     const price = prices[tokenId];
 
@@ -180,6 +257,16 @@ export class PriceFeedService {
   }
 
   /**
+   * Get USD price using Chainlink directly (faster, no API limits)
+   * @param tokenSymbol Token symbol (e.g., "ETH", "USDC")
+   * @returns USD price or null
+   */
+  async getChainlinkUsdPrice(tokenSymbol: string): Promise<number | null> {
+    const data = await chainlinkPriceFeedService.getPrice(this.chainId, tokenSymbol);
+    return data?.price ?? null;
+  }
+
+  /**
    * Clear the price cache
    */
   clearCache(): void {
@@ -187,12 +274,12 @@ export class PriceFeedService {
       prices: {},
       lastUpdate: 0,
     };
+    chainlinkPriceFeedService.clearCache();
     Logger.info("Price feed: Cache cleared");
   }
 
   /**
    * Get the last cache update timestamp
-   * @returns Timestamp in milliseconds
    */
   getLastUpdate(): number {
     return this.priceCache.lastUpdate;

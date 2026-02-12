@@ -6,6 +6,8 @@ import { TransactionButton } from '@/components/web3/common/TransactionButton';
 interface DonationButtonProps {
   charityName: string;
   charityAddress: string;
+  /** Optional charity ID for payment metadata (defaults to charityAddress) */
+  charityId?: string;
   buttonText?: string;
   onSuccess?: () => void;
 }
@@ -13,7 +15,8 @@ interface DonationButtonProps {
 export const DonationButton: React.FC<DonationButtonProps> = ({
   charityName,
   charityAddress,
-  buttonText = "Donate",
+  charityId,
+  buttonText = "Give Once",
   onSuccess
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -39,6 +42,8 @@ export const DonationButton: React.FC<DonationButtonProps> = ({
         <DonationModal
           charityName={charityName}
           charityAddress={charityAddress}
+          charityId={charityId || charityAddress}
+          frequency="once"
           onClose={handleCloseModal}
           onSuccess={onSuccess}
         />

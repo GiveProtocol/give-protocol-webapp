@@ -1,11 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { Calendar } from 'lucide-react';
-import { ScheduledDonationModal } from './ScheduledDonationModal';
+import { DonationModal } from './DonationModal';
 import { TransactionButton } from '@/components/web3/common/TransactionButton';
 
 interface ScheduledDonationButtonProps {
   charityName: string;
   charityAddress: string;
+  /** Optional charity ID for payment metadata (defaults to charityAddress) */
+  charityId?: string;
   buttonText?: string;
   onSuccess?: () => void;
 }
@@ -13,7 +15,8 @@ interface ScheduledDonationButtonProps {
 export const ScheduledDonationButton: React.FC<ScheduledDonationButtonProps> = ({
   charityName,
   charityAddress,
-  buttonText = "Donate Monthly",
+  charityId,
+  buttonText = "Give Monthly",
   onSuccess
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -36,9 +39,11 @@ export const ScheduledDonationButton: React.FC<ScheduledDonationButtonProps> = (
       />
 
       {showModal && (
-        <ScheduledDonationModal
+        <DonationModal
           charityName={charityName}
           charityAddress={charityAddress}
+          charityId={charityId || charityAddress}
+          frequency="monthly"
           onClose={handleCloseModal}
           onSuccess={onSuccess}
         />
