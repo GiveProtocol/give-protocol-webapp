@@ -4,13 +4,13 @@
  */
 
 /** Payment method selection */
-export type PaymentMethod = 'crypto' | 'card';
+export type PaymentMethod = "crypto" | "card";
 
 /** Donation frequency */
-export type DonationFrequency = 'once' | 'monthly';
+export type DonationFrequency = "once" | "monthly";
 
 /** Modal step in the donation flow */
-export type ModalStep = 'input' | 'processing' | 'success' | 'error';
+export type ModalStep = "input" | "processing" | "success" | "error";
 
 /** Result from a successful donation */
 export interface DonationResult {
@@ -100,14 +100,14 @@ export interface DonationModalState {
 
 /** Actions for the donation modal reducer */
 export type DonationModalAction =
-  | { type: 'SET_PAYMENT_METHOD'; payload: PaymentMethod }
-  | { type: 'SET_FREQUENCY'; payload: DonationFrequency }
-  | { type: 'SET_AMOUNT'; payload: number }
-  | { type: 'SET_COVER_FEES'; payload: boolean }
-  | { type: 'START_PROCESSING' }
-  | { type: 'SET_SUCCESS'; payload: DonationResult }
-  | { type: 'SET_ERROR'; payload: string }
-  | { type: 'RESET' };
+  | { type: "SET_PAYMENT_METHOD"; payload: PaymentMethod }
+  | { type: "SET_FREQUENCY"; payload: DonationFrequency }
+  | { type: "SET_AMOUNT"; payload: number }
+  | { type: "SET_COVER_FEES"; payload: boolean }
+  | { type: "START_PROCESSING" }
+  | { type: "SET_SUCCESS"; payload: DonationResult }
+  | { type: "SET_ERROR"; payload: string }
+  | { type: "RESET" };
 
 /** Fee calculation constants */
 export const FEE_PERCENTAGE = 0.03; // 3%
@@ -117,7 +117,10 @@ export const FEE_PERCENTAGE = 0.03; // 3%
  * @param amount - Base amount in dollars
  * @returns Object with fee amount and total
  */
-export function calculateFeeOffset(amount: number): { fee: number; total: number } {
+export function calculateFeeOffset(amount: number): {
+  fee: number;
+  total: number;
+} {
   const fee = Math.round(amount * FEE_PERCENTAGE * 100) / 100;
   return { fee, total: amount + fee };
 }

@@ -1,8 +1,11 @@
-import React, { useState, useCallback, useId } from 'react';
-import type { LucideIcon } from 'lucide-react';
-import { cn } from '@/utils/cn';
+import React, { useState, useCallback, useId } from "react";
+import type { LucideIcon } from "lucide-react";
+import { cn } from "@/utils/cn";
 
-interface PremiumInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'className'> {
+interface PremiumInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "className"
+> {
   /** Label text (used as floating label) */
   label: string;
   /** Icon component from lucide-react */
@@ -45,7 +48,7 @@ export function PremiumInput({
   const [isFocused, setIsFocused] = useState(false);
 
   // Determine if label should float (focused or has value)
-  const hasValue = value !== undefined && value !== '';
+  const hasValue = value !== undefined && value !== "";
   const shouldFloat = isFocused || hasValue;
 
   const handleFocus = useCallback(
@@ -53,7 +56,7 @@ export function PremiumInput({
       setIsFocused(true);
       onFocus?.(e);
     },
-    [onFocus]
+    [onFocus],
   );
 
   const handleBlur = useCallback(
@@ -61,7 +64,7 @@ export function PremiumInput({
       setIsFocused(false);
       onBlur?.(e);
     },
-    [onBlur]
+    [onBlur],
   );
 
   return (
@@ -69,34 +72,34 @@ export function PremiumInput({
       {/* Input container */}
       <div
         className={cn(
-          'relative h-14 rounded-xl',
-          'transition-all duration-200 ease-in-out',
+          "relative h-14 rounded-xl",
+          "transition-all duration-200 ease-in-out",
           // Background
           isFocused
-            ? 'bg-white dark:bg-slate-900'
-            : 'bg-gray-50 dark:bg-slate-800/70',
+            ? "bg-white dark:bg-slate-900"
+            : "bg-gray-50 dark:bg-slate-800/70",
           // Border and ring
-          'border-2',
+          "border-2",
           error
-            ? 'border-red-300 dark:border-red-500'
+            ? "border-red-300 dark:border-red-500"
             : isFocused
-              ? 'border-transparent ring-2 ring-emerald-500 dark:ring-emerald-400'
-              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500',
+              ? "border-transparent ring-2 ring-emerald-500 dark:ring-emerald-400"
+              : "border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500",
           // Disabled state
-          disabled && 'opacity-50 cursor-not-allowed'
+          disabled && "opacity-50 cursor-not-allowed",
         )}
       >
         {/* Icon */}
         {Icon && (
           <div
             className={cn(
-              'absolute left-4 top-1/2 -translate-y-1/2',
-              'transition-colors duration-200',
+              "absolute left-4 top-1/2 -translate-y-1/2",
+              "transition-colors duration-200",
               isFocused
-                ? 'text-emerald-600 dark:text-emerald-400'
+                ? "text-emerald-600 dark:text-emerald-400"
                 : error
-                  ? 'text-red-400 dark:text-red-500'
-                  : 'text-gray-400 dark:text-gray-500'
+                  ? "text-red-400 dark:text-red-500"
+                  : "text-gray-400 dark:text-gray-500",
             )}
           >
             <Icon className="w-5 h-5" aria-hidden="true" />
@@ -107,19 +110,17 @@ export function PremiumInput({
         <label
           htmlFor={inputId}
           className={cn(
-            'absolute left-0 transition-all duration-200 ease-out pointer-events-none',
-            'font-medium',
-            Icon ? 'ml-12' : 'ml-4',
+            "absolute left-0 transition-all duration-200 ease-out pointer-events-none",
+            "font-medium",
+            Icon ? "ml-12" : "ml-4",
             // Floating position
-            shouldFloat
-              ? 'top-2 text-xs'
-              : 'top-1/2 -translate-y-1/2 text-sm',
+            shouldFloat ? "top-2 text-xs" : "top-1/2 -translate-y-1/2 text-sm",
             // Color
             error
-              ? 'text-red-500 dark:text-red-400'
+              ? "text-red-500 dark:text-red-400"
               : isFocused
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-gray-400'
+                ? "text-emerald-600 dark:text-emerald-400"
+                : "text-gray-500 dark:text-gray-400",
           )}
         >
           {label}
@@ -132,19 +133,21 @@ export function PremiumInput({
           onFocus={handleFocus}
           onBlur={handleBlur}
           disabled={disabled}
-          aria-invalid={error ? 'true' : 'false'}
-          aria-describedby={cn(error && errorId, helperText && helperId) || undefined}
+          aria-invalid={error ? "true" : "false"}
+          aria-describedby={
+            cn(error && errorId, helperText && helperId) || undefined
+          }
           className={cn(
-            'absolute inset-0 w-full h-full',
-            'bg-transparent border-none outline-none',
-            'text-gray-900 dark:text-white font-medium',
-            'placeholder:text-transparent',
-            'rounded-xl',
+            "absolute inset-0 w-full h-full",
+            "bg-transparent border-none outline-none",
+            "text-gray-900 dark:text-white font-medium",
+            "placeholder:text-transparent",
+            "rounded-xl",
             // Padding based on icon and floating label
-            Icon ? 'pl-12 pr-4' : 'pl-4 pr-4',
-            'pt-5 pb-2', // Account for floating label space
+            Icon ? "pl-12 pr-4" : "pl-4 pr-4",
+            "pt-5 pb-2", // Account for floating label space
             // Disabled
-            disabled && 'cursor-not-allowed'
+            disabled && "cursor-not-allowed",
           )}
           {...props}
         />

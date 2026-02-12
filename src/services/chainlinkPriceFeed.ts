@@ -79,7 +79,7 @@ export class ChainlinkPriceFeedService {
    */
   private async checkSequencerUptime(
     chainId: ChainId,
-    provider: Provider
+    provider: Provider,
   ): Promise<boolean> {
     const sequencerFeedAddress = SEQUENCER_UPTIME_FEEDS[chainId];
     if (!sequencerFeedAddress) {
@@ -91,7 +91,7 @@ export class ChainlinkPriceFeedService {
       const sequencerFeed = new ethers.Contract(
         sequencerFeedAddress,
         AGGREGATOR_V3_ABI,
-        provider
+        provider,
       );
 
       const roundData = await sequencerFeed.latestRoundData();
@@ -135,12 +135,12 @@ export class ChainlinkPriceFeedService {
    */
   private async readPriceFeed(
     feedConfig: PriceFeedConfig,
-    provider: Provider
+    provider: Provider,
   ): Promise<ChainlinkPriceData> {
     const feed = new ethers.Contract(
       feedConfig.address,
       AGGREGATOR_V3_ABI,
-      provider
+      provider,
     );
 
     const [roundData, decimals] = await Promise.all([
@@ -190,7 +190,7 @@ export class ChainlinkPriceFeedService {
   async getPrice(
     chainId: ChainId | number,
     tokenSymbol: string,
-    provider?: Provider
+    provider?: Provider,
   ): Promise<ChainlinkPriceData | null> {
     const cacheKey = `${chainId}_${tokenSymbol}`;
 
@@ -208,7 +208,10 @@ export class ChainlinkPriceFeedService {
     }
 
     const feedConfig = chainFeeds[tokenSymbol.toUpperCase()];
-    if (!feedConfig || feedConfig.address === "0x0000000000000000000000000000000000000000") {
+    if (
+      !feedConfig ||
+      feedConfig.address === "0x0000000000000000000000000000000000000000"
+    ) {
       Logger.warn("Chainlink: No feed for token", { chainId, tokenSymbol });
       return null;
     }
@@ -219,7 +222,7 @@ export class ChainlinkPriceFeedService {
       // Check sequencer uptime for L2 chains
       const sequencerOk = await this.checkSequencerUptime(
         chainId as ChainId,
-        activeProvider
+        activeProvider,
       );
 
       if (!sequencerOk) {
@@ -272,7 +275,7 @@ export class ChainlinkPriceFeedService {
   async getPrices(
     chainId: ChainId | number,
     tokenSymbols: string[],
-    provider?: Provider
+    provider?: Provider,
   ): Promise<Map<string, ChainlinkPriceData>> {
     const results = new Map<string, ChainlinkPriceData>();
 
@@ -299,7 +302,7 @@ export class ChainlinkPriceFeedService {
   async getPriceByCoingeckoId(
     chainId: ChainId | number,
     coingeckoId: string,
-    provider?: Provider
+    provider?: Provider,
   ): Promise<number | null> {
     const symbol = COINGECKO_TO_SYMBOL[coingeckoId];
     if (!symbol) {
@@ -321,7 +324,7 @@ export class ChainlinkPriceFeedService {
   async getPricesByCoingeckoIds(
     chainId: ChainId | number,
     coingeckoIds: string[],
-    provider?: Provider
+    provider?: Provider,
   ): Promise<Record<string, number>> {
     const results: Record<string, number> = {};
 

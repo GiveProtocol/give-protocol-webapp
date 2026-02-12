@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react';
-import { cn } from '@/utils/cn';
-import type { DonationFrequency } from './types/donation';
+import React, { useCallback } from "react";
+import { cn } from "@/utils/cn";
+import type { DonationFrequency } from "./types/donation";
 
 interface DonationFrequencyToggleProps {
   /** Currently selected frequency */
@@ -28,13 +28,13 @@ export function DonationFrequencyToggle({
 }: DonationFrequencyToggleProps): React.ReactElement {
   const handleOnceClick = useCallback(() => {
     if (!disabled) {
-      onChange('once');
+      onChange("once");
     }
   }, [disabled, onChange]);
 
   const handleMonthlyClick = useCallback(() => {
     if (!disabled) {
-      onChange('monthly');
+      onChange("monthly");
     }
   }, [disabled, onChange]);
 
@@ -42,18 +42,18 @@ export function DonationFrequencyToggle({
     <div className="w-full">
       <div
         className={cn(
-          'relative flex rounded-lg p-1',
-          'bg-gray-100 dark:bg-slate-800',
-          disabled && 'opacity-50 cursor-not-allowed'
+          "relative flex rounded-lg p-1",
+          "bg-gray-100 dark:bg-slate-800",
+          disabled && "opacity-50 cursor-not-allowed",
         )}
       >
         {/* Sliding background indicator */}
         <div
           className={cn(
-            'absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-md',
-            'bg-white dark:bg-slate-700',
-            'shadow-sm transition-transform duration-200 ease-out',
-            value === 'monthly' && 'translate-x-[calc(100%+4px)]'
+            "absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-md",
+            "bg-white dark:bg-slate-700",
+            "shadow-sm transition-transform duration-200 ease-out",
+            value === "monthly" && "translate-x-[calc(100%+4px)]",
           )}
         />
 
@@ -63,15 +63,15 @@ export function DonationFrequencyToggle({
           onClick={handleOnceClick}
           disabled={disabled}
           className={cn(
-            'relative z-10 flex-1 flex items-center justify-center',
-            'px-4 py-2 rounded-md',
-            'text-sm font-medium transition-colors duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
-            value === 'once'
-              ? 'text-gray-900 dark:text-white'
-              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            "relative z-10 flex-1 flex items-center justify-center",
+            "px-4 py-2 rounded-md",
+            "text-sm font-medium transition-colors duration-200",
+            "focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2",
+            value === "once"
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
           )}
-          aria-pressed={value === 'once'}
+          aria-pressed={value === "once"}
         >
           Give Once
         </button>
@@ -82,15 +82,15 @@ export function DonationFrequencyToggle({
           onClick={handleMonthlyClick}
           disabled={disabled}
           className={cn(
-            'relative z-10 flex-1 flex items-center justify-center',
-            'px-4 py-2 rounded-md',
-            'text-sm font-medium transition-colors duration-200',
-            'focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2',
-            value === 'monthly'
-              ? 'text-gray-900 dark:text-white'
-              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300'
+            "relative z-10 flex-1 flex items-center justify-center",
+            "px-4 py-2 rounded-md",
+            "text-sm font-medium transition-colors duration-200",
+            "focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2",
+            value === "monthly"
+              ? "text-gray-900 dark:text-white"
+              : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300",
           )}
-          aria-pressed={value === 'monthly'}
+          aria-pressed={value === "monthly"}
         >
           Monthly
         </button>

@@ -66,7 +66,10 @@ export const SEQUENCER_UPTIME_FEEDS: Partial<Record<ChainId, string>> = {
  * Chainlink price feed addresses by chain
  * Maps token symbols to their USD price feed addresses
  */
-export const CHAINLINK_FEEDS: Record<ChainId, Record<string, PriceFeedConfig>> = {
+export const CHAINLINK_FEEDS: Record<
+  ChainId,
+  Record<string, PriceFeedConfig>
+> = {
   // Base Mainnet
   [CHAIN_IDS.BASE]: {
     ETH: {
@@ -240,7 +243,7 @@ export const COINGECKO_TO_SYMBOL: Record<string, string> = {
  */
 export function getChainlinkFeed(
   chainId: ChainId | number,
-  tokenSymbol: string
+  tokenSymbol: string,
 ): PriceFeedConfig | undefined {
   const chainFeeds = CHAINLINK_FEEDS[chainId as ChainId];
   if (!chainFeeds) return undefined;
@@ -261,6 +264,8 @@ export function hasSequencerFeed(chainId: ChainId | number): boolean {
  * @param chainId - Chain ID
  * @returns Feed address or undefined
  */
-export function getSequencerFeed(chainId: ChainId | number): string | undefined {
+export function getSequencerFeed(
+  chainId: ChainId | number,
+): string | undefined {
   return SEQUENCER_UPTIME_FEEDS[chainId as ChainId];
 }

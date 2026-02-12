@@ -1,7 +1,7 @@
-import React from 'react';
-import { Lock, Shield, ExternalLink } from 'lucide-react';
-import { cn } from '@/utils/cn';
-import type { PaymentMethod } from './types/donation';
+import React from "react";
+import { Lock, Shield, ExternalLink } from "lucide-react";
+import { cn } from "@/utils/cn";
+import type { PaymentMethod } from "./types/donation";
 
 interface TrustSignalsProps {
   /** Current payment method */
@@ -28,20 +28,25 @@ export function TrustSignals({
   contractAddress,
   className,
 }: TrustSignalsProps): React.ReactElement {
-  if (paymentMethod === 'card') {
+  if (paymentMethod === "card") {
     return (
       <div
         className={cn(
-          'flex items-center justify-center gap-2 py-3 px-4',
-          'bg-gray-50 dark:bg-slate-800/50 rounded-lg',
-          'border border-gray-200 dark:border-slate-700',
-          className
+          "flex items-center justify-center gap-2 py-3 px-4",
+          "bg-gray-50 dark:bg-slate-800/50 rounded-lg",
+          "border border-gray-200 dark:border-slate-700",
+          className,
         )}
       >
-        <Lock className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+        <Lock
+          className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+          aria-hidden="true"
+        />
         <span className="text-xs text-gray-600 dark:text-gray-400">
-          Secure processing by{' '}
-          <span className="font-semibold text-gray-700 dark:text-gray-300">Helcim</span>
+          Secure processing by{" "}
+          <span className="font-semibold text-gray-700 dark:text-gray-300">
+            Helcim
+          </span>
         </span>
         <span className="text-xs text-gray-400 dark:text-gray-500">|</span>
         <span className="text-xs text-gray-500 dark:text-gray-400">
@@ -55,15 +60,20 @@ export function TrustSignals({
   return (
     <div
       className={cn(
-        'flex items-center justify-center gap-2 py-3 px-4',
-        'bg-gray-50 dark:bg-slate-800/50 rounded-lg',
-        'border border-gray-200 dark:border-slate-700',
-        className
+        "flex items-center justify-center gap-2 py-3 px-4",
+        "bg-gray-50 dark:bg-slate-800/50 rounded-lg",
+        "border border-gray-200 dark:border-slate-700",
+        className,
       )}
     >
-      <Shield className="w-4 h-4 text-emerald-600 dark:text-emerald-400" aria-hidden="true" />
+      <Shield
+        className="w-4 h-4 text-emerald-600 dark:text-emerald-400"
+        aria-hidden="true"
+      />
       <span className="text-xs text-gray-600 dark:text-gray-400">
-        <span className="font-semibold text-gray-700 dark:text-gray-300">Verified Contract</span>
+        <span className="font-semibold text-gray-700 dark:text-gray-300">
+          Verified Contract
+        </span>
       </span>
       {contractAddress && (
         <>
@@ -73,9 +83,9 @@ export function TrustSignals({
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              'inline-flex items-center gap-1 text-xs',
-              'text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300',
-              'transition-colors duration-150'
+              "inline-flex items-center gap-1 text-xs",
+              "text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300",
+              "transition-colors duration-150",
             )}
           >
             <span className="font-mono">

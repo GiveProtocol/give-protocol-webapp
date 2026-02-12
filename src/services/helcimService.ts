@@ -4,8 +4,12 @@
  * @description Client-side service for interacting with Helcim through Supabase edge functions.
  */
 
-import { Logger } from '@/utils/logger';
-import type { FiatPaymentData, HelcimPaymentResult, DonationFrequency } from '@/components/web3/donation/types/donation';
+import { Logger } from "@/utils/logger";
+import type {
+  FiatPaymentData,
+  HelcimPaymentResult,
+  DonationFrequency,
+} from "@/components/web3/donation/types/donation";
 
 /** Base URL for Supabase edge functions */
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -15,8 +19,8 @@ const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 /** Common headers for Supabase edge function requests */
 const getHeaders = (): Record<string, string> => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
 });
 
 /** Response from the helcim-pay initialization endpoint */
@@ -53,15 +57,17 @@ interface SubscriptionResponse {
  * @returns Payment result with transaction details
  * @throws Error if payment fails
  */
-export async function processPayment(data: FiatPaymentData): Promise<HelcimPaymentResult> {
-  Logger.info('Processing fiat payment', {
+export async function processPayment(
+  data: FiatPaymentData,
+): Promise<HelcimPaymentResult> {
+  Logger.info("Processing fiat payment", {
     charityId: data.charityId,
     amount: data.amount,
     coverFees: data.coverFees,
   });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-payment`, {
-    method: 'POST',
+    method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({
       checkoutToken: data.checkoutToken,
@@ -77,20 +83,20 @@ export async function processPayment(data: FiatPaymentData): Promise<HelcimPayme
   const result: PaymentResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    Logger.error('Fiat payment failed', {
+    Logger.error("Fiat payment failed", {
       status: response.status,
       error: result.error,
     });
-    throw new Error(result.error || 'Payment processing failed');
+    throw new Error(result.error || "Payment processing failed");
   }
 
-  Logger.info('Fiat payment successful', {
+  Logger.info("Fiat payment successful", {
     transactionId: result.transactionId,
   });
 
   return {
-    transactionId: result.transactionId || '',
-    approvalCode: result.approvalCode || '',
+    transactionId: result.transactionId || "",
+    approvalCode: result.approvalCode || "",
     amountCents: Math.round(data.amount * 100),
     cardType: result.cardType,
     cardLastFour: result.cardLastFour,
@@ -108,44 +114,47 @@ export async function createSubscription(data: FiatPaymentData): Promise<{
   customerId: string;
   nextBillingDate: string;
 }> {
-  Logger.info('Creating fiat subscription', {
+  Logger.info("Creating fiat subscription", {
     charityId: data.charityId,
     amount: data.amount,
     coverFees: data.coverFees,
   });
 
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-subscription`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({
-      checkoutToken: data.checkoutToken,
-      amount: Math.round(data.amount * 100), // Convert to cents
-      charityId: data.charityId,
-      charityName: data.charityName,
-      donorName: data.name,
-      donorEmail: data.email,
-      coverFees: data.coverFees,
-    }),
-  });
+  const response = await fetch(
+    `${SUPABASE_URL}/functions/v1/helcim-subscription`,
+    {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({
+        checkoutToken: data.checkoutToken,
+        amount: Math.round(data.amount * 100), // Convert to cents
+        charityId: data.charityId,
+        charityName: data.charityName,
+        donorName: data.name,
+        donorEmail: data.email,
+        coverFees: data.coverFees,
+      }),
+    },
+  );
 
   const result: SubscriptionResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    Logger.error('Fiat subscription failed', {
+    Logger.error("Fiat subscription failed", {
       status: response.status,
       error: result.error,
     });
-    throw new Error(result.error || 'Subscription creation failed');
+    throw new Error(result.error || "Subscription creation failed");
   }
 
-  Logger.info('Fiat subscription created', {
+  Logger.info("Fiat subscription created", {
     subscriptionId: result.subscriptionId,
   });
 
   return {
-    subscriptionId: result.subscriptionId || '',
-    customerId: result.customerId || '',
-    nextBillingDate: result.nextBillingDate || '',
+    subscriptionId: result.subscriptionId || "",
+    customerId: result.customerId || "",
+    nextBillingDate: result.nextBillingDate || "",
   };
 }
 
@@ -158,37 +167,40 @@ export async function createSubscription(data: FiatPaymentData): Promise<{
  */
 export async function fetchHelcimCheckoutToken(
   amount: number,
-  frequency: DonationFrequency
+  frequency: DonationFrequency,
 ): Promise<{ checkoutToken: string; secretToken: string }> {
-  Logger.info('Fetching Helcim checkout token', { amount, frequency });
+  Logger.info("Fetching Helcim checkout token", { amount, frequency });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-pay`, {
-    method: 'POST',
+    method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({
       amount: amount,
-      currency: 'USD',
-      donationType: frequency === 'monthly' ? 'subscription' : 'one-time',
+      currency: "USD",
+      donationType: frequency === "monthly" ? "subscription" : "one-time",
     }),
   });
 
   const result: HelcimPayInitResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    const errorMessage = result.error || 'Failed to initialize payment form';
-    Logger.error('Failed to fetch checkout token', { status: response.status, error: errorMessage });
+    const errorMessage = result.error || "Failed to initialize payment form";
+    Logger.error("Failed to fetch checkout token", {
+      status: response.status,
+      error: errorMessage,
+    });
     throw new Error(errorMessage);
   }
 
   if (!result.checkoutToken) {
-    throw new Error('No checkout token received');
+    throw new Error("No checkout token received");
   }
 
-  Logger.info('Checkout token received');
+  Logger.info("Checkout token received");
 
   return {
     checkoutToken: result.checkoutToken,
-    secretToken: result.secretToken || '',
+    secretToken: result.secretToken || "",
   };
 }
 
@@ -215,7 +227,7 @@ declare global {
         currency: string;
         customerCode?: string;
         avs?: boolean;
-        'css-url'?: string;
+        "css-url"?: string;
       }) => void;
       setAmount: (_amount: number) => void;
       appendTo: (_elementId: string) => void;
@@ -251,19 +263,19 @@ export function loadHelcimScript(): Promise<void> {
   }
 
   helcimScriptPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://secure.helcim.app/helcim-pay/services/start.js';
+    const script = document.createElement("script");
+    script.src = "https://secure.helcim.app/helcim-pay/services/start.js";
     script.async = true;
 
     script.onload = () => {
-      Logger.info('HelcimPay.js loaded');
+      Logger.info("HelcimPay.js loaded");
       resolve();
     };
 
     script.onerror = () => {
-      Logger.error('Failed to load HelcimPay.js');
+      Logger.error("Failed to load HelcimPay.js");
       helcimScriptPromise = null; // Reset on error to allow retry
-      reject(new Error('Failed to load payment processor'));
+      reject(new Error("Failed to load payment processor"));
     };
 
     document.head.appendChild(script);
@@ -283,21 +295,21 @@ export function initializeHelcimFields(
   containerId: string,
   checkoutToken: string,
   amount: number,
-  testMode: boolean = true
+  testMode: boolean = true,
 ): void {
   if (!window.HelcimPay) {
-    throw new Error('HelcimPay.js not loaded');
+    throw new Error("HelcimPay.js not loaded");
   }
 
   if (!checkoutToken) {
-    throw new Error('Checkout token is required');
+    throw new Error("Checkout token is required");
   }
 
   window.HelcimPay.init({
     token: checkoutToken,
     test: testMode,
     amount: amount,
-    currency: 'USD',
+    currency: "USD",
     avs: true,
   });
 
@@ -320,12 +332,12 @@ export function updateHelcimAmount(amount: number): void {
  */
 export async function submitHelcimFields(): Promise<string> {
   if (!window.HelcimPay) {
-    throw new Error('HelcimPay.js not loaded');
+    throw new Error("HelcimPay.js not loaded");
   }
 
   const isValid = await window.HelcimPay.validate();
   if (!isValid) {
-    throw new Error('Please check your card details');
+    throw new Error("Please check your card details");
   }
 
   const result = await window.HelcimPay.submit();

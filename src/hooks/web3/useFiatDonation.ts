@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from "react";
 import {
   processPayment,
   createSubscription,
@@ -7,18 +7,20 @@ import {
   updateHelcimAmount,
   submitHelcimFields,
   fetchHelcimCheckoutToken,
-} from '@/services/helcimService';
-import { Logger } from '@/utils/logger';
+} from "@/services/helcimService";
+import { Logger } from "@/utils/logger";
 import type {
   FiatPaymentData,
   HelcimPaymentResult,
   DonationFrequency,
-} from '@/components/web3/donation/types/donation';
+} from "@/components/web3/donation/types/donation";
 
 /** Return type for the useFiatDonation hook */
 export interface UseFiatDonationReturn {
   /** Process a one-time or recurring payment */
-  processFiatPayment: (_data: Omit<FiatPaymentData, 'checkoutToken'>) => Promise<HelcimPaymentResult>;
+  processFiatPayment: (
+    _data: Omit<FiatPaymentData, "checkoutToken">,
+  ) => Promise<HelcimPaymentResult>;
   /** Whether a payment is being processed */
   loading: boolean;
   /** Current error message, if any */
@@ -26,7 +28,11 @@ export interface UseFiatDonationReturn {
   /** Clear the current error */
   clearError: () => void;
   /** Initialize Helcim hosted fields in a container */
-  initializeFields: (_containerId: string, _initialAmount: number, _frequency: DonationFrequency) => Promise<void>;
+  initializeFields: (
+    _containerId: string,
+    _initialAmount: number,
+    _frequency: DonationFrequency,
+  ) => Promise<void>;
   /** Update the amount displayed in hosted fields */
   updateAmount: (_amount: number) => void;
   /** Whether Helcim fields are ready */
@@ -91,13 +97,17 @@ export function useFiatDonation(): UseFiatDonationReturn {
       .then(() => {
         if (mounted) {
           setScriptLoaded(true);
-          Logger.info('HelcimPay.js ready');
+          Logger.info("HelcimPay.js ready");
         }
       })
       .catch((err) => {
         if (mounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load payment processor');
-          Logger.error('Failed to load HelcimPay.js', { error: err });
+          setError(
+            err instanceof Error
+              ? err.message
+              : "Failed to load payment processor",
+          );
+          Logger.error("Failed to load HelcimPay.js", { error: err });
         }
       });
 
@@ -111,20 +121,24 @@ export function useFiatDonation(): UseFiatDonationReturn {
   }, []);
 
   const initializeFields = useCallback(
-    async (containerId: string, initialAmount: number, frequency: DonationFrequency): Promise<void> => {
+    async (
+      containerId: string,
+      initialAmount: number,
+      frequency: DonationFrequency,
+    ): Promise<void> => {
       // Prevent double initialization
       if (initStateRef.current.containerId === containerId && fieldsReady) {
-        Logger.info('Helcim fields already initialized for this container');
+        Logger.info("Helcim fields already initialized for this container");
         return;
       }
 
       if (initializing) {
-        Logger.info('Helcim fields initialization already in progress');
+        Logger.info("Helcim fields initialization already in progress");
         return;
       }
 
       if (!scriptLoaded) {
-        setError('Payment processor not loaded');
+        setError("Payment processor not loaded");
         return;
       }
 
@@ -133,39 +147,58 @@ export function useFiatDonation(): UseFiatDonationReturn {
 
       try {
         // Step 1: Fetch checkout token from the server
-        Logger.info('Fetching checkout token', { amount: initialAmount, frequency });
-        const { checkoutToken } = await fetchHelcimCheckoutToken(initialAmount, frequency);
+        Logger.info("Fetching checkout token", {
+          amount: initialAmount,
+          frequency,
+        });
+        const { checkoutToken } = await fetchHelcimCheckoutToken(
+          initialAmount,
+          frequency,
+        );
 
         // Step 2: Initialize Helcim fields with the token
-        const testMode = import.meta.env.VITE_HELCIM_TEST_MODE === 'true';
-        initializeHelcimFields(containerId, checkoutToken, initialAmount, testMode);
+        const testMode = import.meta.env.VITE_HELCIM_TEST_MODE === "true";
+        initializeHelcimFields(
+          containerId,
+          checkoutToken,
+          initialAmount,
+          testMode,
+        );
 
         // Track initialization state
         initStateRef.current = { containerId, checkoutToken, frequency };
         setFieldsReady(true);
-        Logger.info('Helcim fields initialized', { containerId });
+        Logger.info("Helcim fields initialized", { containerId });
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to initialize payment fields';
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to initialize payment fields";
         setError(message);
         setFieldsReady(false);
-        Logger.error('Failed to initialize Helcim fields', { error: err });
+        Logger.error("Failed to initialize Helcim fields", { error: err });
       } finally {
         setInitializing(false);
       }
     },
-    [scriptLoaded, fieldsReady, initializing]
+    [scriptLoaded, fieldsReady, initializing],
   );
 
-  const updateAmount = useCallback((amount: number): void => {
-    if (fieldsReady) {
-      updateHelcimAmount(amount);
-    }
-  }, [fieldsReady]);
+  const updateAmount = useCallback(
+    (amount: number): void => {
+      if (fieldsReady) {
+        updateHelcimAmount(amount);
+      }
+    },
+    [fieldsReady],
+  );
 
   const processFiatPayment = useCallback(
-    async (data: Omit<FiatPaymentData, 'checkoutToken'>): Promise<HelcimPaymentResult> => {
+    async (
+      data: Omit<FiatPaymentData, "checkoutToken">,
+    ): Promise<HelcimPaymentResult> => {
       if (!fieldsReady) {
-        throw new Error('Payment fields not ready');
+        throw new Error("Payment fields not ready");
       }
 
       setLoading(true);
@@ -181,13 +214,13 @@ export function useFiatDonation(): UseFiatDonationReturn {
         };
 
         // Process payment or create subscription based on frequency
-        if (data.frequency === 'monthly') {
+        if (data.frequency === "monthly") {
           const result = await createSubscription(paymentData);
 
           // Return a compatible result format
           return {
             transactionId: result.subscriptionId,
-            approvalCode: '',
+            approvalCode: "",
             amountCents: Math.round(data.amount * 100),
             receiptUrl: undefined,
           };
@@ -195,15 +228,16 @@ export function useFiatDonation(): UseFiatDonationReturn {
           return await processPayment(paymentData);
         }
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Payment processing failed';
+        const message =
+          err instanceof Error ? err.message : "Payment processing failed";
         setError(message);
-        Logger.error('Fiat payment error', { error: err });
+        Logger.error("Fiat payment error", { error: err });
         throw err;
       } finally {
         setLoading(false);
       }
     },
-    [fieldsReady]
+    [fieldsReady],
   );
 
   return {
