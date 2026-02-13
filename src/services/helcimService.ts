@@ -227,8 +227,37 @@ declare global {
 }
 
 /**
+ * Poll for `window.HelcimPay` after the script's `onload` fires.
+ * The global may not be assigned synchronously when the script finishes downloading.
+ * @returns Promise that resolves when `window.HelcimPay` is available
+ */
+function waitForHelcimGlobal(): Promise<void> {
+  return new Promise((resolve, reject) => {
+    if (window.HelcimPay) {
+      resolve();
+      return;
+    }
+
+    const pollInterval = 100; // ms
+    const maxWait = 5000; // ms
+    let elapsed = 0;
+
+    const timer = setInterval(() => {
+      elapsed += pollInterval;
+      if (window.HelcimPay) {
+        clearInterval(timer);
+        resolve();
+      } else if (elapsed >= maxWait) {
+        clearInterval(timer);
+        reject(new Error('HelcimPay.js global not available after script load'));
+      }
+    }, pollInterval);
+  });
+}
+
+/**
  * Load HelcimPay.js script dynamically
- * @returns Promise that resolves when script is loaded
+ * @returns Promise that resolves when script is loaded and the global is available
  */
 /** Track script loading state to prevent double-loading */
 let helcimScriptPromise: Promise<void> | null = null;
@@ -239,15 +268,48 @@ export function loadHelcimScript(): Promise<void> {
     return helcimScriptPromise;
   }
 
-  // Check if already loaded
+  // Check if already loaded and available
   if (window.HelcimPay) {
     return Promise.resolve();
   }
 
   // Check if script tag already exists
-  const existingScript = document.querySelector('script[src*="helcim-pay"]');
+  const existingScript = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement | null;
   if (existingScript) {
-    return Promise.resolve();
+    // Script tag exists - wait for it to load
+    helcimScriptPromise = new Promise((resolve, reject) => {
+      // Check if already loaded
+      if (window.HelcimPay) {
+        resolve();
+        return;
+      }
+
+      // Wait for load event, then poll for global
+      const handleLoad = (): void => {
+        Logger.info('HelcimPay.js script loaded (existing script), waiting for global');
+        waitForHelcimGlobal()
+          .then(() => {
+            Logger.info('HelcimPay.js global ready (existing script)');
+            resolve();
+          })
+          .catch((err) => {
+            Logger.error('HelcimPay.js global not available after load', { error: err });
+            helcimScriptPromise = null;
+            reject(err);
+          });
+      };
+
+      const handleError = (): void => {
+        Logger.error('Failed to load HelcimPay.js (existing script)');
+        helcimScriptPromise = null;
+        reject(new Error('Failed to load payment processor'));
+      };
+
+      existingScript.addEventListener('load', handleLoad);
+      existingScript.addEventListener('error', handleError);
+    });
+
+    return helcimScriptPromise;
   }
 
   helcimScriptPromise = new Promise((resolve, reject) => {
@@ -256,8 +318,17 @@ export function loadHelcimScript(): Promise<void> {
     script.async = true;
 
     script.onload = () => {
-      Logger.info('HelcimPay.js loaded');
-      resolve();
+      Logger.info('HelcimPay.js script loaded, waiting for global');
+      waitForHelcimGlobal()
+        .then(() => {
+          Logger.info('HelcimPay.js global ready');
+          resolve();
+        })
+        .catch((err) => {
+          Logger.error('HelcimPay.js global not available after load', { error: err });
+          helcimScriptPromise = null;
+          reject(err);
+        });
     };
 
     script.onerror = () => {
@@ -270,6 +341,14 @@ export function loadHelcimScript(): Promise<void> {
   });
 
   return helcimScriptPromise;
+}
+
+/**
+ * Reset the module-level script promise so a fresh load can be attempted.
+ * Used by the retry mechanism in useFiatDonation.
+ */
+export function resetHelcimScriptState(): void {
+  helcimScriptPromise = null;
 }
 
 /**

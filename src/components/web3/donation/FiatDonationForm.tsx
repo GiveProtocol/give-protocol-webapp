@@ -72,6 +72,8 @@ export function FiatDonationForm({
     updateAmount,
     fieldsReady,
     initializing,
+    retryInitialization,
+    retryCount,
   } = useFiatDonation();
 
   // Calculate final amount
@@ -79,11 +81,13 @@ export function FiatDonationForm({
   const chargeAmount = coverFees ? finalAmount : amount;
 
   // Initialize Helcim fields when component mounts
+  // Use a minimum of $1 for initialization - actual amount is updated when user selects
   useEffect(() => {
-    if (!fieldsReady && !initializing && amount > 0) {
-      initializeFields(cardContainerId, chargeAmount, frequency);
+    if (!fieldsReady && !initializing) {
+      const initAmount = chargeAmount > 0 ? chargeAmount : 1;
+      initializeFields(cardContainerId, initAmount, frequency);
     }
-  }, [fieldsReady, initializing, cardContainerId, chargeAmount, initializeFields, amount, frequency]);
+  }, [fieldsReady, initializing, cardContainerId, chargeAmount, initializeFields, frequency]);
 
   // Update amount when it changes
   useEffect(() => {
@@ -135,6 +139,10 @@ export function FiatDonationForm({
     setEmail(e.target.value);
     if (emailError) setEmailError('');
   }, [emailError]);
+
+  const handleRetryPayment = useCallback(() => {
+    retryInitialization();
+  }, [retryInitialization]);
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
@@ -295,15 +303,29 @@ export function FiatDonationForm({
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span className="text-sm font-medium">
-                {initializing ? 'Connecting to payment processor...' : 'Loading secure payment form...'}
+                {retryCount > 0
+                  ? `Retrying payment setup (attempt ${retryCount + 1}/${3})...`
+                  : initializing
+                    ? 'Connecting to payment processor...'
+                    : 'Loading secure payment form...'}
               </span>
             </div>
           )}
           {!fieldsReady && paymentError && (
-            <div className="flex flex-col items-center gap-2 text-red-600 dark:text-red-400">
+            <div className="flex flex-col items-center gap-3 text-red-600 dark:text-red-400 py-2">
               <AlertCircle className="w-6 h-6" />
               <span className="text-sm font-medium text-center">Payment System Offline</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Please try again later or use crypto payment</span>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Please try again or use crypto payment</span>
+              <Button
+                type="button"
+                size="sm"
+                variant="secondary"
+                onClick={handleRetryPayment}
+                icon={<RefreshCw className="w-4 h-4" />}
+                className="mt-1"
+              >
+                Retry Payment Setup
+              </Button>
             </div>
           )}
         </div>

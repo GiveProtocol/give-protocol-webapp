@@ -3,6 +3,7 @@ import {
   processPayment,
   createSubscription,
   loadHelcimScript,
+  resetHelcimScriptState,
   initializeHelcimFields,
   updateHelcimAmount,
   submitHelcimFields,
@@ -14,6 +15,16 @@ import type {
   HelcimPaymentResult,
   DonationFrequency,
 } from '@/components/web3/donation/types/donation';
+
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000; // 1 second base delay
+
+/**
+ * Calculates retry delay with exponential backoff
+ */
+function calculateRetryDelay(retryCount: number): number {
+  return RETRY_DELAY * Math.pow(2, retryCount);
+}
 
 /** Return type for the useFiatDonation hook */
 export interface UseFiatDonationReturn {
@@ -33,6 +44,10 @@ export interface UseFiatDonationReturn {
   fieldsReady: boolean;
   /** Whether fields are currently initializing */
   initializing: boolean;
+  /** Retry initialization from scratch (for the retry button) */
+  retryInitialization: () => void;
+  /** Current retry attempt number (0 = first attempt) */
+  retryCount: number;
 }
 
 /**
@@ -75,34 +90,61 @@ export function useFiatDonation(): UseFiatDonationReturn {
   const [fieldsReady, setFieldsReady] = useState(false);
   const [initializing, setInitializing] = useState(false);
   const [scriptLoaded, setScriptLoaded] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Track current checkout token and container to prevent double initialization
   const initStateRef = useRef<{
     containerId: string | null;
     checkoutToken: string | null;
     frequency: DonationFrequency | null;
-  }>({ containerId: null, checkoutToken: null, frequency: null });
+    attemptedInit: boolean;
+  }>({ containerId: null, checkoutToken: null, frequency: null, attemptedInit: false });
 
-  // Load HelcimPay.js script on mount
+  const mountedRef = useRef(true);
+  const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Load HelcimPay.js script on mount with retry
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
-    loadHelcimScript()
-      .then(() => {
-        if (mounted) {
-          setScriptLoaded(true);
-          Logger.info('HelcimPay.js ready');
-        }
-      })
-      .catch((err) => {
-        if (mounted) {
-          setError(err instanceof Error ? err.message : 'Failed to load payment processor');
-          Logger.error('Failed to load HelcimPay.js', { error: err });
-        }
-      });
+    const attemptLoad = (attempt: number): void => {
+      loadHelcimScript()
+        .then(() => {
+          if (mountedRef.current) {
+            setScriptLoaded(true);
+            setError(null);
+            Logger.info('HelcimPay.js ready');
+          }
+        })
+        .catch((err) => {
+          if (!mountedRef.current) return;
+
+          const message = err instanceof Error ? err.message : 'Failed to load payment processor';
+
+          if (attempt < MAX_RETRIES) {
+            const delay = calculateRetryDelay(attempt);
+            Logger.info(
+              `Retrying HelcimPay.js load in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
+            );
+            setRetryCount(attempt + 1);
+            resetHelcimScriptState();
+            retryTimeoutRef.current = setTimeout(() => {
+              attemptLoad(attempt + 1);
+            }, delay);
+          } else {
+            setError(message);
+            Logger.error('Failed to load HelcimPay.js after all retries', { error: err });
+          }
+        });
+    };
+
+    attemptLoad(0);
 
     return () => {
-      mounted = false;
+      mountedRef.current = false;
+      if (retryTimeoutRef.current) {
+        clearTimeout(retryTimeoutRef.current);
+      }
     };
   }, []);
 
@@ -112,9 +154,14 @@ export function useFiatDonation(): UseFiatDonationReturn {
 
   const initializeFields = useCallback(
     async (containerId: string, initialAmount: number, frequency: DonationFrequency): Promise<void> => {
-      // Prevent double initialization
-      if (initStateRef.current.containerId === containerId && fieldsReady) {
-        Logger.info('Helcim fields already initialized for this container');
+      // Prevent double initialization - check if already attempted for this container
+      if (initStateRef.current.attemptedInit && initStateRef.current.containerId === containerId) {
+        Logger.info('Helcim fields initialization already attempted for this container');
+        return;
+      }
+
+      if (fieldsReady) {
+        Logger.info('Helcim fields already ready');
         return;
       }
 
@@ -127,6 +174,10 @@ export function useFiatDonation(): UseFiatDonationReturn {
         setError('Payment processor not loaded');
         return;
       }
+
+      // Mark as attempted immediately to prevent React Strict Mode double calls
+      initStateRef.current.attemptedInit = true;
+      initStateRef.current.containerId = containerId;
 
       setInitializing(true);
       setError(null);
@@ -141,7 +192,7 @@ export function useFiatDonation(): UseFiatDonationReturn {
         initializeHelcimFields(containerId, checkoutToken, initialAmount, testMode);
 
         // Track initialization state
-        initStateRef.current = { containerId, checkoutToken, frequency };
+        initStateRef.current = { containerId, checkoutToken, frequency, attemptedInit: true };
         setFieldsReady(true);
         Logger.info('Helcim fields initialized', { containerId });
       } catch (err) {
@@ -206,6 +257,52 @@ export function useFiatDonation(): UseFiatDonationReturn {
     [fieldsReady]
   );
 
+  const retryInitialization = useCallback(() => {
+    setError(null);
+    setScriptLoaded(false);
+    setFieldsReady(false);
+    setRetryCount(0);
+    resetHelcimScriptState();
+    initStateRef.current = { containerId: null, checkoutToken: null, frequency: null, attemptedInit: false };
+
+    if (retryTimeoutRef.current) {
+      clearTimeout(retryTimeoutRef.current);
+    }
+
+    const attemptLoad = (attempt: number): void => {
+      loadHelcimScript()
+        .then(() => {
+          if (mountedRef.current) {
+            setScriptLoaded(true);
+            setError(null);
+            Logger.info('HelcimPay.js ready (manual retry)');
+          }
+        })
+        .catch((err) => {
+          if (!mountedRef.current) return;
+
+          const message = err instanceof Error ? err.message : 'Failed to load payment processor';
+
+          if (attempt < MAX_RETRIES) {
+            const delay = calculateRetryDelay(attempt);
+            Logger.info(
+              `Retrying HelcimPay.js load in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
+            );
+            setRetryCount(attempt + 1);
+            resetHelcimScriptState();
+            retryTimeoutRef.current = setTimeout(() => {
+              attemptLoad(attempt + 1);
+            }, delay);
+          } else {
+            setError(message);
+            Logger.error('Failed to load HelcimPay.js after all retries (manual retry)', { error: err });
+          }
+        });
+    };
+
+    attemptLoad(0);
+  }, []);
+
   return {
     processFiatPayment,
     loading,
@@ -215,5 +312,7 @@ export function useFiatDonation(): UseFiatDonationReturn {
     updateAmount,
     fieldsReady,
     initializing,
+    retryInitialization,
+    retryCount,
   };
 }
