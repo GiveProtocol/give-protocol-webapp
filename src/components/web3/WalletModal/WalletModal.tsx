@@ -167,7 +167,6 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         aria-labelledby="wallet-modal-title"
       >
         {/* Header */}
-        {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
             Connect Wallet
@@ -215,14 +214,12 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         {/* Wallet Groups */}
         <div className="px-2 py-4 max-h-96 overflow-y-auto">
           {filteredWallets.length === 0 ? (
-            <div className="px-4 py-8 text-center">
-              <p className="text-gray-500">
-                No wallets available for {selectedChainType.toUpperCase()} chains.
-              </p>
-              <p className="text-sm text-gray-400 mt-1">
+            <p className="px-4 py-8 text-center text-gray-500">
+              No wallets available for {selectedChainType.toUpperCase()} chains.
+              <span className="block text-sm text-gray-400 mt-1">
                 Try selecting a different chain type.
-              </p>
-            </div>
+              </span>
+            </p>
           ) : (
             CATEGORY_ORDER.map((category) => (
               <WalletGroup
@@ -239,14 +236,12 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl">
-          <p className="text-xs text-gray-500 text-center">
-            By connecting, you agree to the{" "}
-            <a href="/terms" className="text-indigo-600 hover:underline">
-              Terms of Service
-            </a>
-          </p>
-        </div>
+        <p className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl text-xs text-gray-500 text-center">
+          By connecting, you agree to the{" "}
+          <a href="/terms" className="text-indigo-600 hover:underline">
+            Terms of Service
+          </a>
+        </p>
       </div>
     </div>
   );

@@ -66,6 +66,56 @@ const ChainBadge: React.FC<ChainBadgeProps> = ({ chainType }) => {
   );
 };
 
+/**
+ * Wallet status indicator badge
+ * @param isConnecting - Whether this wallet is connecting
+ * @param isComingSoon - Whether this chain is coming soon
+ * @param isInstalled - Whether wallet is installed
+ * @param installUrl - URL to install the wallet
+ * @param onInstallClick - Click handler for install button
+ */
+const WalletStatusBadge: React.FC<{
+  isConnecting: boolean;
+  isComingSoon: boolean;
+  isInstalled: boolean;
+  installUrl: string | undefined;
+  onInstallClick: (_e: React.MouseEvent) => void;
+}> = ({ isConnecting, isComingSoon, isInstalled, installUrl, onInstallClick }) => {
+  if (isConnecting) {
+    return <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />;
+  }
+  if (isComingSoon) {
+    return (
+      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-amber-600 bg-amber-50 rounded">
+        <Clock className="w-3 h-3" />
+        Coming Soon
+      </span>
+    );
+  }
+  if (!isInstalled && installUrl) {
+    return (
+      <button
+        onClick={onInstallClick}
+        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"
+      >
+        <Download className="w-3 h-3" />
+        Install
+        <ExternalLink className="w-3 h-3" />
+      </button>
+    );
+  }
+  if (!isInstalled) {
+    return <span className="text-xs text-gray-400">Not detected</span>;
+  }
+  return null;
+};
+
+/** Category badge configuration */
+const CATEGORY_BADGES: Record<string, { text: string; className: string }> = {
+  hardware: { text: "Hardware", className: "text-gray-500 bg-gray-100" },
+  institutional: { text: "Smart Account", className: "text-green-600 bg-green-50" },
+};
+
 interface WalletOptionProps {
   wallet: UnifiedWalletProvider;
   selectedChainType: ChainType;
@@ -93,19 +143,19 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
   const isInstalled = wallet.isInstalled();
   const installUrl = WALLET_INSTALL_URLS[wallet.name];
 
-  // Check if this wallet has "Coming Soon" support for the selected chain
   const isComingSoon = useMemo(() => {
     const comingSoonChains = COMING_SOON_CHAINS[wallet.name];
     return comingSoonChains?.includes(selectedChainType) ?? false;
   }, [wallet.name, selectedChainType]);
 
   const isDisabled = (isConnecting && !isThisConnecting) || isComingSoon;
+  const categoryBadge = CATEGORY_BADGES[wallet.category];
 
   const handleClick = useCallback(() => {
-    if (isInstalled && !isDisabled && !isThisConnecting && !isComingSoon) {
+    if (isInstalled && !isDisabled && !isThisConnecting) {
       onSelect(wallet);
     }
-  }, [wallet, onSelect, isDisabled, isThisConnecting, isInstalled, isComingSoon]);
+  }, [wallet, onSelect, isDisabled, isThisConnecting, isInstalled]);
 
   const handleInstallClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
@@ -118,15 +168,17 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
     e.currentTarget.src = "/icons/wallet.svg";
   }, []);
 
+  const dimmed = !isInstalled || isComingSoon;
+
   return (
     <button
       onClick={handleClick}
-      disabled={isDisabled || isComingSoon || (!isInstalled && !installUrl)}
+      disabled={isDisabled || !isInstalled}
       className={`
         flex items-center w-full px-4 py-3 text-left rounded-lg transition-colors
-        ${isDisabled || isComingSoon ? "opacity-50 cursor-not-allowed" : ""}
-        ${!isInstalled && !isComingSoon ? "opacity-75" : ""}
-        ${!isDisabled && !isComingSoon && isInstalled ? "hover:bg-gray-50 cursor-pointer" : ""}
+        ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
+        ${dimmed && !isDisabled ? "opacity-75" : ""}
+        ${!isDisabled && isInstalled ? "hover:bg-gray-50 cursor-pointer" : ""}
         ${isThisConnecting ? "bg-indigo-50" : ""}
       `}
       role="menuitem"
@@ -136,7 +188,7 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
         <img
           src={`/icons/${wallet.icon}.svg`}
           alt=""
-          className={`w-full h-full object-contain ${!isInstalled || isComingSoon ? "grayscale" : ""}`}
+          className={`w-full h-full object-contain ${dimmed ? "grayscale" : ""}`}
           aria-hidden="true"
           onError={handleIconError}
         />
@@ -148,28 +200,13 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
           <span className={`font-medium ${isInstalled ? "text-gray-900" : "text-gray-500"}`}>
             {wallet.name}
           </span>
-          {isThisConnecting && (
-            <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />
-          )}
-          {isComingSoon && (
-            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-amber-600 bg-amber-50 rounded">
-              <Clock className="w-3 h-3" />
-              Coming Soon
-            </span>
-          )}
-          {!isInstalled && !isComingSoon && installUrl && (
-            <button
-              onClick={handleInstallClick}
-              className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"
-            >
-              <Download className="w-3 h-3" />
-              Install
-              <ExternalLink className="w-3 h-3" />
-            </button>
-          )}
-          {!isInstalled && !isComingSoon && !installUrl && (
-            <span className="text-xs text-gray-400">Not detected</span>
-          )}
+          <WalletStatusBadge
+            isConnecting={isThisConnecting}
+            isComingSoon={isComingSoon}
+            isInstalled={isInstalled}
+            installUrl={installUrl}
+            onInstallClick={handleInstallClick}
+          />
         </div>
 
         {/* Chain Badges */}
@@ -181,14 +218,9 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
       </div>
 
       {/* Category Badge */}
-      {wallet.category === "hardware" && (
-        <span className="ml-2 px-2 py-0.5 text-xs font-medium text-gray-500 bg-gray-100 rounded">
-          Hardware
-        </span>
-      )}
-      {wallet.category === "institutional" && (
-        <span className="ml-2 px-2 py-0.5 text-xs font-medium text-green-600 bg-green-50 rounded">
-          Smart Account
+      {categoryBadge && (
+        <span className={`ml-2 px-2 py-0.5 text-xs font-medium rounded ${categoryBadge.className}`}>
+          {categoryBadge.text}
         </span>
       )}
     </button>

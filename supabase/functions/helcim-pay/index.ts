@@ -21,11 +21,6 @@ interface InitializeRequest {
   donationType: 'one-time' | 'subscription';
 }
 
-/** Sanitize a value for safe logging (strip newlines and control characters) */
-function sanitizeForLog(value: unknown): string {
-  return String(value).replace(/[\r\n\t]/g, ' ').slice(0, 500);
-}
-
 interface HelcimPayInitResponse {
   checkoutToken: string;
   secretToken: string;
@@ -73,9 +68,9 @@ async function initializeHelcimPaySession(
       'accept': 'application/json',
     },
     body: JSON.stringify({
-      paymentType: paymentType,
-      amount: amount,
-      currency: currency,
+      paymentType,
+      amount,
+      currency,
       // Enable Address Verification Service
       hasAvs: true,
       // Enable CVV verification
@@ -87,21 +82,20 @@ async function initializeHelcimPaySession(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Helcim initialization error:', response.status, sanitizeForLog(errorText));
 
     // Parse error for more specific message
     try {
       const errorJson = JSON.parse(errorText);
       throw new Error(errorJson.message || errorJson.error || 'Failed to initialize payment form');
     } catch {
-      throw new Error(`Payment system error: ${response.status}`);
+      throw new Error(`Payment system error (status ${response.status})`);
     }
   }
 
   const result = await response.json();
 
   if (!result.checkoutToken) {
-    console.error('Missing checkoutToken in response:', sanitizeForLog(JSON.stringify(result)));
+    console.error('Missing checkoutToken in Helcim API response');
     throw new Error('Invalid response from payment processor');
   }
 

@@ -167,7 +167,7 @@ export async function fetchHelcimCheckoutToken(
     method: 'POST',
     headers: getHeaders(),
     body: JSON.stringify({
-      amount: amount,
+      amount,
       currency: 'USD',
       donationType: frequency === 'monthly' ? 'subscription' : 'one-time',
     }),
@@ -376,7 +376,7 @@ export function initializeHelcimFields(
   window.HelcimPay.init({
     token: checkoutToken,
     test: testMode,
-    amount: amount,
+    amount,
     currency: 'USD',
     avs: true,
   });
