@@ -64,6 +64,9 @@
     "tailwind-merge": "^2.2.1",
     "viem": "^2.7.9"
   },
+  "overrides": {
+    "axios": "^1.13.5"
+  },
   "devDependencies": {
     "@babel/core": "^7.28.0",
     "@babel/preset-env": "^7.28.0",
