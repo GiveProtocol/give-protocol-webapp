@@ -87,45 +87,32 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
     }
   }, [account, onSelect]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (onSelect && (e.key === "Enter" || e.key === " ")) {
-        e.preventDefault();
-        onSelect(account);
-      }
-    },
-    [account, onSelect]
-  );
-
   const handleExplorerClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     // Link handles navigation
   }, []);
 
-  return (
-    <div
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      className={`
-        inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
-        ${styles.bgColor} ${styles.borderColor}
-        ${onSelect ? "cursor-pointer hover:opacity-80" : ""}
-        ${isActive ? "ring-2 ring-indigo-500 ring-offset-1" : ""}
-        ${className}
-      `}
-      role={onSelect ? "button" : undefined}
-      tabIndex={onSelect ? 0 : undefined}
-    >
+  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.style.display = "none";
+  }, []);
+
+  const sharedClassName = `
+    inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
+    ${styles.bgColor} ${styles.borderColor}
+    ${onSelect ? "cursor-pointer hover:opacity-80" : ""}
+    ${isActive ? "ring-2 ring-indigo-500 ring-offset-1" : ""}
+    ${className}
+  `;
+
+  const content = (
+    <>
       {/* Chain Icon */}
       {showChainIcon && (
         <img
           src={styles.icon}
           alt={account.chainType}
           className="w-5 h-5"
-          onError={(e) => {
-            // Hide on error
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
+          onError={handleImageError}
         />
       )}
 
@@ -152,6 +139,7 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
       <div className="flex items-center gap-1 ml-auto">
         {showCopyButton && (
           <button
+            type="button"
             onClick={handleCopy}
             className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
             aria-label="Copy address"
@@ -177,6 +165,20 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
           </a>
         )}
       </div>
+    </>
+  );
+
+  if (onSelect) {
+    return (
+      <button type="button" onClick={handleClick} className={sharedClassName}>
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={sharedClassName}>
+      {content}
     </div>
   );
 };

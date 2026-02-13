@@ -62,24 +62,9 @@ export const Modal: React.FC<ModalProps> = ({
   );
 
   // Handle backdrop click
-  const handleBackdropClick = useCallback(
-    (event: React.MouseEvent<HTMLDivElement>) => {
-      if (closeOnBackdrop && event.target === event.currentTarget) {
-        onClose();
-      }
-    },
-    [closeOnBackdrop, onClose]
-  );
-
-  // Handle backdrop keyboard events
-  const handleBackdropKeyDown = useCallback(
-    (event: React.KeyboardEvent<HTMLDivElement>) => {
-      if (closeOnEscape && event.key === "Escape") {
-        onClose();
-      }
-    },
-    [closeOnEscape, onClose]
-  );
+  const handleBackdropClick = useCallback(() => {
+    onClose();
+  }, [onClose]);
 
   // Handle focus trap and keyboard events
   useEffect(() => {
@@ -114,19 +99,25 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <Portal>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in"
-        onClick={handleBackdropClick}
-        onKeyDown={handleBackdropKeyDown}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={title ? "modal-title" : undefined}
-      >
+      {/* Backdrop + centering container */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in">
+        {/* Invisible backdrop button for dismiss-on-click-outside */}
+        {closeOnBackdrop && (
+          <button
+            type="button"
+            className="absolute inset-0 w-full h-full cursor-default"
+            onClick={handleBackdropClick}
+            aria-label="Close modal"
+            tabIndex={-1}
+          />
+        )}
         {/* Modal content */}
         <div
           ref={modalRef}
           tabIndex={-1}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={title ? "modal-title" : undefined}
           className={`
             relative w-full ${sizeClasses[size]} mx-4
             bg-white dark:bg-gray-800

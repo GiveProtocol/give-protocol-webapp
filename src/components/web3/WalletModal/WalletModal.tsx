@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { X, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import type { ChainType, UnifiedWalletProvider, WalletCategory } from "@/types/wallet";
 import { WalletGroup } from "./WalletGroup";
 import { Logger } from "@/utils/logger";
@@ -119,37 +119,24 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   );
 
   // Handle backdrop click
-  const handleBackdropClick = useCallback(
-    (e: React.MouseEvent) => {
-      if (e.target === e.currentTarget && !isConnecting) {
-        onClose();
-      }
-    },
-    [onClose, isConnecting]
-  );
-
-  // Handle backdrop keyboard events
-  const handleBackdropKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === "Escape" && !isConnecting) {
-        onClose();
-      }
-    },
-    [onClose, isConnecting]
-  );
+  const handleBackdropClick = useCallback(() => {
+    if (!isConnecting) {
+      onClose();
+    }
+  }, [onClose, isConnecting]);
 
   // Handle escape key
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !isConnecting) {
         onClose();
       }
     };
 
-    if (isOpen) {
-      document.addEventListener("keydown", handleEscape);
-      return () => document.removeEventListener("keydown", handleEscape);
-    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
   }, [isOpen, isConnecting, onClose]);
 
   if (!isOpen) {
@@ -157,27 +144,35 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
-      onClick={handleBackdropClick}
-      onKeyDown={handleBackdropKeyDown}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="wallet-modal-title"
-    >
-      <div className="relative w-full max-w-md mx-4 bg-white rounded-xl shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      {/* Invisible backdrop button for dismiss-on-click-outside */}
+      <button
+        type="button"
+        className="absolute inset-0 w-full h-full cursor-default"
+        onClick={handleBackdropClick}
+        aria-label="Close modal"
+        tabIndex={-1}
+      />
+      <div
+        className="relative w-full max-w-md mx-4 bg-white rounded-xl shadow-xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="wallet-modal-title"
+      >
+        {/* Header */}
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
           <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
             Connect Wallet
           </h3>
           <button
+            type="button"
             onClick={onClose}
             disabled={isConnecting}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50"
+            className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 text-xl leading-none"
             aria-label="Close modal"
           >
-            <X className="w-5 h-5" />
+            &times;
           </button>
         </div>
 
