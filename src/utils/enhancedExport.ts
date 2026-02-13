@@ -4,7 +4,7 @@ import {
   type VolunteerTransactionType,
 } from "@/types/volunteerTransaction";
 import { formatDate } from "./date";
-import { downloadCSV } from "./csvHelpers";
+import { convertToCSV, downloadCSV } from "./csvHelpers";
 
 /**
  * Enhanced export data structure that includes all transaction types
@@ -184,27 +184,25 @@ export function convertToCSVWithFields<T extends Record<string, unknown>>(
 ): string {
   if (data.length === 0) return "";
 
-  let headers = Object.keys(data[0]);
-
-  // Filter headers based on includeFields if provided
-  if (includeFields) {
-    headers = headers.filter((header) => includeFields[header]);
+  if (!includeFields) {
+    return convertToCSV(data);
   }
 
-  const headerRow = headers.join(",");
+  const allowedKeys = new Set(
+    Object.keys(includeFields).filter((key) => includeFields[key]),
+  );
 
-  const rows = data.map((row) => {
-    return headers
-      .map((header) => {
-        const value =
-          row[header] === null || row[header] === undefined ? "" : row[header];
-        const escaped = String(value).replaceAll('"', '""');
-        return `"${escaped}"`;
-      })
-      .join(",");
+  const filteredData = data.map((row) => {
+    const filtered: Record<string, unknown> = {};
+    for (const key of allowedKeys) {
+      if (key in row) {
+        filtered[key] = row[key];
+      }
+    }
+    return filtered;
   });
 
-  return [headerRow, ...rows].join("\n");
+  return convertToCSV(filteredData);
 }
 
 /**

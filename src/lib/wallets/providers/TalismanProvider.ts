@@ -7,8 +7,6 @@ import { Logger } from "@/utils/logger";
 import type {
   ChainType,
   UnifiedAccount,
-  UnifiedWalletProvider,
-  UnifiedTransactionRequest,
   WalletCategory,
 } from "@/types/wallet";
 import { EVMAdapter, isEIP1193Provider } from "../adapters/EVMAdapter";
@@ -17,6 +15,7 @@ import {
   enablePolkadotExtension,
 } from "../adapters/PolkadotAdapter";
 import { DEFAULT_EVM_CHAIN_ID } from "@/config/chains";
+import { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
 
 const APP_NAME = "Give Protocol";
 
@@ -24,15 +23,17 @@ const APP_NAME = "Give Protocol";
  * TalismanProvider - Multi-chain wallet for EVM and Polkadot
  * Talisman is the leading Polkadot ecosystem wallet with full EVM support
  */
-export class TalismanProvider implements UnifiedWalletProvider {
+export class TalismanProvider extends BaseMultiChainProvider {
   readonly name = "Talisman";
   readonly icon = "talisman";
   readonly category: WalletCategory = "multichain";
   readonly supportedChainTypes: ChainType[] = ["evm", "polkadot"];
 
-  private evmAdapter: EVMAdapter | null = null;
   private polkadotAdapter: PolkadotAdapter | null = null;
-  private connectedChainType: ChainType | null = null;
+
+  protected get secondaryChainType(): ChainType {
+    return "polkadot";
+  }
 
   /**
    * Get underlying provider objects
@@ -42,6 +43,14 @@ export class TalismanProvider implements UnifiedWalletProvider {
       evm: this.getEVMProvider(),
       polkadot: this.polkadotAdapter?.getExtension() ?? null,
     };
+  }
+
+  protected getSecondaryAdapter(): SecondaryChainAdapter | null {
+    return this.polkadotAdapter;
+  }
+
+  protected clearSecondaryAdapter(): void {
+    this.polkadotAdapter = null;
   }
 
   /**
@@ -154,100 +163,6 @@ export class TalismanProvider implements UnifiedWalletProvider {
     }
 
     return this.polkadotAdapter.connect();
-  }
-
-  /**
-   * Disconnect from Talisman
-   */
-  async disconnect(): Promise<void> {
-    try {
-      if (this.evmAdapter) {
-        await this.evmAdapter.disconnect();
-        this.evmAdapter = null;
-      }
-
-      if (this.polkadotAdapter) {
-        await this.polkadotAdapter.disconnect();
-        this.polkadotAdapter = null;
-      }
-
-      this.connectedChainType = null;
-      Logger.info("Talisman disconnected");
-    } catch (error) {
-      Logger.error("Talisman disconnect failed", { error });
-      throw error;
-    }
-  }
-
-  /**
-   * Get accounts from Talisman
-   * @param chainType - Optional chain type filter
-   * @returns Array of accounts
-   */
-  async getAccounts(chainType?: ChainType): Promise<UnifiedAccount[]> {
-    const accounts: UnifiedAccount[] = [];
-
-    if ((!chainType || chainType === "evm") && this.evmAdapter) {
-      const evmAccounts = await this.evmAdapter.getAccounts();
-      accounts.push(...evmAccounts);
-    }
-
-    if ((!chainType || chainType === "polkadot") && this.polkadotAdapter) {
-      const polkadotAccounts = await this.polkadotAdapter.getAccounts();
-      accounts.push(...polkadotAccounts);
-    }
-
-    return accounts;
-  }
-
-  /**
-   * Switch to a different chain
-   * @param chainId - Target chain ID
-   * @param chainType - Chain type
-   */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
-    if (chainType === "evm" && this.evmAdapter) {
-      await this.evmAdapter.switchChain(chainId as number);
-    } else if (chainType === "polkadot" && this.polkadotAdapter) {
-      await this.polkadotAdapter.switchChain(chainId as string);
-    } else {
-      throw new Error(`Cannot switch chain for ${chainType}`);
-    }
-  }
-
-  /**
-   * Sign a transaction
-   * @param tx - Transaction request
-   * @returns Transaction hash or signature
-   */
-  async signTransaction(tx: UnifiedTransactionRequest): Promise<string> {
-    if (tx.chainType === "evm" && this.evmAdapter) {
-      return this.evmAdapter.signTransaction(tx);
-    }
-
-    if (tx.chainType === "polkadot" && this.polkadotAdapter) {
-      return this.polkadotAdapter.signTransaction(tx);
-    }
-
-    throw new Error(`Cannot sign transaction for ${tx.chainType}`);
-  }
-
-  /**
-   * Sign a message
-   * @param message - Message to sign
-   * @param chainType - Chain type for signing
-   * @returns Signature
-   */
-  async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
-    if (chainType === "evm" && this.evmAdapter) {
-      return this.evmAdapter.signMessage(message);
-    }
-
-    if (chainType === "polkadot" && this.polkadotAdapter) {
-      return this.polkadotAdapter.signMessage(message);
-    }
-
-    throw new Error(`Cannot sign message for ${chainType}`);
   }
 
   /**

@@ -115,56 +115,77 @@ export const MOONBEAM_TOKENS: TokenConfig[] = [
   },
 ];
 
+/** Shared token metadata for tokens that appear across multiple chains */
+const ETH_METADATA = {
+  symbol: "ETH",
+  name: "Ethereum",
+  decimals: 18,
+  coingeckoId: "ethereum",
+  icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  isNative: true,
+} as const;
+
+const WETH_METADATA = {
+  symbol: "WETH",
+  name: "Wrapped Ether",
+  decimals: 18,
+  coingeckoId: "ethereum",
+  icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
+  isNative: false,
+} as const;
+
+const USDC_METADATA = {
+  symbol: "USDC",
+  name: "USD Coin",
+  decimals: 6,
+  coingeckoId: "usd-coin",
+  icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
+  isNative: false,
+} as const;
+
+const USDT_METADATA = {
+  symbol: "USDT",
+  name: "Tether USD",
+  decimals: 6,
+  coingeckoId: "tether",
+  icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
+  isNative: false,
+} as const;
+
+const DAI_METADATA = {
+  symbol: "DAI",
+  name: "Dai Stablecoin",
+  decimals: 18,
+  coingeckoId: "dai",
+  icon: "https://assets.coingecko.com/coins/images/9956/small/4943.png",
+  isNative: false,
+} as const;
+
 /**
  * Supported tokens on Base mainnet
  */
 export const BASE_TOKENS: TokenConfig[] = [
   {
-    symbol: "ETH",
-    name: "Ethereum",
+    ...ETH_METADATA,
     address: "0x0000000000000000000000000000000000000000", // Native token
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: true,
   },
   {
-    symbol: "WETH",
-    name: "Wrapped Ether",
+    ...WETH_METADATA,
     address: "0x4200000000000000000000000000000000000006", // Base WETH
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: false,
   },
   {
-    symbol: "USDC",
-    name: "USD Coin",
+    ...USDC_METADATA,
     address: "0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913", // Native Circle USDC on Base
-    decimals: 6,
-    coingeckoId: "usd-coin",
-    icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
-    isNative: false,
     minDonation: 1, // $1 minimum
   },
   {
-    symbol: "USDT",
-    name: "Tether USD",
+    ...USDT_METADATA,
     address: "0xfde4C96c8593536E31F229d6156B4d8D02642F84", // USDT on Base (bridged)
-    decimals: 6,
-    coingeckoId: "tether",
-    icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
-    isNative: false,
     minDonation: 1,
   },
   {
-    symbol: "DAI",
-    name: "Dai Stablecoin",
+    ...DAI_METADATA,
     address: "0x50c5725949A6F0c72E6C4a641F24049B1AE50db8", // DAI on Base
-    decimals: 18,
-    coingeckoId: "dai",
-    icon: "https://assets.coingecko.com/coins/images/9956/small/4943.png",
-    isNative: false,
     minDonation: 1,
   },
 ];
@@ -174,22 +195,14 @@ export const BASE_TOKENS: TokenConfig[] = [
  */
 export const BASE_SEPOLIA_TOKENS: TokenConfig[] = [
   {
-    symbol: "ETH",
+    ...ETH_METADATA,
     name: "Ethereum (Testnet)",
     address: "0x0000000000000000000000000000000000000000",
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: true,
   },
   {
-    symbol: "WETH",
+    ...WETH_METADATA,
     name: "Wrapped Ether (Testnet)",
     address: "0x4200000000000000000000000000000000000006",
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: false,
   },
 ];
 
@@ -198,61 +211,33 @@ export const BASE_SEPOLIA_TOKENS: TokenConfig[] = [
  */
 export const OPTIMISM_TOKENS: TokenConfig[] = [
   {
-    symbol: "ETH",
-    name: "Ethereum",
+    ...ETH_METADATA,
     address: "0x0000000000000000000000000000000000000000", // Native token
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: true,
   },
   {
-    symbol: "WETH",
-    name: "Wrapped Ether",
+    ...WETH_METADATA,
     address: "0x4200000000000000000000000000000000000006", // Optimism WETH
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: false,
   },
   {
+    ...USDC_METADATA,
     symbol: "USDC.e",
     name: "Bridged USD Coin",
     address: "0x7F5c764cBc14f9669B88837ca1490cCa17c31607", // Bridged USDC on Optimism
-    decimals: 6,
-    coingeckoId: "usd-coin",
-    icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
-    isNative: false,
     minDonation: 1,
   },
   {
-    symbol: "USDC",
-    name: "USD Coin",
+    ...USDC_METADATA,
     address: "0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85", // Native Circle USDC on Optimism
-    decimals: 6,
-    coingeckoId: "usd-coin",
-    icon: "https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png",
-    isNative: false,
     minDonation: 1,
   },
   {
-    symbol: "USDT",
-    name: "Tether USD",
+    ...USDT_METADATA,
     address: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58", // USDT on Optimism
-    decimals: 6,
-    coingeckoId: "tether",
-    icon: "https://assets.coingecko.com/coins/images/325/small/Tether.png",
-    isNative: false,
     minDonation: 1,
   },
   {
-    symbol: "DAI",
-    name: "Dai Stablecoin",
+    ...DAI_METADATA,
     address: "0xDA10009cBd5D07dd0CeCc66161FC93D7c9000da1", // DAI on Optimism
-    decimals: 18,
-    coingeckoId: "dai",
-    icon: "https://assets.coingecko.com/coins/images/9956/small/4943.png",
-    isNative: false,
     minDonation: 1,
   },
   {
@@ -272,22 +257,14 @@ export const OPTIMISM_TOKENS: TokenConfig[] = [
  */
 export const OPTIMISM_SEPOLIA_TOKENS: TokenConfig[] = [
   {
-    symbol: "ETH",
+    ...ETH_METADATA,
     name: "Ethereum (Testnet)",
     address: "0x0000000000000000000000000000000000000000",
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: true,
   },
   {
-    symbol: "WETH",
+    ...WETH_METADATA,
     name: "Wrapped Ether (Testnet)",
     address: "0x4200000000000000000000000000000000000006",
-    decimals: 18,
-    coingeckoId: "ethereum",
-    icon: "https://assets.coingecko.com/coins/images/279/small/ethereum.png",
-    isNative: false,
   },
 ];
 
