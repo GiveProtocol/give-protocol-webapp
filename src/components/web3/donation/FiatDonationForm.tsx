@@ -109,7 +109,7 @@ export function FiatDonationForm({
       setNameError('');
     }
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@.]+(?:\.[^\s@.]+)+$/;
     if (!email.trim()) {
       setEmailError('Email is required for your receipt');
       isValid = false;
