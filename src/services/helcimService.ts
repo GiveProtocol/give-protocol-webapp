@@ -5,13 +5,14 @@
  */
 
 import { Logger } from '@/utils/logger';
+import { ENV } from '@/config/env';
 import type { FiatPaymentData, HelcimPaymentResult, DonationFrequency } from '@/components/web3/donation/types/donation';
 
 /** Base URL for Supabase edge functions */
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_URL = ENV.SUPABASE_URL;
 
 /** Supabase anon key for edge function authorization */
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY;
 
 /** Common headers for Supabase edge function requests */
 const getHeaders = (): Record<string, string> => ({
