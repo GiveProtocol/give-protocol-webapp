@@ -103,42 +103,42 @@ export function useFiatDonation(): UseFiatDonationReturn {
   const mountedRef = useRef(true);
   const retryTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const attemptScriptLoad = useCallback((attempt: number): void => {
+    loadHelcimScript()
+      .then(() => {
+        if (mountedRef.current) {
+          setScriptLoaded(true);
+          setError(null);
+          Logger.info('HelcimPay.js ready');
+        }
+      })
+      .catch((err) => {
+        if (!mountedRef.current) return;
+
+        const message = err instanceof Error ? err.message : 'Failed to load payment processor';
+
+        if (attempt < MAX_RETRIES) {
+          const delay = calculateRetryDelay(attempt);
+          Logger.info(
+            `Retrying HelcimPay.js load in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
+          );
+          setRetryCount(attempt + 1);
+          resetHelcimScriptState();
+          retryTimeoutRef.current = setTimeout(() => {
+            attemptScriptLoad(attempt + 1);
+          }, delay);
+        } else {
+          setError(message);
+          Logger.error('Failed to load HelcimPay.js after all retries', { error: err });
+        }
+      });
+  }, []);
+
   // Load HelcimPay.js script on mount with retry
   useEffect(() => {
     mountedRef.current = true;
 
-    const attemptLoad = (attempt: number): void => {
-      loadHelcimScript()
-        .then(() => {
-          if (mountedRef.current) {
-            setScriptLoaded(true);
-            setError(null);
-            Logger.info('HelcimPay.js ready');
-          }
-        })
-        .catch((err) => {
-          if (!mountedRef.current) return;
-
-          const message = err instanceof Error ? err.message : 'Failed to load payment processor';
-
-          if (attempt < MAX_RETRIES) {
-            const delay = calculateRetryDelay(attempt);
-            Logger.info(
-              `Retrying HelcimPay.js load in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
-            );
-            setRetryCount(attempt + 1);
-            resetHelcimScriptState();
-            retryTimeoutRef.current = setTimeout(() => {
-              attemptLoad(attempt + 1);
-            }, delay);
-          } else {
-            setError(message);
-            Logger.error('Failed to load HelcimPay.js after all retries', { error: err });
-          }
-        });
-    };
-
-    attemptLoad(0);
+    attemptScriptLoad(0);
 
     return () => {
       mountedRef.current = false;
@@ -146,7 +146,7 @@ export function useFiatDonation(): UseFiatDonationReturn {
         clearTimeout(retryTimeoutRef.current);
       }
     };
-  }, []);
+  }, [attemptScriptLoad]);
 
   const clearError = useCallback(() => {
     setError(null);
@@ -269,39 +269,8 @@ export function useFiatDonation(): UseFiatDonationReturn {
       clearTimeout(retryTimeoutRef.current);
     }
 
-    const attemptLoad = (attempt: number): void => {
-      loadHelcimScript()
-        .then(() => {
-          if (mountedRef.current) {
-            setScriptLoaded(true);
-            setError(null);
-            Logger.info('HelcimPay.js ready (manual retry)');
-          }
-        })
-        .catch((err) => {
-          if (!mountedRef.current) return;
-
-          const message = err instanceof Error ? err.message : 'Failed to load payment processor';
-
-          if (attempt < MAX_RETRIES) {
-            const delay = calculateRetryDelay(attempt);
-            Logger.info(
-              `Retrying HelcimPay.js load in ${delay}ms (attempt ${attempt + 1}/${MAX_RETRIES})`,
-            );
-            setRetryCount(attempt + 1);
-            resetHelcimScriptState();
-            retryTimeoutRef.current = setTimeout(() => {
-              attemptLoad(attempt + 1);
-            }, delay);
-          } else {
-            setError(message);
-            Logger.error('Failed to load HelcimPay.js after all retries (manual retry)', { error: err });
-          }
-        });
-    };
-
-    attemptLoad(0);
-  }, []);
+    attemptScriptLoad(0);
+  }, [attemptScriptLoad]);
 
   return {
     processFiatPayment,

@@ -11,7 +11,8 @@ import type {
   UnifiedTransactionRequest,
   WalletCategory,
 } from "@/types/wallet";
-import type { EVMAdapter } from "../adapters/EVMAdapter";
+import { EVMAdapter, isEIP1193Provider } from "../adapters/EVMAdapter";
+import { DEFAULT_EVM_CHAIN_ID } from "@/config/chains";
 
 /**
  * Common interface for secondary chain adapters (Solana or Polkadot)
@@ -28,8 +29,7 @@ export interface SecondaryChainAdapter {
 
 /**
  * BaseMultiChainProvider - Abstract base for wallets supporting EVM + one secondary chain
- * Implements the 5 methods that are identical across all multi-chain providers:
- * disconnect, getAccounts, switchChain, signTransaction, signMessage
+ * Implements: connect, connectEVM, disconnect, getAccounts, switchChain, signTransaction, signMessage
  */
 export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
   abstract readonly name: string;
@@ -45,13 +45,76 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
   protected abstract get secondaryChainType(): ChainType;
 
   abstract isInstalled(): boolean;
-  abstract connect(_chainType?: ChainType): Promise<UnifiedAccount[]>;
+
+  /** @returns The EVM provider object from the window */
+  protected abstract getEVMProvider(): unknown;
+
+  /** Connect the secondary chain and return accounts */
+  protected abstract connectSecondary(): Promise<UnifiedAccount[]>;
 
   /** @returns The secondary adapter instance, or null if not connected */
   protected abstract getSecondaryAdapter(): SecondaryChainAdapter | null;
 
   /** Clears the secondary adapter reference (called during disconnect) */
   protected abstract clearSecondaryAdapter(): void;
+
+  /** Default EVM chain ID for this provider. Override to change (e.g., Coinbase defaults to Base). */
+  protected defaultEVMChainId(): number {
+    return DEFAULT_EVM_CHAIN_ID;
+  }
+
+  /**
+   * Connect to the wallet
+   * @param chainType - Chain type to connect (defaults to EVM)
+   * @returns Array of connected accounts
+   */
+  async connect(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
+    if (!this.isInstalled()) {
+      throw new Error(`${this.name} is not installed`);
+    }
+
+    const accounts: UnifiedAccount[] = [];
+
+    try {
+      if (chainType === "evm") {
+        accounts.push(...await this.connectEVM());
+        this.connectedChainType = "evm";
+      }
+
+      if (chainType === this.secondaryChainType) {
+        accounts.push(...await this.connectSecondary());
+        this.connectedChainType = this.secondaryChainType;
+      }
+
+      if (accounts.length === 0) {
+        throw new Error("No accounts connected");
+      }
+
+      Logger.info(`${this.name} connected`, {
+        chainType,
+        accountCount: accounts.length,
+      });
+
+      return accounts;
+    } catch (error) {
+      Logger.error(`${this.name} connection failed`, { error, chainType });
+      throw error;
+    }
+  }
+
+  /**
+   * Connect to the EVM provider
+   * @returns Array of EVM accounts
+   */
+  protected async connectEVM(): Promise<UnifiedAccount[]> {
+    const evmProvider = this.getEVMProvider();
+    if (!evmProvider || !isEIP1193Provider(evmProvider)) {
+      throw new Error(`${this.name} EVM provider not available`);
+    }
+
+    this.evmAdapter = new EVMAdapter(evmProvider);
+    return this.evmAdapter.connect(this.defaultEVMChainId());
+  }
 
   /**
    * Disconnect from the wallet

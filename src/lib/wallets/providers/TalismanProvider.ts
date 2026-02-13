@@ -9,12 +9,10 @@ import type {
   UnifiedAccount,
   WalletCategory,
 } from "@/types/wallet";
-import { EVMAdapter, isEIP1193Provider } from "../adapters/EVMAdapter";
 import {
   PolkadotAdapter,
   enablePolkadotExtension,
 } from "../adapters/PolkadotAdapter";
-import { DEFAULT_EVM_CHAIN_ID } from "@/config/chains";
 import { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
 
 const APP_NAME = "Give Protocol";
@@ -92,10 +90,11 @@ export class TalismanProvider extends BaseMultiChainProvider {
 
   /**
    * Connect to Talisman wallet
+   * Overrides base to add EVM/Polkadot support checks before connecting
    * @param chainType - Chain type to connect (defaults to EVM)
    * @returns Array of connected accounts
    */
-  async connect(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
+  override async connect(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
     if (!this.isInstalled()) {
       throw new Error("Talisman wallet is not installed");
     }
@@ -107,8 +106,7 @@ export class TalismanProvider extends BaseMultiChainProvider {
         if (!this.hasEVMSupport()) {
           throw new Error("Talisman EVM provider not available");
         }
-        const evmAccounts = await this.connectEVM();
-        accounts.push(...evmAccounts);
+        accounts.push(...await this.connectEVM());
         this.connectedChainType = "evm";
       }
 
@@ -116,8 +114,7 @@ export class TalismanProvider extends BaseMultiChainProvider {
         if (!this.hasPolkadotSupport()) {
           throw new Error("Talisman Polkadot extension not available");
         }
-        const polkadotAccounts = await this.connectPolkadot();
-        accounts.push(...polkadotAccounts);
+        accounts.push(...await this.connectSecondary());
         this.connectedChainType = "polkadot";
       }
 
@@ -138,24 +135,18 @@ export class TalismanProvider extends BaseMultiChainProvider {
   }
 
   /**
-   * Connect to Talisman EVM provider
-   * @returns Array of EVM accounts
+   * Get Talisman EVM provider from window
    */
-  private async connectEVM(): Promise<UnifiedAccount[]> {
-    const evmProvider = this.getEVMProvider();
-    if (!evmProvider || !isEIP1193Provider(evmProvider)) {
-      throw new Error("Talisman EVM provider not available");
-    }
-
-    this.evmAdapter = new EVMAdapter(evmProvider);
-    return this.evmAdapter.connect(DEFAULT_EVM_CHAIN_ID);
+  protected getEVMProvider(): unknown {
+    if (typeof window === "undefined") return null;
+    return window.talismanEth ?? null;
   }
 
   /**
    * Connect to Talisman Polkadot extension
    * @returns Array of Polkadot accounts
    */
-  private async connectPolkadot(): Promise<UnifiedAccount[]> {
+  protected async connectSecondary(): Promise<UnifiedAccount[]> {
     this.polkadotAdapter = await enablePolkadotExtension("talisman", APP_NAME);
 
     if (!this.polkadotAdapter) {
@@ -163,14 +154,6 @@ export class TalismanProvider extends BaseMultiChainProvider {
     }
 
     return this.polkadotAdapter.connect();
-  }
-
-  /**
-   * Get Talisman EVM provider from window
-   */
-  private getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
-    return window.talismanEth ?? null;
   }
 }
 

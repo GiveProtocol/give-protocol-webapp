@@ -10,9 +10,7 @@ import type {
   UnifiedAccount,
   WalletCategory,
 } from "@/types/wallet";
-import { EVMAdapter, isEIP1193Provider } from "../adapters/EVMAdapter";
 import { PolkadotAdapter } from "../adapters/PolkadotAdapter";
-import { DEFAULT_EVM_CHAIN_ID } from "@/config/chains";
 import { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
 
 /**
@@ -79,78 +77,9 @@ export class SubWalletProvider extends BaseMultiChainProvider {
   }
 
   /**
-   * Connect to SubWallet
-   * @param chainType - Chain type to connect (defaults to EVM)
-   * @returns Array of connected accounts
-   */
-  async connect(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
-    if (!this.isInstalled()) {
-      throw new Error("SubWallet is not installed");
-    }
-
-    const accounts: UnifiedAccount[] = [];
-
-    try {
-      if (chainType === "evm") {
-        const evmAccounts = await this.connectEVM();
-        accounts.push(...evmAccounts);
-        this.connectedChainType = "evm";
-      }
-
-      if (chainType === "polkadot") {
-        const polkadotAccounts = await this.connectPolkadot();
-        accounts.push(...polkadotAccounts);
-        this.connectedChainType = "polkadot";
-      }
-
-      if (accounts.length === 0) {
-        throw new Error("No accounts connected");
-      }
-
-      Logger.info("SubWallet connected", {
-        chainType,
-        accountCount: accounts.length,
-      });
-
-      return accounts;
-    } catch (error) {
-      Logger.error("SubWallet connection failed", { error, chainType });
-      throw error;
-    }
-  }
-
-  /**
-   * Connect to SubWallet EVM provider
-   * @returns Array of EVM accounts
-   */
-  private async connectEVM(): Promise<UnifiedAccount[]> {
-    const evmProvider = this.getEVMProvider();
-    if (!evmProvider || !isEIP1193Provider(evmProvider)) {
-      throw new Error("SubWallet EVM provider not available");
-    }
-
-    this.evmAdapter = new EVMAdapter(evmProvider);
-    return this.evmAdapter.connect(DEFAULT_EVM_CHAIN_ID);
-  }
-
-  /**
-   * Connect to SubWallet Polkadot provider
-   * @returns Array of Polkadot accounts
-   */
-  private async connectPolkadot(): Promise<UnifiedAccount[]> {
-    const extensionName = this.getPolkadotExtensionName();
-    if (!extensionName) {
-      throw new Error("SubWallet Polkadot extension not available");
-    }
-
-    this.polkadotAdapter = new PolkadotAdapter(extensionName);
-    return this.polkadotAdapter.connect();
-  }
-
-  /**
    * Get SubWallet EVM provider from window
    */
-  private getEVMProvider(): unknown {
+  protected getEVMProvider(): unknown {
     if (typeof window === "undefined") return null;
 
     // SubWallet injects as window.SubWallet for EVM
@@ -158,6 +87,20 @@ export class SubWalletProvider extends BaseMultiChainProvider {
     if (subwallet) return subwallet;
 
     return null;
+  }
+
+  /**
+   * Connect to SubWallet Polkadot provider
+   * @returns Array of Polkadot accounts
+   */
+  protected async connectSecondary(): Promise<UnifiedAccount[]> {
+    const extensionName = this.getPolkadotExtensionName();
+    if (!extensionName) {
+      throw new Error("SubWallet Polkadot extension not available");
+    }
+
+    this.polkadotAdapter = new PolkadotAdapter(extensionName);
+    return this.polkadotAdapter.connect();
   }
 
   /**

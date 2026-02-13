@@ -62,6 +62,21 @@ export const SEQUENCER_UPTIME_FEEDS: Partial<Record<ChainId, string>> = {
   [CHAIN_IDS.OPTIMISM]: "0x371EAD81c9102C9BF4874A9075FFFf170F2Ee389",
 };
 
+/** Creates feed entries where wrapped token shares native token's feed */
+function withWrapped(
+  native: string,
+  wrapped: string,
+  config: PriceFeedConfig,
+): Record<string, PriceFeedConfig> {
+  return { [native]: config, [wrapped]: config };
+}
+
+const STABLECOIN_HEARTBEAT = 86400; // 24 hours
+
+function stablecoinFeed(address: string, symbol: string): PriceFeedConfig {
+  return { address, description: `${symbol} / USD`, decimals: 8, heartbeat: STABLECOIN_HEARTBEAT };
+}
+
 /**
  * Chainlink price feed addresses by chain
  * Maps token symbols to their USD price feed addresses
@@ -69,70 +84,28 @@ export const SEQUENCER_UPTIME_FEEDS: Partial<Record<ChainId, string>> = {
 export const CHAINLINK_FEEDS: Record<ChainId, Record<string, PriceFeedConfig>> = {
   // Base Mainnet
   [CHAIN_IDS.BASE]: {
-    ETH: {
+    ...withWrapped("ETH", "WETH", {
       address: "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70",
       description: "ETH / USD",
       decimals: 8,
       heartbeat: 1200, // 20 minutes
-    },
-    WETH: {
-      address: "0x71041dddad3595F9CEd3DcCFBe3D1F4b0a16Bb70", // Same as ETH
-      description: "ETH / USD",
-      decimals: 8,
-      heartbeat: 1200,
-    },
-    USDC: {
-      address: "0x7e860098F58bBFC8648a4311b374B1D669a2bc6B",
-      description: "USDC / USD",
-      decimals: 8,
-      heartbeat: 86400, // 24 hours for stablecoins
-    },
-    USDT: {
-      address: "0xf19d560eB8d2ADf07BD6D13ed03e1D11215721F9",
-      description: "USDT / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
-    DAI: {
-      address: "0x591e79239a7d679378eC8c847e5038150364C78F",
-      description: "DAI / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
+    }),
+    USDC: stablecoinFeed("0x7e860098F58bBFC8648a4311b374B1D669a2bc6B", "USDC"),
+    USDT: stablecoinFeed("0xf19d560eB8d2ADf07BD6D13ed03e1D11215721F9", "USDT"),
+    DAI: stablecoinFeed("0x591e79239a7d679378eC8c847e5038150364C78F", "DAI"),
   },
 
   // Optimism Mainnet
   [CHAIN_IDS.OPTIMISM]: {
-    ETH: {
+    ...withWrapped("ETH", "WETH", {
       address: "0x13e3Ee699D1909E989722E753853AE30b17e08c5",
       description: "ETH / USD",
       decimals: 8,
       heartbeat: 1200,
-    },
-    WETH: {
-      address: "0x13e3Ee699D1909E989722E753853AE30b17e08c5",
-      description: "ETH / USD",
-      decimals: 8,
-      heartbeat: 1200,
-    },
-    USDC: {
-      address: "0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3",
-      description: "USDC / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
-    USDT: {
-      address: "0xECef79E109e997bCA29c1c0897ec9d7b03647F5E",
-      description: "USDT / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
-    DAI: {
-      address: "0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6",
-      description: "DAI / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
+    }),
+    USDC: stablecoinFeed("0x16a9FA2FDa030272Ce99B29CF780dFA30361E0f3", "USDC"),
+    USDT: stablecoinFeed("0xECef79E109e997bCA29c1c0897ec9d7b03647F5E", "USDT"),
+    DAI: stablecoinFeed("0x8dBa75e83DA73cc766A7e5a0ee71F656BAb470d6", "DAI"),
     OP: {
       address: "0x0D276FC14719f9292D5C1eA2198673d1f4269246",
       description: "OP / USD",
@@ -143,68 +116,40 @@ export const CHAINLINK_FEEDS: Record<ChainId, Record<string, PriceFeedConfig>> =
 
   // Moonbeam Mainnet
   [CHAIN_IDS.MOONBEAM]: {
-    GLMR: {
+    ...withWrapped("GLMR", "WGLMR", {
       address: "0x4497B606be93e773bbA5eaCFCb2ac5E2214220Eb",
       description: "GLMR / USD",
       decimals: 8,
       heartbeat: 3600,
-    },
-    WGLMR: {
-      address: "0x4497B606be93e773bbA5eaCFCb2ac5E2214220Eb",
-      description: "GLMR / USD",
-      decimals: 8,
-      heartbeat: 3600,
-    },
+    }),
     DOT: {
       address: "0x1466b4bD0C4B6B8e1164991909961e0EE6a66d8c",
       description: "DOT / USD",
       decimals: 8,
       heartbeat: 3600,
     },
-    USDC: {
-      address: "0xA122591F60115D63421f66F752EF9f6e0bc73abC",
-      description: "USDC / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
-    USDT: {
-      address: "0x3bC50c8f56EaA6D7fBfB5C89DEe16b0FEc296F87",
-      description: "USDT / USD",
-      decimals: 8,
-      heartbeat: 86400,
-    },
+    USDC: stablecoinFeed("0xA122591F60115D63421f66F752EF9f6e0bc73abC", "USDC"),
+    USDT: stablecoinFeed("0x3bC50c8f56EaA6D7fBfB5C89DEe16b0FEc296F87", "USDT"),
   },
 
   // Base Sepolia (Testnet) - Use mainnet feeds as proxy
   [CHAIN_IDS.BASE_SEPOLIA]: {
-    ETH: {
+    ...withWrapped("ETH", "WETH", {
       address: "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1",
       description: "ETH / USD",
       decimals: 8,
       heartbeat: 3600,
-    },
-    WETH: {
-      address: "0x4aDC67696bA383F43DD60A9e78F2C97Fbbfc7cb1",
-      description: "ETH / USD",
-      decimals: 8,
-      heartbeat: 3600,
-    },
+    }),
   },
 
   // Optimism Sepolia (Testnet)
   [CHAIN_IDS.OPTIMISM_SEPOLIA]: {
-    ETH: {
+    ...withWrapped("ETH", "WETH", {
       address: "0x61Ec26aA57019C486B10502285c5A3D4A4750AD7",
       description: "ETH / USD",
       decimals: 8,
       heartbeat: 3600,
-    },
-    WETH: {
-      address: "0x61Ec26aA57019C486B10502285c5A3D4A4750AD7",
-      description: "ETH / USD",
-      decimals: 8,
-      heartbeat: 3600,
-    },
+    }),
   },
 
   // Moonbase Alpha (Testnet) - Limited feeds available

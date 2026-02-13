@@ -3,13 +3,11 @@
  * Multi-chain wallet supporting EVM and Solana chains
  */
 
-import { Logger } from "@/utils/logger";
 import type {
   ChainType,
-  UnifiedAccount,
   WalletCategory,
+  UnifiedAccount,
 } from "@/types/wallet";
-import { EVMAdapter, isEIP1193Provider } from "../adapters/EVMAdapter";
 import { SolanaAdapter, isSolanaProvider } from "../adapters/SolanaAdapter";
 import { DEFAULT_SOLANA_CLUSTER, EVM_CHAIN_IDS } from "@/config/chains";
 import { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
@@ -76,86 +74,16 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
   }
 
   /**
-   * Connect to Coinbase Wallet
-   * @param chainType - Chain type to connect (defaults to EVM)
-   * @returns Array of connected accounts
+   * Default to Base chain for Coinbase Wallet users
    */
-  async connect(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
-    if (!this.isInstalled()) {
-      throw new Error("Coinbase Wallet is not installed");
-    }
-
-    const accounts: UnifiedAccount[] = [];
-
-    try {
-      if (chainType === "evm") {
-        const evmAccounts = await this.connectEVM();
-        accounts.push(...evmAccounts);
-        this.connectedChainType = "evm";
-      }
-
-      if (chainType === "solana") {
-        if (!this.hasSolanaSupport()) {
-          throw new Error("Coinbase Wallet Solana support not available");
-        }
-        const solanaAccounts = await this.connectSolana();
-        accounts.push(...solanaAccounts);
-        this.connectedChainType = "solana";
-      }
-
-      if (accounts.length === 0) {
-        throw new Error("No accounts connected");
-      }
-
-      Logger.info("Coinbase Wallet connected", {
-        chainType,
-        accountCount: accounts.length,
-      });
-
-      return accounts;
-    } catch (error) {
-      Logger.error("Coinbase Wallet connection failed", { error, chainType });
-      throw error;
-    }
-  }
-
-  /**
-   * Connect to Coinbase EVM provider
-   * Defaults to Base chain for optimal Coinbase experience
-   * @returns Array of EVM accounts
-   */
-  private async connectEVM(): Promise<UnifiedAccount[]> {
-    const evmProvider = this.getEVMProvider();
-    if (!evmProvider || !isEIP1193Provider(evmProvider)) {
-      throw new Error("Coinbase Wallet EVM provider not available");
-    }
-
-    this.evmAdapter = new EVMAdapter(evmProvider);
-
-    // Default to Base chain for Coinbase Wallet users
-    const preferredChainId = EVM_CHAIN_IDS.BASE;
-
-    return this.evmAdapter.connect(preferredChainId);
-  }
-
-  /**
-   * Connect to Coinbase Solana provider
-   * @returns Array of Solana accounts
-   */
-  private async connectSolana(): Promise<UnifiedAccount[]> {
-    const solanaProvider = this.getSolanaProvider();
-    if (!solanaProvider || !isSolanaProvider(solanaProvider)) {
-      throw new Error("Coinbase Wallet Solana provider not available");
-    }
-
-    this.solanaAdapter = new SolanaAdapter(solanaProvider, DEFAULT_SOLANA_CLUSTER);
-    return this.solanaAdapter.connect();
+  protected override defaultEVMChainId(): number {
+    return EVM_CHAIN_IDS.BASE;
   }
 
   /**
    * Get Coinbase EVM provider from window
    */
-  private getEVMProvider(): unknown {
+  protected getEVMProvider(): unknown {
     if (typeof window === "undefined") return null;
 
     // Prefer dedicated extension
@@ -169,6 +97,24 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
     }
 
     return null;
+  }
+
+  /**
+   * Connect to Coinbase Solana provider
+   * @returns Array of Solana accounts
+   */
+  protected async connectSecondary(): Promise<UnifiedAccount[]> {
+    if (!this.hasSolanaSupport()) {
+      throw new Error("Coinbase Wallet Solana support not available");
+    }
+
+    const solanaProvider = this.getSolanaProvider();
+    if (!solanaProvider || !isSolanaProvider(solanaProvider)) {
+      throw new Error("Coinbase Wallet Solana provider not available");
+    }
+
+    this.solanaAdapter = new SolanaAdapter(solanaProvider, DEFAULT_SOLANA_CLUSTER);
+    return this.solanaAdapter.connect();
   }
 
   /**

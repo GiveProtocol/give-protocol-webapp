@@ -3,7 +3,8 @@
  * Unified access to all supported wallet providers
  */
 
-// Base class for multi-chain providers
+// Base classes
+export { BaseEVMProvider } from "./BaseEVMProvider";
 export { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
 
 // MetaMask - EVM only

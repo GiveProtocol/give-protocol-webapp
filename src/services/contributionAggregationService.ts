@@ -396,6 +396,29 @@ export async function getUnifiedContributions(
 }
 
 /**
+ * Aggregates hours from a data array into a user hours map
+ * @param data - Array of records with volunteer_id and hours
+ * @param field - Which field to aggregate into ("formal" or "selfReported")
+ * @param userHours - Map to aggregate into
+ */
+function aggregateHours(
+  data: Array<{ volunteer_id: string; hours: number | null }> | null,
+  field: "formal" | "selfReported",
+  userHours: Map<string, { formal: number; selfReported: number; total: number }>,
+): void {
+  data?.forEach((record) => {
+    const existing = userHours.get(record.volunteer_id) || {
+      formal: 0,
+      selfReported: 0,
+      total: 0,
+    };
+    existing[field] += record.hours || 0;
+    existing.total = existing.formal + existing.selfReported;
+    userHours.set(record.volunteer_id, existing);
+  });
+}
+
+/**
  * Fetches volunteer leaderboard data
  * @param limit - Maximum number of entries to return
  * @param includeUnvalidated - Whether to include unvalidated self-reported hours
@@ -445,27 +468,8 @@ export async function getVolunteerLeaderboard(
       { formal: number; selfReported: number; total: number }
     >();
 
-    formalData?.forEach((record) => {
-      const existing = userHours.get(record.volunteer_id) || {
-        formal: 0,
-        selfReported: 0,
-        total: 0,
-      };
-      existing.formal += record.hours || 0;
-      existing.total = existing.formal + existing.selfReported;
-      userHours.set(record.volunteer_id, existing);
-    });
-
-    selfReportedData?.forEach((record) => {
-      const existing = userHours.get(record.volunteer_id) || {
-        formal: 0,
-        selfReported: 0,
-        total: 0,
-      };
-      existing.selfReported += record.hours || 0;
-      existing.total = existing.formal + existing.selfReported;
-      userHours.set(record.volunteer_id, existing);
-    });
+    aggregateHours(formalData, "formal", userHours);
+    aggregateHours(selfReportedData, "selfReported", userHours);
 
     // Convert to array and sort
     const entries: VolunteerLeaderboardEntry[] = Array.from(userHours.entries())
