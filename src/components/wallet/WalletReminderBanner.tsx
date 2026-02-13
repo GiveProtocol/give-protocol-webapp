@@ -77,6 +77,17 @@ export const WalletReminderBanner: React.FC<WalletReminderBannerProps> = ({
     setConnectionError(null);
   }, []);
 
+  const handleWalletButtonClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const walletName = e.currentTarget.dataset.walletName;
+      const wallet = installedWallets.find((w) => w.name === walletName);
+      if (wallet) {
+        handleWalletConnect(wallet);
+      }
+    },
+    [installedWallets, handleWalletConnect]
+  );
+
   // Don't render if already connected
   if (isConnected) {
     return null;
@@ -152,7 +163,8 @@ export const WalletReminderBanner: React.FC<WalletReminderBannerProps> = ({
                 {installedWallets.map((wallet) => (
                   <button
                     key={wallet.name}
-                    onClick={() => handleWalletConnect(wallet)}
+                    data-wallet-name={wallet.name}
+                    onClick={handleWalletButtonClick}
                     disabled={isConnecting}
                     className="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 rounded-lg hover:border-green-300 dark:hover:border-green-700 hover:shadow-sm transition-all disabled:opacity-60"
                   >
