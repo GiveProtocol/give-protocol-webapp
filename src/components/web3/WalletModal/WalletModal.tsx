@@ -96,6 +96,13 @@ export const WalletModal: React.FC<WalletModalProps> = ({
     setError(null);
   }, []);
 
+  const handleChainTabClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const chainType = e.currentTarget.dataset.chainType as ChainType;
+    if (chainType) {
+      handleChainTypeChange(chainType);
+    }
+  }, [handleChainTypeChange]);
+
   // Handle wallet selection
   const handleSelectWallet = useCallback(
     async (wallet: UnifiedWalletProvider) => {
@@ -181,7 +188,8 @@ export const WalletModal: React.FC<WalletModalProps> = ({
           {CHAIN_TABS.map(({ type, label, color }) => (
             <button
               key={type}
-              onClick={() => handleChainTypeChange(type)}
+              data-chain-type={type}
+              onClick={handleChainTabClick}
               className={`
                 px-4 py-2 text-sm font-medium rounded-lg transition-colors
                 ${

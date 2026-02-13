@@ -283,9 +283,9 @@ export function FiatDonationForm({
 
       {/* Helcim hosted fields container */}
       <div className="space-y-2">
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <span className="block text-sm font-medium text-gray-700 dark:text-gray-300" aria-hidden="true">
           Card Details
-        </label>
+        </span>
         <div
           id={cardContainerId}
           className={cn(

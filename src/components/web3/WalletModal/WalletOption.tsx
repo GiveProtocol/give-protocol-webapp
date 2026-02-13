@@ -114,6 +114,10 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
     }
   }, [installUrl]);
 
+  const handleIconError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
+    e.currentTarget.src = "/icons/wallet.svg";
+  }, []);
+
   return (
     <button
       onClick={handleClick}
@@ -134,10 +138,7 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
           alt=""
           className={`w-full h-full object-contain ${!isInstalled || isComingSoon ? "grayscale" : ""}`}
           aria-hidden="true"
-          onError={(e) => {
-            // Fallback to generic wallet icon
-            (e.target as HTMLImageElement).src = "/icons/wallet.svg";
-          }}
+          onError={handleIconError}
         />
       </div>
 

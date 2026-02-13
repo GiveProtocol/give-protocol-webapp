@@ -21,6 +21,11 @@ interface InitializeRequest {
   donationType: 'one-time' | 'subscription';
 }
 
+/** Sanitize a value for safe logging (strip newlines and control characters) */
+function sanitizeForLog(value: unknown): string {
+  return String(value).replace(/[\r\n\t]/g, ' ').slice(0, 500);
+}
+
 interface HelcimPayInitResponse {
   checkoutToken: string;
   secretToken: string;
@@ -82,7 +87,7 @@ async function initializeHelcimPaySession(
 
   if (!response.ok) {
     const errorText = await response.text();
-    console.error('Helcim initialization error:', response.status, errorText);
+    console.error('Helcim initialization error:', response.status, sanitizeForLog(errorText));
 
     // Parse error for more specific message
     try {
@@ -96,7 +101,7 @@ async function initializeHelcimPaySession(
   const result = await response.json();
 
   if (!result.checkoutToken) {
-    console.error('Missing checkoutToken in response:', result);
+    console.error('Missing checkoutToken in response:', sanitizeForLog(JSON.stringify(result)));
     throw new Error('Invalid response from payment processor');
   }
 

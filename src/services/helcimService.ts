@@ -363,7 +363,7 @@ export function initializeHelcimFields(
   containerId: string,
   checkoutToken: string,
   amount: number,
-  testMode: boolean = true
+  testMode = true
 ): void {
   if (!window.HelcimPay) {
     throw new Error('HelcimPay.js not loaded');

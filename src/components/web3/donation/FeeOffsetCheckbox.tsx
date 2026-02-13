@@ -44,16 +44,6 @@ export function FeeOffsetCheckbox({
     [onChange]
   );
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLLabelElement>) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        onChange(!checked);
-      }
-    },
-    [checked, onChange]
-  );
-
   // Don't show if amount is 0
   if (amount <= 0) {
     return <div className="h-14" />;
@@ -61,6 +51,7 @@ export function FeeOffsetCheckbox({
 
   return (
     <label
+      aria-label="Cover processing fees"
       className={cn(
         'flex items-start gap-3 p-4 rounded-xl cursor-pointer',
         'border-2 transition-all duration-200',
@@ -70,8 +61,6 @@ export function FeeOffsetCheckbox({
           : 'bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600',
         disabled && 'opacity-50 cursor-not-allowed'
       )}
-      onKeyDown={handleKeyDown}
-      tabIndex={disabled ? -1 : 0}
     >
       <input
         type="checkbox"

@@ -3,7 +3,7 @@
  * Displays account address with chain type indicator
  */
 
-import React, { useCallback } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { Copy, ExternalLink, Check } from "lucide-react";
 import type { ChainType, UnifiedAccount } from "@/types/wallet";
 import { shortenAddress } from "@/utils/web3";
@@ -69,7 +69,18 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
   className = "",
 }) => {
   const [copied, setCopied] = React.useState(false);
+  const [iconHidden, setIconHidden] = useState(false);
+  const iconRef = useRef<HTMLImageElement>(null);
   const styles = CHAIN_STYLES[account.chainType];
+
+  // Attach error listener imperatively to avoid onError on non-interactive element (JS-0760)
+  React.useEffect(() => {
+    const img = iconRef.current;
+    if (!img) return;
+    const handler = () => setIconHidden(true);
+    img.addEventListener("error", handler);
+    return () => img.removeEventListener("error", handler);
+  }, []);
 
   const handleCopy = useCallback(
     async (e: React.MouseEvent) => {
@@ -92,10 +103,6 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
     // Link handles navigation
   }, []);
 
-  const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.style.display = "none";
-  }, []);
-
   const sharedClassName = `
     inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
     ${styles.bgColor} ${styles.borderColor}
@@ -107,12 +114,12 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
   const content = (
     <>
       {/* Chain Icon */}
-      {showChainIcon && (
+      {showChainIcon && !iconHidden && (
         <img
+          ref={iconRef}
           src={styles.icon}
           alt={account.chainType}
           className="w-5 h-5"
-          onError={handleImageError}
         />
       )}
 
