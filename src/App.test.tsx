@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 
 // Mock Sentry
 jest.mock("@sentry/react", () => ({
-  ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 // Mock heavy internal components to avoid pulling in full dependency trees
@@ -20,7 +20,7 @@ jest.mock("./components/layout", () => ({
 }));
 
 jest.mock("./components/ErrorBoundary", () => ({
-  ErrorBoundary: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  ErrorBoundary: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./components/web3/ChainSelectionModal", () => ({
@@ -46,31 +46,31 @@ jest.mock("./utils/monitoring", () => ({
 
 // Mock context providers to pass through children
 jest.mock("./contexts/ToastContext", () => ({
-  ToastProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  ToastProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./contexts/AuthContext", () => ({
-  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./contexts/Web3Context", () => ({
-  Web3Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  Web3Provider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./contexts/ChainContext", () => ({
-  ChainProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  ChainProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./contexts/MultiChainContext", () => ({
-  MultiChainProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  MultiChainProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./contexts/SettingsContext", () => ({
-  SettingsProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  SettingsProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 jest.mock("./contexts/CurrencyContext", () => ({
-  CurrencyProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  CurrencyProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
 
 import App from "./App";
