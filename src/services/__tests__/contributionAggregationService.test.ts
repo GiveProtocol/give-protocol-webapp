@@ -246,6 +246,95 @@ describe("contributionAggregationService", () => {
       expect(result[1].date).toBe("2024-01-10");
     });
 
+    it("should handle database errors in individual fetch functions", async () => {
+      setMockResult("donations", { data: null, error: { message: "Error" } });
+      setMockResult("volunteer_hours", { data: null, error: { message: "Error" } });
+      setMockResult("self_reported_hours", { data: null, error: { message: "Error" } });
+
+      const result = await getUnifiedContributions({ userId: "user-1" });
+
+      expect(result).toHaveLength(0);
+    });
+
+    it("should handle donations with null charity data", async () => {
+      setMockResult("donations", {
+        data: [
+          {
+            id: "donation-1",
+            amount: 100,
+            created_at: "2024-01-15",
+            donor_id: "user-1",
+            charity_id: "charity-1",
+            charity: null,
+          },
+        ],
+        error: null,
+      });
+
+      const result = await getUnifiedContributions({
+        userId: "user-1",
+        sources: ["donation"],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].organizationName).toBe("Unknown Charity");
+    });
+
+    it("should handle self-reported hours with null organization", async () => {
+      setMockResult("self_reported_hours", {
+        data: [
+          {
+            id: "srh-1",
+            hours: 3,
+            activity_date: "2024-01-13",
+            activity_type: "cleanup",
+            description: "Beach cleanup",
+            validation_status: null,
+            created_at: "2024-01-13",
+            volunteer_id: "user-1",
+            organization_id: null,
+            organization_name: null,
+          },
+        ],
+        error: null,
+      });
+
+      const result = await getUnifiedContributions({
+        userId: "user-1",
+        sources: ["self_reported"],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].organizationName).toBe("Unknown Organization");
+      expect(result[0].status).toBe("unvalidated");
+    });
+
+    it("should handle formal volunteer hours with pending status", async () => {
+      setMockResult("volunteer_hours", {
+        data: [
+          {
+            id: "vh-1",
+            hours: 5,
+            date_performed: "2024-01-14",
+            description: "Test work",
+            status: "pending",
+            created_at: "2024-01-14",
+            volunteer_id: "user-1",
+            charity_id: "charity-1",
+          },
+        ],
+        error: null,
+      });
+
+      const result = await getUnifiedContributions({
+        userId: "user-1",
+        sources: ["formal_volunteer"],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].status).toBe("pending");
+    });
+
     it("should map validation status to correct contribution status", async () => {
       setMockResult("donations", { data: [], error: null });
       setMockResult("volunteer_hours", { data: [], error: null });
@@ -333,6 +422,22 @@ describe("contributionAggregationService", () => {
       expect(result[2].rank).toBe(3);
     });
 
+    it("should include unvalidated hours when includeUnvalidated is true", async () => {
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", {
+        data: [
+          { volunteer_id: "user-1", hours: 5, validation_status: "validated" },
+          { volunteer_id: "user-1", hours: 3, validation_status: "unvalidated" },
+        ],
+        error: null,
+      });
+
+      const result = await getVolunteerLeaderboard(10, true);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].selfReportedHours).toBe(8);
+    });
+
     it("should respect limit parameter", async () => {
       setMockResult("volunteer_hours", {
         data: [
@@ -358,6 +463,60 @@ describe("contributionAggregationService", () => {
       const result = await getVolunteerLeaderboard();
 
       expect(result).toHaveLength(0);
+    });
+
+    it("should handle null hours in data", async () => {
+      setMockResult("volunteer_hours", {
+        data: [
+          { volunteer_id: "user-1", hours: null },
+          { volunteer_id: "user-1", hours: 5 },
+        ],
+        error: null,
+      });
+      setMockResult("self_reported_hours", {
+        data: [
+          { volunteer_id: "user-1", hours: null, validation_status: "validated" },
+        ],
+        error: null,
+      });
+
+      const result = await getVolunteerLeaderboard();
+
+      expect(result).toHaveLength(1);
+      expect(result[0].formalHours).toBe(5);
+      expect(result[0].selfReportedHours).toBe(0);
+    });
+
+    it("should handle database errors for formal hours", async () => {
+      setMockResult("volunteer_hours", {
+        data: null,
+        error: { message: "Database error" },
+      });
+      setMockResult("self_reported_hours", {
+        data: [{ volunteer_id: "user-1", hours: 5, validation_status: "validated" }],
+        error: null,
+      });
+
+      const result = await getVolunteerLeaderboard();
+
+      expect(result).toHaveLength(1);
+      expect(result[0].selfReportedHours).toBe(5);
+    });
+
+    it("should handle database errors for self-reported hours", async () => {
+      setMockResult("volunteer_hours", {
+        data: [{ volunteer_id: "user-1", hours: 10 }],
+        error: null,
+      });
+      setMockResult("self_reported_hours", {
+        data: null,
+        error: { message: "Database error" },
+      });
+
+      const result = await getVolunteerLeaderboard();
+
+      expect(result).toHaveLength(1);
+      expect(result[0].formalHours).toBe(10);
     });
   });
 
@@ -417,6 +576,37 @@ describe("contributionAggregationService", () => {
 
       expect(result[0].totalDonated).toBe(100);
       expect(result[0].donationCount).toBe(2);
+    });
+
+    it("should handle null charity_id in donations", async () => {
+      setMockResult("donations", {
+        data: [
+          { donor_id: "user-1", amount: 100, charity_id: null },
+        ],
+        error: null,
+      });
+
+      const result = await getDonorLeaderboard();
+
+      expect(result).toHaveLength(1);
+      expect(result[0].organizationsSupported).toBe(0);
+    });
+
+    it("should respect limit parameter", async () => {
+      setMockResult("donations", {
+        data: [
+          { donor_id: "user-1", amount: 100, charity_id: "charity-1" },
+          { donor_id: "user-2", amount: 200, charity_id: "charity-1" },
+          { donor_id: "user-3", amount: 300, charity_id: "charity-1" },
+        ],
+        error: null,
+      });
+
+      const result = await getDonorLeaderboard(2);
+
+      expect(result).toHaveLength(2);
+      expect(result[0].userId).toBe("user-3");
+      expect(result[1].userId).toBe("user-2");
     });
   });
 

@@ -71,6 +71,16 @@ export const Modal: React.FC<ModalProps> = ({
     [closeOnBackdrop, onClose]
   );
 
+  // Handle backdrop keyboard events
+  const handleBackdropKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (closeOnEscape && event.key === "Escape") {
+        onClose();
+      }
+    },
+    [closeOnEscape, onClose]
+  );
+
   // Handle focus trap and keyboard events
   useEffect(() => {
     if (!isOpen) return;
@@ -108,6 +118,7 @@ export const Modal: React.FC<ModalProps> = ({
       <div
         className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-fade-in"
         onClick={handleBackdropClick}
+        onKeyDown={handleBackdropKeyDown}
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? "modal-title" : undefined}

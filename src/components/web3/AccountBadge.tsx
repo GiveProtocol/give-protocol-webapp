@@ -87,6 +87,16 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
     }
   }, [account, onSelect]);
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (onSelect && (e.key === "Enter" || e.key === " ")) {
+        e.preventDefault();
+        onSelect(account);
+      }
+    },
+    [account, onSelect]
+  );
+
   const handleExplorerClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
     // Link handles navigation
@@ -95,6 +105,7 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
   return (
     <div
       onClick={handleClick}
+      onKeyDown={handleKeyDown}
       className={`
         inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
         ${styles.bgColor} ${styles.borderColor}

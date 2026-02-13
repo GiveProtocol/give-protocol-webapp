@@ -276,15 +276,19 @@ export class ChainlinkPriceFeedService {
   ): Promise<Map<string, ChainlinkPriceData>> {
     const results = new Map<string, ChainlinkPriceData>();
 
-    // Fetch all prices in parallel
-    const promises = tokenSymbols.map(async (symbol) => {
-      const data = await this.getPrice(chainId, symbol, provider);
-      if (data) {
-        results.set(symbol, data);
+    // Process sequentially to avoid RPC batch limits on public endpoints
+    for (const symbol of tokenSymbols) {
+      try {
+        const data = await this.getPrice(chainId, symbol, provider);
+        if (data) {
+          results.set(symbol, data);
+        }
+        // Small delay between requests to be respectful to public RPCs
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      } catch (error) {
+        Logger.warn("Chainlink: Skipping token due to error", { symbol, error });
       }
-    });
-
-    await Promise.all(promises);
+    }
 
     return results;
   }
@@ -325,14 +329,19 @@ export class ChainlinkPriceFeedService {
   ): Promise<Record<string, number>> {
     const results: Record<string, number> = {};
 
-    const promises = coingeckoIds.map(async (id) => {
-      const price = await this.getPriceByCoingeckoId(chainId, id, provider);
-      if (price !== null) {
-        results[id] = price;
+    // Process sequentially to avoid RPC batch limits on public endpoints
+    for (const id of coingeckoIds) {
+      try {
+        const price = await this.getPriceByCoingeckoId(chainId, id, provider);
+        if (price !== null) {
+          results[id] = price;
+        }
+        // Small delay between requests to be respectful to public RPCs
+        await new Promise((resolve) => setTimeout(resolve, 50));
+      } catch (error) {
+        Logger.warn("Chainlink: Skipping coingecko ID due to error", { id, error });
       }
-    });
-
-    await Promise.all(promises);
+    }
 
     return results;
   }
