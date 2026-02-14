@@ -27,6 +27,104 @@ interface FiatDonationFormProps {
   onError: (_error: Error) => void;
 }
 
+/** Props for the card fields status display */
+interface CardFieldsStatusProps {
+  fieldsReady: boolean;
+  mounted: boolean;
+  paymentError: string | null;
+  retryCount: number;
+  initializing: boolean;
+  onRetry: () => void;
+}
+
+/**
+ * Card fields loading/error state display
+ * @param {CardFieldsStatusProps} props - Component props
+ * @returns {React.ReactElement | null} Status display or null when fields are ready
+ */
+function CardFieldsStatus({
+  fieldsReady,
+  mounted,
+  paymentError,
+  retryCount,
+  initializing,
+  onRetry,
+}: CardFieldsStatusProps): React.ReactElement | null {
+  if (fieldsReady) return null;
+
+  if (mounted && paymentError) {
+    return (
+      <div className="flex flex-col items-center gap-3 text-red-600 dark:text-red-400 py-2">
+        <AlertCircle className="w-6 h-6" />
+        <span className="text-sm font-medium text-center">Payment System Offline</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400">Please try again or use crypto payment</span>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          onClick={onRetry}
+          icon={<RefreshCw className="w-4 h-4" />}
+          className="mt-1"
+        >
+          Retry Payment Setup
+        </Button>
+      </div>
+    );
+  }
+
+  let statusText = 'Loading secure payment form...';
+  if (retryCount > 0) {
+    statusText = `Retrying payment setup (attempt ${retryCount + 1}/${3})...`;
+  } else if (initializing) {
+    statusText = 'Connecting to payment processor...';
+  }
+
+  return (
+    <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
+      <Loader2 className="w-5 h-5 animate-spin" />
+      <span className="text-sm font-medium">{statusText}</span>
+    </div>
+  );
+}
+
+/**
+ * Disclaimer shown at the bottom of the form
+ * @param {Object} props - Component props
+ * @param {boolean} props.isMonthly - Whether this is a monthly donation
+ * @param {number} props.chargeAmount - Amount to charge
+ * @returns {React.ReactElement} Disclaimer section
+ */
+function PaymentDisclaimer({ isMonthly, chargeAmount }: {
+  isMonthly: boolean;
+  chargeAmount: number;
+}): React.ReactElement {
+  return (
+    <div className={cn(
+      'flex items-start gap-2 p-3 rounded-lg',
+      isMonthly
+        ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'
+        : 'bg-gray-50 dark:bg-slate-800/50'
+    )}>
+      {isMonthly ? (
+        <>
+          <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="text-xs text-amber-700 dark:text-amber-300">
+            <span className="font-semibold">Recurring charge:</span> Your card will be billed ${chargeAmount.toFixed(2)} monthly.
+            You can cancel anytime via the link in your receipt email.
+          </p>
+        </>
+      ) : (
+        <>
+          <CreditCard className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            This is a one-time charge. Your card will not be saved.
+          </p>
+        </>
+      )}
+    </div>
+  );
+}
+
 /**
  * Card payment form with guest checkout
  * @component FiatDonationForm
@@ -203,10 +301,11 @@ export function FiatDonationForm({
   );
 
   const displayError = formError || paymentError;
+  const isBusy = loading || isSubmitting;
 
   // Button text based on mode
   const getButtonText = (): string => {
-    if (loading || isSubmitting) {
+    if (isBusy) {
       return isMonthly ? 'Setting up subscription...' : 'Processing...';
     }
     if (isMonthly) {
@@ -284,7 +383,7 @@ export function FiatDonationForm({
         amount={amount}
         checked={coverFees}
         onChange={onCoverFeesChange}
-        disabled={loading || isSubmitting}
+        disabled={isBusy}
       />
 
       {/* Helcim hosted fields container */}
@@ -305,46 +404,25 @@ export function FiatDonationForm({
             mounted && paymentError && !fieldsReady && 'border-red-300 dark:border-red-700'
           )}
         >
-          {!fieldsReady && (!mounted || !paymentError) && (
-            <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
-              <Loader2 className="w-5 h-5 animate-spin" />
-              <span className="text-sm font-medium">
-                {retryCount > 0
-                  ? `Retrying payment setup (attempt ${retryCount + 1}/${3})...`
-                  : initializing
-                    ? 'Connecting to payment processor...'
-                    : 'Loading secure payment form...'}
-              </span>
-            </div>
-          )}
-          {mounted && !fieldsReady && paymentError && (
-            <div className="flex flex-col items-center gap-3 text-red-600 dark:text-red-400 py-2">
-              <AlertCircle className="w-6 h-6" />
-              <span className="text-sm font-medium text-center">Payment System Offline</span>
-              <span className="text-xs text-gray-500 dark:text-gray-400">Please try again or use crypto payment</span>
-              <Button
-                type="button"
-                size="sm"
-                variant="secondary"
-                onClick={handleRetryPayment}
-                icon={<RefreshCw className="w-4 h-4" />}
-                className="mt-1"
-              >
-                Retry Payment Setup
-              </Button>
-            </div>
-          )}
+          <CardFieldsStatus
+            fieldsReady={fieldsReady}
+            mounted={mounted}
+            paymentError={paymentError}
+            retryCount={retryCount}
+            initializing={initializing}
+            onRetry={handleRetryPayment}
+          />
         </div>
       </div>
 
       {/* Submit button */}
       <Button
         type="submit"
-        disabled={loading || isSubmitting || !fieldsReady || amount <= 0}
+        disabled={isBusy || !fieldsReady || amount <= 0}
         fullWidth
         size="lg"
         icon={
-          loading || isSubmitting ? (
+          isBusy ? (
             <Loader2 className="w-5 h-5 animate-spin" />
           ) : isMonthly ? (
             <RefreshCw className="w-5 h-5" />
@@ -362,30 +440,7 @@ export function FiatDonationForm({
         {getButtonText()}
       </Button>
 
-      {/* Disclaimer */}
-      <div className={cn(
-        'flex items-start gap-2 p-3 rounded-lg',
-        isMonthly
-          ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800'
-          : 'bg-gray-50 dark:bg-slate-800/50'
-      )}>
-        {isMonthly ? (
-          <>
-            <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-xs text-amber-700 dark:text-amber-300">
-              <span className="font-semibold">Recurring charge:</span> Your card will be billed ${chargeAmount.toFixed(2)} monthly.
-              You can cancel anytime via the link in your receipt email.
-            </p>
-          </>
-        ) : (
-          <>
-            <CreditCard className="w-4 h-4 text-gray-500 dark:text-gray-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              This is a one-time charge. Your card will not be saved.
-            </p>
-          </>
-        )}
-      </div>
+      <PaymentDisclaimer isMonthly={isMonthly} chargeAmount={chargeAmount} />
     </form>
   );
 }

@@ -27,17 +27,17 @@ const RPC_ENDPOINTS = {
 };
 
 app.post("/api/rpc/:chain", async (req, res) => {
-  const { chain } = req.params;
-  const rpcUrl = RPC_ENDPOINTS[chain];
+  const safeChain = String(req.params.chain).replace(/[^a-z0-9-]/gi, "");
+  const rpcUrl = RPC_ENDPOINTS[req.params.chain];
   if (!rpcUrl) {
-    res.status(400).json({ error: `Unknown chain: ${chain}` });
+    res.status(400).json({ error: `Unknown chain: ${safeChain}` });
     return;
   }
 
   try {
     const body = JSON.stringify(req.body);
     if (!body || body === '{}' || body === 'null') {
-      console.warn(`RPC proxy (${chain}): empty request body`);
+      console.warn(`RPC proxy (${safeChain}): empty request body`);
     }
 
     const response = await fetch(rpcUrl, {
@@ -46,12 +46,11 @@ app.post("/api/rpc/:chain", async (req, res) => {
       body,
     });
 
-    console.log(`RPC proxy (${chain}): upstream responded ${response.status}`);
+    console.log(`RPC proxy (${safeChain}): upstream responded ${response.status}`);
 
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    const safeChain = String(chain).replace(/[^a-z0-9-]/gi, "");
     const safeMessage = error instanceof Error ? error.message.slice(0, 200) : "Unknown error";
     console.error(`RPC proxy error (${safeChain}): ${safeMessage}`);
     res.status(502).json({ error: `RPC request failed for ${safeChain}` });
