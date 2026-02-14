@@ -180,12 +180,12 @@ export const BASE_TOKENS: TokenConfig[] = [
   },
   {
     ...USDT_METADATA,
-    address: "0xfde4C96c8593536E31F229d6156B4d8D02642F84", // USDT on Base (bridged)
+    address: "0xfde4c96C8593536E31f229d6156B4D8d02642F84", // USDT on Base (bridged)
     minDonation: 1,
   },
   {
     ...DAI_METADATA,
-    address: "0x50c5725949A6F0c72E6C4a641F24049B1AE50db8", // DAI on Base
+    address: "0x50c5725949A6f0C72e6C4a641F24049b1AE50DB8", // DAI on Base
     minDonation: 1,
   },
 ];

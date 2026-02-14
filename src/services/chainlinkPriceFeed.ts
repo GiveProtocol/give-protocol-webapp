@@ -38,15 +38,41 @@ const SEQUENCER_GRACE_PERIOD = 3600;
 /** Local cache TTL in milliseconds */
 const CACHE_TTL_MS = 30000; // 30 seconds
 
-/** Default RPC endpoints for chains */
-const DEFAULT_RPC_ENDPOINTS: Record<ChainId, string> = {
-  [CHAIN_IDS.BASE]: "https://mainnet.base.org",
-  [CHAIN_IDS.OPTIMISM]: "https://mainnet.optimism.io",
-  [CHAIN_IDS.MOONBEAM]: "https://rpc.api.moonbeam.network",
-  [CHAIN_IDS.BASE_SEPOLIA]: "https://sepolia.base.org",
-  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "https://sepolia.optimism.io",
-  [CHAIN_IDS.MOONBASE]: "https://rpc.api.moonbase.moonbeam.network",
+/** Chain short names for the server-side RPC proxy */
+const CHAIN_PROXY_NAMES: Record<ChainId, string> = {
+  [CHAIN_IDS.BASE]: "base",
+  [CHAIN_IDS.OPTIMISM]: "optimism",
+  [CHAIN_IDS.MOONBEAM]: "moonbeam",
+  [CHAIN_IDS.BASE_SEPOLIA]: "base-sepolia",
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "optimism-sepolia",
+  [CHAIN_IDS.MOONBASE]: "moonbase",
 };
+
+/** Env var names for per-chain RPC URLs */
+const CHAIN_RPC_ENV_VARS: Record<ChainId, string> = {
+  [CHAIN_IDS.BASE]: "VITE_BASE_RPC_URL",
+  [CHAIN_IDS.OPTIMISM]: "VITE_OPTIMISM_RPC_URL",
+  [CHAIN_IDS.MOONBEAM]: "VITE_MOONBEAM_RPC_URL",
+  [CHAIN_IDS.BASE_SEPOLIA]: "VITE_BASE_SEPOLIA_RPC_URL",
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "VITE_OPTIMISM_SEPOLIA_RPC_URL",
+  [CHAIN_IDS.MOONBASE]: "VITE_MOONBASE_RPC_URL",
+};
+
+/**
+ * Get the RPC URL for a chain.
+ * Prefers VITE_*_RPC_URL env vars (e.g. Alchemy/Infura with CORS support).
+ * Falls back to the server-side proxy at /api/rpc/<chain> which avoids CORS.
+ */
+function getRpcUrl(chainId: ChainId): string {
+  const envVar = CHAIN_RPC_ENV_VARS[chainId];
+  const envValue = envVar ? import.meta.env[envVar] : undefined;
+  if (envValue) return envValue;
+
+  // Fall back to server-side RPC proxy (absolute URL required by ethers)
+  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
+  const proxyName = CHAIN_PROXY_NAMES[chainId];
+  return `${origin}/api/rpc/${proxyName}`;
+}
 
 /**
  * Chainlink Price Feed Service
@@ -63,12 +89,8 @@ export class ChainlinkPriceFeedService {
     const cached = this.providerCache.get(chainId);
     if (cached) return cached;
 
-    const rpcUrl = DEFAULT_RPC_ENDPOINTS[chainId];
-    if (!rpcUrl) {
-      throw new Error(`No RPC endpoint configured for chain ${chainId}`);
-    }
-
-    const provider = new ethers.JsonRpcProvider(rpcUrl);
+    const rpcUrl = getRpcUrl(chainId);
+    const provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
     this.providerCache.set(chainId, provider);
     return provider;
   }

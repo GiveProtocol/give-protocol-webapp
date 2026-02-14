@@ -8,6 +8,7 @@ import React, {
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Logo } from "./Logo";
 import { ConnectButton } from "./web3/ConnectButton";
+import { ClientOnly } from "./ClientOnly";
 import { SettingsMenu } from "./SettingsMenu";
 import { WalletButton, NetworkSelector } from "./Wallet";
 import type { NetworkType, WalletProviderType } from "./Wallet";
@@ -293,25 +294,27 @@ const NavActions: React.FC<{
   return (
     <div className="flex items-center space-x-2">
       <SettingsMenu />
-      {isConnected && address ? (
-        <>
-          <NetworkSelector
-            currentNetwork={network}
-            onNetworkChange={onNetworkChange}
-            className="hidden sm:block"
-          />
-          <WalletButton
-            address={address}
-            provider={getWalletProvider()}
-            network={network}
-            onDisconnect={onDisconnect}
-            onSwitchAccount={handleSwitchAccount}
-            onNetworkChange={onNetworkChange}
-          />
-        </>
-      ) : (
-        <ConnectButton />
-      )}
+      <ClientOnly>
+        {isConnected && address ? (
+          <>
+            <NetworkSelector
+              currentNetwork={network}
+              onNetworkChange={onNetworkChange}
+              className="hidden sm:block"
+            />
+            <WalletButton
+              address={address}
+              provider={getWalletProvider()}
+              network={network}
+              onDisconnect={onDisconnect}
+              onSwitchAccount={handleSwitchAccount}
+              onNetworkChange={onNetworkChange}
+            />
+          </>
+        ) : (
+          <ConnectButton />
+        )}
+      </ClientOnly>
       <MobileMenuButton
         isMenuOpen={isMenuOpen}
         toggleMenu={toggleMenu}

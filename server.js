@@ -13,6 +13,41 @@ const app = express();
 // Parse cookies
 app.use(cookieParser());
 
+// Parse JSON bodies for RPC proxy
+app.use(express.json());
+
+// RPC proxy endpoints (avoids browser CORS issues with public RPCs)
+const RPC_ENDPOINTS = {
+  base: process.env.VITE_BASE_RPC_URL || "https://base.publicnode.com",
+  optimism: process.env.VITE_OPTIMISM_RPC_URL || "https://mainnet.optimism.io",
+  moonbeam: process.env.VITE_MOONBEAM_RPC_URL || "https://rpc.api.moonbeam.network",
+  "base-sepolia": process.env.VITE_BASE_SEPOLIA_RPC_URL || "https://sepolia.base.org",
+  "optimism-sepolia": process.env.VITE_OPTIMISM_SEPOLIA_RPC_URL || "https://sepolia.optimism.io",
+  moonbase: process.env.VITE_MOONBASE_RPC_URL || "https://rpc.api.moonbase.moonbeam.network",
+};
+
+app.post("/api/rpc/:chain", async (req, res) => {
+  const { chain } = req.params;
+  const rpcUrl = RPC_ENDPOINTS[chain];
+  if (!rpcUrl) {
+    res.status(400).json({ error: `Unknown chain: ${chain}` });
+    return;
+  }
+
+  try {
+    const response = await fetch(rpcUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(req.body),
+    });
+    const data = await response.json();
+    res.json(data);
+  } catch (error) {
+    console.error(`RPC proxy error (${chain}):`, error);
+    res.status(502).json({ error: `RPC request failed for ${chain}` });
+  }
+});
+
 // API Proxy routes for external services (to avoid CORS issues)
 app.get("/api/coingecko/*", async (req, res) => {
   try {
@@ -65,7 +100,9 @@ if (!isProduction) {
 // Serve HTML
 app.use("*", async (req, res) => {
   try {
-    const url = req.originalUrl.replace(base, "");
+    let url = req.originalUrl.replace(base, "");
+    // Ensure URL starts with / so StaticRouter can match routes
+    if (!url.startsWith("/")) url = `/${url}`;
 
     // Read theme from cookie (default to 'light')
     const theme = req.cookies.theme || "light";

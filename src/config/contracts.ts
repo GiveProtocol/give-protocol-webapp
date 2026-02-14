@@ -109,7 +109,7 @@ export const CHAIN_CONFIGS: Record<ChainId, ChainConfig> = {
     name: "Base",
     shortName: "base",
     nativeCurrency: { name: "Ethereum", symbol: "ETH", decimals: 18 },
-    rpcUrls: ["https://mainnet.base.org"],
+    rpcUrls: [import.meta.env.VITE_BASE_RPC_URL || "https://mainnet.base.org"],
     blockExplorerUrls: ["https://basescan.org"],
     iconPath: "/chains/base.svg",
     color: "#0052FF",

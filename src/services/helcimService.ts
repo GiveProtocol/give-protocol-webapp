@@ -230,6 +230,7 @@ declare global {
 /**
  * Poll for `window.HelcimPay` after the script's `onload` fires.
  * The global may not be assigned synchronously when the script finishes downloading.
+ * Uses async/await polling with a generous timeout for slow connections.
  * @returns Promise that resolves when `window.HelcimPay` is available
  */
 function waitForHelcimGlobal(): Promise<void> {
@@ -239,18 +240,22 @@ function waitForHelcimGlobal(): Promise<void> {
       return;
     }
 
-    const pollInterval = 100; // ms
-    const maxWait = 5000; // ms
+    const pollInterval = 200; // ms
+    const maxWait = 10000; // 10s - generous for slow connections
     let elapsed = 0;
 
     const timer = setInterval(() => {
       elapsed += pollInterval;
       if (window.HelcimPay) {
         clearInterval(timer);
+        Logger.info(`HelcimPay.js global detected after ${elapsed}ms`);
         resolve();
       } else if (elapsed >= maxWait) {
         clearInterval(timer);
-        reject(new Error('HelcimPay.js global not available after script load'));
+        reject(new Error(
+          `HelcimPay.js global not available after ${maxWait}ms. ` +
+          'Check CSP script-src includes https://secure.helcim.app and https://api.helcim.com'
+        ));
       }
     }, pollInterval);
   });

@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 import { ethers } from "ethers";
 import { useWeb3 } from "@/contexts/Web3Context";
-import { TokenConfig } from "@/config/tokens";
+import { CHAIN_TOKENS, type TokenConfig } from "@/config/tokens";
+import type { ChainId } from "@/config/contracts";
 import { Logger } from "@/utils/logger";
 
 const ERC20_ABI = [
@@ -10,12 +11,35 @@ const ERC20_ABI = [
 ];
 
 /**
+ * Filter tokens to only include those valid for the connected chain.
+ * Prevents calling balanceOf on addresses that don't exist on the current network.
+ */
+function filterTokensForChain(
+  tokens: TokenConfig[],
+  chainId: number | null,
+): TokenConfig[] {
+  if (!chainId) return [];
+
+  const chainTokens = CHAIN_TOKENS[chainId as ChainId];
+  if (!chainTokens) return [];
+
+  const validAddresses = new Set(
+    chainTokens.map((t) => t.address.toLowerCase()),
+  );
+
+  return tokens.filter(
+    (token) =>
+      token.isNative || validAddresses.has(token.address.toLowerCase()),
+  );
+}
+
+/**
  * Hook for fetching balances of multiple tokens simultaneously
  * @param tokens Array of token configurations to fetch balances for
  * @returns Object containing balances map, loading state, error, and refetch function
  */
 export function useMultiTokenBalance(tokens: TokenConfig[]) {
-  const { provider, address, isConnected } = useWeb3();
+  const { provider, address, isConnected, chainId } = useWeb3();
   const [balances, setBalances] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
@@ -26,11 +50,18 @@ export function useMultiTokenBalance(tokens: TokenConfig[]) {
       return;
     }
 
+    // Only query tokens that belong to the connected chain
+    const validTokens = filterTokensForChain(tokens, chainId);
+    if (validTokens.length === 0) {
+      setBalances({});
+      return;
+    }
+
     setIsLoading(true);
     setError(null);
 
     try {
-      const balancePromises = tokens.map(async (token) => {
+      const balancePromises = validTokens.map(async (token) => {
         try {
           if (token.isNative) {
             const balanceWei = await provider.getBalance(address);
@@ -45,15 +76,15 @@ export function useMultiTokenBalance(tokens: TokenConfig[]) {
             provider,
           );
           const balanceRaw = await contract.balanceOf(address);
-          const decimals = await contract.decimals();
           const balanceFormatted = Number.parseFloat(
-            ethers.formatUnits(balanceRaw, decimals),
+            ethers.formatUnits(balanceRaw, token.decimals),
           );
           return { symbol: token.symbol, balance: balanceFormatted };
         } catch (tokenError) {
-          Logger.error("Failed to fetch balance for token", {
+          Logger.warn("Failed to fetch balance for token", {
             token: token.symbol,
-            error: tokenError,
+            address: token.address,
+            chainId,
           });
           return { symbol: token.symbol, balance: 0 };
         }
@@ -76,7 +107,7 @@ export function useMultiTokenBalance(tokens: TokenConfig[]) {
     } finally {
       setIsLoading(false);
     }
-  }, [provider, address, tokens, isConnected]);
+  }, [provider, address, tokens, isConnected, chainId]);
 
   useEffect(() => {
     fetchBalances();

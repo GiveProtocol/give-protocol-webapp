@@ -94,6 +94,8 @@ export class SecurityManager {
       "sepolia.base.org",
       "sepolia.optimism.io",
       "rpc.api.moonbase.moonbeam.network",
+      "base.publicnode.com",
+      "s3.amazonaws.com",
     ];
   }
 
