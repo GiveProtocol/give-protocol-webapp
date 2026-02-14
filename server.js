@@ -46,7 +46,7 @@ app.post("/api/rpc/:chain", async (req, res) => {
       body,
     });
 
-    console.log(`RPC proxy (${safeChain}): upstream responded ${response.status}`);
+    console.log(`RPC proxy (${safeChain}): upstream responded ${Number(response.status)}`);
 
     const data = await response.json();
     res.json(data);
