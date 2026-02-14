@@ -99,7 +99,7 @@ export class ChainlinkPriceFeedService {
    * Check if L2 sequencer is up and past grace period
    * Required for Base and Optimism to ensure price data is fresh
    */
-  private async checkSequencerUptime(
+  private static async checkSequencerUptime(
     chainId: ChainId,
     provider: Provider
   ): Promise<boolean> {
@@ -155,7 +155,7 @@ export class ChainlinkPriceFeedService {
   /**
    * Read price from a Chainlink aggregator contract
    */
-  private async readPriceFeed(
+  private static async readPriceFeed(
     feedConfig: PriceFeedConfig,
     provider: Provider
   ): Promise<ChainlinkPriceData> {
@@ -239,7 +239,7 @@ export class ChainlinkPriceFeedService {
       const activeProvider = provider || this.getProvider(chainId as ChainId);
 
       // Check sequencer uptime for L2 chains
-      const sequencerOk = await this.checkSequencerUptime(
+      const sequencerOk = await ChainlinkPriceFeedService.checkSequencerUptime(
         chainId as ChainId,
         activeProvider
       );
@@ -253,7 +253,7 @@ export class ChainlinkPriceFeedService {
       }
 
       // Read price from contract
-      const priceData = await this.readPriceFeed(feedConfig, activeProvider);
+      const priceData = await ChainlinkPriceFeedService.readPriceFeed(feedConfig, activeProvider);
 
       // Update cache
       this.priceCache.set(cacheKey, {

@@ -22,5 +22,6 @@ export function ClientOnly({
     setMounted(true);
   }, []);
 
-  return mounted ? <>{children}</> : <>{fallback}</>;
+  if (!mounted) return fallback as React.ReactElement | null;
+  return children as React.ReactElement | null;
 }

@@ -43,8 +43,10 @@ app.post("/api/rpc/:chain", async (req, res) => {
     const data = await response.json();
     res.json(data);
   } catch (error) {
-    console.error(`RPC proxy error (${chain}):`, error);
-    res.status(502).json({ error: `RPC request failed for ${chain}` });
+    const safeChain = String(chain).replace(/[^a-z0-9-]/gi, "");
+    const safeMessage = error instanceof Error ? error.message.slice(0, 200) : "Unknown error";
+    console.error(`RPC proxy error (${safeChain}): ${safeMessage}`);
+    res.status(502).json({ error: `RPC request failed for ${safeChain}` });
   }
 });
 
