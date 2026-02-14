@@ -63,6 +63,12 @@ export function FiatDonationForm({
   const [emailError, setEmailError] = useState('');
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  // Prevent hydration mismatch: only render payment-dependent UI after client mount
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const {
     processFiatPayment,
@@ -296,10 +302,10 @@ export function FiatDonationForm({
             'focus-within:bg-white dark:focus-within:bg-slate-900',
             'focus-within:border-transparent focus-within:ring-2 focus-within:ring-emerald-500',
             !fieldsReady && 'flex items-center justify-center',
-            paymentError && !fieldsReady && 'border-red-300 dark:border-red-700'
+            mounted && paymentError && !fieldsReady && 'border-red-300 dark:border-red-700'
           )}
         >
-          {!fieldsReady && !paymentError && (
+          {!fieldsReady && (!mounted || !paymentError) && (
             <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400">
               <Loader2 className="w-5 h-5 animate-spin" />
               <span className="text-sm font-medium">
@@ -311,7 +317,7 @@ export function FiatDonationForm({
               </span>
             </div>
           )}
-          {!fieldsReady && paymentError && (
+          {mounted && !fieldsReady && paymentError && (
             <div className="flex flex-col items-center gap-3 text-red-600 dark:text-red-400 py-2">
               <AlertCircle className="w-6 h-6" />
               <span className="text-sm font-medium text-center">Payment System Offline</span>

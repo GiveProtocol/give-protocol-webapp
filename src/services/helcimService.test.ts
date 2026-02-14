@@ -278,7 +278,6 @@ describe("helcimService", () => {
       // Find the script element that was appended
       const script = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
       expect(script).not.toBeNull();
-      expect(script.async).toBe(true);
 
       // Simulate script load, then global appears
       window.HelcimPay = createMockHelcimPay();

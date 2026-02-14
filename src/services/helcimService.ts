@@ -321,7 +321,6 @@ export function loadHelcimScript(): Promise<void> {
   helcimScriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = 'https://secure.helcim.app/helcim-pay/services/start.js';
-    script.async = true;
 
     script.onload = () => {
       Logger.info('HelcimPay.js script loaded, waiting for global');

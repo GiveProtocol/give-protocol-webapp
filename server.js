@@ -35,11 +35,19 @@ app.post("/api/rpc/:chain", async (req, res) => {
   }
 
   try {
+    const body = JSON.stringify(req.body);
+    if (!body || body === '{}' || body === 'null') {
+      console.warn(`RPC proxy (${chain}): empty request body`);
+    }
+
     const response = await fetch(rpcUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body),
+      body,
     });
+
+    console.log(`RPC proxy (${chain}): upstream responded ${response.status}`);
+
     const data = await response.json();
     res.json(data);
   } catch (error) {
