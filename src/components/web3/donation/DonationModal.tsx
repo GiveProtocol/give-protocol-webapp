@@ -41,9 +41,9 @@ interface DonationModalProps {
   onSuccess?: (_result: DonationResult) => void;
 }
 
-function createInitialState(frequency: DonationFrequency): DonationModalState {
+function createInitialState(frequency: DonationFrequency, isConnected: boolean): DonationModalState {
   return {
-    paymentMethod: 'crypto',
+    paymentMethod: isConnected ? 'crypto' : 'card',
     frequency,
     step: 'input',
     amount: 0,
@@ -101,8 +101,12 @@ export const DonationModal: React.FC<DonationModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [state, dispatch] = useReducer(donationReducer, frequency, createInitialState);
-  const { chainId } = useWeb3();
+  const { chainId, isConnected } = useWeb3();
+  const [state, dispatch] = useReducer(
+    donationReducer,
+    { frequency, isConnected: Boolean(isConnected) },
+    (args) => createInitialState(args.frequency, args.isConnected),
+  );
 
   // Get token for fiat presets
   const availableTokens = useMemo(() => {

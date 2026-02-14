@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Calendar } from 'lucide-react';
 import { DonationModal } from './DonationModal';
-import { TransactionButton } from '@/components/web3/common/TransactionButton';
+import { Button } from '@/components/ui/Button';
 
 interface ScheduledDonationButtonProps {
   charityName: string;
@@ -31,12 +31,13 @@ export const ScheduledDonationButton: React.FC<ScheduledDonationButtonProps> = (
 
   return (
     <>
-      <TransactionButton
-        icon={Calendar}
-        label={buttonText}
+      <Button
+        icon={<Calendar className="w-4 h-4" />}
         onClick={handleOpenModal}
         className="w-full flex items-center justify-center"
-      />
+      >
+        {buttonText}
+      </Button>
 
       {showModal && (
         <DonationModal
