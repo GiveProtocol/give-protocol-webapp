@@ -59,6 +59,7 @@ export default {
     "!src/**/*.test.{ts,tsx}",
     "!src/**/*.stories.tsx",
     "!src/types/**/*",
+    "src/types/chains.ts",
     "!src/mocks/**/*",
   ],
   coverageReporters: ["text", "lcov", "json", "html"],

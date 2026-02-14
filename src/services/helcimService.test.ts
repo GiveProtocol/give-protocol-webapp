@@ -323,10 +323,10 @@ describe("helcimService", () => {
       // Script loads but global never appears
       script.onload?.(new Event("load"));
 
-      // Advance past the 5s timeout
-      jest.advanceTimersByTime(5100);
+      // Advance past the 10s timeout
+      jest.advanceTimersByTime(10100);
 
-      await expect(promise).rejects.toThrow("HelcimPay.js global not available after script load");
+      await expect(promise).rejects.toThrow("HelcimPay.js global not available after 10000ms");
       jest.useRealTimers();
     });
 

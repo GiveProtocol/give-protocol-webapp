@@ -13,6 +13,7 @@ import {
   type PriceFeedConfig,
 } from "@/config/chainlink";
 import { CHAIN_IDS, type ChainId } from "@/config/contracts";
+import { getEnv } from "@/config/env";
 
 /** Price data returned from Chainlink */
 export interface ChainlinkPriceData {
@@ -65,8 +66,10 @@ const CHAIN_RPC_ENV_VARS: Record<ChainId, string> = {
  */
 function getRpcUrl(chainId: ChainId): string {
   const envVar = CHAIN_RPC_ENV_VARS[chainId];
-  const envValue = envVar ? import.meta.env[envVar] : undefined;
-  if (envValue) return envValue;
+  if (envVar) {
+    const envValue = getEnv(envVar);
+    if (envValue) return envValue;
+  }
 
   // Fall back to server-side RPC proxy (absolute URL required by ethers)
   const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";

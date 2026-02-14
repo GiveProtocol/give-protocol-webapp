@@ -1,6 +1,15 @@
 // Mock for @/config/env module
 // This provides the ENV object that would normally come from import.meta.env
 
+/**
+ * Mock getEnv that returns undefined for all keys.
+ * @param {string} _key - The env var key
+ * @returns {undefined} Always returns undefined in tests
+ */
+export function getEnv(_key) {
+  return undefined;
+}
+
 export const ENV = {
   SUPABASE_URL: "https://mock-supabase-url.supabase.co",
   SUPABASE_ANON_KEY: "mock-supabase-anon-key",
