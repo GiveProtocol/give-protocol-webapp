@@ -53,26 +53,24 @@ interface CurrencyProviderProps {
 export function CurrencyProvider({
   children,
 }: CurrencyProviderProps): React.ReactElement {
+  // Initialize with SSR-safe default; hydrate from localStorage in useEffect
   const [selectedCurrency, setSelectedCurrencyState] = useState<FiatCurrency>(
-    () => {
-      if (typeof window === "undefined") {
-        return SUPPORTED_CURRENCIES[0]; // USD default
-      }
-
-      const saved = localStorage.getItem("preferredCurrency");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          const currency = getCurrencyByCode(parsed.code);
-          return currency || SUPPORTED_CURRENCIES[0];
-        } catch {
-          // Invalid JSON, use default
-        }
-      }
-
-      return SUPPORTED_CURRENCIES[0]; // USD default
-    },
+    SUPPORTED_CURRENCIES[0],
   );
+
+  // Hydrate currency preference from localStorage after mount
+  useEffect(() => {
+    const saved = localStorage.getItem("preferredCurrency");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        const currency = getCurrencyByCode(parsed.code);
+        if (currency) setSelectedCurrencyState(currency);
+      } catch {
+        // Invalid JSON, use default
+      }
+    }
+  }, []);
 
   const [tokenPrices, setTokenPrices] = useState<Record<string, number>>({});
   const [isLoading, setIsLoading] = useState(true);

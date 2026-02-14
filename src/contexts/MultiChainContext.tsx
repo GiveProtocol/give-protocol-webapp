@@ -90,18 +90,21 @@ interface MultiChainProviderProps {
  * @param children - Child components
  */
 export function MultiChainProvider({ children }: MultiChainProviderProps) {
-  // Load initial state from localStorage
-  const initialState = loadPersistedState();
-
-  // State
+  // Initialize with SSR-safe defaults; hydrate from localStorage in useEffect
   const [wallet, setWallet] = useState<UnifiedWalletProvider | null>(null);
   const [accounts, setAccounts] = useState<UnifiedAccount[]>([]);
   const [activeAccount, setActiveAccount] = useState<UnifiedAccount | null>(null);
-  const [activeChainType, setActiveChainType] = useState<ChainType>(
-    initialState.activeChainType
-  );
+  const [activeChainType, setActiveChainType] = useState<ChainType>("evm");
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+
+  // Hydrate chain type from localStorage after mount
+  useEffect(() => {
+    const persisted = loadPersistedState();
+    if (persisted.activeChainType !== "evm") {
+      setActiveChainType(persisted.activeChainType);
+    }
+  }, []);
 
   // Refs for avoiding stale closures
   const walletRef = useRef<UnifiedWalletProvider | null>(null);

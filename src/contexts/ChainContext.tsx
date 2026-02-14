@@ -65,20 +65,19 @@ export const ChainProvider: React.FC<ChainProviderProps> = ({ children }) => {
   // Determine if testnets should be shown
   const showTestnets = ENV.SHOW_TESTNETS;
 
-  // Initialize from localStorage or use default (SSR-safe)
-  const [selectedChainId, setSelectedChainId] = useState<ChainId>(() => {
-    if (typeof window === "undefined") return DEFAULT_CHAIN_ID;
+  // Initialize with SSR-safe default; hydrate from localStorage in useEffect
+  const [selectedChainId, setSelectedChainId] = useState<ChainId>(DEFAULT_CHAIN_ID);
 
+  // Hydrate chain selection from localStorage after mount
+  useEffect(() => {
     const stored = localStorage.getItem(STORAGE_KEY);
     if (stored) {
       const parsedId = Number.parseInt(stored, 10);
-      // Validate stored chain is still supported
       if (isChainSupported(parsedId)) {
-        return parsedId as ChainId;
+        setSelectedChainId(parsedId as ChainId);
       }
     }
-    return DEFAULT_CHAIN_ID;
-  });
+  }, []);
 
   // Get available chains based on testnet setting
   const availableChains = React.useMemo(

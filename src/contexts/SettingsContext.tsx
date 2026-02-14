@@ -95,21 +95,20 @@ export const useSettings = () => {
 export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // Initialize from localStorage or use defaults (SSR-safe)
-  const [language, setLanguageState] = useState<Language>(() => {
-    if (typeof window === "undefined") return "en";
-    return (localStorage.getItem("language") as Language) || "en";
-  });
+  // Initialize with SSR-safe defaults; hydrate from localStorage/cookies in useEffect
+  const [language, setLanguageState] = useState<Language>("en");
+  const [currency, setCurrencyState] = useState<Currency>("USD");
+  const [theme, setThemeState] = useState<Theme>("light");
 
-  const [currency, setCurrencyState] = useState<Currency>(() => {
-    if (typeof window === "undefined") return "USD";
-    return (localStorage.getItem("currency") as Currency) || "USD";
-  });
+  // Hydrate state from localStorage/cookies after mount to avoid SSR mismatch
+  useEffect(() => {
+    const storedLang = localStorage.getItem("language") as Language | null;
+    if (storedLang) setLanguageState(storedLang);
 
-  const [theme, setThemeState] = useState<Theme>(() => {
-    if (typeof window === "undefined") return "light";
+    const storedCurrency = localStorage.getItem("currency") as Currency | null;
+    if (storedCurrency) setCurrencyState(storedCurrency);
 
-    // Try to read from cookie first (for SSR consistency), then localStorage
+    // Read theme from cookie first (server also reads this), then localStorage
     const getCookie = (name: string): string | null => {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -117,24 +116,18 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
       return null;
     };
 
-    const cookieTheme = getCookie("theme");
-    const localTheme = localStorage.getItem("theme");
+    const cookieTheme = getCookie("theme") as Theme | null;
+    const localTheme = localStorage.getItem("theme") as Theme | null;
+    const resolvedTheme = cookieTheme || localTheme || "light";
+    setThemeState(resolvedTheme);
 
-    return (cookieTheme as Theme) || (localTheme as Theme) || "light";
-  });
-
-  // Apply initial theme on mount (SSR will have already set the class, just sync state)
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      // Ensure the class matches our state (SSR already set it, but verify)
-      if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+    // Apply theme class to document
+    if (resolvedTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount - theme dependency handled by separate effect below
+  }, []);
 
   // Update localStorage when settings change (client-only)
   useEffect(() => {
