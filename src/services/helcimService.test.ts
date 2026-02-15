@@ -49,14 +49,14 @@ describe("helcimService", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (global.fetch as jest.Mock).mockClear();
-    delete window.HelcimPay;
+    delete window.helcimPayJS;
     resetHelcimScriptState();
   });
 
   afterEach(() => {
     // Clean up script tags added during tests
     document.querySelectorAll('script[src*="helcim-pay"]').forEach((el) => el.remove());
-    delete window.HelcimPay;
+    delete window.helcimPayJS;
   });
 
   describe("processPayment", () => {
@@ -264,8 +264,8 @@ describe("helcimService", () => {
   });
 
   describe("loadHelcimScript", () => {
-    it("should resolve immediately when window.HelcimPay already exists", async () => {
-      window.HelcimPay = createMockHelcimPay();
+    it("should resolve immediately when window.helcimPayJS already exists", async () => {
+      window.helcimPayJS = createMockHelcimPay();
 
       await expect(loadHelcimScript()).resolves.toBeUndefined();
     });
@@ -280,7 +280,7 @@ describe("helcimService", () => {
       expect(script).not.toBeNull();
 
       // Simulate script load, then global appears
-      window.HelcimPay = createMockHelcimPay();
+      window.helcimPayJS = createMockHelcimPay();
       script.onload?.(new Event("load"));
 
       // Advance past the poll interval
@@ -322,10 +322,10 @@ describe("helcimService", () => {
       // Script loads but global never appears
       script.onload?.(new Event("load"));
 
-      // Advance past the 10s timeout
-      jest.advanceTimersByTime(10100);
+      // Advance past the 5s timeout
+      jest.advanceTimersByTime(5100);
 
-      await expect(promise).rejects.toThrow("HelcimPay.js global not available after 10000ms");
+      await expect(promise).rejects.toThrow("helcimPayJS global not available after 5000ms");
       jest.useRealTimers();
     });
 
@@ -340,7 +340,7 @@ describe("helcimService", () => {
       const promise = loadHelcimScript();
 
       // Simulate load event on existing script
-      window.HelcimPay = createMockHelcimPay();
+      window.helcimPayJS = createMockHelcimPay();
       existingScript.dispatchEvent(new Event("load"));
 
       jest.advanceTimersByTime(100);
@@ -369,7 +369,7 @@ describe("helcimService", () => {
       document.head.appendChild(existingScript);
 
       // Global already available
-      window.HelcimPay = createMockHelcimPay();
+      window.helcimPayJS = createMockHelcimPay();
 
       await expect(loadHelcimScript()).resolves.toBeUndefined();
     });
@@ -396,7 +396,7 @@ describe("helcimService", () => {
       const script2 = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
       expect(script2).not.toBeNull();
 
-      window.HelcimPay = createMockHelcimPay();
+      window.helcimPayJS = createMockHelcimPay();
       script2.onload?.(new Event("load"));
       jest.advanceTimersByTime(100);
 
@@ -408,7 +408,7 @@ describe("helcimService", () => {
   describe("initializeHelcimFields", () => {
     it("should initialize fields with correct config", () => {
       const mockHelcim = createMockHelcimPay();
-      window.HelcimPay = mockHelcim;
+      window.helcimPayJS = mockHelcim;
 
       initializeHelcimFields("card-container", "checkout-token", 50, true);
 
@@ -424,7 +424,7 @@ describe("helcimService", () => {
 
     it("should default to test mode true", () => {
       const mockHelcim = createMockHelcimPay();
-      window.HelcimPay = mockHelcim;
+      window.helcimPayJS = mockHelcim;
 
       initializeHelcimFields("card-container", "checkout-token", 50);
 
@@ -435,12 +435,12 @@ describe("helcimService", () => {
 
     it("should throw when HelcimPay is not loaded", () => {
       expect(() => initializeHelcimFields("card-container", "checkout-token", 50)).toThrow(
-        "HelcimPay.js not loaded",
+        "helcimPayJS not loaded",
       );
     });
 
     it("should throw when checkout token is empty", () => {
-      window.HelcimPay = createMockHelcimPay();
+      window.helcimPayJS = createMockHelcimPay();
 
       expect(() => initializeHelcimFields("card-container", "", 50)).toThrow(
         "Checkout token is required",
@@ -451,7 +451,7 @@ describe("helcimService", () => {
   describe("updateHelcimAmount", () => {
     it("should update amount when HelcimPay is available", () => {
       const mockHelcim = createMockHelcimPay();
-      window.HelcimPay = mockHelcim;
+      window.helcimPayJS = mockHelcim;
 
       updateHelcimAmount(75);
 
@@ -466,7 +466,7 @@ describe("helcimService", () => {
   describe("submitHelcimFields", () => {
     it("should validate and submit fields", async () => {
       const mockHelcim = createMockHelcimPay();
-      window.HelcimPay = mockHelcim;
+      window.helcimPayJS = mockHelcim;
 
       const token = await submitHelcimFields();
 
@@ -476,13 +476,13 @@ describe("helcimService", () => {
     });
 
     it("should throw when HelcimPay is not loaded", async () => {
-      await expect(submitHelcimFields()).rejects.toThrow("HelcimPay.js not loaded");
+      await expect(submitHelcimFields()).rejects.toThrow("helcimPayJS not loaded");
     });
 
     it("should throw when validation fails", async () => {
       const mockHelcim = createMockHelcimPay();
       mockHelcim.validate.mockResolvedValue(false);
-      window.HelcimPay = mockHelcim;
+      window.helcimPayJS = mockHelcim;
 
       await expect(submitHelcimFields()).rejects.toThrow("Please check your card details");
       expect(mockHelcim.submit).not.toHaveBeenCalled();

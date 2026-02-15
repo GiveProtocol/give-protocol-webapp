@@ -35,25 +35,52 @@ app.post("/api/rpc/:chain", async (req, res) => {
   }
 
   try {
-    const body = JSON.stringify(req.body);
-    if (!body || body === '{}' || body === 'null') {
-      console.warn(`RPC proxy (${safeChain}): empty request body`);
+    if (!req.body || !req.body.method) {
+      res.status(400).json({
+        jsonrpc: "2.0",
+        id: null,
+        error: { code: -32600, message: "Invalid Request: empty or malformed JSON-RPC body" },
+      });
+      return;
     }
+
+    const body = JSON.stringify(req.body);
 
     const response = await fetch(rpcUrl, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Content-Length": Buffer.byteLength(body).toString(),
+      },
       body,
     });
 
     console.log(`RPC proxy (${safeChain}): upstream responded ${Number(response.status)}`);
 
     const data = await response.json();
+
+    if (
+      data === null ||
+      typeof data !== "object" ||
+      (!("result" in data) && !("error" in data))
+    ) {
+      res.status(502).json({
+        jsonrpc: "2.0",
+        id: req.body.id,
+        error: { code: -32603, message: "Empty response from upstream RPC" },
+      });
+      return;
+    }
+
     res.json(data);
   } catch (error) {
     const safeMessage = error instanceof Error ? error.message.slice(0, 200) : "Unknown error";
     console.error(`RPC proxy error (${safeChain}): ${safeMessage}`);
-    res.status(502).json({ error: `RPC request failed for ${safeChain}` });
+    res.status(502).set("Content-Type", "application/json").json({
+      jsonrpc: "2.0",
+      id: (req.body && req.body.id) || null,
+      error: { code: -32603, message: `RPC request failed for ${safeChain}` },
+    });
   }
 });
 

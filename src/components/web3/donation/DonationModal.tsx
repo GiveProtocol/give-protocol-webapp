@@ -101,6 +101,9 @@ export const DonationModal: React.FC<DonationModalProps> = ({
   onClose,
   onSuccess,
 }) => {
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => { setIsMounted(true); }, []);
+
   const { chainId, isConnected } = useWeb3();
   const [state, dispatch] = useReducer(
     donationReducer,
@@ -349,6 +352,12 @@ export const DonationModal: React.FC<DonationModalProps> = ({
                   onClose={onClose}
                 />
               )
+            ) : !isMounted ? (
+              // SSR / hydration placeholder — avoid loading Helcim scripts server-side
+              <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+                <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent mb-3" />
+                <p className="text-sm">Loading payment form...</p>
+              </div>
             ) : (
               // Card mode - fiat donation form
               <div className="space-y-6">
