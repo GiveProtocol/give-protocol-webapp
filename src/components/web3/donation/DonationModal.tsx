@@ -26,6 +26,119 @@ import { getERC20TokensForChain, type TokenConfig } from '@/config/tokens';
 import { getContractAddress, CHAIN_IDS } from '@/config/contracts';
 import { useWeb3 } from '@/contexts/Web3Context';
 
+/** Shared modal overlay + card shell with close button */
+function ModalShell({ onClose, children, dark }: {
+  onClose: () => void;
+  children: React.ReactNode;
+  dark?: boolean;
+}): React.ReactElement {
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fadeIn overflow-y-auto">
+      <Card className={cn('w-full max-w-md relative shadow-2xl rounded-2xl animate-slideIn my-8', dark && 'dark:bg-slate-900')}>
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors z-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full p-1 hover:bg-white dark:hover:bg-slate-700"
+          aria-label="Close"
+        >
+          <X className="h-6 w-6" />
+        </button>
+        {children}
+      </Card>
+    </div>
+  );
+}
+
+/** Success confirmation content */
+function SuccessContent({ result, charityName, onClose }: {
+  result: DonationResult;
+  charityName: string;
+  onClose: () => void;
+}): React.ReactElement {
+  return (
+    <div className="p-8 text-center">
+      <div className="w-16 h-16 mx-auto mb-4 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
+        <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
+      </div>
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+        Thank You!
+      </h2>
+      <p className="text-gray-600 dark:text-gray-400 mb-4">
+        Your {result.isRecurring ? 'monthly ' : ''}donation of{' '}
+        {result.paymentMethod === 'card'
+          ? `$${result.amount.toFixed(2)}`
+          : `${result.amount} ${result.currency}`}{' '}
+        to {charityName} has been processed.
+      </p>
+      {result.isRecurring && (
+        <p className="text-sm text-emerald-600 dark:text-emerald-400 mb-4">
+          You&apos;ll be charged monthly until you cancel.
+        </p>
+      )}
+      {result.paymentMethod === 'card' && (
+        <p className="text-sm text-gray-500 dark:text-gray-500">
+          A receipt has been sent to your email.
+        </p>
+      )}
+      <Button onClick={onClose} className="mt-6" fullWidth>
+        Done
+      </Button>
+    </div>
+  );
+}
+
+/** Amount display shown when an amount is selected in card mode */
+function AmountDisplay({ amount, isMonthly }: {
+  amount: number;
+  isMonthly: boolean;
+}): React.ReactElement | null {
+  if (amount <= 0) return null;
+  return (
+    <div className="text-center p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        Donation Amount
+      </p>
+      <p className="text-3xl font-bold text-gray-900 dark:text-white">
+        ${amount.toFixed(2)}
+      </p>
+      {isMonthly && (
+        <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1">
+          per month
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Error state content */
+function ErrorContent({ error, onReset, onClose }: {
+  error: string | null;
+  onReset: () => void;
+  onClose: () => void;
+}): React.ReactElement {
+  return (
+    <div className="p-8 text-center">
+      <div className="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+        <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
+      </div>
+      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
+        Something Went Wrong
+      </h2>
+      <p className="text-gray-600 dark:text-gray-400 mb-4">
+        {error || 'An unexpected error occurred. Please try again.'}
+      </p>
+      <div className="flex gap-3">
+        <Button onClick={onReset} variant="secondary" fullWidth>
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Try Again
+        </Button>
+        <Button onClick={onClose} fullWidth>
+          Close
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 interface DonationModalProps {
   /** Display name of the charity */
   charityName: string;
@@ -219,105 +332,30 @@ export const DonationModal: React.FC<DonationModalProps> = ({
   // Render success state
   if (state.step === 'success' && state.result) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fadeIn overflow-y-auto">
-        <Card className="w-full max-w-md relative shadow-2xl rounded-2xl animate-slideIn my-8">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors z-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full p-1 hover:bg-white dark:hover:bg-slate-700"
-            aria-label="Close"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-emerald-100 dark:bg-emerald-900/30 rounded-full flex items-center justify-center">
-              <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-              Thank You!
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              Your {state.result.isRecurring ? 'monthly ' : ''}donation of{' '}
-              {state.result.paymentMethod === 'card'
-                ? `$${state.result.amount.toFixed(2)}`
-                : `${state.result.amount} ${state.result.currency}`}{' '}
-              to {charityName} has been processed.
-            </p>
-            {state.result.isRecurring && (
-              <p className="text-sm text-emerald-600 dark:text-emerald-400 mb-4">
-                You&apos;ll be charged monthly until you cancel.
-              </p>
-            )}
-            {state.result.paymentMethod === 'card' && (
-              <p className="text-sm text-gray-500 dark:text-gray-500">
-                A receipt has been sent to your email.
-              </p>
-            )}
-            <Button onClick={onClose} className="mt-6" fullWidth>
-              Done
-            </Button>
-          </div>
-        </Card>
-      </div>
+      <ModalShell onClose={onClose}>
+        <SuccessContent result={state.result} charityName={charityName} onClose={onClose} />
+      </ModalShell>
     );
   }
 
   // Render error state
   if (state.step === 'error') {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fadeIn overflow-y-auto">
-        <Card className="w-full max-w-md relative shadow-2xl rounded-2xl animate-slideIn my-8">
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 transition-colors z-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full p-1 hover:bg-white dark:hover:bg-slate-700"
-            aria-label="Close"
-          >
-            <X className="h-6 w-6" />
-          </button>
-          <div className="p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-              <AlertCircle className="w-8 h-8 text-red-600 dark:text-red-400" />
-            </div>
-            <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-2">
-              Something Went Wrong
-            </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">
-              {state.error || 'An unexpected error occurred. Please try again.'}
-            </p>
-            <div className="flex gap-3">
-              <Button onClick={handleReset} variant="secondary" fullWidth>
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Try Again
-              </Button>
-              <Button onClick={onClose} fullWidth>
-                Close
-              </Button>
-            </div>
-          </div>
-        </Card>
-      </div>
+      <ModalShell onClose={onClose}>
+        <ErrorContent error={state.error} onReset={handleReset} onClose={onClose} />
+      </ModalShell>
     );
   }
 
   // Main input state
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fadeIn overflow-y-auto">
-      <Card className="w-full max-w-md relative shadow-2xl rounded-2xl animate-slideIn my-8 dark:bg-slate-900">
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors z-10 bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-full p-1 hover:bg-white dark:hover:bg-slate-700"
-          aria-label="Close"
-        >
-          <X className="h-6 w-6" />
-        </button>
-
+    <ModalShell onClose={onClose} dark>
         <div className="p-8 max-h-[calc(100vh-4rem)] overflow-y-auto">
           {/* Header with title and frequency badge */}
           <div className="mb-6 pr-8">
-            <div className="flex items-center gap-3 mb-2">
-              <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
-                {modalTitle}
-              </h2>
-            </div>
+            <h2 className="flex items-center gap-3 mb-2 text-2xl font-semibold text-gray-900 dark:text-white">
+              {modalTitle}
+            </h2>
             {FrequencyBadge}
           </div>
 
@@ -368,22 +406,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({
                   directFiat
                 />
 
-                {/* Amount display */}
-                {state.amount > 0 && (
-                  <div className="text-center p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Donation Amount
-                    </p>
-                    <p className="text-3xl font-bold text-gray-900 dark:text-white">
-                      ${state.amount.toFixed(2)}
-                    </p>
-                    {frequency === 'monthly' && (
-                      <p className="text-sm text-emerald-600 dark:text-emerald-400 mt-1">
-                        per month
-                      </p>
-                    )}
-                  </div>
-                )}
+                <AmountDisplay amount={state.amount} isMonthly={frequency === 'monthly'} />
 
                 <FiatDonationForm
                   charityId={charityId}
@@ -407,7 +430,6 @@ export const DonationModal: React.FC<DonationModalProps> = ({
             />
           </div>
         </div>
-      </Card>
-    </div>
+    </ModalShell>
   );
 };

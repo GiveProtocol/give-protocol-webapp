@@ -387,10 +387,6 @@ export function openHelcimCheckout(
 
     const expectedEvent = `helcim-pay-js-${checkoutToken}`;
 
-    const cleanup = (): void => {
-      window.removeEventListener('message', handleMessage);
-    };
-
     const handleMessage = (event: MessageEvent): void => {
       const msg = event.data;
 
@@ -403,7 +399,7 @@ export function openHelcimCheckout(
 
       if (msg.eventStatus === 'SUCCESS') {
         settled = true;
-        cleanup();
+        window.removeEventListener('message', handleMessage);
         const txData: HelcimTransactionData = msg.eventMessage?.data || {};
         Logger.info('HelcimPay.js payment succeeded', {
           transactionId: txData.transactionId,
@@ -414,7 +410,7 @@ export function openHelcimCheckout(
 
       if (msg.eventStatus === 'ABORTED') {
         settled = true;
-        cleanup();
+        window.removeEventListener('message', handleMessage);
         const reason = msg.eventMessage || 'Transaction aborted';
         Logger.error('HelcimPay.js payment aborted', { reason });
         reject(new Error(typeof reason === 'string' ? reason : 'Payment was declined'));
@@ -423,17 +419,21 @@ export function openHelcimCheckout(
 
       if (msg.eventStatus === 'HIDE') {
         settled = true;
-        cleanup();
+        window.removeEventListener('message', handleMessage);
         Logger.info('HelcimPay.js modal closed');
         reject(new Error('Payment cancelled'));
-        return;
       }
     };
 
     window.addEventListener('message', handleMessage);
 
     // Open the HelcimPay.js iframe
-    window.appendHelcimPayIframe!(checkoutToken, true, '', email || '');
+    const appendFn = window.appendHelcimPayIframe;
+    if (!appendFn) {
+      reject(new Error('HelcimPay.js not loaded'));
+      return;
+    }
+    appendFn(checkoutToken, true, '', email || '');
     Logger.info('HelcimPay.js checkout iframe opened');
   });
 }
