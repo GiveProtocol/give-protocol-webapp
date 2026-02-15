@@ -10,6 +10,7 @@ import React, {
   useCallback,
   useEffect,
   useRef,
+  startTransition,
 } from "react";
 import { Logger } from "@/utils/logger";
 import type {
@@ -102,7 +103,9 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
   useEffect(() => {
     const persisted = loadPersistedState();
     if (persisted.activeChainType !== "evm") {
-      setActiveChainType(persisted.activeChainType);
+      startTransition(() => {
+        setActiveChainType(persisted.activeChainType);
+      });
     }
   }, []);
 

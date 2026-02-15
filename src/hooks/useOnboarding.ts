@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, startTransition } from "react";
 
 const ONBOARDING_KEY = "giveprotocol_onboarding_complete";
 
@@ -18,26 +18,24 @@ interface UseOnboardingReturn {
  * @returns Onboarding state and actions
  */
 export function useOnboarding(): UseOnboardingReturn {
-  // Check if onboarding has been completed (SSR-safe)
-  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(() => {
-    if (typeof window === "undefined") return true; // Assume complete on server
-    return localStorage.getItem(ONBOARDING_KEY) === "true";
-  });
+  // SSR-safe default: assume onboarding complete on server to match hydration
+  const [hasCompletedOnboarding, setHasCompletedOnboarding] = useState(true);
 
   // Derive modal visibility from onboarding state
   const [showChainSelection, setShowChainSelection] = useState(false);
 
-  // Check onboarding status on mount
+  // Hydrate onboarding status from localStorage after mount
   useEffect(() => {
     if (typeof window === "undefined") return;
 
     const isComplete = localStorage.getItem(ONBOARDING_KEY) === "true";
-    setHasCompletedOnboarding(isComplete);
 
-    // Show chain selection if not completed
-    if (!isComplete) {
-      setShowChainSelection(true);
-    }
+    startTransition(() => {
+      setHasCompletedOnboarding(isComplete);
+      if (!isComplete) {
+        setShowChainSelection(true);
+      }
+    });
   }, []);
 
   // Mark onboarding as complete

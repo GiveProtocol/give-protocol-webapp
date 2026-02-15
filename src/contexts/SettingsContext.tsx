@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, startTransition } from "react";
 
 export type Language =
   | "en" // English
@@ -102,13 +102,6 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Hydrate state from localStorage/cookies after mount to avoid SSR mismatch
   useEffect(() => {
-    const storedLang = localStorage.getItem("language") as Language | null;
-    if (storedLang) setLanguageState(storedLang);
-
-    const storedCurrency = localStorage.getItem("currency") as Currency | null;
-    if (storedCurrency) setCurrencyState(storedCurrency);
-
-    // Read theme from cookie first (server also reads this), then localStorage
     const getCookie = (name: string): string | null => {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -116,12 +109,20 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
       return null;
     };
 
+    const storedLang = localStorage.getItem("language") as Language | null;
+    const storedCurrency = localStorage.getItem("currency") as Currency | null;
     const cookieTheme = getCookie("theme") as Theme | null;
     const localTheme = localStorage.getItem("theme") as Theme | null;
     const resolvedTheme = cookieTheme || localTheme || "light";
-    setThemeState(resolvedTheme);
 
-    // Apply theme class to document
+    // Wrap in startTransition so hydration completes before React processes these
+    startTransition(() => {
+      if (storedLang) setLanguageState(storedLang);
+      if (storedCurrency) setCurrencyState(storedCurrency);
+      setThemeState(resolvedTheme);
+    });
+
+    // Apply theme class to document (DOM mutation, not a React state update)
     if (resolvedTheme === "dark") {
       document.documentElement.classList.add("dark");
     } else {

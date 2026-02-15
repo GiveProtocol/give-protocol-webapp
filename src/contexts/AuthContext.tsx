@@ -4,6 +4,7 @@ import React, {
   useEffect,
   useState,
   useCallback,
+  startTransition,
 } from "react";
 import { User, AuthError as _AuthError } from "@supabase/supabase-js";
 import { supabase } from "@/lib/supabase";
@@ -213,12 +214,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         const userType = await resolveUserType(session?.user);
 
-        setState((prev) => ({
-          ...prev,
-          user: session?.user ?? null,
-          userType,
-          loading: false,
-        }));
+        startTransition(() => {
+          setState((prev) => ({
+            ...prev,
+            user: session?.user ?? null,
+            userType,
+            loading: false,
+          }));
+        });
 
         updateSentryUserContext(session?.user, userType);
 
@@ -236,12 +239,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           handleAuthEvent(event, startRefreshInterval, stopRefreshInterval);
 
-          setState((prev) => ({
-            ...prev,
-            user: session?.user ?? null,
-            userType,
-            loading: false,
-          }));
+          startTransition(() => {
+            setState((prev) => ({
+              ...prev,
+              user: session?.user ?? null,
+              userType,
+              loading: false,
+            }));
+          });
 
           updateSentryUserContext(session?.user, userType);
         });
@@ -260,14 +265,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         });
 
         if (mounted) {
-          setState((prev) => ({
-            ...prev,
-            error:
-              err instanceof Error
-                ? err
-                : new Error("Failed to initialize auth"),
-            loading: false,
-          }));
+          startTransition(() => {
+            setState((prev) => ({
+              ...prev,
+              error:
+                err instanceof Error
+                  ? err
+                  : new Error("Failed to initialize auth"),
+              loading: false,
+            }));
+          });
         }
         return undefined;
       }

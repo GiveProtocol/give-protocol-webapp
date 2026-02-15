@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  startTransition,
 } from "react";
 import {
   FiatCurrency,
@@ -65,7 +66,11 @@ export function CurrencyProvider({
       try {
         const parsed = JSON.parse(saved);
         const currency = getCurrencyByCode(parsed.code);
-        if (currency) setSelectedCurrencyState(currency);
+        if (currency) {
+          startTransition(() => {
+            setSelectedCurrencyState(currency);
+          });
+        }
       } catch {
         // Invalid JSON, use default
       }

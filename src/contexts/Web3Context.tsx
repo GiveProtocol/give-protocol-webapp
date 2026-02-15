@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  startTransition,
 } from "react";
 import { ethers } from "ethers";
 import { Logger } from "@/utils/logger";
@@ -226,14 +227,16 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
             method: "eth_accounts",
           });
           if (accounts.length > 0) {
-            const provider = new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            const network = await provider.getNetwork();
+            const newProvider = new ethers.BrowserProvider(window.ethereum);
+            const newSigner = await newProvider.getSigner();
+            const network = await newProvider.getNetwork();
 
-            setProvider(provider);
-            setSigner(signer);
-            setAddress(accounts[0]);
-            setChainId(Number(network.chainId));
+            startTransition(() => {
+              setProvider(newProvider);
+              setSigner(newSigner);
+              setAddress(accounts[0]);
+              setChainId(Number(network.chainId));
+            });
             Logger.info("Restored existing connection", {
               address: accounts[0],
               chainId: network.chainId,
@@ -241,17 +244,21 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
           }
         } catch (err: unknown) {
           // Clear any existing connection state
-          setProvider(null);
-          setSigner(null);
-          setAddress(null);
-          setChainId(null);
+          startTransition(() => {
+            setProvider(null);
+            setSigner(null);
+            setAddress(null);
+            setChainId(null);
+          });
 
           // Handle unauthorized error specifically
           if (hasErrorMessage(err, "has not been authorized")) {
             const error = new Error(
               'Wallet connection needs authorization. Please click "Connect" to continue.',
             );
-            setError(error);
+            startTransition(() => {
+              setError(error);
+            });
             Logger.info("Wallet needs reauthorization");
           } else {
             Logger.error("Failed to restore connection", { error: err });

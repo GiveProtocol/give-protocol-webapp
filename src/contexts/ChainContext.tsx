@@ -4,6 +4,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  startTransition,
 } from "react";
 import {
   type ChainId,
@@ -74,7 +75,9 @@ export const ChainProvider: React.FC<ChainProviderProps> = ({ children }) => {
     if (stored) {
       const parsedId = Number.parseInt(stored, 10);
       if (isChainSupported(parsedId)) {
-        setSelectedChainId(parsedId as ChainId);
+        startTransition(() => {
+          setSelectedChainId(parsedId as ChainId);
+        });
       }
     }
   }, []);

@@ -3,7 +3,7 @@
  * Detects Safe iframe environment and automatically initiates connection
  */
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, startTransition } from "react";
 import { Logger } from "@/utils/logger";
 import { useMultiChainContext } from "@/contexts/MultiChainContext";
 import { createSafeProvider, isInSafeAppContext } from "@/lib/wallets";
@@ -44,11 +44,15 @@ export function useSafeAutoConnect() {
           return;
         }
 
-        await connect(safeProvider, "evm");
-        Logger.info("Successfully auto-connected to Safe");
+        // Wrap in startTransition so the connection state updates
+        // don't interrupt Suspense hydration
+        startTransition(() => {
+          connect(safeProvider, "evm")
+            .then(() => Logger.info("Successfully auto-connected to Safe"))
+            .catch((err) => Logger.error("Failed to auto-connect to Safe", { error: err }));
+        });
       } catch (error) {
         Logger.error("Failed to auto-connect to Safe", { error });
-        // Don't throw - auto-connect failure shouldn't break the app
       }
     };
 
