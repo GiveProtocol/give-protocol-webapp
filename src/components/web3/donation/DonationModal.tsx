@@ -361,10 +361,11 @@ export const DonationModal: React.FC<DonationModalProps> = ({
             ) : (
               // Card mode - fiat donation form
               <div className="space-y-6">
-                {/* Fiat presets for amount selection */}
+                {/* Fiat presets for amount selection (directFiat skips crypto conversion) */}
                 <FiatPresets
                   selectedToken={selectedToken}
                   onAmountSelect={handleAmountChange}
+                  directFiat
                 />
 
                 {/* Amount display */}

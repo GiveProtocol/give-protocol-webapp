@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect, useId } from 'react';
-import { Loader2, CheckCircle2, AlertCircle, Mail, User, RefreshCw, CreditCard } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { Loader2, CheckCircle2, AlertCircle, Mail, User, RefreshCw, CreditCard, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { useFiatDonation } from '@/hooks/web3/useFiatDonation';
@@ -27,30 +27,28 @@ interface FiatDonationFormProps {
   onError: (_error: Error) => void;
 }
 
-/** Props for the card fields status display */
-interface CardFieldsStatusProps {
-  fieldsReady: boolean;
+/** Props for the script status display */
+interface ScriptStatusProps {
+  scriptReady: boolean;
   mounted: boolean;
   paymentError: string | null;
   retryCount: number;
-  initializing: boolean;
   onRetry: () => void;
 }
 
 /**
- * Card fields loading/error state display
- * @param {CardFieldsStatusProps} props - Component props
- * @returns {React.ReactElement | null} Status display or null when fields are ready
+ * Script loading/error state display
+ * @param {ScriptStatusProps} props - Component props
+ * @returns {React.ReactElement | null} Status display or null when ready
  */
-function CardFieldsStatus({
-  fieldsReady,
+function ScriptStatus({
+  scriptReady,
   mounted,
   paymentError,
   retryCount,
-  initializing,
   onRetry,
-}: CardFieldsStatusProps): React.ReactElement | null {
-  if (fieldsReady) return null;
+}: ScriptStatusProps): React.ReactElement | null {
+  if (scriptReady) return null;
 
   if (mounted && paymentError) {
     return (
@@ -75,8 +73,6 @@ function CardFieldsStatus({
   let statusText = 'Loading secure payment form...';
   if (retryCount > 0) {
     statusText = `Retrying payment setup (attempt ${retryCount + 1}/${3})...`;
-  } else if (initializing) {
-    statusText = 'Connecting to payment processor...';
   }
 
   return (
@@ -126,19 +122,12 @@ function PaymentDisclaimer({ isMonthly, chargeAmount }: {
 }
 
 /**
- * Card payment form with guest checkout
+ * Card payment form with guest checkout via HelcimPay.js
  * @component FiatDonationForm
- * @description Form for card payments using Helcim hosted fields.
- * Supports both one-time and monthly subscription payments.
- * @param {Object} props - Component props
- * @param {string} props.charityId - Charity identifier
- * @param {string} props.charityName - Charity display name
- * @param {number} props.amount - Donation amount in dollars
- * @param {DonationFrequency} props.frequency - Once or monthly
- * @param {boolean} props.coverFees - Whether to cover fees
- * @param {function} props.onCoverFeesChange - Fee coverage toggle callback
- * @param {function} props.onSuccess - Success callback
- * @param {function} props.onError - Error callback
+ * @description Form for card payments. On submit, opens a secure Helcim-hosted
+ * payment modal (iframe) where the user enters card details. No card data
+ * touches this application.
+ * @param {FiatDonationFormProps} props - Component props
  * @returns {React.ReactElement} Fiat donation form
  */
 export function FiatDonationForm({
@@ -151,8 +140,6 @@ export function FiatDonationForm({
   onSuccess,
   onError,
 }: FiatDonationFormProps): React.ReactElement {
-  const formId = useId();
-  const cardContainerId = `helcim-card-${formId.replace(/:/g, '')}`;
   const isMonthly = frequency === 'monthly';
 
   const [name, setName] = useState('');
@@ -163,7 +150,6 @@ export function FiatDonationForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-  // Prevent hydration mismatch: only render payment-dependent UI after client mount
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -172,10 +158,7 @@ export function FiatDonationForm({
     processFiatPayment,
     loading,
     error: paymentError,
-    initializeFields,
-    updateAmount,
-    fieldsReady,
-    initializing,
+    scriptReady,
     retryInitialization,
     retryCount,
   } = useFiatDonation();
@@ -183,22 +166,6 @@ export function FiatDonationForm({
   // Calculate final amount
   const { total: finalAmount } = calculateFeeOffset(coverFees ? amount : 0);
   const chargeAmount = coverFees ? finalAmount : amount;
-
-  // Initialize Helcim fields when component mounts
-  // Use a minimum of $1 for initialization - actual amount is updated when user selects
-  useEffect(() => {
-    if (!fieldsReady && !initializing) {
-      const initAmount = chargeAmount > 0 ? chargeAmount : 1;
-      initializeFields(cardContainerId, initAmount, frequency);
-    }
-  }, [fieldsReady, initializing, cardContainerId, chargeAmount, initializeFields, frequency]);
-
-  // Update amount when it changes
-  useEffect(() => {
-    if (fieldsReady) {
-      updateAmount(chargeAmount);
-    }
-  }, [chargeAmount, fieldsReady, updateAmount]);
 
   const validateForm = useCallback((): boolean => {
     let isValid = true;
@@ -256,8 +223,8 @@ export function FiatDonationForm({
         return;
       }
 
-      if (!fieldsReady) {
-        setFormError('Payment form is loading. Please wait.');
+      if (!scriptReady) {
+        setFormError('Payment processor is loading. Please wait.');
         return;
       }
 
@@ -278,15 +245,18 @@ export function FiatDonationForm({
         onSuccess(result);
       } catch (err) {
         const error = err instanceof Error ? err : new Error('Payment failed');
-        setFormError(error.message);
-        onError(error);
+        // Don't show "Payment cancelled" as a form error
+        if (error.message !== 'Payment cancelled') {
+          setFormError(error.message);
+          onError(error);
+        }
       } finally {
         setIsSubmitting(false);
       }
     },
     [
       validateForm,
-      fieldsReady,
+      scriptReady,
       processFiatPayment,
       name,
       email,
@@ -303,7 +273,6 @@ export function FiatDonationForm({
   const displayError = formError || paymentError;
   const isBusy = loading || isSubmitting;
 
-  // Button text based on mode
   const getButtonText = (): string => {
     if (isBusy) {
       return isMonthly ? 'Setting up subscription...' : 'Processing...';
@@ -386,39 +355,39 @@ export function FiatDonationForm({
         disabled={isBusy}
       />
 
-      {/* Helcim hosted fields container */}
-      <div className="space-y-2">
-        <span className="block text-sm font-medium text-gray-700 dark:text-gray-300" aria-hidden="true">
-          Card Details
-        </span>
-        <div
-          id={cardContainerId}
-          className={cn(
-            'min-h-[120px] p-4 rounded-xl',
-            'bg-gray-50 dark:bg-slate-800/70',
-            'border-2 border-gray-200 dark:border-slate-600',
-            'transition-all duration-200',
-            'focus-within:bg-white dark:focus-within:bg-slate-900',
-            'focus-within:border-transparent focus-within:ring-2 focus-within:ring-emerald-500',
-            !fieldsReady && 'flex items-center justify-center',
-            mounted && paymentError && !fieldsReady && 'border-red-300 dark:border-red-700'
-          )}
-        >
-          <CardFieldsStatus
-            fieldsReady={fieldsReady}
+      {/* Script loading status */}
+      {!scriptReady && (
+        <div className={cn(
+          'p-4 rounded-xl',
+          'bg-gray-50 dark:bg-slate-800/70',
+          'border-2 border-gray-200 dark:border-slate-600',
+          'flex items-center justify-center',
+          mounted && paymentError && 'border-red-300 dark:border-red-700'
+        )}>
+          <ScriptStatus
+            scriptReady={scriptReady}
             mounted={mounted}
             paymentError={paymentError}
             retryCount={retryCount}
-            initializing={initializing}
             onRetry={handleRetryPayment}
           />
         </div>
-      </div>
+      )}
+
+      {/* Secure checkout notice */}
+      {scriptReady && (
+        <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
+          <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" aria-hidden="true" />
+          <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
+            A secure payment window will open for card details.
+          </p>
+        </div>
+      )}
 
       {/* Submit button */}
       <Button
         type="submit"
-        disabled={isBusy || !fieldsReady || amount <= 0}
+        disabled={isBusy || !scriptReady || amount <= 0}
         fullWidth
         size="lg"
         icon={

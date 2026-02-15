@@ -1,7 +1,8 @@
 /**
  * Helcim payment service client
  * @module helcimService
- * @description Client-side service for interacting with Helcim through Supabase edge functions.
+ * @description Client-side service for interacting with Helcim through Supabase edge functions
+ * and the HelcimPay.js iframe checkout.
  */
 
 import { Logger } from '@/utils/logger';
@@ -50,7 +51,7 @@ interface SubscriptionResponse {
 
 /**
  * Process a one-time card payment through Helcim
- * @param data - Payment data including checkout token from Helcim hosted fields
+ * @param data - Payment data including checkout token
  * @returns Payment result with transaction details
  * @throws Error if payment fails
  */
@@ -100,7 +101,7 @@ export async function processPayment(data: FiatPaymentData): Promise<HelcimPayme
 
 /**
  * Create a monthly subscription through Helcim
- * @param data - Payment data including checkout token from Helcim hosted fields
+ * @param data - Payment data including checkout token
  * @returns Subscription result with subscription ID
  * @throws Error if subscription creation fails
  */
@@ -154,7 +155,7 @@ export async function createSubscription(data: FiatPaymentData): Promise<{
  * Fetch a checkout token from the Helcim Pay initialization endpoint
  * @param amount - Payment amount in dollars
  * @param frequency - Donation frequency (once or monthly)
- * @returns Checkout token for initializing helcimPayJS
+ * @returns Checkout token and secret token for HelcimPay.js
  * @throws Error if token fetch fails
  */
 export async function fetchHelcimCheckoutToken(
@@ -193,120 +194,122 @@ export async function fetchHelcimCheckoutToken(
   };
 }
 
-/** helcimPayJS configuration */
-export interface HelcimConfig {
-  /** Container element ID for hosted fields */
-  containerId: string;
-  /** Callback when checkout token is received */
-  onToken: (_token: string) => void;
-  /** Callback when an error occurs */
-  onError: (_error: string) => void;
-  /** Optional CSS customization */
-  styles?: Record<string, string>;
-}
+// ---------------------------------------------------------------------------
+// HelcimPay.js iframe checkout (start.js globals)
+// ---------------------------------------------------------------------------
 
-/** Global helcimPayJS interface */
+/**
+ * Global functions injected by HelcimPay.js start.js script.
+ * These are bare function declarations that become window properties.
+ */
 declare global {
   interface Window {
-    helcimPayJS?: {
-      init: (_config: {
-        token: string;
-        test: boolean;
-        amount: number;
-        currency: string;
-        customerCode?: string;
-        avs?: boolean;
-        'css-url'?: string;
-      }) => void;
-      setAmount: (_amount: number) => void;
-      appendTo: (_elementId: string) => void;
-      on: (_event: string, _callback: (_data: unknown) => void) => void;
-      validate: () => Promise<boolean>;
-      submit: () => Promise<{ cardToken: string }>;
-    };
+    appendHelcimPayIframe?: (
+      _token: string,
+      _showExitButton?: boolean,
+      _phone?: string,
+      _email?: string,
+      _csrf?: string,
+    ) => HTMLIFrameElement | undefined;
+    removeHelcimPayIframe?: () => void;
   }
 }
 
+/** Transaction data returned inside the HelcimPay.js iframe message */
+export interface HelcimTransactionData {
+  transactionId?: string;
+  amount?: string;
+  approvalCode?: string;
+  avsResponse?: string;
+  cardHolderName?: string;
+  cardNumber?: string;
+  cardToken?: string;
+  currency?: string;
+  customerCode?: string;
+  dateCreated?: string;
+  status?: string;
+  type?: string;
+}
+
 /**
- * Poll for `window.helcimPayJS` after the script's `onload` fires.
- * The global may not be assigned synchronously when the script finishes downloading.
- * Uses async/await polling with a generous timeout for slow connections.
- * @returns Promise that resolves when `window.helcimPayJS` is available
+ * Check whether the HelcimPay.js global function is available
+ * @returns true if appendHelcimPayIframe is defined
+ */
+function isHelcimReady(): boolean {
+  return typeof window.appendHelcimPayIframe === 'function';
+}
+
+/**
+ * Poll for `appendHelcimPayIframe` after the script's `onload` fires.
+ * @returns Promise that resolves when the global is available
  */
 function waitForHelcimGlobal(): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (window.helcimPayJS) {
+    if (isHelcimReady()) {
       resolve();
       return;
     }
 
     const pollInterval = 200; // ms
-    const maxWait = 5000; // 5s - generous for slow connections
+    const maxWait = 5000; // 5s
     let elapsed = 0;
 
     const timer = setInterval(() => {
       elapsed += pollInterval;
-      if (window.helcimPayJS) {
+      if (isHelcimReady()) {
         clearInterval(timer);
-        Logger.info(`helcimPayJS global detected after ${elapsed}ms`);
+        Logger.info(`HelcimPay.js ready after ${elapsed}ms`);
         resolve();
       } else if (elapsed >= maxWait) {
         clearInterval(timer);
         reject(new Error(
-          `helcimPayJS global not available after ${maxWait}ms. ` +
-          'Check CSP script-src includes https://secure.helcim.app and https://api.helcim.com'
+          `HelcimPay.js not ready after ${maxWait}ms. ` +
+          'Check CSP script-src includes https://secure.helcim.app'
         ));
       }
     }, pollInterval);
   });
 }
 
-/**
- * Load helcimPayJS script dynamically
- * @returns Promise that resolves when script is loaded and the global is available
- */
 /** Track script loading state to prevent double-loading */
 let helcimScriptPromise: Promise<void> | null = null;
 
+/**
+ * Load HelcimPay.js script dynamically.
+ * Resolves once `appendHelcimPayIframe` is available on window.
+ * @returns Promise that resolves when script is loaded and ready
+ */
 export function loadHelcimScript(): Promise<void> {
-  // Return existing promise if script is already loading
   if (helcimScriptPromise) {
     return helcimScriptPromise;
   }
 
-  // Check if already loaded and available
-  if (window.helcimPayJS) {
+  if (isHelcimReady()) {
     return Promise.resolve();
   }
 
-  // Check if script tag already exists
-  const existingScript = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement | null;
+  const existingScript = document.querySelector(
+    'script[src*="helcim-pay"]'
+  ) as HTMLScriptElement | null;
+
   if (existingScript) {
-    // Script tag exists - wait for it to load
     helcimScriptPromise = new Promise((resolve, reject) => {
-      // Check if already loaded
-      if (window.helcimPayJS) {
+      if (isHelcimReady()) {
         resolve();
         return;
       }
 
-      // Wait for load event, then poll for global
       const handleLoad = (): void => {
-        Logger.info('helcimPayJS script loaded (existing script), waiting for global');
+        Logger.info('HelcimPay.js script loaded (existing), waiting for global');
         waitForHelcimGlobal()
-          .then(() => {
-            Logger.info('helcimPayJS global ready (existing script)');
-            resolve();
-          })
+          .then(() => { resolve(); })
           .catch((err) => {
-            Logger.error('helcimPayJS global not available after load', { error: err });
             helcimScriptPromise = null;
             reject(err);
           });
       };
 
       const handleError = (): void => {
-        Logger.error('Failed to load helcimPayJS (existing script)');
         helcimScriptPromise = null;
         reject(new Error('Failed to load payment processor'));
       };
@@ -325,22 +328,21 @@ export function loadHelcimScript(): Promise<void> {
     script.async = false;
 
     script.onload = () => {
-      Logger.info('helcimPayJS script loaded, waiting for global');
+      Logger.info('HelcimPay.js script loaded, waiting for global');
       waitForHelcimGlobal()
         .then(() => {
-          Logger.info('helcimPayJS global ready');
+          Logger.info('HelcimPay.js ready');
           resolve();
         })
         .catch((err) => {
-          Logger.error('helcimPayJS global not available after load', { error: err });
           helcimScriptPromise = null;
           reject(err);
         });
     };
 
     script.onerror = () => {
-      Logger.error('Failed to load helcimPayJS');
-      helcimScriptPromise = null; // Reset on error to allow retry
+      Logger.error('Failed to load HelcimPay.js script');
+      helcimScriptPromise = null;
       reject(new Error('Failed to load payment processor'));
     };
 
@@ -359,61 +361,79 @@ export function resetHelcimScriptState(): void {
 }
 
 /**
- * Initialize Helcim hosted fields with a checkout token
- * @param containerId - DOM element ID to render fields into
- * @param checkoutToken - Checkout token from helcim-pay edge function
- * @param amount - Initial amount in dollars
- * @param testMode - Whether to use test mode
+ * Open the HelcimPay.js iframe checkout and wait for the payment result.
+ *
+ * The iframe handles all card input and payment processing. Results are
+ * communicated back via `window.postMessage` with:
+ *   - `eventName`: `'helcim-pay-js-' + checkoutToken`
+ *   - `eventStatus`: `'SUCCESS'` | `'ABORTED'` | `'HIDE'`
+ *   - `eventMessage.data`: transaction details on SUCCESS
+ *
+ * @param checkoutToken - Token from fetchHelcimCheckoutToken
+ * @param email - Pre-fill email in the checkout iframe
+ * @returns Transaction data from the completed payment
+ * @throws Error if user cancels, payment is aborted, or script not loaded
  */
-export function initializeHelcimFields(
-  containerId: string,
+export function openHelcimCheckout(
   checkoutToken: string,
-  amount: number,
-  testMode = true
-): void {
-  if (!window.helcimPayJS) {
-    throw new Error('helcimPayJS not loaded');
+  email?: string,
+): Promise<HelcimTransactionData> {
+  if (!isHelcimReady()) {
+    return Promise.reject(new Error('HelcimPay.js not loaded'));
   }
 
-  if (!checkoutToken) {
-    throw new Error('Checkout token is required');
-  }
+  return new Promise((resolve, reject) => {
+    let settled = false;
 
-  window.helcimPayJS.init({
-    token: checkoutToken,
-    test: testMode,
-    amount,
-    currency: 'USD',
-    avs: true,
+    const expectedEvent = `helcim-pay-js-${checkoutToken}`;
+
+    const cleanup = (): void => {
+      window.removeEventListener('message', handleMessage);
+    };
+
+    const handleMessage = (event: MessageEvent): void => {
+      const msg = event.data;
+
+      // Only handle HelcimPay.js messages for this checkout
+      if (msg?.eventName !== expectedEvent) {
+        return;
+      }
+
+      if (settled) return;
+
+      if (msg.eventStatus === 'SUCCESS') {
+        settled = true;
+        cleanup();
+        const txData: HelcimTransactionData = msg.eventMessage?.data || {};
+        Logger.info('HelcimPay.js payment succeeded', {
+          transactionId: txData.transactionId,
+        });
+        resolve(txData);
+        return;
+      }
+
+      if (msg.eventStatus === 'ABORTED') {
+        settled = true;
+        cleanup();
+        const reason = msg.eventMessage || 'Transaction aborted';
+        Logger.error('HelcimPay.js payment aborted', { reason });
+        reject(new Error(typeof reason === 'string' ? reason : 'Payment was declined'));
+        return;
+      }
+
+      if (msg.eventStatus === 'HIDE') {
+        settled = true;
+        cleanup();
+        Logger.info('HelcimPay.js modal closed');
+        reject(new Error('Payment cancelled'));
+        return;
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    // Open the HelcimPay.js iframe
+    window.appendHelcimPayIframe!(checkoutToken, true, '', email || '');
+    Logger.info('HelcimPay.js checkout iframe opened');
   });
-
-  window.helcimPayJS.appendTo(containerId);
-}
-
-/**
- * Update the amount in Helcim hosted fields
- * @param amount - New amount in dollars
- */
-export function updateHelcimAmount(amount: number): void {
-  if (window.helcimPayJS) {
-    window.helcimPayJS.setAmount(amount);
-  }
-}
-
-/**
- * Validate and submit Helcim hosted fields
- * @returns Promise with the checkout token
- */
-export async function submitHelcimFields(): Promise<string> {
-  if (!window.helcimPayJS) {
-    throw new Error('helcimPayJS not loaded');
-  }
-
-  const isValid = await window.helcimPayJS.validate();
-  if (!isValid) {
-    throw new Error('Please check your card details');
-  }
-
-  const result = await window.helcimPayJS.submit();
-  return result.cardToken;
 }
