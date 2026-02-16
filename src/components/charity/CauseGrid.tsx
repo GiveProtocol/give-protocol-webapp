@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { Card } from '../ui/Card';
 import { Cause } from '../../types/charity';
 import { formatCurrency } from '../../utils/money';
-import { DonationButton } from '../web3/donation/DonationButton';
+import { Button } from '../ui/Button';
 
 interface CauseGridProps {
   searchTerm: string;
@@ -89,10 +89,9 @@ export const CauseGrid: React.FC<CauseGridProps> = ({ searchTerm, category }) =>
                 />
               </div>
 
-              <DonationButton
-                charityName={cause.name}
-                charityAddress={cause.charityId}
-              />
+              <Button className="w-full">
+                Give to Cause
+              </Button>
             </div>
           </Card>
         </Link>

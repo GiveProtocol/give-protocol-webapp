@@ -1,4 +1,5 @@
 import React, { useCallback, useReducer, useMemo, useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, CheckCircle2, AlertCircle, ArrowLeft, Calendar, Zap } from 'lucide-react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -32,8 +33,8 @@ function ModalShell({ onClose, children, dark }: {
   children: React.ReactNode;
   dark?: boolean;
 }): React.ReactElement {
-  return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-start justify-center p-4 z-50 animate-fadeIn overflow-y-auto">
+  const content = (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn overflow-y-auto">
       <Card className={cn('w-full max-w-md relative shadow-2xl rounded-2xl animate-slideIn my-8', dark && 'dark:bg-slate-900')}>
         <button
           onClick={onClose}
@@ -46,6 +47,11 @@ function ModalShell({ onClose, children, dark }: {
       </Card>
     </div>
   );
+
+  if (typeof document !== 'undefined') {
+    return createPortal(content, document.body) as React.ReactElement;
+  }
+  return content;
 }
 
 /** Success confirmation content */
