@@ -6,6 +6,7 @@
  */
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -166,12 +167,38 @@ serve(async (req: Request) => {
       apiToken
     );
 
-    // Return the checkout token to the frontend
+    // Store the secretToken server-side for hash validation.
+    // The helcim-validate function will look it up by checkoutToken.
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+      const { error: insertError } = await supabase
+        .from('checkout_sessions')
+        .insert({
+          checkout_token: initResult.checkoutToken,
+          secret_token: initResult.secretToken,
+          amount: body.amount,
+          currency,
+          donation_type: body.donationType,
+        });
+
+      if (insertError) {
+        console.error('Failed to store checkout session:', insertError);
+        // Non-fatal: validation won't work but payment can still proceed
+      }
+    } else {
+      console.warn('SUPABASE_URL/SERVICE_ROLE_KEY not set — secretToken not persisted');
+    }
+
+    // Return only the checkoutToken — secretToken stays server-side.
+    // The secretToken field is kept (empty) for API backward compatibility.
     return new Response(
       JSON.stringify({
         success: true,
         checkoutToken: initResult.checkoutToken,
-        secretToken: initResult.secretToken,
+        secretToken: '',
       }),
       {
         status: 200,

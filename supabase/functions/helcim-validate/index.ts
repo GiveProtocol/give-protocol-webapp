@@ -1,0 +1,409 @@
+/**
+ * Supabase Edge Function for validating HelcimPay.js payment events
+ * @module helcim-validate
+ * @description Server-side validation of HelcimPay.js iframe postMessage events.
+ * Verifies the SHA-256 hash using the secretToken stored during checkout
+ * initialization. Only validated transactions are persisted as donations.
+ *
+ * Validation flow (per https://devdocs.helcim.com/docs/validate-helcimpayjs):
+ *   1. Frontend receives eventMessage from HelcimPay.js iframe on SUCCESS
+ *   2. Frontend forwards the full eventMessage + checkoutToken to this endpoint
+ *   3. This function looks up the secretToken from checkout_sessions
+ *   4. Computes SHA-256( JSON(transactionData) + secretToken )
+ *   5. Compares against the hash provided by Helcim in the eventMessage
+ *   6. Only if the hash matches → persists donation and returns success
+ */
+
+import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+// CORS headers for browser requests
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+};
+
+/** JSON content-type header merged with CORS */
+const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
+
+// ---------------------------------------------------------------------------
+// Request / response types
+// ---------------------------------------------------------------------------
+
+/** Transaction data returned by HelcimPay.js inside eventMessage.data */
+interface HelcimTransactionData {
+  transactionId?: string;
+  amount?: string;
+  approvalCode?: string;
+  avsResponse?: string;
+  cvvResponse?: string;
+  cardHolderName?: string;
+  cardNumber?: string;
+  cardToken?: string;
+  currency?: string;
+  customerCode?: string;
+  dateCreated?: string;
+  status?: string;
+  type?: string;
+  [key: string]: unknown;
+}
+
+/** Request body sent by the frontend after a HelcimPay.js SUCCESS event */
+interface ValidateRequest {
+  /** The checkoutToken used to open the HelcimPay.js iframe */
+  checkoutToken: string;
+  /** The raw transaction data object from eventMessage.data */
+  transactionData: HelcimTransactionData;
+  /** The hash string from eventMessage (Helcim-computed) */
+  hash: string;
+  /** Donation metadata from the frontend form */
+  charityId: string;
+  charityName: string;
+  donorName: string;
+  donorEmail: string;
+  coverFees: boolean;
+}
+
+/** Row from the checkout_sessions table */
+interface CheckoutSession {
+  id: string;
+  checkout_token: string;
+  secret_token: string;
+  amount: number;
+  currency: string;
+  donation_type: string;
+  validated: boolean;
+  expires_at: string;
+}
+
+// ---------------------------------------------------------------------------
+// Validation helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Validate the incoming request body
+ * @param body - Parsed request body
+ * @returns Whether the body contains all required fields
+ */
+function validateRequestBody(body: unknown): body is ValidateRequest {
+  if (typeof body !== 'object' || body === null) {
+    return false;
+  }
+
+  const req = body as Record<string, unknown>;
+
+  return (
+    typeof req.checkoutToken === 'string' &&
+    req.checkoutToken.length > 0 &&
+    typeof req.transactionData === 'object' &&
+    req.transactionData !== null &&
+    typeof req.hash === 'string' &&
+    req.hash.length > 0 &&
+    typeof req.charityId === 'string' &&
+    req.charityId.length > 0 &&
+    typeof req.charityName === 'string' &&
+    typeof req.donorName === 'string' &&
+    typeof req.donorEmail === 'string' &&
+    req.donorEmail.includes('@')
+  );
+}
+
+/**
+ * Compute the SHA-256 hash that Helcim expects for validation.
+ *
+ * Per Helcim docs: hash = SHA-256( JSON.stringify(data) + secretToken )
+ * where the JSON is re-encoded from a parsed object to ensure consistent
+ * formatting ("cleaned" JSON with unicode-escaped special characters).
+ *
+ * @param transactionData - The transaction data object from eventMessage.data
+ * @param secretToken - The secret token stored during checkout initialization
+ * @returns Hex-encoded SHA-256 hash
+ */
+async function computeHelcimHash(
+  transactionData: HelcimTransactionData,
+  secretToken: string
+): Promise<string> {
+  // Re-encode to ensure consistent JSON representation.
+  // Helcim uses JSON-escaped unicode for special characters.
+  const cleanedJson = JSON.stringify(transactionData);
+  const payload = cleanedJson + secretToken;
+
+  const encoder = new TextEncoder();
+  const data = encoder.encode(payload);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+
+  // Convert ArrayBuffer to hex string
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+// ---------------------------------------------------------------------------
+// Database operations
+// ---------------------------------------------------------------------------
+
+/**
+ * Look up a checkout session by its token
+ * @param supabase - Supabase client (service role)
+ * @param checkoutToken - The token to look up
+ * @returns The session row, or null if not found / expired / already validated
+ */
+async function lookupSession(
+  supabase: ReturnType<typeof createClient>,
+  checkoutToken: string
+): Promise<CheckoutSession | null> {
+  const { data, error } = await supabase
+    .from('checkout_sessions')
+    .select('*')
+    .eq('checkout_token', checkoutToken)
+    .eq('validated', false)
+    .gt('expires_at', new Date().toISOString())
+    .single();
+
+  if (error || !data) {
+    return null;
+  }
+
+  return data as CheckoutSession;
+}
+
+/**
+ * Mark a checkout session as validated (prevents replay)
+ * @param supabase - Supabase client (service role)
+ * @param sessionId - The session UUID to update
+ */
+async function markSessionValidated(
+  supabase: ReturnType<typeof createClient>,
+  sessionId: string
+): Promise<void> {
+  const { error } = await supabase
+    .from('checkout_sessions')
+    .update({ validated: true })
+    .eq('id', sessionId);
+
+  if (error) {
+    console.error('Failed to mark session as validated:', error);
+  }
+}
+
+/**
+ * Persist a validated one-time donation
+ * @param supabase - Supabase client (service role)
+ * @param request - Donation metadata from frontend
+ * @param txData - Validated transaction data from Helcim
+ * @param session - The checkout session
+ */
+async function logDonation(
+  supabase: ReturnType<typeof createClient>,
+  request: ValidateRequest,
+  txData: HelcimTransactionData,
+  session: CheckoutSession
+): Promise<void> {
+  const cardNumber = txData.cardNumber || '';
+  const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
+
+  const amountCents = txData.amount
+    ? Math.round(Number(txData.amount) * 100)
+    : Math.round(session.amount * 100);
+
+  const { error } = await supabase.from('donations').insert({
+    charity_id: request.charityId,
+    donor_email: request.donorEmail,
+    donor_name: request.donorName,
+    amount_cents: amountCents,
+    currency: session.currency,
+    payment_method: 'card',
+    transaction_id: txData.transactionId || '',
+    card_type: txData.type || '',
+    card_last_four: cardLastFour,
+    fee_covered: request.coverFees,
+    status: 'completed',
+    created_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.error('Failed to log donation:', error);
+    throw new Error('Payment validated but failed to record donation');
+  }
+}
+
+/**
+ * Persist a validated subscription
+ * @param supabase - Supabase client (service role)
+ * @param request - Donation metadata from frontend
+ * @param txData - Validated transaction data from Helcim
+ * @param session - The checkout session
+ */
+async function logSubscription(
+  supabase: ReturnType<typeof createClient>,
+  request: ValidateRequest,
+  txData: HelcimTransactionData,
+  session: CheckoutSession
+): Promise<void> {
+  const amountCents = txData.amount
+    ? Math.round(Number(txData.amount) * 100)
+    : Math.round(session.amount * 100);
+
+  const nextBillingDate = new Date();
+  nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+
+  const { error } = await supabase.from('recurring_donations').insert({
+    charity_id: request.charityId,
+    donor_email: request.donorEmail,
+    donor_name: request.donorName,
+    amount_cents: amountCents,
+    currency: session.currency,
+    payment_method: 'card',
+    subscription_id: txData.transactionId || '',
+    customer_id: txData.customerCode || '',
+    fee_covered: request.coverFees,
+    frequency: 'monthly',
+    status: 'active',
+    next_billing_date: nextBillingDate.toISOString(),
+    created_at: new Date().toISOString(),
+  });
+
+  if (error) {
+    console.error('Failed to log subscription:', error);
+    throw new Error('Payment validated but failed to record subscription');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Main handler
+// ---------------------------------------------------------------------------
+
+serve(async (req: Request) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders });
+  }
+
+  try {
+    // Only allow POST requests
+    if (req.method !== 'POST') {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Method not allowed' }),
+        { status: 405, headers: jsonHeaders }
+      );
+    }
+
+    // Parse request body
+    let body: unknown;
+    try {
+      body = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+        { status: 400, headers: jsonHeaders }
+      );
+    }
+
+    // Validate request structure
+    if (!validateRequestBody(body)) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail',
+        }),
+        { status: 400, headers: jsonHeaders }
+      );
+    }
+
+    // Initialize Supabase client
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    if (!supabaseUrl || !supabaseKey) {
+      console.error('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured');
+      return new Response(
+        JSON.stringify({ success: false, error: 'Validation service unavailable' }),
+        { status: 503, headers: jsonHeaders }
+      );
+    }
+
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    // -----------------------------------------------------------------------
+    // Step 1: Look up the checkout session (contains the secretToken)
+    // -----------------------------------------------------------------------
+    const session = await lookupSession(supabase, body.checkoutToken);
+
+    if (!session) {
+      console.error('No valid checkout session found', {
+        checkoutToken: body.checkoutToken,
+      });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Invalid or expired checkout session',
+        }),
+        { status: 403, headers: jsonHeaders }
+      );
+    }
+
+    // -----------------------------------------------------------------------
+    // Step 2: Compute the expected hash and compare
+    // -----------------------------------------------------------------------
+    const computedHash = await computeHelcimHash(
+      body.transactionData,
+      session.secret_token
+    );
+
+    if (computedHash !== body.hash) {
+      console.error('Hash validation failed', {
+        checkoutToken: body.checkoutToken,
+        expected: computedHash,
+        received: body.hash,
+      });
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Payment validation failed: hash mismatch',
+        }),
+        { status: 403, headers: jsonHeaders }
+      );
+    }
+
+    // -----------------------------------------------------------------------
+    // Step 3: Mark session as validated (prevents replay attacks)
+    // -----------------------------------------------------------------------
+    await markSessionValidated(supabase, session.id);
+
+    // -----------------------------------------------------------------------
+    // Step 4: Persist the donation / subscription
+    // -----------------------------------------------------------------------
+    if (session.donation_type === 'subscription') {
+      await logSubscription(supabase, body, body.transactionData, session);
+    } else {
+      await logDonation(supabase, body, body.transactionData, session);
+    }
+
+    // -----------------------------------------------------------------------
+    // Step 5: Return success with sanitized transaction details
+    // -----------------------------------------------------------------------
+    const cardNumber = body.transactionData.cardNumber || '';
+    const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        transactionId: body.transactionData.transactionId || '',
+        approvalCode: body.transactionData.approvalCode || '',
+        cardLastFour,
+        donationType: session.donation_type,
+      }),
+      { status: 200, headers: jsonHeaders }
+    );
+  } catch (error) {
+    console.error('Validation error:', error);
+
+    const errorMessage =
+      error instanceof Error ? error.message : 'Payment validation failed';
+
+    return new Response(
+      JSON.stringify({ success: false, error: errorMessage }),
+      { status: 500, headers: jsonHeaders }
+    );
+  }
+});
