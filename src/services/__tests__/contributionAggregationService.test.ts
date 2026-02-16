@@ -69,8 +69,50 @@ describe("contributionAggregationService", () => {
       expect(result.organizationsHelped).toBe(4); // 2 charities + 1 org + 1 named org
     });
 
+    it("should include fiat donations in stats", async () => {
+      setMockResult("donations", {
+        data: [{ amount: 100 }],
+        error: null,
+      });
+      setMockResult("fiat_donations", {
+        data: [
+          { amount_cents: 5000 },
+          { amount_cents: 2500 },
+        ],
+        error: null,
+      });
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", { data: [], error: null });
+      setMockResult("skill_endorsements", { data: [], error: null });
+
+      const result = await getUserContributionStats("user-123");
+
+      expect(result.totalDonated).toBe(100);
+      expect(result.donationCount).toBe(1);
+      expect(result.totalFiatDonated).toBe(75); // (5000 + 2500) / 100
+      expect(result.fiatDonationCount).toBe(2);
+    });
+
+    it("should handle fiat donations database error gracefully", async () => {
+      setMockResult("donations", { data: [{ amount: 100 }], error: null });
+      setMockResult("fiat_donations", {
+        data: null,
+        error: { message: "Database error" },
+      });
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", { data: [], error: null });
+      setMockResult("skill_endorsements", { data: [], error: null });
+
+      const result = await getUserContributionStats("user-123");
+
+      expect(result.totalDonated).toBe(100);
+      expect(result.totalFiatDonated).toBe(0);
+      expect(result.fiatDonationCount).toBe(0);
+    });
+
     it("should return zeros when user has no contributions", async () => {
       setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", { data: [], error: null });
       setMockResult("volunteer_hours", { data: [], error: null });
       setMockResult("self_reported_hours", { data: [], error: null });
       setMockResult("skill_endorsements", { data: [], error: null });
@@ -79,6 +121,8 @@ describe("contributionAggregationService", () => {
 
       expect(result.totalDonated).toBe(0);
       expect(result.donationCount).toBe(0);
+      expect(result.totalFiatDonated).toBe(0);
+      expect(result.fiatDonationCount).toBe(0);
       expect(result.formalVolunteerHours).toBe(0);
       expect(result.selfReportedHours.total).toBe(0);
       expect(result.skillsEndorsed).toBe(0);
@@ -147,6 +191,7 @@ describe("contributionAggregationService", () => {
         ],
         error: null,
       });
+      setMockResult("fiat_donations", { data: [], error: null });
       setMockResult("volunteer_hours", {
         data: [
           {
@@ -189,6 +234,88 @@ describe("contributionAggregationService", () => {
       expect(result[1].hours).toBe(5);
       expect(result[2].type).toBe("self_reported");
       expect(result[2].hours).toBe(3);
+    });
+
+    it("should include fiat donations when no filter specified", async () => {
+      setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", {
+        data: [
+          {
+            id: "fiat-1",
+            amount_cents: 5000,
+            currency: "USD",
+            payment_method: "card",
+            transaction_id: "txn-123",
+            card_last_four: "4242",
+            donor_name: "Test Donor",
+            disbursement_status: "received",
+            status: "completed",
+            created_at: "2024-01-16",
+            donor_id: "user-1",
+            charity_id: "charity-1",
+            charity: { charity_details: { name: "Test Charity" } },
+          },
+        ],
+        error: null,
+      });
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", { data: [], error: null });
+
+      const result = await getUnifiedContributions({ userId: "user-1" });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe("fiat_donation");
+      expect(result[0].amount).toBe(50); // 5000 / 100
+      expect(result[0].isFiatDonation).toBe(true);
+      expect(result[0].paymentMethod).toBe("card");
+      expect(result[0].disbursementStatus).toBe("received");
+      expect(result[0].organizationName).toBe("Test Charity");
+    });
+
+    it("should filter to only fiat_donation source", async () => {
+      setMockResult("fiat_donations", {
+        data: [
+          {
+            id: "fiat-1",
+            amount_cents: 2500,
+            currency: "USD",
+            payment_method: "card",
+            transaction_id: "",
+            card_last_four: "",
+            donor_name: "",
+            disbursement_status: "received",
+            status: "completed",
+            created_at: "2024-01-16",
+            donor_id: "user-1",
+            charity_id: "charity-1",
+            charity: null,
+          },
+        ],
+        error: null,
+      });
+
+      const result = await getUnifiedContributions({
+        userId: "user-1",
+        sources: ["fiat_donation"],
+      });
+
+      expect(result).toHaveLength(1);
+      expect(result[0].type).toBe("fiat_donation");
+      expect(result[0].organizationName).toBe("Unknown Charity");
+    });
+
+    it("should handle fiat donations database error in unified contributions", async () => {
+      setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", {
+        data: null,
+        error: { message: "Error" },
+      });
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", { data: [], error: null });
+
+      const result = await getUnifiedContributions({ userId: "user-1" });
+
+      expect(result).toHaveLength(0);
     });
 
     it("should filter by source type", async () => {
