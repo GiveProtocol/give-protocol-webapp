@@ -60,8 +60,20 @@ interface VolunteerData {
   volunteer_id: string;
 }
 
+interface FiatDonationData {
+  id?: string;
+  amount_cents?: number;
+  created_at?: string;
+  donor_id?: string;
+  donor_name?: string;
+  payment_method?: string;
+  disbursement_status?: string;
+  status?: string;
+}
+
 interface BasicStatsData {
   donations: DonationData[];
+  fiatDonations: FiatDonationData[];
   hours: HourData[];
   endorsements: EndorsementData[];
   volunteers: VolunteerData[];
@@ -242,9 +254,35 @@ export const CharityPortal: React.FC = () => {
           endorsementsResult = { data: [], error: null };
         }
 
+        // Fetch fiat donations with error handling
+        let fiatDonationsResult = { data: [], error: null };
+        try {
+          fiatDonationsResult = await supabase
+            .from("fiat_donations")
+            .select("id, amount_cents, disbursement_status")
+            .eq("charity_id", charityId);
+
+          if (fiatDonationsResult.error) {
+            Logger.warn("Error fetching fiat donations:", {
+              error: fiatDonationsResult.error,
+              charityId,
+            });
+            fiatDonationsResult = { data: [], error: null };
+          }
+        } catch (err) {
+          Logger.warn("Exception fetching fiat donations:", {
+            error: err,
+            charityId,
+          });
+          fiatDonationsResult = { data: [], error: null };
+        }
+
         return {
           donations: Array.isArray(donationsResult.data)
             ? donationsResult.data
+            : [],
+          fiatDonations: Array.isArray(fiatDonationsResult.data)
+            ? fiatDonationsResult.data
             : [],
           hours: Array.isArray(hoursResult.data) ? hoursResult.data : [],
           endorsements: Array.isArray(endorsementsResult.data)
@@ -267,10 +305,15 @@ export const CharityPortal: React.FC = () => {
 
   // Helper function to calculate statistics
   const calculateStats = useCallback((data: BasicStatsData) => {
-    const totalDonated = data.donations.reduce((sum, donation) => {
+    const cryptoDonated = data.donations.reduce((sum, donation) => {
       const amount = donation?.amount ? Number(donation.amount) : 0;
       return sum + amount;
     }, 0);
+
+    const fiatDonated = data.fiatDonations.reduce((sum, donation) => {
+      const cents = donation?.amount_cents ? Number(donation.amount_cents) : 0;
+      return sum + cents;
+    }, 0) / 100;
 
     const totalHours = data.hours.reduce((sum, hour) => {
       const hourCount = hour?.hours ? Number(hour.hours) : 0;
@@ -282,7 +325,7 @@ export const CharityPortal: React.FC = () => {
     );
 
     return {
-      totalDonated,
+      totalDonated: cryptoDonated + fiatDonated,
       volunteerHours: totalHours,
       skillsEndorsed: data.endorsements.length,
       activeVolunteers: uniqueVolunteers.size,
@@ -291,6 +334,7 @@ export const CharityPortal: React.FC = () => {
 
   // Helper function to fetch and format detailed transactions
   const fetchTransactions = useCallback(async (charityId: string) => {
+    // Fetch crypto donations
     const { data: detailedDonations, error } = await supabase
       .from("donations")
       .select(
@@ -313,7 +357,7 @@ export const CharityPortal: React.FC = () => {
       ? detailedDonations
       : [];
 
-    return donationsList.map((donation) => ({
+    const cryptoTransactions: Transaction[] = donationsList.map((donation) => ({
       id: donation?.id || "",
       hash: donation?.id || "",
       from: donation?.donor?.id || "",
@@ -335,6 +379,54 @@ export const CharityPortal: React.FC = () => {
         category: "Donation",
       },
     }));
+
+    // Fetch fiat donations
+    let fiatTransactions: Transaction[] = [];
+    try {
+      const { data: fiatDonations, error: fiatError } = await supabase
+        .from("fiat_donations")
+        .select("id, amount_cents, created_at, donor_name, payment_method, disbursement_status, status")
+        .eq("charity_id", charityId)
+        .order("created_at", { ascending: false });
+
+      if (fiatError) {
+        Logger.warn("Error fetching fiat donations for transactions:", {
+          error: fiatError,
+          charityId,
+        });
+      } else {
+        const fiatList = Array.isArray(fiatDonations) ? fiatDonations : [];
+        fiatTransactions = fiatList.map((fd) => ({
+          id: fd.id || "",
+          amount: fd.amount_cents ? fd.amount_cents / 100 : 0,
+          cryptoType: "USD",
+          fiatValue: fd.amount_cents ? fd.amount_cents / 100 : 0,
+          timestamp: fd.created_at || new Date().toISOString(),
+          status: fd.status === "completed" ? "completed" as const : "pending" as const,
+          purpose: "Fiat Donation",
+          metadata: {
+            organization: fd.donor_name || "Anonymous",
+            donor: fd.donor_name || "Anonymous",
+            category: "Fiat Donation",
+            isFiatDonation: true,
+            paymentMethod: fd.payment_method,
+            disbursementStatus: fd.disbursement_status,
+          },
+        }));
+      }
+    } catch (err) {
+      Logger.warn("Exception fetching fiat donations for transactions:", {
+        error: err,
+        charityId,
+      });
+    }
+
+    // Merge and sort by date descending
+    const allTransactions = [...cryptoTransactions, ...fiatTransactions];
+    allTransactions.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+    );
+    return allTransactions;
   }, []);
 
   // Helper function to fetch volunteer applications

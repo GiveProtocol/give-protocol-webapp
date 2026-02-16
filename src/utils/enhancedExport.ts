@@ -39,6 +39,11 @@ export interface EnhancedExportData {
   transactionInitiator?: string;
   relatedTransactionId?: string;
   description?: string;
+
+  // Fiat donation fields
+  paymentMethod?: string;
+  cardLastFour?: string;
+  disbursementStatus?: string;
 }
 
 /**
@@ -74,6 +79,22 @@ function formatMetadataFields(metadata: Record<string, unknown>) {
     verificationHash: metadata.verificationHash || "",
     blockNumber: metadata.blockNumber ? metadata.blockNumber.toString() : "",
     description: metadata.description || metadata.category || "",
+  };
+}
+
+/**
+ * Helper function to format fiat-specific fields from metadata
+ * @param metadata Transaction metadata object
+ * @returns Object with formatted fiat donation fields
+ */
+function formatFiatFields(metadata: Record<string, unknown>) {
+  if (!metadata.isFiatDonation) {
+    return {};
+  }
+  return {
+    paymentMethod: metadata.paymentMethod || "",
+    cardLastFour: metadata.cardLastFour || "",
+    disbursementStatus: metadata.disbursementStatus || "",
   };
 }
 
@@ -114,6 +135,7 @@ export function formatTransactionsForEnhancedExport(
       ...formatCommonFields(transaction),
       ...formatMetadataFields(metadata),
       ...formatVolunteerFields(metadata),
+      ...formatFiatFields(metadata),
     };
   });
 }
@@ -134,6 +156,10 @@ export function getFieldsToInclude(
 
   const hasDonations = transactions.some(
     (t) => t.purpose === "Donation" || (t.amount && t.amount > 0),
+  );
+
+  const hasFiatDonations = transactions.some(
+    (t) => t.purpose === "Fiat Donation",
   );
 
   return {
@@ -165,6 +191,11 @@ export function getFieldsToInclude(
     transactionInitiator: hasVolunteerTransactions,
     relatedTransactionId: hasVolunteerTransactions,
     description: true,
+
+    // Include for fiat donations
+    paymentMethod: hasFiatDonations,
+    cardLastFour: hasFiatDonations,
+    disbursementStatus: hasFiatDonations,
 
     // Always include addresses for transparency
     senderAddress: true,

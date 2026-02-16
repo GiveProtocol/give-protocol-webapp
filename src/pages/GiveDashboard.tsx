@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { Navigate, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
-import { Transaction } from "@/types/contribution";
+import type { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
 import { formatDate } from "@/utils/date";
 import { useTranslation } from "@/hooks/useTranslation";
@@ -24,6 +24,12 @@ import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 import { WalletAliasSettings } from "@/components/settings/WalletAliasSettings";
 import { ScheduledDonations } from "@/components/donor/ScheduledDonations";
 import { SelfReportedHoursDashboard } from "@/components/volunteer/self-reported";
+import {
+  useUserContributionStats,
+  useUnifiedContributions,
+} from "@/hooks/useContributionStats";
+import type { UnifiedContribution } from "@/services/contributionAggregationService";
+import { useProfile } from "@/hooks/useProfile";
 
 type View =
   | "select"
@@ -73,6 +79,65 @@ function compareValues(
   return 0;
 }
 
+/**
+ * Maps a UnifiedContribution to the Transaction shape used by the table and export modal
+ */
+function mapContributionToTransaction(c: UnifiedContribution): Transaction {
+  if (c.isFiatDonation) {
+    return {
+      id: c.id,
+      amount: c.amount || 0,
+      cryptoType: "USD",
+      fiatValue: c.amount || 0,
+      timestamp: c.date,
+      status: c.status === "completed" ? "completed" : "pending",
+      purpose: "Fiat Donation",
+      metadata: {
+        organization: c.organizationName,
+        category: "Fiat Donation",
+        isFiatDonation: true,
+        paymentMethod: c.paymentMethod,
+        disbursementStatus: c.disbursementStatus,
+      },
+    };
+  }
+
+  if (c.type === "donation") {
+    return {
+      id: c.id,
+      amount: c.amount || 0,
+      cryptoType: "GLMR",
+      fiatValue: c.amount || 0,
+      timestamp: c.date,
+      status: c.status === "completed" ? "completed" : "pending",
+      purpose: "Donation",
+      metadata: {
+        organization: c.organizationName,
+        category: "Donation",
+      },
+    };
+  }
+
+  // Volunteer contributions
+  const purposeMap: Record<string, string> = {
+    formal_volunteer: "Volunteer Hours",
+    self_reported: "Volunteer Hours",
+  };
+
+  return {
+    id: c.id,
+    amount: 0,
+    timestamp: c.date,
+    status: c.status === "completed" || c.status === "validated" ? "completed" : "pending",
+    purpose: purposeMap[c.type] || c.type,
+    metadata: {
+      organization: c.organizationName,
+      hours: c.hours,
+      description: c.description,
+    },
+  };
+}
+
 export const GiveDashboard: React.FC = () => {
   const [_view, _setView] = useState<View>("select"); // Prefixed as unused
   const { user, userType } = useAuth();
@@ -91,6 +156,20 @@ export const GiveDashboard: React.FC = () => {
   }>({ key: null, direction: "asc" });
   const { t } = useTranslation();
 
+  // Real data hooks
+  const { profile } = useProfile();
+  const { data: stats, isLoading: statsLoading } =
+    useUserContributionStats();
+  const { data: rawContributions = [], isLoading: contribLoading } =
+    useUnifiedContributions({
+      userId: profile?.id,
+    });
+
+  const contributions = useMemo(
+    () => rawContributions.map(mapContributionToTransaction),
+    [rawContributions],
+  );
+
   // Check if we should show wallet settings from location state
   useEffect(() => {
     if (location.state?.showWalletSettings) {
@@ -102,197 +181,6 @@ export const GiveDashboard: React.FC = () => {
   const handleConnectWallet = useCallback(() => {
     connect();
   }, [connect]);
-
-  // Sample data - replace with actual data fetching
-  const [contributions, _setContributions] = useState<Transaction[]>([
-    // setContributions prefixed as unused
-    {
-      id: "1",
-      hash: "0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef",
-      from: "0x1234567890123456789012345678901234567890",
-      to: "0x0987654321098765432109876543210987654321",
-      amount: 0.5,
-      cryptoType: "GLMR",
-      fiatValue: 500,
-      fee: 0.0001,
-      timestamp: "2024-03-15T10:30:00Z",
-      status: "completed",
-      purpose: "Donation",
-      metadata: {
-        organization: "Global Water Foundation",
-        category: "Water & Sanitation",
-      },
-    },
-    {
-      id: "2",
-      hash: "0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890",
-      from: "0x1234567890123456789012345678901234567890",
-      to: "0x2345678901234567890123456789012345678901",
-      amount: 0.3,
-      cryptoType: "GLMR",
-      fiatValue: 300,
-      fee: 0.0001,
-      timestamp: "2023-12-20T14:45:00Z",
-      status: "completed",
-      purpose: "Donation",
-      metadata: {
-        organization: "Climate Action Now",
-        category: "Environment",
-      },
-    },
-    {
-      id: "3",
-      hash: "0x7890abcdef1234567890abcdef1234567890abcdef1234567890abcdef123456",
-      from: "0x1234567890123456789012345678901234567890",
-      to: "0x3456789012345678901234567890123456789012",
-      amount: 1.2,
-      cryptoType: "GLMR",
-      fiatValue: 1200,
-      fee: 0.0002,
-      timestamp: "2024-03-14T09:15:00Z",
-      status: "completed",
-      purpose: "Donation",
-      metadata: {
-        organization: "Education for All",
-        category: "Education",
-      },
-    },
-    // Volunteer contribution examples - All 5 types
-
-    // Type 1: Volunteer Solicitation (donor/volunteer initiated)
-    {
-      id: "4",
-      hash: "0xef89012345678901234567890123456789012345678901234567890123456789",
-      from: "0x1234567890123456789012345678901234567890", // Volunteer address
-      to: "0x4567890123456789012345678901234567890123", // Charity address
-      amount: 0,
-      cryptoType: "",
-      fiatValue: 0,
-      fee: 0,
-      timestamp: "2024-04-05T13:20:00Z",
-      status: "completed",
-      purpose: "Volunteer Solicitation",
-      metadata: {
-        organization: "Education for All",
-        opportunity: "Web Development for Education Platform",
-        applicationText:
-          "I have 5 years of React experience and would love to help build your education platform.",
-        availability: "10-15 hours per week",
-        transactionInitiator: "volunteer",
-        verificationHash:
-          "0xef89012345678901234567890123456789012345678901234567890123456789",
-        blockNumber: 1234567,
-      },
-    },
-
-    // Type 2: Volunteer Acceptance (charity initiated)
-    {
-      id: "5",
-      hash: "0x98765432109876543210987654321098765432109876543210987654321098",
-      from: "0x4567890123456789012345678901234567890123", // Charity address
-      to: "0x1234567890123456789012345678901234567890", // Volunteer address
-      amount: 0,
-      cryptoType: "",
-      fiatValue: 0,
-      fee: 0,
-      timestamp: "2024-04-07T10:00:00Z",
-      status: "completed",
-      purpose: "Volunteer Acceptance",
-      metadata: {
-        organization: "Education for All",
-        opportunity: "Web Development for Education Platform",
-        acceptanceDate: "2024-04-07",
-        acceptedBy: "Jane Smith, Volunteer Coordinator",
-        transactionInitiator: "charity",
-        relatedTransactionId: "4", // Links to the solicitation
-        verificationHash:
-          "0x98765432109876543210987654321098765432109876543210987654321098",
-        blockNumber: 1234590,
-      },
-    },
-
-    // Type 3: Volunteer Hours Record (volunteer initiated)
-    {
-      id: "6",
-      hash: "0x23456789012345678901234567890123456789012345678901234567890123ef",
-      from: "0x1234567890123456789012345678901234567890", // Volunteer address
-      to: "0x4567890123456789012345678901234567890123", // Charity address
-      amount: 0,
-      cryptoType: "",
-      fiatValue: 0,
-      fee: 0,
-      timestamp: "2024-04-10T15:45:00Z",
-      status: "completed",
-      purpose: "Volunteer Hours Record",
-      metadata: {
-        organization: "Education for All",
-        opportunity: "Web Development for Education Platform",
-        hours: 8,
-        startTime: "2024-04-10T08:00:00Z",
-        endTime: "2024-04-10T16:00:00Z",
-        description:
-          "Implemented user authentication system and created login/signup pages",
-        transactionInitiator: "volunteer",
-        verificationHash:
-          "0x23456789012345678901234567890123456789012345678901234567890123ef",
-        blockNumber: 1235678,
-      },
-    },
-
-    // Type 4: Volunteer Hours Approval (charity initiated)
-    {
-      id: "7",
-      hash: "0xabcdef123456789abcdef123456789abcdef123456789abcdef123456789abc",
-      from: "0x4567890123456789012345678901234567890123", // Charity address
-      to: "0x1234567890123456789012345678901234567890", // Volunteer address
-      amount: 0,
-      cryptoType: "",
-      fiatValue: 0,
-      fee: 0,
-      timestamp: "2024-04-11T09:00:00Z",
-      status: "completed",
-      purpose: "Volunteer Hours Approval",
-      metadata: {
-        organization: "Education for All",
-        opportunity: "Web Development for Education Platform",
-        hours: 8,
-        acceptedBy: "Jane Smith, Volunteer Coordinator",
-        transactionInitiator: "charity",
-        relatedTransactionId: "6", // Links to the hours record
-        description:
-          "Hours verified and approved for authentication system implementation",
-        verificationHash:
-          "0xabcdef123456789abcdef123456789abcdef123456789abcdef123456789abc",
-        blockNumber: 1235700,
-      },
-    },
-
-    // Type 5: Volunteer Endorsement (charity initiated)
-    {
-      id: "8",
-      hash: "0x11111111222222223333333344444444555555556666666677777777888888",
-      from: "0x4567890123456789012345678901234567890123", // Charity address
-      to: "0x1234567890123456789012345678901234567890", // Volunteer address
-      amount: 0,
-      cryptoType: "",
-      fiatValue: 0,
-      fee: 0,
-      timestamp: "2024-04-15T14:30:00Z",
-      status: "completed",
-      purpose: "Volunteer Endorsement",
-      metadata: {
-        organization: "Education for All",
-        skills: ["React", "Node.js", "TypeScript"], // Top 3 skills
-        endorsementText:
-          "Outstanding volunteer who delivered high-quality authentication system. Highly skilled in React and modern web development.",
-        transactionInitiator: "charity",
-        hours: 32, // Total hours contributed
-        verificationHash:
-          "0x11111111222222223333333344444444555555556666666677777777888888",
-        blockNumber: 1236000,
-      },
-    },
-  ]);
 
   /**
    * Determines if a navigation path is currently active and returns appropriate CSS classes
@@ -526,39 +414,61 @@ export const GiveDashboard: React.FC = () => {
       )}
 
       {/* Metrics Grid - Flattened from 4 to 3 levels */}
-      <div className="grid gap-6 mb-8 md:grid-cols-3">
-        <Card className="p-6 flex items-center">
-          <DollarSign className="h-6 w-6 p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4" />
-          <div>
-            <p className="text-sm font-medium text-gray-600">
-              {t("dashboard.totalDonations")}
-            </p>
-            <p className="text-2xl font-semibold text-gray-900">
-              <CurrencyDisplay amount={2450} />
-            </p>
-          </div>
-        </Card>
+      {statsLoading || contribLoading ? (
+        <div className="grid gap-6 mb-8 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i} className="p-6 flex items-center animate-pulse">
+              <div className="h-12 w-12 bg-gray-200 rounded-full mr-4" />
+              <div className="flex-1">
+                <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
+                <div className="h-7 bg-gray-200 rounded w-16" />
+              </div>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-6 mb-8 md:grid-cols-3">
+          <Card className="p-6 flex items-center">
+            <DollarSign className="h-6 w-6 p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                {t("dashboard.totalDonations")}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                <CurrencyDisplay
+                  amount={
+                    (stats?.totalDonated || 0) + (stats?.totalFiatDonated || 0)
+                  }
+                />
+              </p>
+            </div>
+          </Card>
 
-        <Card className="p-6 flex items-center">
-          <Clock className="h-6 w-6 p-3 rounded-full bg-green-100 text-green-600 mr-4" />
-          <div>
-            <p className="text-sm font-medium text-gray-600">
-              {t("dashboard.volunteerHours")}
-            </p>
-            <p className="text-2xl font-semibold text-gray-900">48</p>
-          </div>
-        </Card>
+          <Card className="p-6 flex items-center">
+            <Clock className="h-6 w-6 p-3 rounded-full bg-green-100 text-green-600 mr-4" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                {t("dashboard.volunteerHours")}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {stats?.totalVolunteerHours || 0}
+              </p>
+            </div>
+          </Card>
 
-        <Card className="p-6 flex items-center">
-          <Award className="h-6 w-6 p-3 rounded-full bg-purple-100 text-purple-600 mr-4" />
-          <div>
-            <p className="text-sm font-medium text-gray-600">
-              {t("dashboard.skillsEndorsed")}
-            </p>
-            <p className="text-2xl font-semibold text-gray-900">12</p>
-          </div>
-        </Card>
-      </div>
+          <Card className="p-6 flex items-center">
+            <Award className="h-6 w-6 p-3 rounded-full bg-purple-100 text-purple-600 mr-4" />
+            <div>
+              <p className="text-sm font-medium text-gray-600">
+                {t("dashboard.skillsEndorsed")}
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {stats?.skillsEndorsed || 0}
+              </p>
+            </div>
+          </Card>
+        </div>
+      )}
 
       {/* Contributions - Flattened to reduce nesting */}
       <div className="bg-white rounded-lg shadow-md mb-8 overflow-x-auto">
@@ -588,6 +498,9 @@ export const GiveDashboard: React.FC = () => {
               <option value="all">{t("filter.allTypes", "All Types")}</option>
               <option value="Donation">
                 {t("filter.donations", "Donations")}
+              </option>
+              <option value="Fiat Donation">
+                {t("filter.fiatDonations", "Fiat Donations")}
               </option>
               <option value="Volunteer Application">
                 {t("filter.volunteerApplications", "Volunteer Applications")}
@@ -670,7 +583,16 @@ export const GiveDashboard: React.FC = () => {
                     t("common.unknown", "Unknown")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {contribution.purpose === "Donation" ? (
+                  {contribution.purpose === "Fiat Donation" ? (
+                    <>
+                      <CurrencyDisplay amount={contribution.amount || 0} />
+                      {contribution.metadata?.disbursementStatus && (
+                        <span className="ml-2 text-xs text-gray-500">
+                          ({contribution.metadata.disbursementStatus})
+                        </span>
+                      )}
+                    </>
+                  ) : contribution.purpose === "Donation" ? (
                     <>
                       {contribution.amount} {contribution.cryptoType} (
                       <CurrencyDisplay amount={contribution.fiatValue || 0} />)

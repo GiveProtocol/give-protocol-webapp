@@ -6,6 +6,7 @@ import { Logger } from "@/utils/logger";
  */
 export type ContributionSource =
   | "donation"
+  | "fiat_donation"
   | "formal_volunteer"
   | "self_reported";
 
@@ -16,6 +17,8 @@ export interface UserContributionStats {
   userId: string;
   totalDonated: number;
   donationCount: number;
+  totalFiatDonated: number;
+  fiatDonationCount: number;
   formalVolunteerHours: number;
   selfReportedHours: {
     validated: number;
@@ -45,6 +48,10 @@ export interface UnifiedContribution {
   activityType?: string;
   description?: string;
   validationStatus?: string;
+  // Fiat donation-specific
+  paymentMethod?: string;
+  disbursementStatus?: string;
+  isFiatDonation?: boolean;
   // Common
   status: "completed" | "pending" | "validated" | "unvalidated";
   createdAt: string;
@@ -99,7 +106,7 @@ export async function getUserContributionStats(
   userId: string,
 ): Promise<UserContributionStats> {
   try {
-    // Fetch donations
+    // Fetch crypto donations
     const { data: donations, error: donationsError } = await supabase
       .from("donations")
       .select("amount")
@@ -108,6 +115,19 @@ export async function getUserContributionStats(
     if (donationsError) {
       Logger.warn("Error fetching donations for stats", {
         error: donationsError,
+        userId,
+      });
+    }
+
+    // Fetch fiat donations
+    const { data: fiatDonations, error: fiatDonationsError } = await supabase
+      .from("fiat_donations")
+      .select("amount_cents")
+      .eq("donor_id", userId);
+
+    if (fiatDonationsError) {
+      Logger.warn("Error fetching fiat donations for stats", {
+        error: fiatDonationsError,
         userId,
       });
     }
@@ -152,10 +172,15 @@ export async function getUserContributionStats(
       });
     }
 
-    // Calculate donation stats
+    // Calculate crypto donation stats
     const totalDonated =
       donations?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
     const donationCount = donations?.length || 0;
+
+    // Calculate fiat donation stats
+    const totalFiatDonated =
+      fiatDonations?.reduce((sum, d) => sum + (d.amount_cents || 0), 0) / 100 || 0;
+    const fiatDonationCount = fiatDonations?.length || 0;
 
     // Calculate formal volunteer hours
     const formalVolunteerHours =
@@ -206,6 +231,8 @@ export async function getUserContributionStats(
       userId,
       totalDonated,
       donationCount,
+      totalFiatDonated,
+      fiatDonationCount,
       formalVolunteerHours,
       selfReportedHours: selfReportedStats,
       totalVolunteerHours: formalVolunteerHours + selfReportedStats.validated,
@@ -255,6 +282,55 @@ async function fetchDonationContributions(
       organizationName: charityData?.charity_details?.name || "Unknown Charity",
       amount: d.amount,
       status: "completed" as const,
+      createdAt: d.created_at,
+    };
+  });
+}
+
+/**
+ * Fetches fiat donation contributions from the fiat_donations table
+ */
+async function fetchFiatDonationContributions(
+  filters: ContributionFilters,
+): Promise<UnifiedContribution[]> {
+  let query = supabase.from("fiat_donations").select(`
+    id, amount_cents, currency, payment_method, transaction_id,
+    card_last_four, donor_name, disbursement_status, status,
+    created_at, donor_id, charity_id,
+    charity:charity_id ( charity_details ( name ) )
+  `);
+
+  if (filters.userId) query = query.eq("donor_id", filters.userId);
+  if (filters.organizationId)
+    query = query.eq("charity_id", filters.organizationId);
+  if (filters.dateFrom) query = query.gte("created_at", filters.dateFrom);
+  if (filters.dateTo) query = query.lte("created_at", filters.dateTo);
+
+  const { data, error } = await query;
+
+  if (error) {
+    Logger.warn("Error fetching fiat donations", { error });
+    return [];
+  }
+
+  return (data || []).map((d) => {
+    const charityData = d.charity as {
+      charity_details?: { name?: string };
+    } | null;
+    return {
+      id: d.id,
+      type: "fiat_donation" as const,
+      userId: d.donor_id,
+      date: d.created_at,
+      organizationId: d.charity_id,
+      organizationName: charityData?.charity_details?.name || "Unknown Charity",
+      amount: d.amount_cents / 100,
+      paymentMethod: d.payment_method,
+      disbursementStatus: d.disbursement_status,
+      isFiatDonation: true,
+      status: (d.status === "completed" ? "completed" : "pending") as
+        | "completed"
+        | "pending",
       createdAt: d.created_at,
     };
   });
@@ -363,6 +439,7 @@ export async function getUnifiedContributions(
 ): Promise<UnifiedContribution[]> {
   const sources = filters.sources || [
     "donation",
+    "fiat_donation",
     "formal_volunteer",
     "self_reported",
   ];
@@ -372,6 +449,9 @@ export async function getUnifiedContributions(
 
     if (sources.includes("donation")) {
       fetchPromises.push(fetchDonationContributions(filters));
+    }
+    if (sources.includes("fiat_donation")) {
+      fetchPromises.push(fetchFiatDonationContributions(filters));
     }
     if (sources.includes("formal_volunteer")) {
       fetchPromises.push(fetchFormalVolunteerContributions(filters));

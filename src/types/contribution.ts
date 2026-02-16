@@ -114,6 +114,13 @@ export interface TransactionMetadata extends Record<string, unknown> {
   acceptedBy?: string;
   transactionInitiator?: "volunteer" | "charity";
   relatedTransactionId?: string;
+
+  // Fiat donation fields
+  isFiatDonation?: boolean;
+  paymentMethod?: string;
+  helcimTransactionId?: string;
+  disbursementStatus?: string;
+  cardLastFour?: string;
 }
 
 export interface TransactionExportOptions {

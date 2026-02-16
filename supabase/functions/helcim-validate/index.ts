@@ -63,6 +63,8 @@ interface ValidateRequest {
   donorName: string;
   donorEmail: string;
   coverFees: boolean;
+  /** The authenticated user's profile ID */
+  donorId: string;
 }
 
 /** Row from the checkout_sessions table */
@@ -105,7 +107,9 @@ function validateRequestBody(body: unknown): body is ValidateRequest {
     typeof req.charityName === 'string' &&
     typeof req.donorName === 'string' &&
     typeof req.donorEmail === 'string' &&
-    req.donorEmail.includes('@')
+    req.donorEmail.includes('@') &&
+    typeof req.donorId === 'string' &&
+    req.donorId.length > 0
   );
 }
 
@@ -187,17 +191,19 @@ async function markSessionValidated(
 }
 
 /**
- * Persist a validated one-time donation
+ * Persist a validated one-time fiat payment into fiat_donations
  * @param supabase - Supabase client (service role)
  * @param request - Donation metadata from frontend
  * @param txData - Validated transaction data from Helcim
  * @param session - The checkout session
+ * @param subscriptionId - Optional FK to fiat_subscriptions for recurring initial payments
  */
-async function logDonation(
+async function logFiatPayment(
   supabase: ReturnType<typeof createClient>,
   request: ValidateRequest,
   txData: HelcimTransactionData,
-  session: CheckoutSession
+  session: CheckoutSession,
+  subscriptionId?: string
 ): Promise<void> {
   const cardNumber = txData.cardNumber || '';
   const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
@@ -206,7 +212,8 @@ async function logDonation(
     ? Math.round(Number(txData.amount) * 100)
     : Math.round(session.amount * 100);
 
-  const { error } = await supabase.from('donations').insert({
+  const { error } = await supabase.from('fiat_donations').insert({
+    donor_id: request.donorId,
     charity_id: request.charityId,
     donor_email: request.donorEmail,
     donor_name: request.donorName,
@@ -217,24 +224,26 @@ async function logDonation(
     card_type: txData.type || '',
     card_last_four: cardLastFour,
     fee_covered: request.coverFees,
+    subscription_id: subscriptionId || null,
+    disbursement_status: 'received',
     status: 'completed',
     created_at: new Date().toISOString(),
   });
 
   if (error) {
-    console.error('Failed to log donation:', error);
+    console.error('Failed to log fiat payment:', error);
     throw new Error('Payment validated but failed to record donation');
   }
 }
 
 /**
- * Persist a validated subscription
+ * Persist a validated subscription into fiat_subscriptions, then log the initial payment
  * @param supabase - Supabase client (service role)
  * @param request - Donation metadata from frontend
  * @param txData - Validated transaction data from Helcim
  * @param session - The checkout session
  */
-async function logSubscription(
+async function logFiatSubscription(
   supabase: ReturnType<typeof createClient>,
   request: ValidateRequest,
   txData: HelcimTransactionData,
@@ -247,26 +256,32 @@ async function logSubscription(
   const nextBillingDate = new Date();
   nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
-  const { error } = await supabase.from('recurring_donations').insert({
-    charity_id: request.charityId,
-    donor_email: request.donorEmail,
-    donor_name: request.donorName,
-    amount_cents: amountCents,
-    currency: session.currency,
-    payment_method: 'card',
-    subscription_id: txData.transactionId || '',
-    customer_id: txData.customerCode || '',
-    fee_covered: request.coverFees,
-    frequency: 'monthly',
-    status: 'active',
-    next_billing_date: nextBillingDate.toISOString(),
-    created_at: new Date().toISOString(),
-  });
+  const { data: subscription, error: subError } = await supabase
+    .from('fiat_subscriptions')
+    .insert({
+      donor_id: request.donorId,
+      charity_id: request.charityId,
+      donor_email: request.donorEmail,
+      donor_name: request.donorName,
+      amount_cents: amountCents,
+      currency: session.currency,
+      customer_id: txData.customerCode || '',
+      fee_covered: request.coverFees,
+      frequency: 'monthly',
+      status: 'active',
+      next_billing_date: nextBillingDate.toISOString(),
+      created_at: new Date().toISOString(),
+    })
+    .select('id')
+    .single();
 
-  if (error) {
-    console.error('Failed to log subscription:', error);
+  if (subError) {
+    console.error('Failed to log fiat subscription:', subError);
     throw new Error('Payment validated but failed to record subscription');
   }
+
+  // Log the initial payment linked to the subscription
+  await logFiatPayment(supabase, request, txData, session, subscription.id);
 }
 
 // ---------------------------------------------------------------------------
@@ -304,7 +319,7 @@ serve(async (req: Request) => {
       return new Response(
         JSON.stringify({
           success: false,
-          error: 'Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail',
+          error: 'Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail, donorId',
         }),
         { status: 400, headers: jsonHeaders }
       );
@@ -374,9 +389,9 @@ serve(async (req: Request) => {
     // Step 4: Persist the donation / subscription
     // -----------------------------------------------------------------------
     if (session.donation_type === 'subscription') {
-      await logSubscription(supabase, body, body.transactionData, session);
+      await logFiatSubscription(supabase, body, body.transactionData, session);
     } else {
-      await logDonation(supabase, body, body.transactionData, session);
+      await logFiatPayment(supabase, body, body.transactionData, session);
     }
 
     // -----------------------------------------------------------------------
