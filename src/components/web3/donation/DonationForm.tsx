@@ -35,6 +35,9 @@ interface DonationFormProps {
  * ```
  */
 export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
+  const [hasMounted, setHasMounted] = useState(false);
+  React.useEffect(() => { setHasMounted(true); }, []);
+
   const { isConnected, connect, chainId } = useWeb3();
   const { donate, loading, approving, error: donationError } = useDonation();
 
@@ -132,6 +135,15 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
     },
     [amount, balance, charityAddress, selectedToken, donate, onSuccess],
   );
+
+  if (!hasMounted) {
+    return (
+      <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent mb-3" />
+        <p className="text-sm">Loading wallet...</p>
+      </div>
+    );
+  }
 
   if (!isConnected) {
     return (

@@ -154,9 +154,9 @@ interface DonationModalProps {
   onSuccess?: (_result: DonationResult) => void;
 }
 
-function createInitialState(frequency: DonationFrequency, isConnected: boolean): DonationModalState {
+function createInitialState(frequency: DonationFrequency): DonationModalState {
   return {
-    paymentMethod: isConnected ? 'crypto' : 'card',
+    paymentMethod: 'card',
     frequency,
     step: 'input',
     amount: 0,
@@ -220,9 +220,18 @@ export const DonationModal: React.FC<DonationModalProps> = ({
   const { chainId, isConnected } = useWeb3();
   const [state, dispatch] = useReducer(
     donationReducer,
-    { frequency, isConnected: Boolean(isConnected) },
-    (args) => createInitialState(args.frequency, args.isConnected),
+    frequency,
+    createInitialState,
   );
+
+  // After hydration, sync payment method with wallet connection state
+  useEffect(() => {
+    if (isConnected) {
+      dispatch({ type: 'SET_PAYMENT_METHOD', payload: 'crypto' });
+    }
+    // Only run on mount to avoid hydration mismatch
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Get token for fiat presets
   const availableTokens = useMemo(() => {

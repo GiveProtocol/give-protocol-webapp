@@ -214,7 +214,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     Logger.info("Chain changed", { chainId: newChainId });
 
     // Reload the page when chain changes to ensure all state is fresh
-    window.location.reload();
+    if (typeof window !== "undefined") {
+      window.location.reload();
+    }
   }, []);
 
   // Initialize provider and check for existing connection
@@ -272,7 +274,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   // Set up event listeners
   useEffect(() => {
-    const walletProvider = currentWalletProvider || window.ethereum;
+    const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
     if (!walletProvider || typeof walletProvider.on !== "function") return;
 
     const handleDisconnect = () => {
@@ -309,7 +311,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const walletProvider = currentWalletProvider || window.ethereum;
+      const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
       if (!walletProvider || typeof walletProvider.request !== "function")
         return;
 
@@ -341,7 +343,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   const switchChain = useCallback(
     async (targetChainId: number) => {
-      const walletProvider = currentWalletProvider || window.ethereum;
+      const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
       if (!walletProvider) {
         throw new Error("No wallet provider found");
       }
@@ -359,8 +361,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     async (_walletProvider?: unknown) => {
       // Resolve wallet provider (ignore events from onClick={connect})
       const walletProvider = isEventObject(_walletProvider)
-        ? window.ethereum
-        : _walletProvider || window.ethereum;
+        ? (typeof window !== "undefined" ? window.ethereum : null)
+        : _walletProvider || (typeof window !== "undefined" ? window.ethereum : null);
 
       if (!walletProvider) {
         const error = new Error(
@@ -465,7 +467,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       setCurrentWalletProvider(null);
 
       // Most wallets don't have a disconnect method, but we can try various approaches
-      if (window.ethereum) {
+      if (typeof window !== "undefined" && window.ethereum) {
         try {
           // Try the WalletConnect disconnect method if available
           if (typeof window.ethereum.disconnect === "function") {
