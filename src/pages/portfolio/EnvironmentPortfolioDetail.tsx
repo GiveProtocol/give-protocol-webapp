@@ -70,53 +70,47 @@ const CHARITIES = [
 const EnvironmentPortfolioDetail: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <ScrollReveal direction="up">
-        <div className="relative h-64 rounded-xl overflow-hidden mb-6">
-          <img
-            src={PORTFOLIO.image}
-            alt={PORTFOLIO.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-6 text-white">
-            <h1 className="text-3xl font-bold mb-2">{PORTFOLIO.name}</h1>
-            <p className="text-lg opacity-90">{PORTFOLIO.description}</p>
-          </div>
+      <ScrollReveal direction="up" className="relative h-64 rounded-xl overflow-hidden mb-6">
+        <img
+          src={PORTFOLIO.image}
+          alt={PORTFOLIO.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-end p-6 text-white">
+          <h1 className="text-3xl font-bold mb-2">{PORTFOLIO.name}</h1>
+          <p className="text-lg opacity-90">{PORTFOLIO.description}</p>
         </div>
       </ScrollReveal>
 
-      <ScrollReveal direction="up" delay={100}>
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-sm text-gray-500">Total Donated</p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatCurrency(PORTFOLIO.totalDonated)}
-            </p>
-          </div>
-          <div className="w-1/2 space-y-3">
-            <DonationButton
-              charityName={PORTFOLIO.name}
-              charityAddress={PORTFOLIO.id}
-              buttonText="Give Once"
-            />
-            <ScheduledDonationButton
-              charityName={PORTFOLIO.name}
-              charityAddress={PORTFOLIO.id}
-              buttonText="Give Monthly"
-            />
-          </div>
+      <ScrollReveal direction="up" delay={100} className="flex items-center justify-between mb-8">
+        <div>
+          <p className="text-sm text-gray-500">Total Donated</p>
+          <p className="text-2xl font-bold text-gray-900">
+            {formatCurrency(PORTFOLIO.totalDonated)}
+          </p>
+        </div>
+        <div className="w-1/2 space-y-3">
+          <DonationButton
+            charityName={PORTFOLIO.name}
+            charityAddress={PORTFOLIO.id}
+            buttonText="Give Once"
+          />
+          <ScheduledDonationButton
+            charityName={PORTFOLIO.name}
+            charityAddress={PORTFOLIO.id}
+            buttonText="Give Monthly"
+          />
         </div>
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={200}>
-        <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">
-            Supported Environmental Organizations
-          </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {CHARITIES.map((charity) => (
-              <CharityCard key={charity.id} charity={charity} />
-            ))}
-          </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Supported Environmental Organizations
+        </h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {CHARITIES.map((charity) => (
+            <CharityCard key={charity.id} charity={charity} />
+          ))}
         </div>
       </ScrollReveal>
     </div>

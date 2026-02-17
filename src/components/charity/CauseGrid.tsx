@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Card } from '../ui/Card';
 import { Cause } from '../../types/charity';
 import { formatCurrency } from '../../utils/money';
 import { Button } from '../ui/Button';
@@ -67,33 +66,29 @@ export const CauseGrid: React.FC<CauseGridProps> = ({ searchTerm, category }) =>
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {filteredCauses.map((cause) => (
-        <Link key={cause.id} to={`/causes/${getCauseSlug(cause.name)}`} className="block">
-          <Card className="overflow-hidden">
-            <img
-              src={cause.image}
-              alt={cause.name}
-              className="w-full h-48 object-cover"
-            />
-            <div className="p-6 space-y-4">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{cause.name}</h3>
-              <p className="text-gray-600 mb-4">{cause.description}</p>
-              
-              <div className="flex justify-between text-sm text-gray-500 mb-1">
-                <span>Progress</span>
-                <span>{formatCurrency(cause.raisedAmount)} of {formatCurrency(cause.targetAmount)}</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mb-4 relative overflow-hidden">
-                <div
-                  className="absolute inset-y-0 left-0 bg-indigo-600"
-                  style={{ width: `${(cause.raisedAmount / cause.targetAmount) * 100}%` }}
-                />
-              </div>
-
-              <Button className="w-full">
-                Give to Cause
-              </Button>
+        <Link key={cause.id} to={`/causes/${getCauseSlug(cause.name)}`} className="block bg-white rounded-lg shadow-card border border-gray-100 overflow-hidden transition-all duration-200 ease-in-out hover:shadow-card-hover">
+          <img
+            src={cause.image}
+            alt={cause.name}
+            className="w-full h-48 object-cover"
+          />
+          <div className="p-6 space-y-4">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">{cause.name}</h3>
+            <p className="text-gray-600 mb-4">{cause.description}</p>
+            <div className="flex justify-between text-sm text-gray-500 mb-1">
+              <span>Progress</span>
+              <span>{formatCurrency(cause.raisedAmount)} of {formatCurrency(cause.targetAmount)}</span>
             </div>
-          </Card>
+            <div className="w-full bg-gray-200 rounded-full h-2 mb-4 relative overflow-hidden">
+              <div
+                className="absolute inset-y-0 left-0 bg-indigo-600"
+                style={{ width: `${(cause.raisedAmount / cause.targetAmount) * 100}%` }}
+              />
+            </div>
+            <Button className="w-full">
+              Give to Cause
+            </Button>
+          </div>
         </Link>
       ))}
     </div>

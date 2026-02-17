@@ -3,8 +3,92 @@ import { DonationButton } from "@/components/web3/donation/DonationButton";
 import { ScheduledDonationButton } from "@/components/web3/donation/ScheduledDonationButton";
 import { formatCurrency } from "@/utils/money";
 import { HeroSection } from "@/components/ui/HeroSection";
-import { CauseProfileData } from "@/types/charity";
+import type { CauseProfileData } from "@/types/charity";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+
+function FundingProgressCard({ cause, progressPercentage }: {
+  cause: CauseProfileData;
+  progressPercentage: number;
+}): React.ReactElement {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+      <h2 className="text-xl font-semibold text-gray-900">
+        Funding Progress
+      </h2>
+      <div className="flex justify-between text-sm text-gray-500 mb-1">
+        <span>Progress</span>
+        <span>
+          {formatCurrency(cause.raisedAmount)} of{" "}
+          {formatCurrency(cause.targetAmount)}
+        </span>
+      </div>
+      <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div
+          className="bg-indigo-600 h-2 rounded-full"
+          style={{ width: `${Math.min(progressPercentage, 100)}%` }}
+        />
+      </div>
+      <DonationButton
+        charityName={cause.name}
+        charityAddress={cause.charityId}
+      />
+      <ScheduledDonationButton
+        charityName={cause.name}
+        charityAddress={cause.charityId}
+      />
+    </div>
+  );
+}
+
+function ProjectDetailsCard({ cause }: {
+  cause: CauseProfileData;
+}): React.ReactElement {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+      <h2 className="text-xl font-semibold text-gray-900">
+        Project Details
+      </h2>
+      <div>
+        <p className="text-sm text-gray-500">Timeline</p>
+        <p className="font-medium mb-3">{cause.timeline}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500">Location</p>
+        <p className="font-medium mb-3">{cause.location}</p>
+      </div>
+      <div>
+        <p className="text-sm text-gray-500 mb-1">Key Partners</p>
+        <ul className="list-disc list-inside space-y-1">
+          {cause.partners.map((partner) => (
+            <li key={partner} className="text-gray-700">
+              {partner}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+function ImpactHighlightsCard({ impact }: {
+  impact: string[];
+}): React.ReactElement {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        Impact Highlights
+      </h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {impact.map((item) => (
+          <p key={item} className="flex items-start text-gray-700">
+            <span className="w-2 h-2 mt-2 bg-indigo-500 rounded-full mr-3 flex-shrink-0" />
+            {item}
+          </p>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 interface CausePageTemplateProps {
   /** The cause profile data to display */
@@ -52,7 +136,7 @@ export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
   const progressPercentage = (cause.raisedAmount / cause.targetAmount) * 100;
 
   return (
-    <div>
+    <>
       <HeroSection
         image={cause.image}
         title={cause.name}
@@ -60,82 +144,16 @@ export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
       />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        <ScrollReveal direction="up" delay={100}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Funding Progress
-              </h2>
-              <div className="flex justify-between text-sm text-gray-500 mb-1">
-                <span>Progress</span>
-                <span>
-                  {formatCurrency(cause.raisedAmount)} of{" "}
-                  {formatCurrency(cause.targetAmount)}
-                </span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-                <div
-                  className="bg-indigo-600 h-2 rounded-full"
-                  style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-                />
-              </div>
-              <DonationButton
-                charityName={cause.name}
-                charityAddress={cause.charityId}
-              />
-              <ScheduledDonationButton
-                charityName={cause.name}
-                charityAddress={cause.charityId}
-              />
-            </div>
-
-            <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-              <h2 className="text-xl font-semibold text-gray-900">
-                Project Details
-              </h2>
-              <dl className="space-y-4">
-                <div>
-                  <dt className="text-sm text-gray-500">Timeline</dt>
-                  <dd className="font-medium mb-3">{cause.timeline}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm text-gray-500">Location</dt>
-                  <dd className="font-medium mb-3">{cause.location}</dd>
-                </div>
-                <div>
-                  <dt className="text-sm text-gray-500 mb-1">Key Partners</dt>
-                  <dd>
-                    <ul className="list-disc list-inside space-y-1">
-                      {cause.partners.map((partner) => (
-                        <li key={partner} className="text-gray-700">
-                          {partner}
-                        </li>
-                      ))}
-                    </ul>
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          </div>
+        <ScrollReveal direction="up" delay={100} className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <FundingProgressCard cause={cause} progressPercentage={progressPercentage} />
+          <ProjectDetailsCard cause={cause} />
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={200}>
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Impact Highlights
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {cause.impact.map((item) => (
-                <p key={item} className="flex items-start text-gray-700">
-                  <span className="w-2 h-2 mt-2 bg-indigo-500 rounded-full mr-3 flex-shrink-0" />
-                  {item}
-                </p>
-              ))}
-            </div>
-          </div>
+          <ImpactHighlightsCard impact={cause.impact} />
         </ScrollReveal>
       </main>
-    </div>
+    </>
   );
 };
 
