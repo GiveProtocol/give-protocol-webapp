@@ -18,8 +18,7 @@ export const Footer: React.FC = () => {
               Give Protocol
             </Link>
             <p className="text-sm text-white/90">
-              Empowering charitable giving through transparent and efficient
-              blockchain technology.
+              Removing barriers to sustainable charitable giving.
             </p>
           </div>
 

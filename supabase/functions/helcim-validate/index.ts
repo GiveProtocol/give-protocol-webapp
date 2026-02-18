@@ -65,6 +65,8 @@ interface ValidateRequest {
   coverFees: boolean;
   /** The authenticated user's profile ID */
   donorId: string;
+  /** Optional connected wallet address for dashboard association */
+  donorAddress?: string;
 }
 
 /** Row from the checkout_sessions table */
@@ -217,6 +219,7 @@ async function logFiatPayment(
     charity_id: request.charityId,
     donor_email: request.donorEmail,
     donor_name: request.donorName,
+    donor_address: request.donorAddress || null,
     amount_cents: amountCents,
     currency: session.currency,
     payment_method: 'card',
@@ -263,6 +266,7 @@ async function logFiatSubscription(
       charity_id: request.charityId,
       donor_email: request.donorEmail,
       donor_name: request.donorName,
+      donor_address: request.donorAddress || null,
       amount_cents: amountCents,
       currency: session.currency,
       customer_id: txData.customerCode || '',

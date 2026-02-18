@@ -588,7 +588,16 @@ export async function getDonorLeaderboard(
 
     if (error) {
       Logger.warn("Error fetching donations for leaderboard", { error });
-      return [];
+    }
+
+    const { data: fiatData, error: fiatError } = await supabase
+      .from("fiat_donations")
+      .select("donor_id, amount_cents, charity_id");
+
+    if (fiatError) {
+      Logger.warn("Error fetching fiat donations for leaderboard", {
+        error: fiatError,
+      });
     }
 
     // Aggregate donations by user
@@ -604,6 +613,20 @@ export async function getDonorLeaderboard(
         charities: new Set<string>(),
       };
       existing.total += record.amount || 0;
+      existing.count += 1;
+      if (record.charity_id) {
+        existing.charities.add(record.charity_id);
+      }
+      userDonations.set(record.donor_id, existing);
+    });
+
+    fiatData?.forEach((record) => {
+      const existing = userDonations.get(record.donor_id) || {
+        total: 0,
+        count: 0,
+        charities: new Set<string>(),
+      };
+      existing.total += (record.amount_cents || 0) / 100;
       existing.count += 1;
       if (record.charity_id) {
         existing.charities.add(record.charity_id);
@@ -650,7 +673,7 @@ export async function getGlobalContributionStats(): Promise<{
   totalSkillsEndorsed: number;
 }> {
   try {
-    // Get donation stats
+    // Get crypto donation stats
     const { data: donations, error: donationsError } = await supabase
       .from("donations")
       .select("amount, donor_id");
@@ -658,6 +681,17 @@ export async function getGlobalContributionStats(): Promise<{
     if (donationsError) {
       Logger.warn("Error fetching global donation stats", {
         error: donationsError,
+      });
+    }
+
+    // Get fiat donation stats
+    const { data: fiatDonations, error: fiatDonationsError } = await supabase
+      .from("fiat_donations")
+      .select("amount_cents, donor_id");
+
+    if (fiatDonationsError) {
+      Logger.warn("Error fetching global fiat donation stats", {
+        error: fiatDonationsError,
       });
     }
 
@@ -695,9 +729,16 @@ export async function getGlobalContributionStats(): Promise<{
     }
 
     // Calculate stats
-    const totalDonationAmount =
+    const cryptoDonationAmount =
       donations?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
-    const uniqueDonors = new Set(donations?.map((d) => d.donor_id) || []);
+    const fiatDonationAmount =
+      fiatDonations?.reduce((sum, d) => sum + (d.amount_cents || 0), 0) / 100 || 0;
+    const totalDonationAmount = cryptoDonationAmount + fiatDonationAmount;
+
+    const uniqueDonors = new Set([
+      ...(donations?.map((d) => d.donor_id) || []),
+      ...(fiatDonations?.map((d) => d.donor_id) || []),
+    ]);
 
     const totalFormalHours =
       formalHours?.reduce((sum, h) => sum + (h.hours || 0), 0) || 0;
@@ -726,7 +767,7 @@ export async function getGlobalContributionStats(): Promise<{
     });
 
     return {
-      totalDonations: donations?.length || 0,
+      totalDonations: (donations?.length || 0) + (fiatDonations?.length || 0),
       totalDonationAmount,
       totalFormalVolunteerHours: totalFormalHours,
       totalSelfReportedHours: {
