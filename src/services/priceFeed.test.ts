@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { PriceFeedService } from "./priceFeed";
+import { chainlinkPriceFeedService } from "./chainlinkPriceFeed";
 import { CHAIN_IDS } from "@/config/contracts";
 
 // Mock the Logger
@@ -11,18 +12,10 @@ jest.mock("@/utils/logger", () => ({
   },
 }));
 
-// Mock chainlinkPriceFeedService
-const mockGetPrice = jest.fn();
-const mockGetPricesByCoingeckoIds = jest.fn();
-const mockChainlinkClearCache = jest.fn();
-
-jest.mock("./chainlinkPriceFeed", () => ({
-  chainlinkPriceFeedService: {
-    getPrice: (...args: unknown[]) => mockGetPrice(...args),
-    getPricesByCoingeckoIds: (...args: unknown[]) => mockGetPricesByCoingeckoIds(...args),
-    clearCache: () => mockChainlinkClearCache(),
-  },
-}));
+// Spy on the real chainlinkPriceFeedService singleton (avoids ESM module mock issues)
+const mockGetPrice = jest.spyOn(chainlinkPriceFeedService, "getPrice");
+const mockGetPricesByCoingeckoIds = jest.spyOn(chainlinkPriceFeedService, "getPricesByCoingeckoIds");
+const mockChainlinkClearCache = jest.spyOn(chainlinkPriceFeedService, "clearCache");
 
 // Mock global fetch
 global.fetch = jest.fn() as jest.Mock;
@@ -36,6 +29,9 @@ describe("PriceFeedService", () => {
     (global.fetch as jest.Mock).mockClear();
     mockGetPricesByCoingeckoIds.mockResolvedValue({});
     mockGetPrice.mockResolvedValue(null);
+    mockChainlinkClearCache.mockImplementation(() => {
+      // No-op mock for clearCache
+    });
   });
 
   describe("getTokenPrices", () => {

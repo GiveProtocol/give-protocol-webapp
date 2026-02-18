@@ -41,6 +41,8 @@ export default {
     "(.*)/config/docs(\\.ts)?$": "<rootDir>/src/test-utils/docsMock.js",
     "(.*)/lib/supabase(\\.ts)?$": "<rootDir>/src/test-utils/supabaseMock.js",
     "(.*)/lib/sentry(\\.ts)?$": "<rootDir>/src/test-utils/sentryMock.js",
+    // Library mocks
+    "^ethers$": "<rootDir>/src/test-utils/ethersMock.js",
     // Generic path mapping
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",

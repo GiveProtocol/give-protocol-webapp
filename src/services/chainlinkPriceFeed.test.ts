@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { CHAIN_IDS } from "@/config/contracts";
+import {
+  mockLatestRoundData,
+  mockDecimals,
+} from "@/test-utils/ethersMock";
 
 // Mock Logger
 jest.mock("@/utils/logger", () => ({
@@ -10,30 +14,12 @@ jest.mock("@/utils/logger", () => ({
   },
 }));
 
-// Store mock functions globally so the factory can reference them
+// Use the shared ethers mock functions
 const mockFns = {
-  latestRoundData: jest.fn<() => Promise<unknown>>(),
-  decimals: jest.fn<() => Promise<unknown>>(),
+  latestRoundData: mockLatestRoundData as jest.Mock<() => Promise<unknown>>,
+  decimals: mockDecimals as jest.Mock<() => Promise<unknown>>,
 };
 
-jest.mock("ethers", () => {
-  return {
-    ethers: {
-      Contract: jest.fn().mockImplementation(() => ({
-        latestRoundData: mockFns.latestRoundData,
-        decimals: mockFns.decimals,
-      })),
-      JsonRpcProvider: jest.fn().mockImplementation(() => ({
-        _isProvider: true,
-      })),
-      formatUnits: (value: bigint, decimals: number) => {
-        return (Number(value) / Math.pow(10, Number(decimals))).toString();
-      },
-    },
-  };
-});
-
-// Import after mocks are set up
 import { ChainlinkPriceFeedService } from "./chainlinkPriceFeed";
 
 describe("ChainlinkPriceFeedService", () => {
