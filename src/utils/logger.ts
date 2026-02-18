@@ -18,7 +18,7 @@ interface LogEntry {
 // skipcq: JS-0327 - Class with static state (logs array) requires singleton pattern, not namespace object
 export class Logger {
   private static readonly MAX_LOG_SIZE = 1000;
-  private static logs: LogEntry[] = [];
+  private static readonly logs: LogEntry[] = [];
   private static logCount = 0;
 
   // Private constructor prevents instantiation - this is a singleton utility class with state

@@ -43,6 +43,33 @@ function SourceToggleButtonComponent(props: SourceToggleButtonProps) {
 
 const SourceToggleButton = React.memo(SourceToggleButtonComponent);
 
+interface SourceFilterSectionProps {
+  selectedSources: ContributionSourceType[];
+  onToggle: (_source: ContributionSourceType) => void;
+}
+
+const SourceFilterSection: React.FC<SourceFilterSectionProps> = ({
+  selectedSources,
+  onToggle,
+}) => (
+  <div className="mb-4">
+    <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+      Contribution Types
+    </p>
+    <div className="flex flex-wrap gap-2">
+      {SOURCE_OPTIONS.map((option) => (
+        <SourceToggleButton
+          key={option.value}
+          source={option.value}
+          label={option.label}
+          isSelected={selectedSources.includes(option.value)}
+          onToggle={onToggle}
+        />
+      ))}
+    </div>
+  </div>
+);
+
 interface ContributionFiltersProps {
   filters: FilterType;
   onChange: (_filters: FilterType) => void;
@@ -112,28 +139,6 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
       onChange({ ...filters, sources: newSources });
     },
     [filters, onChange],
-  );
-
-  const SourceFilterSection: React.FC<{
-    selectedSources: ContributionSourceType[];
-    onToggle: (_source: ContributionSourceType) => void;
-  }> = ({ selectedSources, onToggle }) => (
-    <div className="mb-4">
-      <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-        Contribution Types
-      </p>
-      <div className="flex flex-wrap gap-2">
-        {SOURCE_OPTIONS.map((option) => (
-          <SourceToggleButton
-            key={option.value}
-            source={option.value}
-            label={option.label}
-            isSelected={selectedSources.includes(option.value)}
-            onToggle={onToggle}
-          />
-        ))}
-      </div>
-    </div>
   );
 
   const selectedSources = filters.sources || [

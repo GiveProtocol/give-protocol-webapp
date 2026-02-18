@@ -116,13 +116,10 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
                   {opportunity.title}
                 </h3>
                 <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                    opportunity.status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : opportunity.status === "filled"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800"
-                  }`}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-full ${{
+                    active: "bg-green-100 text-green-800",
+                    filled: "bg-blue-100 text-blue-800",
+                  }[opportunity.status] || "bg-gray-100 text-gray-800"}`}
                 >
                   {opportunity.status.charAt(0).toUpperCase() +
                     opportunity.status.slice(1)}

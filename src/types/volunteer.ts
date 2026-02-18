@@ -1,5 +1,4 @@
 import { UUID, Timestamp } from './common';
-// import { Address } from './common'; // Unused import
 
 /* eslint-disable no-unused-vars */
 

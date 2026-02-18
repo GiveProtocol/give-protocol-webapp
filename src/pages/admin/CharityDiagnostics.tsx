@@ -159,16 +159,18 @@ const CharityDiagnostics: React.FC = () => {
                   Token Acceptance
                 </span>
                 <div className="flex items-center gap-2">
-                  {isAccepted === null ? (
+                  {isAccepted === null && (
                     <span className="text-sm text-gray-500">Unknown</span>
-                  ) : isAccepted ? (
+                  )}
+                  {isAccepted === true && (
                     <>
                       <CheckCircle2 className="w-5 h-5 text-green-600" />
                       <span className="text-sm font-semibold text-green-700">
                         Accepted
                       </span>
                     </>
-                  ) : (
+                  )}
+                  {isAccepted === false && (
                     <>
                       <XCircle className="w-5 h-5 text-red-600" />
                       <span className="text-sm font-semibold text-red-700">

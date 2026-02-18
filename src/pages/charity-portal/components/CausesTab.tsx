@@ -107,13 +107,10 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
                   {cause.name}
                 </h3>
                 <span
-                  className={`px-2.5 py-1 text-xs font-medium rounded-full ${
-                    cause.status === "active"
-                      ? "bg-green-100 text-green-800"
-                      : cause.status === "completed"
-                        ? "bg-blue-100 text-blue-800"
-                        : "bg-gray-100 text-gray-800"
-                  }`}
+                  className={`px-2.5 py-1 text-xs font-medium rounded-full ${{
+                    active: "bg-green-100 text-green-800",
+                    completed: "bg-blue-100 text-blue-800",
+                  }[cause.status] || "bg-gray-100 text-gray-800"}`}
                 >
                   {cause.status.charAt(0).toUpperCase() + cause.status.slice(1)}
                 </span>

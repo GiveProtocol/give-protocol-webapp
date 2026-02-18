@@ -208,15 +208,13 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
         }
         className="font-bold text-lg shadow-xl hover:shadow-2xl"
       >
-        {approving
-          ? "Approving Token..."
-          : loading
-            ? "Processing Donation..."
-            : successMessage
-              ? "Donation Successful!"
-              : isLoadingBalance
-                ? "Loading Balance..."
-                : "Donate Now"}
+        {(() => {
+          if (approving) return "Approving Token...";
+          if (loading) return "Processing Donation...";
+          if (successMessage) return "Donation Successful!";
+          if (isLoadingBalance) return "Loading Balance...";
+          return "Donate Now";
+        })()}
       </Button>
     </form>
   );

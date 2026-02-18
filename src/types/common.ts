@@ -1,6 +1,5 @@
 // Basic Types
 export type UUID = string;
-export type Address = string;
 export type Timestamp = number;
 export type ISO8601Date = string;
 export type URL = string;

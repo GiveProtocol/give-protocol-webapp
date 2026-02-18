@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/contexts/AuthContext';
-// import { supabase } from '@/lib/supabase'; // Unused import
 import { trackEvent } from '@/lib/sentry';
 
 interface AdminStats {

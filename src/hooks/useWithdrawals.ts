@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
 import { useProfile } from '@/hooks/useProfile';
-// import { WithdrawalRequest } from '@/types/charity'; // Unused import
 import { Logger } from '@/utils/logger';
 
 interface Withdrawal {

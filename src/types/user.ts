@@ -1,4 +1,4 @@
-import { UUID, Address, Timestamp } from './common';
+import { UUID, Timestamp } from './common';
 
 export interface UserProfile {
   id: UUID;
@@ -44,7 +44,7 @@ export interface UserPreferences {
 export interface WalletAlias {
   id: UUID;
   userId: UUID;
-  walletAddress: Address;
+  walletAddress: string;
   alias: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;

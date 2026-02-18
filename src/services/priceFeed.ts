@@ -236,7 +236,7 @@ export class PriceFeedService {
 
     for (const tokenId of tokenIds) {
       const tokenData = data[tokenId];
-      if (tokenData && tokenData[targetCurrency] !== undefined) {
+      if (tokenData?.[targetCurrency] !== undefined) {
         prices[tokenId] = tokenData[targetCurrency];
       }
     }

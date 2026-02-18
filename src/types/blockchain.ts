@@ -1,4 +1,3 @@
-import { Address } from './common';
 
 export type NetworkId = number;
 export type TransactionHash = string;
@@ -15,8 +14,8 @@ export interface BlockchainConfig {
 
 export interface Transaction {
   hash: TransactionHash;
-  from: Address;
-  to: Address;
+  from: string;
+  to: string;
   value: TokenAmount;
   blockNumber: BlockNumber;
   timestamp: number;
@@ -36,7 +35,7 @@ export type TransactionStatus =
 // - IWeb3Provider (renamed from Web3Provider to avoid naming conflict with React component)
 
 export interface TransactionRequest {
-  to: Address;
+  to: string;
   value: TokenAmount;
   data?: string;
   gasLimit?: string;

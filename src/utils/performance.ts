@@ -24,7 +24,7 @@ import { Logger } from "./logger";
  */
 export class PerformanceMonitor {
   private static instance: PerformanceMonitor;
-  private metrics: Map<string, number[]> = new Map();
+  private readonly metrics: Map<string, number[]> = new Map();
   private readonly SAMPLE_SIZE = 100;
 
   private constructor() {

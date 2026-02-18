@@ -64,47 +64,47 @@ const VerifyContribution: React.FC = () => {
         </div>
 
         <div className="p-6">
-          {verificationChecked ? (
-            verification ? (
-              <div className="space-y-6">
-                <div className="flex items-center p-4 bg-green-50 rounded-lg">
-                  <CheckCircle className="h-6 w-6 text-green-500 mr-3" />
-                  <div>
-                    <h2 className="text-lg font-medium text-green-800">Verification Successful</h2>
-                    <p className="text-sm text-green-700">
-                      This volunteer contribution has been verified and recorded on the blockchain.
-                    </p>
-                  </div>
-                </div>
-
-                <VolunteerVerificationCard
-                  verification={{
-                    id: verification.id,
-                    applicantName: verification.profiles?.name || 'Unknown Volunteer',
-                    opportunityTitle: verification.volunteer_opportunities?.title || 'Unknown Opportunity',
-                    charityName: verification.volunteer_opportunities?.charity_details?.name || 'Unknown Organization',
-                    acceptanceHash: verification.acceptanceHash,
-                    verificationHash: verification.verificationHash,
-                    acceptedAt: verification.acceptedAt,
-                    verifiedAt: verification.verifiedAt,
-                    blockchainReference: verification.blockchainReference
-                  }}
-                />
-              </div>
-            ) : (
-              <div className="flex items-center p-4 bg-yellow-50 rounded-lg">
-                <AlertCircle className="h-6 w-6 text-yellow-500 mr-3" />
+          {!verificationChecked && (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No verification hash provided.</p>
+            </div>
+          )}
+          {verificationChecked && verification && (
+            <div className="space-y-6">
+              <div className="flex items-center p-4 bg-green-50 rounded-lg">
+                <CheckCircle className="h-6 w-6 text-green-500 mr-3" />
                 <div>
-                  <h2 className="text-lg font-medium text-yellow-800">Verification Failed</h2>
-                  <p className="text-sm text-yellow-700">
-                    The verification hash {hash} could not be found or is invalid.
+                  <h2 className="text-lg font-medium text-green-800">Verification Successful</h2>
+                  <p className="text-sm text-green-700">
+                    This volunteer contribution has been verified and recorded on the blockchain.
                   </p>
                 </div>
               </div>
-            )
-          ) : (
-            <div className="text-center py-8">
-              <p className="text-gray-500">No verification hash provided.</p>
+
+              <VolunteerVerificationCard
+                verification={{
+                  id: verification.id,
+                  applicantName: verification.profiles?.name || 'Unknown Volunteer',
+                  opportunityTitle: verification.volunteer_opportunities?.title || 'Unknown Opportunity',
+                  charityName: verification.volunteer_opportunities?.charity_details?.name || 'Unknown Organization',
+                  acceptanceHash: verification.acceptanceHash,
+                  verificationHash: verification.verificationHash,
+                  acceptedAt: verification.acceptedAt,
+                  verifiedAt: verification.verifiedAt,
+                  blockchainReference: verification.blockchainReference
+                }}
+              />
+            </div>
+          )}
+          {verificationChecked && !verification && (
+            <div className="flex items-center p-4 bg-yellow-50 rounded-lg">
+              <AlertCircle className="h-6 w-6 text-yellow-500 mr-3" />
+              <div>
+                <h2 className="text-lg font-medium text-yellow-800">Verification Failed</h2>
+                <p className="text-sm text-yellow-700">
+                  The verification hash {hash} could not be found or is invalid.
+                </p>
+              </div>
             </div>
           )}
 

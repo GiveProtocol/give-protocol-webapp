@@ -204,15 +204,16 @@ export const RecentContributions: React.FC = () => {
                 </div>
               </div>
               <div className="text-right">
-                {contribution.amount !== undefined ? (
+                {contribution.amount !== undefined && (
                   <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {formatCurrency(contribution.amount)}
                   </span>
-                ) : contribution.hours !== undefined ? (
+                )}
+                {contribution.amount === undefined && contribution.hours !== undefined && (
                   <span className="font-semibold text-gray-900 dark:text-gray-100">
                     {contribution.hours.toLocaleString()} hrs
                   </span>
-                ) : null}
+                )}
               </div>
             </div>
           ))}

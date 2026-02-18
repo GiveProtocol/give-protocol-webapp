@@ -85,19 +85,20 @@ export function TokenSelector({
           <div className="font-medium text-gray-900">
             {selectedToken.symbol}
           </div>
-          {isLoadingBalance ? (
+          {isLoadingBalance && (
             <div className="flex items-center gap-1 text-sm text-gray-500">
               <Loader2 className="w-3 h-3 animate-spin" />
               <span>Loading balance...</span>
             </div>
-          ) : walletBalance !== undefined ? (
+          )}
+          {!isLoadingBalance && walletBalance !== undefined && (
             <div className="text-sm text-gray-500">
               Balance:{" "}
               {formatCrypto(walletBalance, selectedToken, { decimals: 4 })}
               {fiatValue > 0 &&
                 ` (${formatFiat(fiatValue, selectedCurrency, { decimals: 2 })})`}
             </div>
-          ) : null}
+          )}
         </div>
         <ChevronDown
           className={cn(
@@ -138,17 +139,18 @@ export function TokenSelector({
                     {token.symbol}
                   </div>
                   <div className="text-sm text-gray-500 truncate">{token.name}</div>
-                  {isLoadingAllBalances ? (
+                  {isLoadingAllBalances && (
                     <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
                       <Loader2 className="w-3 h-3 animate-spin" />
                       <span>Loading...</span>
                     </div>
-                  ) : tokenBalance !== undefined ? (
+                  )}
+                  {!isLoadingAllBalances && tokenBalance !== undefined && (
                     <div className="text-xs text-gray-600 mt-0.5">
                       Balance: {formatCrypto(tokenBalance, token, { decimals: 4 })}
                       {tokenFiatValue > 0 && ` (${formatFiat(tokenFiatValue, selectedCurrency, { decimals: 2 })})`}
                     </div>
-                  ) : null}
+                  )}
                 </div>
                 {price !== undefined && (
                   <div className="text-sm text-gray-600 flex-shrink-0">

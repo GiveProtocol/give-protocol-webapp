@@ -32,7 +32,7 @@ interface PerformanceMetric {
  */
 export class PerformanceMetrics {
   private static instance: PerformanceMetrics;
-  private metrics: PerformanceMetric[] = [];
+  private readonly metrics: PerformanceMetric[] = [];
   private readonly MAX_METRICS = 1000;
 
   private constructor() {

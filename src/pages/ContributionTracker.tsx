@@ -312,7 +312,7 @@ export const ContributionTracker: React.FC = () => {
             </label>
           </div>
 
-          {isConnected && alias ? (
+          {isConnected && alias && (
             <div className="flex items-center space-x-2">
               <span className="text-sm text-gray-600">
                 Your alias:{" "}
@@ -322,7 +322,8 @@ export const ContributionTracker: React.FC = () => {
                 Change
               </Button>
             </div>
-          ) : isConnected ? (
+          )}
+          {isConnected && !alias && (
             <Button
               variant="secondary"
               size="sm"
@@ -330,7 +331,7 @@ export const ContributionTracker: React.FC = () => {
             >
               Set Wallet Alias
             </Button>
-          ) : null}
+          )}
         </div>
       </div>
 

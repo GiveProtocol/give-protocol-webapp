@@ -101,7 +101,7 @@ export class InputSanitizer {
         Array.from(element.attributes).forEach((attr) => {
           const tagAllowedAttrs =
             this.allowedAttributes[element.tagName.toLowerCase()];
-          if (!tagAllowedAttrs || !tagAllowedAttrs.includes(attr.name)) {
+          if (!tagAllowedAttrs?.includes(attr.name)) {
             element.removeAttribute(attr.name);
           }
         });

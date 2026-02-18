@@ -38,7 +38,7 @@ interface RateLimitRecord {
  */
 export class RateLimiter {
   private static instance: RateLimiter;
-  private store: Map<string, RateLimitRecord> = new Map();
+  private readonly store: Map<string, RateLimitRecord> = new Map();
 
   private readonly authConfig: RateLimitConfig = {
     windowMs: 15 * 60 * 1000, // 15 minutes

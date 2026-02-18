@@ -23,6 +23,46 @@ type View =
   | "forgotPassword"
   | "forgotUsername";
 
+interface LoginHelpersProps {
+  onForgotUsername: () => void;
+  onForgotPassword: () => void;
+}
+
+const LoginHelpers: React.FC<LoginHelpersProps> = ({
+  onForgotUsername,
+  onForgotPassword,
+}) => (
+  <div className="mt-6 space-y-4">
+    <div className="relative">
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full border-t border-gray-200" />
+      </div>
+      <div className="relative flex justify-center text-sm">
+        <span className="px-2 bg-white text-gray-500">Need help?</span>
+      </div>
+    </div>
+
+    <div className="grid grid-cols-2 gap-4">
+      <button
+        type="button"
+        onClick={onForgotUsername}
+        className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
+        aria-label="Recover forgotten username"
+      >
+        Forgot username?
+      </button>
+      <button
+        type="button"
+        onClick={onForgotPassword}
+        className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
+        aria-label="Recover forgotten password"
+      >
+        Forgot password?
+      </button>
+    </div>
+  </div>
+);
+
 const Login: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeParam = searchParams.get("type");
@@ -72,39 +112,6 @@ const Login: React.FC = () => {
   if (user) {
     return <Navigate to={from} replace />;
   }
-
-  // LoginHelpers component that provides navigation links to help options
-  const LoginHelpers: React.FC = () => (
-    <div className="mt-6 space-y-4">
-      <div className="relative">
-        <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200" />
-        </div>
-        <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Need help?</span>
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <button
-          type="button"
-          onClick={handleForgotUsername}
-          className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
-          aria-label="Recover forgotten username"
-        >
-          Forgot username?
-        </button>
-        <button
-          type="button"
-          onClick={handleForgotPassword}
-          className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
-          aria-label="Recover forgotten password"
-        >
-          Forgot password?
-        </button>
-      </div>
-    </div>
-  );
 
   const renderView = () => {
     switch (view) {
@@ -171,7 +178,7 @@ const Login: React.FC = () => {
               </p>
             </div>
             <DonorLogin />
-            <LoginHelpers />
+            <LoginHelpers onForgotUsername={handleForgotUsername} onForgotPassword={handleForgotPassword} />
           </>
         );
       case "forgotPassword":
@@ -196,7 +203,7 @@ const Login: React.FC = () => {
               </p>
             </div>
             <CharityLogin />
-            <LoginHelpers />
+            <LoginHelpers onForgotUsername={handleForgotUsername} onForgotPassword={handleForgotPassword} />
           </>
         );
       default:

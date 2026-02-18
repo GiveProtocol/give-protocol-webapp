@@ -1,4 +1,4 @@
-import { Address, Timestamp, UUID } from "./common";
+import { Timestamp, UUID } from "./common";
 import { TokenAmount } from "./blockchain";
 
 export enum CharityStatus {
@@ -26,7 +26,7 @@ export interface CharityBase {
   description: string;
   category: CharityCategory;
   status: CharityStatus;
-  walletAddress: Address;
+  walletAddress: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }

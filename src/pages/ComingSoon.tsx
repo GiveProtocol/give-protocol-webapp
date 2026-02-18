@@ -99,13 +99,10 @@ const ComingSoon: React.FC = () => {
           <button
             type="submit"
             disabled={status === "loading" || status === "success"}
-            className={`absolute right-2 top-2 px-4 py-1.5 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
-              status === "loading"
-                ? "bg-gray-100 cursor-wait"
-                : status === "success"
-                  ? "bg-green-500 text-gray-900"
-                  : "bg-indigo-600 text-gray-900 hover:bg-indigo-700 focus:ring-indigo-500 active:bg-indigo-800"
-            }`}
+            className={`absolute right-2 top-2 px-4 py-1.5 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${{
+              loading: "bg-gray-100 cursor-wait",
+              success: "bg-green-500 text-gray-900",
+            }[status] || "bg-indigo-600 text-gray-900 hover:bg-indigo-700 focus:ring-indigo-500 active:bg-indigo-800"}`}
           >
             Join Waitlist
           </button>

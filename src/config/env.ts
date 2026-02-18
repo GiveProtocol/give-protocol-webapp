@@ -10,11 +10,11 @@ const parseStringArray = (value: string | string[]): string[] => {
 // Helper to get environment variable with fallback to process.env for test environments
 export const getEnv = (key: string): string | undefined => {
   // Check if import.meta.env is available (Vite runtime)
-  if (typeof import.meta !== "undefined" && import.meta.env) {
+  if (typeof import.meta !== "undefined" && import.meta?.env) {
     return import.meta.env[key];
   }
   // Fallback to process.env for test environments
-  if (typeof process !== "undefined" && process.env) {
+  if (typeof process !== "undefined" && process?.env) {
     return process.env[key];
   }
   return undefined;

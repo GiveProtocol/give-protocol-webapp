@@ -185,11 +185,12 @@ export const SelfReportedHoursList: React.FC<SelfReportedHoursListProps> = ({
       </div>
 
       {/* Records List */}
-      {loading ? (
+      {loading && (
         <div className="flex justify-center py-12">
           <LoadingSpinner size="lg" />
         </div>
-      ) : records.length === 0 ? (
+      )}
+      {!loading && records.length === 0 ? (
         <div className="text-center py-12">
           <ClipboardList className="h-12 w-12 text-gray-300 mx-auto mb-4" />
           <h3 className="text-lg font-medium text-gray-900 mb-1">

@@ -6,8 +6,6 @@ import {
   VolunteerVerification,
 } from "@/types/volunteer";
 import { Logger } from "./logger";
-// import { useWeb3 } from '@/contexts/Web3Context'; // Unused import
-// import { getContractAddress } from '@/config/contracts'; // Unused import
 import { SecureRandom } from "@/utils/security/index";
 
 // ABI for the VolunteerVerification contract
