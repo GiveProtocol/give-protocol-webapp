@@ -154,15 +154,14 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
           </div>
         )}
         {success && (
-          <div
-            className="mb-4 p-3 bg-green-50 text-green-600 rounded-md"
-            role="status"
+          <output
+            className="mb-4 p-3 bg-green-50 text-green-600 rounded-md block"
           >
             {t(
               "organization.saveSuccess",
               "Organization profile saved successfully",
             )}
-          </div>
+          </output>
         )}
 
         <OrganizationProfileForm

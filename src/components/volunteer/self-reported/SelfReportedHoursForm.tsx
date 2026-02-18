@@ -74,7 +74,7 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
         id="activityTypeButton"
         type="button"
         aria-expanded={isOpen}
-        aria-haspopup="listbox"
+        aria-haspopup="true"
         onClick={onToggle}
         className="w-full h-auto min-h-[2.75rem] flex items-center justify-between px-4 py-3 text-left rounded-lg bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:border-transparent"
       >
@@ -92,37 +92,36 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
       </button>
 
       {isOpen && (
-        <div
-          role="listbox"
+        <ul
           aria-labelledby="activityTypeButton"
-          className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto"
+          className="absolute z-20 w-full mt-2 bg-white rounded-xl shadow-xl shadow-gray-200/50 border border-gray-100 max-h-72 overflow-auto list-none m-0 p-0"
         >
           {Object.values(ActivityType).map((type) => (
-            <button
-              key={type}
-              type="button"
-              role="option"
-              aria-selected={value === type}
-              data-type={type}
-              onClick={handleOptionClick}
-              className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
-                value === type ? "bg-emerald-50" : "hover:bg-gray-50"
-              }`}
-            >
-              <div className="flex-1 min-w-0">
-                <span className="block text-sm font-medium text-gray-900">
-                  {ACTIVITY_TYPE_LABELS[type]}
-                </span>
-                <span className="block text-xs text-gray-500 mt-0.5">
-                  {ACTIVITY_TYPE_DESCRIPTIONS[type]}
-                </span>
-              </div>
-              {value === type && (
-                <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
-              )}
-            </button>
+            <li key={type}>
+              <button
+                type="button"
+                aria-selected={value === type}
+                data-type={type}
+                onClick={handleOptionClick}
+                className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
+                  value === type ? "bg-emerald-50" : "hover:bg-gray-50"
+                }`}
+              >
+                <div className="flex-1 min-w-0">
+                  <span className="block text-sm font-medium text-gray-900">
+                    {ACTIVITY_TYPE_LABELS[type]}
+                  </span>
+                  <span className="block text-xs text-gray-500 mt-0.5">
+                    {ACTIVITY_TYPE_DESCRIPTIONS[type]}
+                  </span>
+                </div>
+                {value === type && (
+                  <Check className="w-4 h-4 text-emerald-600 flex-shrink-0 mt-0.5" />
+                )}
+              </button>
+            </li>
           ))}
-        </div>
+        </ul>
       )}
     </div>
   );
@@ -170,35 +169,41 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
       {/* Segmented Control */}
       <div
         className="inline-flex rounded-lg bg-gray-100 p-1 mb-4"
-        role="radiogroup"
-        aria-label="Organization type"
       >
-        <button
-          type="button"
-          role="radio"
-          aria-checked={orgMode === "verified"}
-          onClick={handleVerifiedClick}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+        <label
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer ${
             orgMode === "verified"
               ? "bg-white text-gray-900 shadow-sm"
               : "text-gray-600 hover:text-gray-900"
           }`}
         >
+          <input
+            type="radio"
+            name="orgMode"
+            value="verified"
+            checked={orgMode === "verified"}
+            onChange={handleVerifiedClick}
+            className="sr-only"
+          />
           Platform Organization
-        </button>
-        <button
-          type="button"
-          role="radio"
-          aria-checked={orgMode === "other"}
-          onClick={handleOtherClick}
-          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
+        </label>
+        <label
+          className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer ${
             orgMode === "other"
               ? "bg-white text-gray-900 shadow-sm"
               : "text-gray-600 hover:text-gray-900"
           }`}
         >
+          <input
+            type="radio"
+            name="orgMode"
+            value="other"
+            checked={orgMode === "other"}
+            onChange={handleOtherClick}
+            className="sr-only"
+          />
           Not Listed
-        </button>
+        </label>
       </div>
 
       {orgMode === "verified" ? (

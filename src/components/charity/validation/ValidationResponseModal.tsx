@@ -128,13 +128,11 @@ export const ValidationResponseModal: React.FC<
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
       onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={-1}
-      aria-label="Close dialog"
+      role="presentation"
     >
-      <div
-        className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-        role="dialog"
+      <dialog
+        open
+        className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto m-0 p-0"
         aria-modal="true"
         aria-labelledby="validation-modal-title"
       >
@@ -315,7 +313,7 @@ export const ValidationResponseModal: React.FC<
             </>
           )}
         </div>
-      </div>
+      </dialog>
     </div>
   );
 };
