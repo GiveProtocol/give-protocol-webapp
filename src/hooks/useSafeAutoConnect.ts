@@ -9,6 +9,16 @@ import { useMultiChainContext } from "@/contexts/MultiChainContext";
 import { createSafeProvider, isInSafeAppContext } from "@/lib/wallets";
 
 /**
+ * Handles the Safe wallet connection promise result with logging
+ * Extracted to avoid exceeding max function nesting depth (S2004)
+ */
+function handleConnectResult(promise: Promise<void>): void {
+  promise
+    .then(() => Logger.info("Successfully auto-connected to Safe"))
+    .catch((err: unknown) => Logger.error("Failed to auto-connect to Safe", { error: err }));
+}
+
+/**
  * Hook that automatically connects to Safe wallet when running in Safe App iframe
  * Should be used at the app root level
  */
@@ -47,9 +57,7 @@ export function useSafeAutoConnect() {
         // Wrap in startTransition so the connection state updates
         // don't interrupt Suspense hydration
         startTransition(() => {
-          connect(safeProvider, "evm")
-            .then(() => Logger.info("Successfully auto-connected to Safe"))
-            .catch((err) => Logger.error("Failed to auto-connect to Safe", { error: err }));
+          handleConnectResult(connect(safeProvider, "evm"));
         });
       } catch (error) {
         Logger.error("Failed to auto-connect to Safe", { error });

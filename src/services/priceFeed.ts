@@ -104,52 +104,16 @@ export class PriceFeedService {
       }
     }
 
-    // Try Chainlink first (for USD prices)
     const prices: Record<string, number> = {};
-    const missingTokens: string[] = [];
 
-    // Attempt to get prices from Chainlink
-    if (targetCurrency.toLowerCase() === "usd") {
-      const chainlinkPrices = await this.fetchChainlinkPrices(tokenIds);
-
-      for (const tokenId of tokenIds) {
-        if (chainlinkPrices[tokenId] !== undefined) {
-          prices[tokenId] = chainlinkPrices[tokenId];
-          this.updateCache(tokenId, chainlinkPrices[tokenId], targetCurrency, now);
-        } else {
-          missingTokens.push(tokenId);
-        }
-      }
-    } else {
-      // For non-USD currencies, we need CoinGecko
-      missingTokens.push(...tokenIds);
-    }
+    // Resolve Chainlink prices for USD, or mark all tokens as missing for non-USD
+    const missingTokens = targetCurrency.toLowerCase() === "usd"
+      ? await this.resolveChainlinkPrices(tokenIds, prices, targetCurrency, now)
+      : [...tokenIds];
 
     // Fallback to CoinGecko for missing tokens or non-USD currencies
     if (missingTokens.length > 0) {
-      try {
-        const coingeckoPrices = await this.fetchCoingeckoPrices(
-          missingTokens,
-          targetCurrency
-        );
-
-        for (const tokenId of missingTokens) {
-          if (coingeckoPrices[tokenId] !== undefined) {
-            prices[tokenId] = coingeckoPrices[tokenId];
-            this.updateCache(tokenId, coingeckoPrices[tokenId], targetCurrency, now);
-          }
-        }
-      } catch (error) {
-        Logger.warn("Price feed: CoinGecko fallback failed", { error });
-
-        // Use stale cache if available
-        const stalePrices = getStalePrices(
-          this.priceCache.prices,
-          missingTokens,
-          targetCurrency
-        );
-        Object.assign(prices, stalePrices);
-      }
+      await this.resolveFallbackPrices(missingTokens, prices, targetCurrency, now);
     }
 
     this.priceCache.lastUpdate = now;
@@ -161,6 +125,64 @@ export class PriceFeedService {
     });
 
     return prices;
+  }
+
+  /**
+   * Resolve prices from Chainlink, returning token IDs that were not found
+   */
+  private async resolveChainlinkPrices(
+    tokenIds: string[],
+    prices: Record<string, number>,
+    targetCurrency: string,
+    now: number
+  ): Promise<string[]> {
+    const missingTokens: string[] = [];
+    const chainlinkPrices = await this.fetchChainlinkPrices(tokenIds);
+
+    for (const tokenId of tokenIds) {
+      if (chainlinkPrices[tokenId] !== undefined) {
+        prices[tokenId] = chainlinkPrices[tokenId];
+        this.updateCache(tokenId, chainlinkPrices[tokenId], targetCurrency, now);
+      } else {
+        missingTokens.push(tokenId);
+      }
+    }
+
+    return missingTokens;
+  }
+
+  /**
+   * Resolve prices from CoinGecko fallback, using stale cache on failure
+   */
+  private async resolveFallbackPrices(
+    missingTokens: string[],
+    prices: Record<string, number>,
+    targetCurrency: string,
+    now: number
+  ): Promise<void> {
+    try {
+      const coingeckoPrices = await this.fetchCoingeckoPrices(
+        missingTokens,
+        targetCurrency
+      );
+
+      for (const tokenId of missingTokens) {
+        if (coingeckoPrices[tokenId] !== undefined) {
+          prices[tokenId] = coingeckoPrices[tokenId];
+          this.updateCache(tokenId, coingeckoPrices[tokenId], targetCurrency, now);
+        }
+      }
+    } catch (error) {
+      Logger.warn("Price feed: CoinGecko fallback failed", { error });
+
+      // Use stale cache if available
+      const stalePrices = getStalePrices(
+        this.priceCache.prices,
+        missingTokens,
+        targetCurrency
+      );
+      Object.assign(prices, stalePrices);
+    }
   }
 
   /**
