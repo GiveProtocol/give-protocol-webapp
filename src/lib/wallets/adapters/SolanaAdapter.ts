@@ -48,7 +48,7 @@ export function isSolanaProvider(provider: unknown): provider is SolanaProvider 
  * Provides unified interface for Solana blockchain operations
  */
 export class SolanaAdapter {
-  private provider: SolanaProvider;
+  private readonly provider: SolanaProvider;
   private currentCluster: SolanaClusterId;
   private connectedAddress: string | null = null;
 

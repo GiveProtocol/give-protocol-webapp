@@ -241,13 +241,12 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * @param chainType - Optional chain type filter
    * @returns Array of accounts
    */
-  async getAccounts(chainType?: ChainType): Promise<UnifiedAccount[]> {
+  async getAccounts(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
     if (!this.connectedAddress) {
       return [];
     }
 
-    const accountChainType = chainType || "evm";
-    return this.toUnifiedAccounts([this.connectedAddress], accountChainType);
+    return this.toUnifiedAccounts([this.connectedAddress], chainType);
   }
 
   /**

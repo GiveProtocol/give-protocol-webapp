@@ -411,11 +411,9 @@ class CoinbaseWallet extends EVMWalletBase {
   constructor() {
     // Coinbase Wallet injects as window.ethereum with isCoinbaseWallet flag
     // or as window.coinbaseWalletExtension
-    const provider =
-      typeof window !== "undefined"
-        ? window.coinbaseWalletExtension ||
-          (window.ethereum?.isCoinbaseWallet ? window.ethereum : null)
-        : null;
+    const isClient = typeof window !== "undefined";
+    const coinbaseEthereum = isClient && window.ethereum?.isCoinbaseWallet ? window.ethereum : null;
+    const provider = isClient ? (window.coinbaseWalletExtension || coinbaseEthereum) : null;
 
     super("Coinbase Wallet", "coinbase", provider);
   }

@@ -360,9 +360,10 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const connect = useCallback(
     async (_walletProvider?: unknown) => {
       // Resolve wallet provider (ignore events from onClick={connect})
+      const defaultProvider = typeof window !== "undefined" ? window.ethereum : null;
       const walletProvider = isEventObject(_walletProvider)
-        ? (typeof window !== "undefined" ? window.ethereum : null)
-        : _walletProvider || (typeof window !== "undefined" ? window.ethereum : null);
+        ? defaultProvider
+        : _walletProvider || defaultProvider;
 
       if (!walletProvider) {
         const error = new Error(

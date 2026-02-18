@@ -80,9 +80,9 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
   const mainnetChains = availableChains.filter((chain) => !chain.isTestnet);
 
   return (
-    <div
+    <dialog
+      open
       className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-fadeIn"
-      role="dialog"
       aria-modal="true"
       aria-labelledby="chain-selection-title"
     >
@@ -151,6 +151,6 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };

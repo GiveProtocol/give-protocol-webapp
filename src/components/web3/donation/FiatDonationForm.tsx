@@ -283,6 +283,10 @@ export function FiatDonationForm({
     return `Donate $${chargeAmount.toFixed(2)}`;
   };
 
+  const submitIcon = isMonthly
+    ? <RefreshCw className="w-5 h-5" />
+    : <CreditCard className="w-5 h-5" />;
+
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
       {displayError && (
@@ -390,15 +394,7 @@ export function FiatDonationForm({
         disabled={isBusy || !scriptReady || amount <= 0}
         fullWidth
         size="lg"
-        icon={
-          isBusy ? (
-            <Loader2 className="w-5 h-5 animate-spin" />
-          ) : isMonthly ? (
-            <RefreshCw className="w-5 h-5" />
-          ) : (
-            <CreditCard className="w-5 h-5" />
-          )
-        }
+        icon={isBusy ? <Loader2 className="w-5 h-5 animate-spin" /> : submitIcon}
         className={cn(
           'h-14 font-bold text-lg shadow-xl hover:shadow-2xl',
           'bg-gradient-to-r from-emerald-600 to-teal-600',

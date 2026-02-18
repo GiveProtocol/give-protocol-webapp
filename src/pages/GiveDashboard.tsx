@@ -583,7 +583,7 @@ export const GiveDashboard: React.FC = () => {
                     t("common.unknown", "Unknown")}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {contribution.purpose === "Fiat Donation" ? (
+                  {contribution.purpose === "Fiat Donation" && (
                     <>
                       <CurrencyDisplay amount={contribution.amount || 0} />
                       {contribution.metadata?.disbursementStatus && (
@@ -592,19 +592,23 @@ export const GiveDashboard: React.FC = () => {
                         </span>
                       )}
                     </>
-                  ) : contribution.purpose === "Donation" ? (
+                  )}
+                  {contribution.purpose === "Donation" && (
                     <>
                       {contribution.amount} {contribution.cryptoType} (
                       <CurrencyDisplay amount={contribution.fiatValue || 0} />)
                     </>
-                  ) : contribution.purpose === "Volunteer Hours" ? (
+                  )}
+                  {contribution.purpose === "Volunteer Hours" && (
                     <>
                       {contribution.metadata?.hours} {t("volunteer.hours")} -{" "}
                       {contribution.metadata?.description}
                     </>
-                  ) : (
-                    contribution.metadata?.opportunity
                   )}
+                  {contribution.purpose !== "Fiat Donation" &&
+                    contribution.purpose !== "Donation" &&
+                    contribution.purpose !== "Volunteer Hours" &&
+                    contribution.metadata?.opportunity}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span

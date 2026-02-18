@@ -59,7 +59,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
 
     // Check for Coinbase injected into ethereum
     const hasCoinbaseInEthereum =
-      typeof window.ethereum !== "undefined" && window.ethereum.isCoinbaseWallet;
+      typeof window.ethereum !== "undefined" && window.ethereum?.isCoinbaseWallet;
 
     return hasCoinbaseExtension || hasCoinbaseInEthereum;
   }

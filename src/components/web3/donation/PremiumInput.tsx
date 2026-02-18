@@ -64,6 +64,16 @@ export function PremiumInput({
     [onBlur]
   );
 
+  const borderClass = isFocused
+    ? 'border-transparent ring-2 ring-emerald-500 dark:ring-emerald-400'
+    : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500';
+  const iconColorClass = error
+    ? 'text-red-400 dark:text-red-500'
+    : 'text-gray-400 dark:text-gray-500';
+  const labelColorClass = isFocused
+    ? 'text-emerald-600 dark:text-emerald-400'
+    : 'text-gray-500 dark:text-gray-400';
+
   return (
     <div className="w-full">
       {/* Input container */}
@@ -77,11 +87,7 @@ export function PremiumInput({
             : 'bg-gray-50 dark:bg-slate-800/70',
           // Border and ring
           'border-2',
-          error
-            ? 'border-red-300 dark:border-red-500'
-            : isFocused
-              ? 'border-transparent ring-2 ring-emerald-500 dark:ring-emerald-400'
-              : 'border-gray-200 dark:border-slate-600 hover:border-gray-300 dark:hover:border-slate-500',
+          error ? 'border-red-300 dark:border-red-500' : borderClass,
           // Disabled state
           disabled && 'opacity-50 cursor-not-allowed'
         )}
@@ -92,11 +98,7 @@ export function PremiumInput({
             className={cn(
               'absolute left-4 top-1/2 -translate-y-1/2',
               'transition-colors duration-200',
-              isFocused
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : error
-                  ? 'text-red-400 dark:text-red-500'
-                  : 'text-gray-400 dark:text-gray-500'
+              isFocused ? 'text-emerald-600 dark:text-emerald-400' : iconColorClass
             )}
           >
             <Icon className="w-5 h-5" aria-hidden="true" />
@@ -115,11 +117,7 @@ export function PremiumInput({
               ? 'top-2 text-xs'
               : 'top-1/2 -translate-y-1/2 text-sm',
             // Color
-            error
-              ? 'text-red-500 dark:text-red-400'
-              : isFocused
-                ? 'text-emerald-600 dark:text-emerald-400'
-                : 'text-gray-500 dark:text-gray-400'
+            error ? 'text-red-500 dark:text-red-400' : labelColorClass
           )}
         >
           {label}

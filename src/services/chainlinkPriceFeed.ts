@@ -82,8 +82,8 @@ function getRpcUrl(chainId: ChainId): string {
  * Provides decentralized price data from Chainlink oracle networks
  */
 export class ChainlinkPriceFeedService {
-  private priceCache: Map<string, PriceCacheEntry> = new Map();
-  private providerCache: Map<number, Provider> = new Map();
+  private readonly priceCache: Map<string, PriceCacheEntry> = new Map();
+  private readonly providerCache: Map<number, Provider> = new Map();
 
   /**
    * Get or create a provider for a chain

@@ -63,7 +63,7 @@ function hasErrorCode(error: unknown, code: number): boolean {
  * Provides unified interface for EVM blockchain operations
  */
 export class EVMAdapter {
-  private rawProvider: EIP1193Provider;
+  private readonly rawProvider: EIP1193Provider;
   private ethersProvider: ethers.BrowserProvider | null = null;
   private ethersSigner: ethers.Signer | null = null;
   private currentChainId: number | null = null;

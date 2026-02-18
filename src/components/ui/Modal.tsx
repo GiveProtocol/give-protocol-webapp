@@ -41,7 +41,7 @@ export const Modal: React.FC<ModalProps> = ({
   showCloseButton = true,
   className = "",
 }) => {
-  const modalRef = useRef<HTMLDivElement>(null);
+  const modalRef = useRef<HTMLDialogElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
 
   // Size classes
@@ -112,10 +112,10 @@ export const Modal: React.FC<ModalProps> = ({
           />
         )}
         {/* Modal content */}
-        <div
+        <dialog
           ref={modalRef}
           tabIndex={-1}
-          role="dialog"
+          open
           aria-modal="true"
           aria-labelledby={title ? "modal-title" : undefined}
           className={`
@@ -153,7 +153,7 @@ export const Modal: React.FC<ModalProps> = ({
 
           {/* Body */}
           <div className="px-6 pb-6">{children}</div>
-        </div>
+        </dialog>
       </div>
     </Portal>
   );

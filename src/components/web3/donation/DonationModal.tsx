@@ -390,31 +390,28 @@ export const DonationModal: React.FC<DonationModalProps> = ({
               state.step === 'processing' && 'opacity-50 pointer-events-none'
             )}
           >
-            {state.paymentMethod === 'crypto' ? (
-              // Crypto mode - use existing forms
-              frequency === 'once' ? (
-                <DonationForm
-                  charityAddress={charityAddress}
-                  onSuccess={handleCryptoSuccess}
-                />
-              ) : (
-                <ScheduledDonationForm
-                  charityAddress={charityAddress}
-                  charityName={charityName}
-                  onSuccess={handleCryptoSuccess}
-                  onClose={onClose}
-                />
-              )
-            ) : !isMounted ? (
-              // SSR / hydration placeholder — avoid loading Helcim scripts server-side
+            {state.paymentMethod === 'crypto' && frequency === 'once' && (
+              <DonationForm
+                charityAddress={charityAddress}
+                onSuccess={handleCryptoSuccess}
+              />
+            )}
+            {state.paymentMethod === 'crypto' && frequency !== 'once' && (
+              <ScheduledDonationForm
+                charityAddress={charityAddress}
+                charityName={charityName}
+                onSuccess={handleCryptoSuccess}
+                onClose={onClose}
+              />
+            )}
+            {state.paymentMethod !== 'crypto' && !isMounted && (
               <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent mb-3" />
                 <p className="text-sm">Loading payment form...</p>
               </div>
-            ) : (
-              // Card mode - fiat donation form
+            )}
+            {state.paymentMethod !== 'crypto' && isMounted && (
               <div className="space-y-6">
-                {/* Fiat presets for amount selection (directFiat skips crypto conversion) */}
                 <FiatPresets
                   selectedToken={selectedToken}
                   onAmountSelect={handleAmountChange}

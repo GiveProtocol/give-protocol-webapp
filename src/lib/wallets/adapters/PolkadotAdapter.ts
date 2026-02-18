@@ -64,8 +64,8 @@ export function isPolkadotExtension(provider: unknown): provider is PolkadotExte
  * Provides unified interface for Polkadot/Substrate blockchain operations
  */
 export class PolkadotAdapter {
-  private extension: PolkadotExtension;
-  private extensionName: string;
+  private readonly extension: PolkadotExtension;
+  private readonly extensionName: string;
   private currentChain: PolkadotChainId;
   private accounts: InjectedAccountWithMeta[] = [];
   private unsubscribe: (() => void) | null = null;
@@ -303,7 +303,7 @@ export async function enablePolkadotExtension(
     const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> })
       .injectedWeb3;
 
-    if (!injectedWeb3 || !injectedWeb3[extensionName]) {
+    if (!injectedWeb3?.[extensionName]) {
       Logger.info("Polkadot extension not found", { extensionName });
       return null;
     }

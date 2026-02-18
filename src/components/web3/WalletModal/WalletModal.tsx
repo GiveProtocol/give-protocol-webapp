@@ -160,9 +160,9 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         aria-label="Close modal"
         tabIndex={-1}
       />
-      <div
+      <dialog
+        open
         className="relative w-full max-w-md mx-4 bg-white rounded-xl shadow-xl"
-        role="dialog"
         aria-modal="true"
         aria-labelledby="wallet-modal-title"
       >
@@ -242,7 +242,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
             Terms of Service
           </a>
         </p>
-      </div>
+      </dialog>
     </div>
   );
 };
