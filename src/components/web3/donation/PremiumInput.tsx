@@ -122,6 +122,7 @@ export function PremiumInput({
   const labelColorClass = isFocused
     ? 'text-emerald-600 dark:text-emerald-400'
     : 'text-gray-500 dark:text-gray-400';
+  const ariaInvalid = Boolean(error);
 
   return (
     <div className="w-full">
@@ -179,7 +180,7 @@ export function PremiumInput({
           onFocus={handleFocus}
           onBlur={handleBlur}
           disabled={disabled}
-          aria-invalid={error ? 'true' : 'false'}
+          aria-invalid={ariaInvalid}
           aria-describedby={cn(error && errorId, helperText && helperId) || undefined}
           className={cn(
             'absolute inset-0 w-full h-full',
