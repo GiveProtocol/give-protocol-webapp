@@ -85,7 +85,7 @@ export function formatFiat(
 
   if (!showSymbol) {
     // Remove currency symbol
-    return formatted.replace(/[^0-9,.-]/g, "").trim();
+    return formatted.replaceAll(/[^0-9,.-]/g, "").trim();
   }
 
   return formatted;
@@ -150,7 +150,7 @@ export function formatCrypto(
  */
 export function parseFormattedNumber(formattedValue: string): number {
   // Remove all non-numeric characters except dots, commas, and minus
-  const cleaned = formattedValue.replace(/[^0-9.,-]/g, "");
+  const cleaned = formattedValue.replaceAll(/[^0-9.,-]/g, "");
 
   // Handle European format (comma as decimal separator)
   if (cleaned.includes(",") && cleaned.includes(".")) {

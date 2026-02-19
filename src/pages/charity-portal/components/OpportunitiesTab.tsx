@@ -143,7 +143,7 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
               </div>
             </header>
             <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-              {opportunity.description.replace(/[<>]/g, "")}
+              {opportunity.description.replaceAll(/[<>]/g, "")}
             </p>
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
               <span className="flex items-center gap-1">

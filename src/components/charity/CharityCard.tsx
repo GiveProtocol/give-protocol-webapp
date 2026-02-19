@@ -11,7 +11,7 @@ interface CharityCardProps {
 export const CharityCard: React.FC<CharityCardProps> = ({ charity }) => {
   // Convert charity name to URL-friendly slug
   const getCharitySlug = (name: string) => {
-    return name.toLowerCase().replace(/\s+/g, '-');
+    return name.toLowerCase().replaceAll(/\s+/g, '-');
   };
 
   return (

@@ -90,7 +90,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   const stripHtmlTags = (input: string): string => {
     // Remove all < and > characters which are the core of HTML tags
     // This is more secure than trying to match complete tag patterns
-    return input.replace(/[<>]/g, "");
+    return input.replaceAll(/[<>]/g, "");
   };
 
   const validateField = useCallback((name: string, value: string): string => {

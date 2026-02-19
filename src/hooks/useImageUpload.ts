@@ -100,7 +100,7 @@ function generateFilePath(originalName: string, folder: string): string {
   const timestamp = Date.now();
   const randomString = generateSecureRandomString(8);
   const extension = originalName.split(".").pop()?.toLowerCase() || "jpg";
-  const sanitizedFolder = folder.replace(/[^a-zA-Z0-9-_/]/g, "");
+  const sanitizedFolder = folder.replaceAll(/[^a-zA-Z0-9-_/]/g, "");
   return `${sanitizedFolder}/${timestamp}-${randomString}.${extension}`;
 }
 

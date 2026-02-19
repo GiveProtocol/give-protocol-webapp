@@ -11,7 +11,7 @@ export const formatBalance = (balance: string | number | bigint): string => {
     if (!balance) return '0.00';
     
     // Convert to string first to handle all input types
-    const balanceStr = balance.toString().replace(/[^\d]/g, '');
+    const balanceStr = balance.toString().replaceAll(/[^\d]/g, '');
     
     // Handle empty string after sanitization
     if (!balanceStr) return '0.00';

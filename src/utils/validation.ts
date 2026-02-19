@@ -52,7 +52,7 @@ export function validateAuthInput(email: string, password: string): void {
  */
 export function sanitizeInput(input: string): string {
   // Remove potentially dangerous characters
-  return input.replace(/[<>'"]/g, "");
+  return input.replaceAll(/[<>'"]/g, "");
 }
 
 /**

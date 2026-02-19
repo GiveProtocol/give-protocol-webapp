@@ -117,7 +117,7 @@ export class InputSanitizer {
     const sanitized = input
       .trim()
       .slice(0, this.maxLengths[field])
-      .replace(/[<>]/g, "")
+      .replaceAll(/[<>]/g, "")
       .replaceAll("&", "&amp;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#x27;")

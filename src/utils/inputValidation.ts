@@ -30,8 +30,8 @@ export const InputValidator = {
 
   sanitizeInput(input: string): string {
     return input
-      .replace(/[<>]/g, "") // Remove potential HTML tags
-      .replace(/['"]/g, "") // Remove quotes
+      .replaceAll(/[<>]/g, "") // Remove potential HTML tags
+      .replaceAll(/['"]/g, "") // Remove quotes
       .trim();
   },
 

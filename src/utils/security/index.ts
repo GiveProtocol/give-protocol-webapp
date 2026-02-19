@@ -115,7 +115,7 @@ export class SecurityManager {
         base-uri 'self';
         upgrade-insecure-requests;
       `
-        .replace(/\s+/g, " ")
+        .replaceAll(/\s+/g, " ")
         .trim(),
       "X-Content-Type-Options": "nosniff",
       "X-Frame-Options": "DENY",

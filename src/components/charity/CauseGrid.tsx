@@ -45,7 +45,7 @@ export const CauseGrid: React.FC<CauseGridProps> = ({ searchTerm, category }) =>
   ];
 
   const getCauseSlug = (name: string): string => {
-    return name.toLowerCase().replace(/\s+/g, '-');
+    return name.toLowerCase().replaceAll(/\s+/g, '-');
   };
 
   const filteredCauses = causes.filter(cause => {
