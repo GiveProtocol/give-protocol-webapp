@@ -1,7 +1,8 @@
 // Safe email regex that avoids catastrophic backtracking
-// Rejects consecutive dots and dots at boundaries (start, end, before/after @)
+// Uses dot-separated segment pattern instead of lookaheads to prevent
+// consecutive dots and boundary dots while staying under complexity limit
 const EMAIL_REGEX =
-  /^(?!.*\.\.)(?!.*\.$|^\.|.*\.@|.*@\.)[a-zA-Z0-9][a-zA-Z0-9._%+-]*@[a-zA-Z0-9][a-zA-Z0-9.-]*\.[a-zA-Z]{2,}$/;
+  /^[a-zA-Z0-9_%+-]+(?:\.[a-zA-Z0-9_%+-]+)*@[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
 const PASSWORD_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 // Safe URL regex - requires TLD for proper URL validation

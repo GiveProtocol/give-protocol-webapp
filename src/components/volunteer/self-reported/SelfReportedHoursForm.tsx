@@ -100,7 +100,7 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
             <li key={type}>
               <button
                 type="button"
-                aria-selected={value === type}
+                aria-current={value === type ? "true" : undefined}
                 data-type={type}
                 onClick={handleOptionClick}
                 className={`w-full px-4 py-3 text-left transition-colors flex items-start gap-3 first:rounded-t-xl last:rounded-b-xl ${
@@ -184,8 +184,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
             checked={orgMode === "verified"}
             onChange={handleVerifiedClick}
             className="sr-only"
-          />
-          Platform Organization
+          /><span>Platform Organization</span>
         </label>
         <label
           className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer ${
@@ -201,8 +200,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
             checked={orgMode === "other"}
             onChange={handleOtherClick}
             className="sr-only"
-          />
-          Not Listed
+          /><span>Not Listed</span>
         </label>
       </div>
 
