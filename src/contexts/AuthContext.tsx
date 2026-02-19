@@ -417,8 +417,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         error: null,
       });
 
-      // Stay on current domain instead of redirecting
-      window.location.href = `${window.location.origin}/`;
+      // Redirect to login page so user must re-authenticate
+      window.location.href = `${window.location.origin}/login`;
 
       showToast("success", "Logged out successfully");
     } catch (err) {
