@@ -144,22 +144,19 @@ export function useAuth() {
   const logout = async () => {
     try {
       setLoading(true);
-      
+
       // Disconnect wallet first
       await disconnect();
-      
-      // Then logout from auth
+
+      // Then logout from auth (handles redirect to /login)
       await authContext.logout();
-      
-      // Use window.location to stay on the same domain
-      window.location.href = `${window.location.origin}/`;
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to log out';
       showToast('error', 'Logout Error', message);
-      Logger.error('Logout failed', { 
-        error: error instanceof Error ? 
-          { message: error.message, stack: error.stack } : 
-          error 
+      Logger.error('Logout failed', {
+        error: error instanceof Error ?
+          { message: error.message, stack: error.stack } :
+          error
       });
       throw error;
     } finally {
