@@ -215,6 +215,27 @@ export interface OrganizationProfileFormData {
   instagram: string;
 }
 
+/**
+ * A single impact statistic label/value pair for charity profiles
+ */
+export interface ImpactStat {
+  label: string;
+  value: string;
+}
+
+/**
+ * Charity details stored in the charity_details table
+ */
+export interface CharityDetails {
+  name: string;
+  description: string;
+  category: string;
+  image_url: string;
+  mission_statement?: string;
+  impact_stats?: ImpactStat[];
+  impact_highlights?: string[];
+}
+
 /** Maximum number of causes a charity can have active at once */
 export const MAX_CAUSES_PER_CHARITY = 3;
 

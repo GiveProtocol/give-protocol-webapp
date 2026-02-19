@@ -343,8 +343,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           );
         }
 
-        // Don't redirect here - let the Login component handle it via <Navigate>
-        // The auth state will update, triggering the redirect in Login.tsx
+        // Set user state directly so Login.tsx can redirect immediately
+        // rather than waiting for the async onAuthStateChange listener
+        setState((prev) => ({
+          ...prev,
+          user: user ?? null,
+          userType: (userType as UserType) ?? null,
+        }));
       } catch (err) {
         const message =
           err instanceof Error ? err.message : "Failed to sign in";

@@ -11,11 +11,13 @@ import {
   RefreshCw,
   Clock,
   Settings,
+  Target,
 } from "lucide-react";
 import {
   ApplicationsTab,
   CausesTab,
   HoursVerificationTab,
+  ImpactProfileTab,
   OpportunitiesTab,
   OrganizationProfileTab,
   StatsCards,
@@ -133,6 +135,7 @@ export const CharityPortal: React.FC = () => {
     | "applications"
     | "opportunities"
     | "causes"
+    | "impact"
     | "organization"
   >("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
@@ -656,6 +659,10 @@ export const CharityPortal: React.FC = () => {
     setActiveTab("causes");
   }, []);
 
+  const handleImpactTab = useCallback(() => {
+    setActiveTab("impact");
+  }, []);
+
   const handleOrganizationTab = useCallback(() => {
     setActiveTab("organization");
   }, []);
@@ -898,6 +905,17 @@ export const CharityPortal: React.FC = () => {
                 {t("cause.causes", "Causes")}
               </button>
               <button
+                onClick={handleImpactTab}
+                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  activeTab === "impact"
+                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+                }`}
+              >
+                <Target className="h-4 w-4" />
+                {t("impact.profile", "Impact Profile")}
+              </button>
+              <button
                 onClick={handleOrganizationTab}
                 className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                   activeTab === "organization"
@@ -942,6 +960,11 @@ export const CharityPortal: React.FC = () => {
 
         {/* Causes Tab */}
         {activeTab === "causes" && <CausesTab causes={causes} />}
+
+        {/* Impact Profile */}
+        {activeTab === "impact" && profile?.id && (
+          <ImpactProfileTab profileId={profile.id} />
+        )}
 
         {/* Organization Profile */}
         {activeTab === "organization" && profile?.id && (
