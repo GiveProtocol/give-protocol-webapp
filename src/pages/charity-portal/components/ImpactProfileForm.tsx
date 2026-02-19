@@ -54,7 +54,7 @@ export const ImpactProfileForm: React.FC<ImpactProfileFormProps> = ({
 
   const initialFormData = useMemo((): ImpactProfileFormData => {
     const stats =
-      initialData?.impact_stats && initialData.impact_stats.length === 3
+      initialData?.impact_stats?.length === 3
         ? initialData.impact_stats
         : DEFAULT_STATS;
 

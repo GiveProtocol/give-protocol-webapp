@@ -1,9 +1,9 @@
 // Helper to get environment variable with fallback to process.env for test environments
 const getEnv = (key: string): string | undefined => {
-  if (typeof import.meta !== 'undefined' && import.meta?.env) {
+  if (import.meta?.env) {
     return import.meta.env[key];
   }
-  if (typeof process !== 'undefined' && process?.env) {
+  if (process?.env) {
     return process.env[key];
   }
   return undefined;
