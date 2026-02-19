@@ -1,93 +1,269 @@
-# Give Protocol - Web Application
+# Give Protocol Web Application
 
-Progressive Web App (PWA) for Give Protocol, a blockchain-based charitable giving platform.
+Progressive Web Application for Give Protocol, a Delaware-based 501(c)(3) nonprofit enabling transparent charitable giving through blockchain technology. This app serves donors, charities, volunteers, and administrators with multi-chain crypto donations, fiat payments, portfolio fund management, and volunteer verification.
 
-## Features
+<!-- Screenshot placeholder: Replace with an actual screenshot of the running application -->
+<!-- ![Give Protocol Dashboard](docs/images/dashboard-screenshot.png) -->
 
-- 🎯 Donor dashboard with real-time donation tracking
-- 🏢 Charity management portal
-- 💼 Volunteer verification system
-- 📊 Analytics and impact reporting
-- 🔐 Web3 wallet integration (MetaMask, WalletConnect)
-- 🌍 Multi-language support (i18next)
-- 📱 Progressive Web App capabilities
+## Getting Started
 
-## Tech Stack
+### Prerequisites
 
-- **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: TailwindCSS
-- **State Management**: React Query (TanStack Query)
-- **Routing**: React Router v6
-- **Blockchain**: ethers.js, viem
-- **Backend**: Supabase
-- **Monitoring**: Sentry
-- **Testing**: Jest, Cypress
+- Node.js 20+
+- npm
+- A Supabase project (for authentication and database)
 
-## Setup
+### Installation
 
 ```bash
+git clone https://github.com/GiveProtocol/give-protocol-webapp.git
+cd give-protocol-webapp
 npm install
 ```
 
-## Configuration
+### Environment Configuration
 
-Copy `.env.example` to `.env`:
+Copy `.env.example` to `.env` and configure the required variables:
 
 ```env
-VITE_SUPABASE_URL=
-VITE_SUPABASE_ANON_KEY=
-VITE_MOONBASE_RPC_URL=
+# --- Required ---
+
+# Supabase (authentication and database)
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+
+# Feature flags
+VITE_ENABLE_WEB3=true
+VITE_SHOW_TESTNETS=false
+
+# --- Smart Contract Addresses (per network) ---
+# Each network needs six addresses: Donation, Verification,
+# Distribution, PortfolioFunds, Executor, and Token.
+# Example for Base Sepolia testnet:
+VITE_BASE_SEPOLIA_DONATION_ADDRESS=0x...
+VITE_BASE_SEPOLIA_VERIFICATION_ADDRESS=0x...
+VITE_BASE_SEPOLIA_DISTRIBUTION_ADDRESS=0x...
+VITE_BASE_SEPOLIA_PORTFOLIO_FUNDS_ADDRESS=0x...
+VITE_BASE_SEPOLIA_EXECUTOR_ADDRESS=0x...
+VITE_BASE_SEPOLIA_TOKEN_ADDRESS=0x...
+
+# Repeat for: OPTIMISM_SEPOLIA, MOONBASE (testnets)
+#             BASE, OPTIMISM, MOONBEAM (mainnets)
+
+# --- RPC URLs (optional -- uses server proxy if not set) ---
+# Set dedicated provider URLs (Alchemy, Infura) for production.
+# VITE_BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
+# VITE_OPTIMISM_RPC_URL=https://opt-mainnet.g.alchemy.com/v2/YOUR_KEY
+# VITE_MOONBEAM_RPC_URL=https://rpc.api.moonbeam.network
+
+# --- Helcim Fiat Payments (frontend flag only) ---
+VITE_HELCIM_TEST_MODE=true
+# API credentials are server-side secrets set in Supabase Dashboard,
+# not in this file. See .env.example for details.
+
+# --- Monitoring (optional) ---
+VITE_SENTRY_DSN=
+VITE_ENABLE_ANALYTICS=false
 ```
 
-## Development
+See `.env.example` for the complete list of variables with documentation.
+
+### Running the Development Server
 
 ```bash
-# Start dev server
-npm run dev
-
-# Run tests
-npm run test
-
-# Run linter
-npm run lint
-
-# E2E tests
-npm run test:e2e
+npm run dev          # Start Vite dev server at http://localhost:5173
 ```
 
-## Building
+## User Flows
+
+The application supports four user roles, each with a dedicated experience:
+
+```mermaid
+flowchart LR
+    subgraph Donor
+        D1[Browse Charities] --> D2[Connect Wallet]
+        D2 --> D3[Donate Crypto or Fiat]
+        D3 --> D4[Track Impact in Dashboard]
+        D4 --> D5[Manage Scheduled Donations]
+    end
+
+    subgraph Charity
+        C1[Register and Verify] --> C2[Manage Profile]
+        C2 --> C3[Create Causes]
+        C3 --> C4[Post Volunteer Opportunities]
+        C4 --> C5[View Donations and Analytics]
+    end
+
+    subgraph Volunteer
+        V1[Browse Opportunities] --> V2[Report Hours]
+        V2 --> V3[Receive Verification Link]
+        V3 --> V4[Build Service Record]
+    end
+
+    subgraph Admin
+        A1[Approve Charities] --> A2[Manage Users]
+        A2 --> A3[Monitor Donations]
+        A3 --> A4[Review Audit Logs]
+    end
+```
+
+**Donor:** Register or connect wallet, browse charities at `/browse`, make crypto or fiat donations, track all giving in `/give-dashboard`, manage recurring donations at `/scheduled-donations`.
+
+**Charity:** Register at `/register`, manage organization profile and causes in `/charity-portal`, post volunteer opportunities, view donation analytics and impact reporting.
+
+**Volunteer:** Browse opportunities at `/opportunities`, self-report hours, receive verification links, track contribution history at `/contributions`.
+
+**Admin:** Access `/admin` for charity approval, user management, donation monitoring, withdrawal processing, and audit logs.
+
+## Wallet Integration
+
+The app supports a broad range of wallet providers for EVM-compatible chains:
+
+| Wallet | Type | Notes |
+|--------|------|-------|
+| MetaMask | Browser extension | Most widely used; auto-detected |
+| WalletConnect | Protocol | Connects mobile and desktop wallets |
+| Ledger | Hardware | Via @ledgerhq/device-signer-kit-ethereum |
+| Safe (Gnosis) | Multisig | Via @safe-global/safe-apps-sdk |
+| Coinbase Wallet | Browser/mobile | Native integration |
+| Phantom | Browser extension | EVM mode |
+| Rabby | Browser extension | Multi-chain |
+| Talisman | Browser extension | Polkadot and EVM |
+| SubWallet | Browser extension | Polkadot and EVM |
+
+**Wallet features:**
+- Auto-detection of installed browser wallets
+- Chain switching with user confirmation
+- Real-time balance tracking across connected chains
+- Transaction signing, submission, and status monitoring
+- Wallet disconnect synced with authentication logout
+
+**Supported chains:** Base, Optimism, Moonbeam (mainnets), and their respective testnets (Base Sepolia, Optimism Sepolia, Moonbase Alpha).
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|-----------|
+| Framework | React 18 + TypeScript 5 |
+| Build | Vite 7 (SSR support, code splitting, gzip) |
+| Routing | React Router v6 |
+| Server state | TanStack React Query v5 |
+| Client state | React Context (Auth, Web3, Chain, Settings, Currency, Toast) |
+| Styling | TailwindCSS 3 |
+| Rich text | Tiptap editor |
+| Blockchain | ethers.js v6, viem v2 |
+| Database/Auth | Supabase (PostgreSQL, Auth, Realtime) |
+| Fiat payments | Helcim (via Supabase Edge Functions) |
+| Monitoring | Sentry 9, custom performance monitoring |
+| Testing | Jest 30 (unit), Cypress 13 (E2E) |
+| Code quality | ESLint 8, SonarCloud, DeepSource |
+
+### State Management
+
+- **React Query** handles all server/async state: API responses, caching, background refetch, optimistic updates.
+- **React Context** handles client-only state: authenticated user, active wallet/chain, UI preferences, toast notifications.
+- No external state management library (Redux, Zustand, etc.) is used. React Query covers the complexity that would traditionally require one.
+
+## Scripts
 
 ```bash
-# Production build
-npm run build
+# Development
+npm run dev              # Vite dev server with SSR (port 5173)
+npm run dev:spa          # SPA mode (no SSR)
 
-# Preview production build
-npm run preview
+# Build
+npm run build            # Production build (client + SSR server)
+npm run build:spa        # SPA-only build (for Netlify)
+npm run preview          # Preview production build locally
+
+# Quality
+npm run lint             # ESLint (max 200 warnings)
+npm run test             # Jest unit tests
+npm run test:e2e         # Cypress E2E (interactive)
+npm run test:e2e:headless # Cypress headless
 ```
 
-## Code Quality
+## Project Structure
 
-This project follows strict code quality standards:
-- DeepSource analysis
-- SonarQube integration
-- See CLAUDE_CODE_RULES.md for detailed guidelines
+```
+src/
+├── pages/                # Route-level components
+│   ├── Home.tsx          # Landing page
+│   ├── Login.tsx         # Authentication
+│   ├── GiveDashboard.tsx # Donor dashboard
+│   ├── CharityPortal.tsx # Charity management
+│   ├── CharityBrowser.tsx
+│   ├── VolunteerOpportunities.tsx
+│   └── admin/            # Admin panel
+├── components/           # Feature-organized components
+│   ├── web3/             # Wallet, donation, withdrawal UIs
+│   ├── charity/          # Charity cards, profiles, portfolios
+│   ├── donor/            # Donor-specific components
+│   ├── volunteer/        # Volunteer components
+│   ├── auth/             # Login, registration forms
+│   └── ui/               # Reusable primitives (Button, Input, Card)
+├── contexts/             # React Context providers
+├── hooks/                # Custom hooks (useAuth, useWallet, useMultiChain)
+├── services/             # API and business logic
+├── config/               # Environment, contracts, chains, tokens
+├── lib/                  # External integrations (Supabase, Sentry)
+├── utils/                # Formatters, validation, security
+├── types/                # TypeScript type definitions
+├── contracts/            # Smart contract ABIs
+├── routes/               # Route definitions and guards
+└── i18n/                 # Internationalization
+supabase/
+└── functions/            # Supabase Edge Functions (Deno)
+    ├── helcim-pay/       # HelcimPay.js checkout initialization
+    ├── helcim-payment/   # Payment processing
+    ├── helcim-subscription/ # Recurring fiat donations
+    └── helcim-validate/  # Payment validation
+```
 
 ## Deployment
 
-Deploy to Vercel or any static hosting provider:
+### Vercel (Primary)
+
+Deployment is configured in `vercel.json` with SSR support, security headers (CSP, HSTS, X-Frame-Options), SPA rewrites, and long-lived cache headers for static assets.
 
 ```bash
 npm run build
-# Deploy dist/ folder
+vercel deploy --prod
 ```
 
-## Documentation
+### Netlify (Alternative)
 
-- [Development Guidelines](CLAUDE.md)
-- [Code Quality Rules](CLAUDE_CODE_RULES.md)
-- [Testing Guidelines](TEST_GUIDELINES.md)
+Configured in `netlify.toml`. Uses SPA mode (no SSR).
+
+```bash
+npm run build:spa
+netlify deploy --prod --dir=dist
+```
+
+### Self-Hosted (Nginx)
+
+An `nginx.conf` is provided for self-hosted deployments with SSL, gzip, and SPA fallback routing.
+
+### Docker
+
+```bash
+docker build -t give-protocol-webapp .
+docker run -p 3000:5173 give-protocol-webapp
+```
+
+## Repository Context
+
+This is the **webapp** repository in the Give Protocol multi-repo architecture:
+
+| Repository | Purpose |
+|------------|---------|
+| [give-protocol-webapp](https://github.com/GiveProtocol/give-protocol-webapp) | React web application (this repo) |
+| [give-protocol-backend](https://github.com/GiveProtocol/give-protocol-backend) | Supabase database and admin |
+| [give-protocol-contracts](https://github.com/GiveProtocol/give-protocol-contracts) | Solidity smart contracts |
+| [give-protocol-docs](https://github.com/GiveProtocol/give-protocol-docs) | Documentation site |
+
+**Boundary rules:** Database schema migrations go in the backend repo. Edge functions (Deno) go in this repo under `supabase/functions/`. Smart contracts go in the contracts repo. See the root `CLAUDE.md` for full details.
 
 ## License
 
-UNLICENSED - Private Repository
+UNLICENSED -- Private Repository
