@@ -14,6 +14,7 @@ import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ChainSelectionModal } from "./components/web3/ChainSelectionModal";
 import { useOnboarding } from "./hooks/useOnboarding";
 import { useSafeAutoConnect } from "./hooks/useSafeAutoConnect";
+import { useWalletAuthSync } from "./hooks/useWalletAuthSync";
 import { MonitoringService } from "./utils/monitoring";
 import { ENV } from "./config/env";
 
@@ -64,10 +65,19 @@ const ChainWeb3Providers = ({ children }: { children: React.ReactNode }) => (
   </ChainProvider>
 );
 
+// Bridges wallet disconnect events to auth logout
+const WalletAuthSync = () => {
+  useWalletAuthSync();
+  return null;
+};
+
 // Auth and Web3 providers combined
 const AuthWeb3Providers = ({ children }: { children: React.ReactNode }) => (
   <AuthSettingsProviders>
-    <ChainWeb3Providers>{children}</ChainWeb3Providers>
+    <ChainWeb3Providers>
+      <WalletAuthSync />
+      {children}
+    </ChainWeb3Providers>
   </AuthSettingsProviders>
 );
 
