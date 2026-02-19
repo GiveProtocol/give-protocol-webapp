@@ -13,99 +13,6 @@ Progressive Web Application for Give Protocol, a Delaware-based 501(c)(3) nonpro
 - npm
 - A Supabase project (for authentication and database)
 
-### Installation
-
-```bash
-git clone https://github.com/GiveProtocol/give-protocol-webapp.git
-cd give-protocol-webapp
-npm install
-```
-
-### Environment Configuration
-
-Copy `.env.example` to `.env` and configure the required variables:
-
-```env
-# --- Required ---
-
-# Supabase (authentication and database)
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
-
-# Feature flags
-VITE_ENABLE_WEB3=true
-VITE_SHOW_TESTNETS=false
-
-# --- Smart Contract Addresses (per network) ---
-# Each network needs six addresses: Donation, Verification,
-# Distribution, PortfolioFunds, Executor, and Token.
-# Example for Base Sepolia testnet:
-VITE_BASE_SEPOLIA_DONATION_ADDRESS=0x...
-VITE_BASE_SEPOLIA_VERIFICATION_ADDRESS=0x...
-VITE_BASE_SEPOLIA_DISTRIBUTION_ADDRESS=0x...
-VITE_BASE_SEPOLIA_PORTFOLIO_FUNDS_ADDRESS=0x...
-VITE_BASE_SEPOLIA_EXECUTOR_ADDRESS=0x...
-VITE_BASE_SEPOLIA_TOKEN_ADDRESS=0x...
-
-# Repeat for: OPTIMISM_SEPOLIA, MOONBASE (testnets)
-#             BASE, OPTIMISM, MOONBEAM (mainnets)
-
-# --- RPC URLs (optional -- uses server proxy if not set) ---
-# Set dedicated provider URLs (Alchemy, Infura) for production.
-# VITE_BASE_RPC_URL=https://base-mainnet.g.alchemy.com/v2/YOUR_KEY
-# VITE_OPTIMISM_RPC_URL=https://opt-mainnet.g.alchemy.com/v2/YOUR_KEY
-# VITE_MOONBEAM_RPC_URL=https://rpc.api.moonbeam.network
-
-# --- Helcim Fiat Payments (frontend flag only) ---
-VITE_HELCIM_TEST_MODE=true
-# API credentials are server-side secrets set in Supabase Dashboard,
-# not in this file. See .env.example for details.
-
-# --- Monitoring (optional) ---
-VITE_SENTRY_DSN=
-VITE_ENABLE_ANALYTICS=false
-```
-
-See `.env.example` for the complete list of variables with documentation.
-
-### Running the Development Server
-
-```bash
-npm run dev          # Start Vite dev server at http://localhost:5173
-```
-
-## User Flows
-
-The application supports four user roles, each with a dedicated experience:
-
-```mermaid
-flowchart LR
-    subgraph Donor
-        D1[Browse Charities] --> D2[Connect Wallet]
-        D2 --> D3[Donate Crypto or Fiat]
-        D3 --> D4[Track Impact in Dashboard]
-        D4 --> D5[Manage Scheduled Donations]
-    end
-
-    subgraph Charity
-        C1[Register and Verify] --> C2[Manage Profile]
-        C2 --> C3[Create Causes]
-        C3 --> C4[Post Volunteer Opportunities]
-        C4 --> C5[View Donations and Analytics]
-    end
-
-    subgraph Volunteer
-        V1[Browse Opportunities] --> V2[Report Hours]
-        V2 --> V3[Receive Verification Link]
-        V3 --> V4[Build Service Record]
-    end
-
-    subgraph Admin
-        A1[Approve Charities] --> A2[Manage Users]
-        A2 --> A3[Monitor Donations]
-        A3 --> A4[Review Audit Logs]
-    end
-```
 
 **Donor:** Register or connect wallet, browse charities at `/browse`, make crypto or fiat donations, track all giving in `/give-dashboard`, manage recurring donations at `/scheduled-donations`.
 
@@ -138,7 +45,7 @@ The app supports a broad range of wallet providers for EVM-compatible chains:
 - Transaction signing, submission, and status monitoring
 - Wallet disconnect synced with authentication logout
 
-**Supported chains:** Base, Optimism, Moonbeam (mainnets), and their respective testnets (Base Sepolia, Optimism Sepolia, Moonbase Alpha).
+**Supported chains:** Base, Optimism, Moonbeam, Polkadot, Solana, Bitcoin. 
 
 ## Tech Stack
 
@@ -183,41 +90,7 @@ npm run test:e2e         # Cypress E2E (interactive)
 npm run test:e2e:headless # Cypress headless
 ```
 
-## Project Structure
 
-```
-src/
-├── pages/                # Route-level components
-│   ├── Home.tsx          # Landing page
-│   ├── Login.tsx         # Authentication
-│   ├── GiveDashboard.tsx # Donor dashboard
-│   ├── CharityPortal.tsx # Charity management
-│   ├── CharityBrowser.tsx
-│   ├── VolunteerOpportunities.tsx
-│   └── admin/            # Admin panel
-├── components/           # Feature-organized components
-│   ├── web3/             # Wallet, donation, withdrawal UIs
-│   ├── charity/          # Charity cards, profiles, portfolios
-│   ├── donor/            # Donor-specific components
-│   ├── volunteer/        # Volunteer components
-│   ├── auth/             # Login, registration forms
-│   └── ui/               # Reusable primitives (Button, Input, Card)
-├── contexts/             # React Context providers
-├── hooks/                # Custom hooks (useAuth, useWallet, useMultiChain)
-├── services/             # API and business logic
-├── config/               # Environment, contracts, chains, tokens
-├── lib/                  # External integrations (Supabase, Sentry)
-├── utils/                # Formatters, validation, security
-├── types/                # TypeScript type definitions
-├── contracts/            # Smart contract ABIs
-├── routes/               # Route definitions and guards
-└── i18n/                 # Internationalization
-supabase/
-└── functions/            # Supabase Edge Functions (Deno)
-    ├── helcim-pay/       # HelcimPay.js checkout initialization
-    ├── helcim-payment/   # Payment processing
-    ├── helcim-subscription/ # Recurring fiat donations
-    └── helcim-validate/  # Payment validation
 ```
 
 ## Deployment
@@ -266,4 +139,4 @@ This is the **webapp** repository in the Give Protocol multi-repo architecture:
 
 ## License
 
-UNLICENSED -- Private Repository
+This project is licensed under the MIT License.
