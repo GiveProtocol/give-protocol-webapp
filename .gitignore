@@ -57,4 +57,5 @@ eslint-report.json
 .cache
 .temp
 tmp
+CLAUDE.md
 CLAUDE_CODE_RULES.md
