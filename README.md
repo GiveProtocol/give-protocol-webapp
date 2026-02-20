@@ -1,10 +1,41 @@
 # Give Protocol Web Application
 
-Progressive Web Application for Give Protocol, a Delaware-based 501(c)(3) nonprofit enabling transparent charitable giving through blockchain technology. This app serves donors, charities, volunteers, and administrators with multi-chain crypto donations, fiat payments, portfolio fund management, and volunteer verification.
+Progressive Web Application for Give Protocol, a Delaware-based 501(c)(3) nonprofit working to leverage technology to remove barriers to sustainable charitable action. This app serves donors, charities, volunteers, and administrators with multi-chain crypto donations, fiat payments, portfolio fund management, and volunteer verification.
 
-<!-- Screenshot placeholder: Replace with an actual screenshot of the running application -->
-<!-- ![Give Protocol Dashboard](docs/images/dashboard-screenshot.png) -->
+----
 
+[![Build](https://github.com/GiveProtocol/give-protocol-webapp/actions/workflows/build.yml/badge.svg)](https://github.com/GiveProtocol/give-protocol-webapp/actions/workflows/build.yml) [![Code Quality & Analysis](https://github.com/GiveProtocol/give-protocol-webapp/actions/workflows/code-quality.yml/badge.svg)](https://github.com/GiveProtocol/give-protocol-webapp/actions/workflows/code-quality.yml) [![SonarCloud Analysis](https://github.com/GiveProtocol/give-protocol-webapp/actions/workflows/sonarcloud.yml/badge.svg)](https://github.com/GiveProtocol/give-protocol-webapp/actions/workflows/sonarcloud.yml) [![MIT License](https://img.shields.io/badge/license-MIT-green)](./LICENSE)
+
+
+## Features
+
+### For Donors
+- **Crypto & Fiat Giving**: Donate via multiple cryptocurrencies or traditional fiat payments
+- **Portfolio Funds**: Participate in Charitable Equity Funds (CEFs) and Cause-Specific Impact Funds (CIFs)
+- **Dashboard**: Track all donations and recurring contributions at `/give-dashboard`
+- **Recurring Donations**: Set up automated monthly or quarterly giving at `/scheduled-donations`
+- **Multi-Chain**: Donate across Base, Optimism, Moonbeam, and more
+
+### For Charities
+- **Organization Portal**: Manage profile and causes at `/charity-portal`
+- **Volunteer Management**: Post opportunities and verify contributions
+- **Analytics**: Real-time donation trends and fund performance insights
+- **Verification**: Multi-signature security for treasury operations
+- **Impact Reporting**: Transparent tracking of fund utilization
+
+### For Volunteers
+- **Opportunity Discovery**: Browse verified positions at `/opportunities`
+- **Hour Logging**: Self-report contributions with blockchain verification
+- **Contribution Tracking**: View verified service history at `/contributions`
+- **Portable Credentials**: Blockchain-verified skills and achievements
+- **Skill Endorsement**: Build a verifiable portfolio of expertise
+
+### For Administrators
+- **Charity Approval**: Verify and onboard 501(c)(3) organizations
+- **User Management**: Handle account creation, roles, and permissions
+- **Donation Monitoring**: Real-time transaction oversight
+- **Audit Logs**: Complete transparency for compliance
+- **Withdrawal Processing**: Manage fund disbursements
 ## Getting Started
 
 ### Prerequisites
@@ -13,6 +44,37 @@ Progressive Web Application for Give Protocol, a Delaware-based 501(c)(3) nonpro
 - npm
 - A Supabase project (for authentication and database)
 
+## Installation
+
+### 1. Clone the Repository
+````bash
+git clone https://github.com/give-protocol/give-protocol-webapp.git
+cd give-protocol-webapp
+````
+
+### 2. Install Dependencies
+````bash
+npm install
+````
+
+### 3. Configure Environment Variables
+````bash
+# Copy the example file
+cp .env.example .env.local
+
+# Edit with your Supabase credentials
+nano .env.local  # or use your editor
+````
+
+### 4. Start Development Server
+````bash
+npm run dev
+````
+
+### 5. Open in Browser
+Visit `http://localhost:5173`
+
+**Note:** You'll need a Supabase project. [Create one for free](https://supabase.com/dashboard/projects).
 
 **Donor:** Register or connect wallet, browse charities at `/browse`, make crypto or fiat donations, track all giving in `/give-dashboard`, manage recurring donations at `/scheduled-donations`.
 
@@ -135,8 +197,16 @@ This is the **webapp** repository in the Give Protocol multi-repo architecture:
 | [give-protocol-contracts](https://github.com/GiveProtocol/give-protocol-contracts) | Solidity smart contracts |
 | [give-protocol-docs](https://github.com/GiveProtocol/give-protocol-docs) | Documentation site |
 
-**Boundary rules:** Database schema migrations go in the backend repo. Edge functions (Deno) go in this repo under `supabase/functions/`. Smart contracts go in the contracts repo. See the root `CLAUDE.md` for full details.
+**Boundary rules:** Database schema migrations go in the backend repo. Edge functions (Deno) go in this repo under `supabase/functions/`. Smart contracts go in the contracts repo. 
+
 
 ## License
 
-This project is licensed under the MIT License.
+This Give Protocol webapp is licensed under the MIT License.
+
+Our values: We believe philanthropic infrastructure should be 
+open and accessible. While we don't require it, we ask that 
+projects adapting this code consider:
+- Contributing improvements back to the community
+- Acknowledging the Give Protocol Foundation
+- Maintaining transparency in how they use this infrastructure
