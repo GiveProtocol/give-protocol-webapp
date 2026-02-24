@@ -11,7 +11,7 @@ describe('English translations (en)', () => {
     expect(en.translation['app.name']).toBeDefined();
     expect(en.translation['app.tagline']).toBeDefined();
     expect(en.translation['app.name']).toBe('Give Protocol');
-    expect(en.translation['app.tagline']).toBe('Empower Change Through Smart Giving');
+    expect(en.translation['app.tagline']).toBe('Transparent, borderless infrastructure for generosity.');
   });
 
   it('has translation keys as strings', () => {

@@ -10,7 +10,7 @@ export const Hero: React.FC = () => {
         {t('app.tagline')}
       </h1>
       <p className="mt-4 text-xl text-gray-600">
-        {t('home.subtitle', 'Join the future of charitable giving with transparent, efficient, and impactful donations')}
+        {t('home.subtitle', 'Connecting resources to the causes that need them most')}
       </p>
     </>
   );

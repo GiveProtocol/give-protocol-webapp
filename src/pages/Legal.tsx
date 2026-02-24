@@ -4,9 +4,8 @@ import { ImportantNotice } from '@/components/ui/ImportantNotice';
 
 export const Legal: React.FC = () => {
   return (
-    <StaticPageLayout 
+    <StaticPageLayout
       title="GIVE PROTOCOL - TERMS AND CONDITIONS"
-      effectiveDate="Effective: March 15, 2025"
     >
       <div className="space-y-8">
         <section>
@@ -118,6 +117,7 @@ export const Legal: React.FC = () => {
           <p className="mt-4 p-4 bg-gray-50 rounded-lg">
             <strong>Email:</strong> legal@giveprotocol.io
           </p>
+          <p className="mt-8 text-gray-500 italic">Effective: March 15, 2025</p>
         </section>
       </div>
     </StaticPageLayout>

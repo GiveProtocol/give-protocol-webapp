@@ -2,7 +2,7 @@ export default {
   translation: {
     // Common
     'app.name': 'Give Protocol',
-    'app.tagline': 'Empower Change Through Smart Giving',
+    'app.tagline': 'Transparent, borderless infrastructure for generosity.',
     'common.cancel': 'Cancel',
     'common.edit': 'Edit',
     'common.delete': 'Delete',
@@ -173,7 +173,7 @@ export default {
     'skills.endorsements': 'Skills & Endorsements',
     
     // Home
-    'home.subtitle': 'Join the future of charitable giving with transparent, efficient, and impactful donations',
+    'home.subtitle': 'Connecting resources to the causes that need them most',
     'home.startDonating': 'Start Donating'
   }
 };

@@ -6,27 +6,27 @@ describe("ProtocolStats", () => {
     render(<ProtocolStats />);
 
     // Check for stat labels
-    expect(screen.getByText("Total Value Donated")).toBeInTheDocument();
-    expect(screen.getByText("Total Donations")).toBeInTheDocument();
+    expect(screen.getByText("Blockchain Networks Served")).toBeInTheDocument();
+    expect(screen.getByText("Charitable Sectors Benefitted")).toBeInTheDocument();
   });
 
-  it("displays the total value donated", () => {
+  it("displays the blockchain networks count", () => {
     render(<ProtocolStats />);
 
-    expect(screen.getByText("$1,245,392")).toBeInTheDocument();
+    expect(screen.getByText("3+")).toBeInTheDocument();
   });
 
-  it("displays the total donations count", () => {
+  it("displays the charitable sectors count", () => {
     render(<ProtocolStats />);
 
-    expect(screen.getByText("3,427")).toBeInTheDocument();
+    expect(screen.getByText("7")).toBeInTheDocument();
   });
 
   it("renders with proper styling", () => {
     render(<ProtocolStats />);
 
     // Check that the container has the grid layout
-    const container = screen.getByText("Total Value Donated").closest(".grid");
+    const container = screen.getByText("Blockchain Networks Served").closest(".grid");
     expect(container).toHaveClass("grid-cols-2", "gap-8");
   });
 
