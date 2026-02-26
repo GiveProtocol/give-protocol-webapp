@@ -199,6 +199,7 @@ async function markSessionValidated(
  * @param txData - Validated transaction data from Helcim
  * @param session - The checkout session
  * @param subscriptionId - Optional FK to fiat_subscriptions for recurring initial payments
+ * @returns The donation ID (UUID) of the inserted row
  */
 async function logFiatPayment(
   supabase: ReturnType<typeof createClient>,
@@ -206,7 +207,7 @@ async function logFiatPayment(
   txData: HelcimTransactionData,
   session: CheckoutSession,
   subscriptionId?: string
-): Promise<void> {
+): Promise<string> {
   const cardNumber = txData.cardNumber || '';
   const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
 
@@ -214,7 +215,7 @@ async function logFiatPayment(
     ? Math.round(Number(txData.amount) * 100)
     : Math.round(session.amount * 100);
 
-  const { error } = await supabase.from('fiat_donations').insert({
+  const { data, error } = await supabase.from('fiat_donations').insert({
     donor_id: request.donorId,
     charity_id: request.charityId,
     donor_email: request.donorEmail,
@@ -231,12 +232,14 @@ async function logFiatPayment(
     disbursement_status: 'received',
     status: 'completed',
     created_at: new Date().toISOString(),
-  });
+  }).select('id').single();
 
   if (error) {
     console.error('Failed to log fiat payment:', error);
     throw new Error('Payment validated but failed to record donation');
   }
+
+  return data.id;
 }
 
 /**
@@ -245,13 +248,14 @@ async function logFiatPayment(
  * @param request - Donation metadata from frontend
  * @param txData - Validated transaction data from Helcim
  * @param session - The checkout session
+ * @returns The donation ID (UUID) of the initial payment
  */
 async function logFiatSubscription(
   supabase: ReturnType<typeof createClient>,
   request: ValidateRequest,
   txData: HelcimTransactionData,
   session: CheckoutSession
-): Promise<void> {
+): Promise<string> {
   const amountCents = txData.amount
     ? Math.round(Number(txData.amount) * 100)
     : Math.round(session.amount * 100);
@@ -285,7 +289,7 @@ async function logFiatSubscription(
   }
 
   // Log the initial payment linked to the subscription
-  await logFiatPayment(supabase, request, txData, session, subscription.id);
+  return await logFiatPayment(supabase, request, txData, session, subscription.id);
 }
 
 // ---------------------------------------------------------------------------
@@ -392,11 +396,24 @@ serve(async (req: Request) => {
     // -----------------------------------------------------------------------
     // Step 4: Persist the donation / subscription
     // -----------------------------------------------------------------------
+    let donationId: string;
     if (session.donation_type === 'subscription') {
-      await logFiatSubscription(supabase, body, body.transactionData, session);
+      donationId = await logFiatSubscription(supabase, body, body.transactionData, session);
     } else {
-      await logFiatPayment(supabase, body, body.transactionData, session);
+      donationId = await logFiatPayment(supabase, body, body.transactionData, session);
     }
+
+    // -----------------------------------------------------------------------
+    // Step 4b: Fire-and-forget attestation (non-blocking)
+    // -----------------------------------------------------------------------
+    fetch(`${supabaseUrl}/functions/v1/attest-fiat-donation`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ donationId }),
+    }).catch((err) => console.error('Attestation trigger failed (non-blocking):', err));
 
     // -----------------------------------------------------------------------
     // Step 5: Return success with sanitized transaction details
