@@ -78,7 +78,7 @@ app.post("/api/rpc/:chain", async (req, res) => {
     console.error(`RPC proxy error (${safeChain}): ${safeMessage}`);
     res.status(502).set("Content-Type", "application/json").json({
       jsonrpc: "2.0",
-      id: (req.body && req.body.id) || null,
+      id: req.body?.id ?? null,
       error: { code: -32603, message: `RPC request failed for ${safeChain}` },
     });
   }
