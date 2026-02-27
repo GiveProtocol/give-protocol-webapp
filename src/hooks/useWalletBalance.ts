@@ -114,8 +114,8 @@ function formatUsdValue(value: number): string {
  */
 export function useWalletBalance(network: NetworkType): WalletBalanceResult {
   const { provider, address, isConnected, chainId } = useWeb3();
-  const [native, setNative] = useState<string | undefined>(undefined);
-  const [usdValue, setUsdValue] = useState<string | undefined>(undefined);
+  const [native, setNative] = useState<string | undefined>();
+  const [usdValue, setUsdValue] = useState<string | undefined>();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -127,8 +127,8 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
 
   const fetchBalance = useCallback(async () => {
     if (!provider || !address || !isConnected) {
-      setNative(undefined);
-      setUsdValue(undefined);
+      setNative(() => undefined);
+      setUsdValue(() => undefined);
       setIsLoading(false);
       return;
     }
@@ -155,7 +155,7 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
           const usd = balanceFormatted * price;
           setUsdValue(formatUsdValue(usd));
         } else {
-          setUsdValue(undefined);
+          setUsdValue(() => undefined);
         }
       });
 
@@ -175,8 +175,8 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
         error: errorMessage,
       });
       setError(err instanceof Error ? err : new Error(errorMessage));
-      setNative(undefined);
-      setUsdValue(undefined);
+      setNative(() => undefined);
+      setUsdValue(() => undefined);
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false);

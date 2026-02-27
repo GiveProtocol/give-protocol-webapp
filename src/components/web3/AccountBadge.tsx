@@ -77,6 +77,7 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
   React.useEffect(() => {
     const img = iconRef.current;
     if (!img) return undefined;
+    /** Hide icon on load error */
     const handler = () => setIconHidden(true);
     img.addEventListener("error", handler);
     return () => img.removeEventListener("error", handler);
@@ -198,6 +199,11 @@ interface CompactAccountBadgeProps {
   className?: string;
 }
 
+/**
+ * Compact account badge showing shortened address with chain color
+ * @param account - Account to display
+ * @param className - Additional CSS classes
+ */
 export const CompactAccountBadge: React.FC<CompactAccountBadgeProps> = ({
   account,
   className = "",
@@ -227,6 +233,12 @@ interface ChainTypeBadgeProps {
   className?: string;
 }
 
+/**
+ * Chain type badge showing the chain name in uppercase with styled colors
+ * @param chainType - Chain type to display (evm, solana, polkadot)
+ * @param size - Badge size variant
+ * @param className - Additional CSS classes
+ */
 export const ChainTypeBadge: React.FC<ChainTypeBadgeProps> = ({
   chainType,
   size = "md",

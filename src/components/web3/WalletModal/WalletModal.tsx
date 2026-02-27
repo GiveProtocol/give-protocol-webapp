@@ -136,6 +136,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   useEffect(() => {
     if (!isOpen) return undefined;
 
+    /** Dismiss modal on Escape key press */
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !isConnecting) {
         onClose();
