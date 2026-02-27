@@ -126,18 +126,82 @@ interface CharityCause {
   created_at: string;
 }
 
+type TabKey =
+  | "transactions"
+  | "hours"
+  | "applications"
+  | "opportunities"
+  | "causes"
+  | "impact"
+  | "organization";
+
+interface TabDef {
+  key: TabKey;
+  labelKey: string;
+  labelDefault: string;
+  icon: React.ElementType;
+  badge?: number;
+}
+
+/**
+ * Tab navigation bar for the charity portal
+ * @param tabs - Tab definitions with icons and badges
+ * @param activeTab - Currently selected tab
+ * @param onTabChange - Callback when a tab is clicked
+ */
+function CharityTabNav({
+  tabs,
+  activeTab,
+  onTabChange,
+}: {
+  tabs: TabDef[];
+  activeTab: TabKey;
+  onTabChange: (_tab: TabKey) => void;
+}) {
+  const { t } = useTranslation();
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const tab = e.currentTarget.dataset.tab as TabKey;
+      if (tab) onTabChange(tab);
+    },
+    [onTabChange],
+  );
+
+  return (
+    <div className="mb-6">
+      <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 overflow-x-auto">
+        <nav className="flex gap-1 min-w-max">
+          {tabs.map(({ key, labelKey, labelDefault, icon: Icon, badge }) => (
+            <button
+              key={key}
+              data-tab={key}
+              onClick={handleClick}
+              className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
+                activeTab === key
+                  ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
+                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {t(labelKey, labelDefault)}
+              {badge !== undefined && badge > 0 && (
+                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                  {badge}
+                </span>
+              )}
+            </button>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
   const { profile, loading: profileLoading } = useProfile();
-  const [activeTab, setActiveTab] = useState<
-    | "transactions"
-    | "hours"
-    | "applications"
-    | "opportunities"
-    | "causes"
-    | "impact"
-    | "organization"
-  >("transactions");
+  const [activeTab, setActiveTab] = useState<TabKey>("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
   const [sortConfig, setSortConfig] = useState<{
     key: "date" | "type" | "status" | "organization" | null;
@@ -639,33 +703,12 @@ export const CharityPortal: React.FC = () => {
     }
   }, [loading, error]);
 
-  const handleTransactionsTab = useCallback(() => {
-    setActiveTab("transactions");
+  const handleTabChange = useCallback((tab: TabKey) => {
+    setActiveTab(tab);
   }, []);
 
-  const handleHoursTab = useCallback(() => {
-    setActiveTab("hours");
-  }, []);
-
-  const handleApplicationsTab = useCallback(() => {
-    setActiveTab("applications");
-  }, []);
-
-  const handleOpportunitiesTab = useCallback(() => {
-    setActiveTab("opportunities");
-  }, []);
-
-  const handleCausesTab = useCallback(() => {
-    setActiveTab("causes");
-  }, []);
-
-  const handleImpactTab = useCallback(() => {
-    setActiveTab("impact");
-  }, []);
-
-  const handleOrganizationTab = useCallback(() => {
-    setActiveTab("organization");
-  }, []);
+  const handleTransactionsTab = useCallback(() => setActiveTab("transactions"), []);
+  const handleHoursTab = useCallback(() => setActiveTab("hours"), []);
 
   const handleShowExportModal = useCallback(() => {
     setShowExportModal(true);
@@ -835,100 +878,20 @@ export const CharityPortal: React.FC = () => {
           onVolunteersClick={handleHoursTab}
         />
 
-        {/* Enhanced Tabs with Icons */}
-        <div className="mb-6">
-          <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 overflow-x-auto">
-            <nav className="flex gap-1 min-w-max">
-              <button
-                onClick={handleTransactionsTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  activeTab === "transactions"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Receipt className="h-4 w-4" />
-                {t("charity.transactions")}
-              </button>
-              <button
-                onClick={handleHoursTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
-                  activeTab === "hours"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Clock className="h-4 w-4" />
-                {t("volunteer.hoursVerification", "Hours")}
-                {pendingHoursCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {pendingHoursCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={handleApplicationsTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
-                  activeTab === "applications"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <ClipboardList className="h-4 w-4" />
-                {t("charity.applications")}
-                {pendingApplicationsCount > 0 && (
-                  <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                    {pendingApplicationsCount}
-                  </span>
-                )}
-              </button>
-              <button
-                onClick={handleOpportunitiesTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  activeTab === "opportunities"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Briefcase className="h-4 w-4" />
-                {t("volunteer.opportunities")}
-              </button>
-              <button
-                onClick={handleCausesTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  activeTab === "causes"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Heart className="h-4 w-4" />
-                {t("cause.causes", "Causes")}
-              </button>
-              <button
-                onClick={handleImpactTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  activeTab === "impact"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Target className="h-4 w-4" />
-                {t("impact.profile", "Impact Profile")}
-              </button>
-              <button
-                onClick={handleOrganizationTab}
-                className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
-                  activeTab === "organization"
-                    ? "bg-white dark:bg-gray-700 text-indigo-700 dark:text-indigo-300 shadow-sm"
-                    : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
-                }`}
-              >
-                <Settings className="h-4 w-4" />
-                {t("organization.settings", "Organization")}
-              </button>
-            </nav>
-          </div>
-        </div>
+        {/* Tab Navigation */}
+        <CharityTabNav
+          tabs={[
+            { key: "transactions", labelKey: "charity.transactions", labelDefault: "Transactions", icon: Receipt },
+            { key: "hours", labelKey: "volunteer.hoursVerification", labelDefault: "Hours", icon: Clock, badge: pendingHoursCount },
+            { key: "applications", labelKey: "charity.applications", labelDefault: "Applications", icon: ClipboardList, badge: pendingApplicationsCount },
+            { key: "opportunities", labelKey: "volunteer.opportunities", labelDefault: "Opportunities", icon: Briefcase },
+            { key: "causes", labelKey: "cause.causes", labelDefault: "Causes", icon: Heart },
+            { key: "impact", labelKey: "impact.profile", labelDefault: "Impact Profile", icon: Target },
+            { key: "organization", labelKey: "organization.settings", labelDefault: "Organization", icon: Settings },
+          ]}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+        />
 
         {/* Transaction History */}
         {activeTab === "transactions" && (

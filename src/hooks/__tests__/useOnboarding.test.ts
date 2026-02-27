@@ -11,7 +11,8 @@ const localStorageMock = (() => {
       store[key] = value;
     }),
     removeItem: jest.fn((key: string) => {
-      delete store[key];
+      const { [key]: _, ...rest } = store;
+      store = rest;
     }),
     clear: jest.fn(() => {
       store = {};
