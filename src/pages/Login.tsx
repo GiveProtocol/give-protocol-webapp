@@ -74,6 +74,13 @@ const Login: React.FC = () => {
   const _navigate = useNavigate();
   const location = useLocation();
 
+  // Trigger .visible class after mount for staggered entrance animation
+  const [visible, setVisible] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setVisible(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
   // Get the intended destination from location state, or default to dashboard
   const from =
     location.state?.from?.pathname ||
@@ -112,6 +119,8 @@ const Login: React.FC = () => {
   if (user) {
     return <Navigate to={from} replace />;
   }
+
+  const visibleClass = visible ? "visible" : "";
 
   const renderView = () => {
     switch (view) {
@@ -168,7 +177,7 @@ const Login: React.FC = () => {
                 onClick={handleSelectView}
                 className="text-sm text-gray-600 hover:text-gray-900"
               >
-                ← Back to selection
+                &larr; Back to selection
               </button>
               <h2 className="mt-4 text-2xl font-semibold text-center">
                 Donor Login
@@ -193,7 +202,7 @@ const Login: React.FC = () => {
                 onClick={handleSelectView}
                 className="text-sm text-gray-600 hover:text-gray-900"
               >
-                ← Back to selection
+                &larr; Back to selection
               </button>
               <h2 className="mt-4 text-2xl font-semibold text-center">
                 Charity Portal Login
@@ -207,7 +216,6 @@ const Login: React.FC = () => {
           </>
         );
       default:
-        // This should never happen as we have all cases covered
         return null;
     }
   };
@@ -215,12 +223,23 @@ const Login: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <div className="flex justify-center mb-8">
+        {/* Logo — first to appear */}
+        <div
+          className={`frame-reveal ${visibleClass} flex justify-center mb-8`}
+          style={{ "--reveal-delay": "0.05s" } as React.CSSProperties}
+        >
           <Link to="/" className="flex items-center">
             <Logo className="h-12 w-12" />
           </Link>
         </div>
-        {renderView()}
+
+        {/* View content — staggered after logo */}
+        <div
+          className={`frame-reveal ${visibleClass}`}
+          style={{ "--reveal-delay": "0.1s" } as React.CSSProperties}
+        >
+          {renderView()}
+        </div>
       </div>
     </div>
   );

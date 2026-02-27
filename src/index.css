@@ -229,6 +229,22 @@
   }
 }
 
+/* Frame animation system — use .frame-reveal + .visible for staggered page loads */
+:root {
+  --frame-animation: fadeInUp;
+}
+
+.frame-reveal {
+  opacity: 0;
+  animation-fill-mode: both !important;
+}
+
+.frame-reveal.visible {
+  animation: var(--frame-animation) 0.25s ease-in-out;
+  animation-delay: var(--reveal-delay, 0.05s);
+  animation-fill-mode: both !important;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
