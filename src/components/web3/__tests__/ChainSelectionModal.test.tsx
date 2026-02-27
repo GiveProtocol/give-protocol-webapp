@@ -226,7 +226,9 @@ describe("ChainSelectionModal", () => {
         </TestWrapper>,
       );
 
-      expect(screen.getByText(/Fast, secure, and powered by Coinbase/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Fast, secure, and powered by Coinbase/i),
+      ).toBeInTheDocument();
     });
   });
 });
