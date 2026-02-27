@@ -101,9 +101,9 @@ const ChainOnboarding = () => {
 };
 
 // Safe auto-connect wrapper
-const SafeAutoConnectWrapper = ({ children }: { children: React.ReactNode }) => {
+const SafeAutoConnectWrapper = ({ children }: { children: React.ReactElement }) => {
   useSafeAutoConnect();
-  return <>{children}</>;
+  return children;
 };
 
 // Router wrapper component (Router is now provided by entry files)

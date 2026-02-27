@@ -203,7 +203,7 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
 
   // Set up polling for balance updates (every 30 seconds)
   useEffect(() => {
-    if (!isConnected) return;
+    if (!isConnected) return undefined;
 
     const intervalId = setInterval(() => {
       fetchBalance();
@@ -214,7 +214,7 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
 
   // Listen for block updates to refresh balance after transactions
   useEffect(() => {
-    if (!provider || !isConnected) return;
+    if (!provider || !isConnected) return undefined;
 
     const handleBlock = () => {
       // Debounce block updates - only fetch every few blocks

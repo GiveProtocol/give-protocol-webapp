@@ -76,7 +76,7 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
   // Attach error listener imperatively to avoid onError on non-interactive element (JS-0760)
   React.useEffect(() => {
     const img = iconRef.current;
-    if (!img) return;
+    if (!img) return undefined;
     const handler = () => setIconHidden(true);
     img.addEventListener("error", handler);
     return () => img.removeEventListener("error", handler);

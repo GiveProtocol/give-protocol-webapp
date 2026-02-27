@@ -134,7 +134,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
   // Handle escape key
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
 
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape" && !isConnecting) {

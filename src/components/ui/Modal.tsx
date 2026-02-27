@@ -68,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({
 
   // Handle focus trap and keyboard events
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) return undefined;
 
     // Store current focus
     previousActiveElement.current = document.activeElement as HTMLElement;
