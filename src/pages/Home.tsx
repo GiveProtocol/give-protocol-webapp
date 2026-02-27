@@ -105,8 +105,8 @@ const Home: React.FC = () => {
             </span>
           </h1>
           <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-            Revolutionizing philanthropy through blockchain transparency.
-            Verified charities and projects. Complete on-chain visibility.
+            Crypto-native giving with full on-chain transparency.
+            Fiat-friendly when you need it. Every dollar traceable.
           </p>
         </div>
 
@@ -117,11 +117,11 @@ const Home: React.FC = () => {
           </h3>
           <p className="text-gray-300 text-lg leading-relaxed">
             Give Protocol is building the infrastructure for transparent,
-            sustainable philanthropy on the blockchain. By leveraging
-            Moonbeam&apos;s EVM compatibility and Polkadot&apos;s security,
-            we&apos;re creating innovative funding mechanisms that transform
-            one-time donations into lasting impact for verified charitable
-            organizations worldwide.
+            sustainable philanthropy across multiple blockchains. By deploying
+            on Base, Optimism, and Moonbeam, we&apos;re meeting donors where
+            they already are — whether they give in crypto or fiat — and
+            creating funding mechanisms that transform one-time donations
+            into lasting impact for charitable organizations worldwide.
           </p>
         </div>
 
@@ -155,8 +155,8 @@ const Home: React.FC = () => {
             Your Gateway to Transparent Philanthropy
           </h2>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Built on Moonbeam for seamless blockchain giving and complete
-            transparency
+            Multichain infrastructure for seamless giving — crypto or fiat —
+            with complete transparency
           </p>
         </div>
 
@@ -190,7 +190,7 @@ const Home: React.FC = () => {
               icon: <Shield className="w-10 h-10" />,
               title: "Verified Organizations",
               description:
-                "Every charity undergoes rigorous verification. Legitimate charitable organizations and projects thoroughly vetted for authenticity.",
+                "Browse any registered organization, or look for the verified badge. Organizations that opt in to our vetting process earn on-chain verification donors can trust.",
               color: "from-green-500 to-emerald-500",
               badge: null,
             },
@@ -206,7 +206,7 @@ const Home: React.FC = () => {
               icon: <Globe className="w-10 h-10" />,
               title: "Cross-Chain Connected",
               description:
-                "Seamless connections across multiple blockchains via Moonbeam. Give in DOT, GLMR, or major stablecoins.",
+                "Live on Base, Optimism, and Moonbeam. Give in ETH, USDC, or other major tokens — with more chains on the way.",
               color: "from-teal-500 to-emerald-500",
               badge: "Coming Soon",
             },
@@ -246,12 +246,12 @@ const Home: React.FC = () => {
           <div className="grid md:grid-cols-3 gap-8">
             <div>
               <div className="text-emerald-400 font-semibold mb-3">
-                For Crypto-Native Donors
+                For Donors
               </div>
               <ul className="space-y-2 text-gray-300">
                 <li className="flex items-start">
                   <Check className="w-5 h-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
-                  <span>Seamless crypto donation mechanisms</span>
+                  <span>Give in crypto or fiat — your choice</span>
                 </li>
                 <li className="flex items-start">
                   <Check className="w-5 h-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
@@ -352,29 +352,31 @@ const Home: React.FC = () => {
       <section className="relative z-10 container mx-auto px-6 py-20">
         <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-12 text-center">
           <h2 className="text-4xl font-bold mb-6">
-            Why We&apos;re Building on Moonbeam
+            Why We&apos;re Building Multichain
           </h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            Moonbeam&apos;s EVM compatibility, Polkadot security, and
-            interoperability make it the perfect foundation for transparent,
-            global philanthropy.
+            No single chain serves every donor. By deploying across leading
+            EVM networks, we keep fees low, reach more wallets, and let
+            organizations receive funds however works best for them.
           </p>
           <div className="grid md:grid-cols-4 gap-6 text-center">
             <div>
               <div className="text-3xl font-bold text-emerald-400 mb-2">
-                51+
+                3+
               </div>
-              <div className="text-sm text-gray-400">Polkadot Parachains</div>
+              <div className="text-sm text-gray-400">Supported Chains</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-teal-400 mb-2">
                 Low Fees
               </div>
-              <div className="text-sm text-gray-400">Transaction Costs</div>
+              <div className="text-sm text-gray-400">L2 Transaction Costs</div>
             </div>
             <div>
-              <div className="text-3xl font-bold text-cyan-400 mb-2">~12s</div>
-              <div className="text-sm text-gray-400">Block Time</div>
+              <div className="text-3xl font-bold text-cyan-400 mb-2">
+                Crypto + Fiat
+              </div>
+              <div className="text-sm text-gray-400">Donation Options</div>
             </div>
             <div>
               <div className="text-3xl font-bold text-green-400 mb-2">EVM</div>
@@ -516,8 +518,8 @@ const Home: React.FC = () => {
         </div>
         <div className="pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
           <p>
-            © {new Date().getFullYear()} Give Protocol Foundation. Building on
-            Moonbeam. Powered by Give Protocol volunteers.
+            © {new Date().getFullYear()} Give Protocol Foundation. Multichain
+            by design. Powered by Give Protocol volunteers.
           </p>
         </div>
       </footer>
