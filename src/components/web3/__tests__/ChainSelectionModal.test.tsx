@@ -54,7 +54,7 @@ describe("ChainSelectionModal", () => {
     it("renders modal when open", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -66,7 +66,7 @@ describe("ChainSelectionModal", () => {
     it("displays mainnet chains", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -78,7 +78,7 @@ describe("ChainSelectionModal", () => {
     it("shows ecosystem tags", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -92,7 +92,7 @@ describe("ChainSelectionModal", () => {
     it("allows selecting a chain", async () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -108,7 +108,7 @@ describe("ChainSelectionModal", () => {
     it("disables continue button when no chain selected", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -120,7 +120,7 @@ describe("ChainSelectionModal", () => {
       render(
         <TestWrapper>
           <ChainSelectionModal
-            isOpen={true}
+            isOpen
             onComplete={mockOnComplete}
             detectedChainId={CHAIN_IDS.BASE}
           />
@@ -138,7 +138,7 @@ describe("ChainSelectionModal", () => {
       render(
         <TestWrapper>
           <ChainSelectionModal
-            isOpen={true}
+            isOpen
             onComplete={mockOnComplete}
             detectedChainId={CHAIN_IDS.BASE}
           />
@@ -156,7 +156,7 @@ describe("ChainSelectionModal", () => {
     it("persists selected chain to localStorage via context", async () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -181,7 +181,7 @@ describe("ChainSelectionModal", () => {
     it("has correct ARIA attributes", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -196,7 +196,7 @@ describe("ChainSelectionModal", () => {
     it("has accessible chain selection buttons", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -210,7 +210,7 @@ describe("ChainSelectionModal", () => {
     it("shows network switch hint", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
@@ -222,11 +222,13 @@ describe("ChainSelectionModal", () => {
     it("shows chain descriptions", () => {
       render(
         <TestWrapper>
-          <ChainSelectionModal isOpen={true} onComplete={mockOnComplete} />
+          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
         </TestWrapper>,
       );
 
-      expect(screen.getByText(/Fast, secure, and powered by Coinbase/i)).toBeInTheDocument();
+      expect(
+        screen.getByText(/Fast, secure, and powered by Coinbase/i),
+      ).toBeInTheDocument();
     });
   });
 });
