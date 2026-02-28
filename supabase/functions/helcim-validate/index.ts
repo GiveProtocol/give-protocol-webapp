@@ -16,6 +16,7 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import { resolveNames } from '../_shared/receipt-context.ts';
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -79,6 +80,9 @@ interface CheckoutSession {
   donation_type: string;
   validated: boolean;
   expires_at: string;
+  charity_id: string | null;
+  cause_id: string | null;
+  fund_id: string | null;
 }
 
 // ---------------------------------------------------------------------------
@@ -192,12 +196,19 @@ async function markSessionValidated(
   }
 }
 
+/** Resolved names for cause/fund context */
+interface ResolvedDonationNames {
+  causeName: string | null;
+  fundName: string | null;
+}
+
 /**
  * Persist a validated one-time fiat payment into fiat_donations
  * @param supabase - Supabase client (service role)
  * @param request - Donation metadata from frontend
  * @param txData - Validated transaction data from Helcim
  * @param session - The checkout session
+ * @param names - Resolved cause/fund names
  * @param subscriptionId - Optional FK to fiat_subscriptions for recurring initial payments
  * @returns The donation ID (UUID) of the inserted row
  */
@@ -206,6 +217,7 @@ async function logFiatPayment(
   request: ValidateRequest,
   txData: HelcimTransactionData,
   session: CheckoutSession,
+  names: ResolvedDonationNames,
   subscriptionId?: string
 ): Promise<string> {
   const cardNumber = txData.cardNumber || '';
@@ -217,7 +229,7 @@ async function logFiatPayment(
 
   const { data, error } = await supabase.from('fiat_donations').insert({
     donor_id: request.donorId,
-    charity_id: request.charityId,
+    charity_id: session.charity_id ?? request.charityId,
     donor_email: request.donorEmail,
     donor_name: request.donorName,
     donor_address: request.donorAddress || null,
@@ -231,6 +243,11 @@ async function logFiatPayment(
     subscription_id: subscriptionId || null,
     disbursement_status: 'received',
     status: 'completed',
+    // Cause/fund context from trusted session data
+    cause_id: session.cause_id ?? null,
+    fund_id: session.fund_id ?? null,
+    cause_name: names.causeName ?? null,
+    fund_name: names.fundName ?? null,
     created_at: new Date().toISOString(),
   }).select('id').single();
 
@@ -248,13 +265,15 @@ async function logFiatPayment(
  * @param request - Donation metadata from frontend
  * @param txData - Validated transaction data from Helcim
  * @param session - The checkout session
+ * @param names - Resolved cause/fund names
  * @returns The donation ID (UUID) of the initial payment
  */
 async function logFiatSubscription(
   supabase: ReturnType<typeof createClient>,
   request: ValidateRequest,
   txData: HelcimTransactionData,
-  session: CheckoutSession
+  session: CheckoutSession,
+  names: ResolvedDonationNames
 ): Promise<string> {
   const amountCents = txData.amount
     ? Math.round(Number(txData.amount) * 100)
@@ -267,7 +286,7 @@ async function logFiatSubscription(
     .from('fiat_subscriptions')
     .insert({
       donor_id: request.donorId,
-      charity_id: request.charityId,
+      charity_id: session.charity_id ?? request.charityId,
       donor_email: request.donorEmail,
       donor_name: request.donorName,
       donor_address: request.donorAddress || null,
@@ -278,6 +297,11 @@ async function logFiatSubscription(
       frequency: 'monthly',
       status: 'active',
       next_billing_date: nextBillingDate.toISOString(),
+      // Cause/fund context from trusted session data
+      cause_id: session.cause_id ?? null,
+      fund_id: session.fund_id ?? null,
+      cause_name: names.causeName ?? null,
+      fund_name: names.fundName ?? null,
       created_at: new Date().toISOString(),
     })
     .select('id')
@@ -289,7 +313,7 @@ async function logFiatSubscription(
   }
 
   // Log the initial payment linked to the subscription
-  return await logFiatPayment(supabase, request, txData, session, subscription.id);
+  return await logFiatPayment(supabase, request, txData, session, names, subscription.id);
 }
 
 // ---------------------------------------------------------------------------
@@ -394,13 +418,29 @@ serve(async (req: Request) => {
     await markSessionValidated(supabase, session.id);
 
     // -----------------------------------------------------------------------
+    // Step 3b: Resolve cause/fund names from session (trusted source)
+    // -----------------------------------------------------------------------
+    const resolvedNames = await resolveNames(supabase, {
+      charityId: session.charity_id ?? body.charityId,
+      causeId: session.cause_id ?? undefined,
+      fundId: session.fund_id ?? undefined,
+      amountUsd: session.amount,
+      donationType: session.donation_type as 'one-time' | 'subscription',
+    });
+
+    const donationNames: ResolvedDonationNames = {
+      causeName: resolvedNames.causeName,
+      fundName: resolvedNames.fundName,
+    };
+
+    // -----------------------------------------------------------------------
     // Step 4: Persist the donation / subscription
     // -----------------------------------------------------------------------
     let donationId: string;
     if (session.donation_type === 'subscription') {
-      donationId = await logFiatSubscription(supabase, body, body.transactionData, session);
+      donationId = await logFiatSubscription(supabase, body, body.transactionData, session, donationNames);
     } else {
-      donationId = await logFiatPayment(supabase, body, body.transactionData, session);
+      donationId = await logFiatPayment(supabase, body, body.transactionData, session, donationNames);
     }
 
     // -----------------------------------------------------------------------

@@ -35,6 +35,12 @@ export interface FiatPaymentInput {
   donorId?: string;
   /** Connected wallet address (associates fiat donation with on-chain identity) */
   donorAddress?: string;
+  /** Giving type: direct charity, CEF, or CIF */
+  givingType?: 'direct' | 'cef' | 'cif';
+  /** Cause ID (if donating to a specific cause) */
+  causeId?: string;
+  /** Fund ID (if donating to a CEF/CIF) */
+  fundId?: string;
 }
 
 /** Return type for the useFiatDonation hook */
@@ -132,7 +138,12 @@ export function useFiatDonation(): UseFiatDonationReturn {
       try {
         // Step 1: Fetch a checkout token from the backend
         Logger.info('Fetching checkout token', { amount: data.amount, frequency: data.frequency });
-        const { checkoutToken } = await fetchHelcimCheckoutToken(data.amount, data.frequency);
+        const { checkoutToken } = await fetchHelcimCheckoutToken(data.amount, data.frequency, {
+          givingType: data.givingType,
+          charityId: data.charityId,
+          causeId: data.causeId,
+          fundId: data.fundId,
+        });
 
         // Step 2: Open the HelcimPay.js iframe checkout
         // The iframe handles card input, validation, and payment processing

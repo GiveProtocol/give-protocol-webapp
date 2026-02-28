@@ -7,6 +7,10 @@
 
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+import {
+  resolveNames,
+  buildHelcimReceiptFields,
+} from '../_shared/receipt-context.ts';
 
 // CORS headers for browser requests
 const corsHeaders = {
@@ -20,6 +24,10 @@ interface InitializeRequest {
   currency?: string;
   customerEmail?: string;
   donationType: 'one-time' | 'subscription';
+  givingType?: 'direct' | 'cef' | 'cif';
+  charityId?: string;
+  causeId?: string;
+  fundId?: string;
 }
 
 interface HelcimPayInitResponse {
@@ -46,20 +54,58 @@ function validateRequest(body: unknown): body is InitializeRequest {
   );
 }
 
+/** Receipt fields resolved from donation context */
+interface ReceiptFields {
+  comments: string;
+  invoiceNumber: string;
+  lineItemDescription: string;
+}
+
 /**
  * Initialize HelcimPay.js session
  * @param amount - Payment amount in dollars
  * @param currency - Currency code (default: USD)
  * @param paymentType - Payment type for Helcim
  * @param apiToken - Helcim API token
+ * @param receiptFields - Optional receipt context for Helcim payload
  * @returns Checkout token and secret token
  */
 async function initializeHelcimPaySession(
   amount: number,
   currency: string,
   paymentType: string,
-  apiToken: string
+  apiToken: string,
+  receiptFields?: ReceiptFields
 ): Promise<HelcimPayInitResponse> {
+  // Build the Helcim initialization payload
+  const helcimPayload: Record<string, unknown> = {
+    paymentType,
+    amount,
+    currency,
+    // Enable Address Verification Service
+    hasAvs: true,
+    // Enable CVV verification
+    hasCvv: true,
+    // Allow card to be stored for future use (needed for subscriptions)
+    allowCardStorage: paymentType === 'verify',
+  };
+
+  // Add receipt fields if available
+  if (receiptFields) {
+    helcimPayload.comments = receiptFields.comments;
+    helcimPayload.invoice = {
+      invoiceNumber: receiptFields.invoiceNumber,
+      lineItems: [
+        {
+          description: receiptFields.lineItemDescription,
+          quantity: 1,
+          price: amount,
+          total: amount,
+        },
+      ],
+    };
+  }
+
   // Helcim's HelcimPay.js initialization endpoint
   const response = await fetch('https://api.helcim.com/v2/helcim-pay/initialize', {
     method: 'POST',
@@ -68,17 +114,7 @@ async function initializeHelcimPaySession(
       'api-token': apiToken,
       'accept': 'application/json',
     },
-    body: JSON.stringify({
-      paymentType,
-      amount,
-      currency,
-      // Enable Address Verification Service
-      hasAvs: true,
-      // Enable CVV verification
-      hasCvv: true,
-      // Allow card to be stored for future use (needed for subscriptions)
-      allowCardStorage: paymentType === 'verify',
-    }),
+    body: JSON.stringify(helcimPayload),
   });
 
   if (!response.ok) {
@@ -159,18 +195,41 @@ serve(async (req: Request) => {
     const paymentType = body.donationType === 'subscription' ? 'verify' : 'purchase';
     const currency = body.currency || 'USD';
 
+    // Store the secretToken server-side for hash validation.
+    // The helcim-validate function will look it up by checkoutToken.
+    const supabaseUrl = Deno.env.get('SUPABASE_URL');
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+
+    // Resolve human-readable names and build receipt fields
+    let receiptFields: ReceiptFields | undefined;
+    if (supabaseUrl && supabaseKey) {
+      const supabase = createClient(supabaseUrl, supabaseKey);
+
+      // Generate internal reference for this session
+      const internalRef = crypto.randomUUID().slice(0, 8);
+
+      const donationContext = {
+        charityId: body.charityId,
+        causeId: body.causeId,
+        fundId: body.fundId,
+        amountUsd: body.amount,
+        donationType: body.donationType,
+        givingType: body.givingType ?? 'direct' as const,
+      };
+
+      // Resolve names (non-blocking — returns nulls on failure)
+      const names = await resolveNames(supabase, donationContext);
+      receiptFields = buildHelcimReceiptFields(names, donationContext, internalRef);
+    }
+
     // Initialize HelcimPay.js session
     const initResult = await initializeHelcimPaySession(
       body.amount,
       currency,
       paymentType,
-      apiToken
+      apiToken,
+      receiptFields
     );
-
-    // Store the secretToken server-side for hash validation.
-    // The helcim-validate function will look it up by checkoutToken.
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
@@ -182,6 +241,10 @@ serve(async (req: Request) => {
           amount: body.amount,
           currency,
           donation_type: body.donationType,
+          // Donation context columns
+          charity_id: body.charityId ?? null,
+          cause_id: body.causeId ?? null,
+          fund_id: body.fundId ?? null,
         });
 
       if (insertError) {

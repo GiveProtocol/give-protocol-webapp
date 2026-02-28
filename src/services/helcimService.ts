@@ -151,16 +151,30 @@ export async function createSubscription(data: FiatPaymentData): Promise<{
   };
 }
 
+/** Donation context for checkout initialization */
+export interface CheckoutContext {
+  /** Giving type: direct charity, CEF, or CIF */
+  givingType?: 'direct' | 'cef' | 'cif';
+  /** Charity profile ID */
+  charityId?: string;
+  /** Cause ID (if donating to a specific cause) */
+  causeId?: string;
+  /** Fund ID (if donating to a CEF/CIF) */
+  fundId?: string;
+}
+
 /**
  * Fetch a checkout token from the Helcim Pay initialization endpoint
  * @param amount - Payment amount in dollars
  * @param frequency - Donation frequency (once or monthly)
+ * @param context - Optional donation context for receipt fields
  * @returns Checkout token and secret token for HelcimPay.js
  * @throws Error if token fetch fails
  */
 export async function fetchHelcimCheckoutToken(
   amount: number,
-  frequency: DonationFrequency
+  frequency: DonationFrequency,
+  context?: CheckoutContext
 ): Promise<{ checkoutToken: string; secretToken: string }> {
   Logger.info('Fetching Helcim checkout token', { amount, frequency });
 
@@ -171,6 +185,10 @@ export async function fetchHelcimCheckoutToken(
       amount,
       currency: 'USD',
       donationType: frequency === 'monthly' ? 'subscription' : 'one-time',
+      givingType: context?.givingType,
+      charityId: context?.charityId,
+      causeId: context?.causeId,
+      fundId: context?.fundId,
     }),
   });
 
