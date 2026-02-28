@@ -112,7 +112,7 @@ export const CharityLogin: React.FC = () => {
       />
       <Button
         type="submit"
-        className="w-full"
+        className="w-full min-h-[48px]"
         disabled={loading}
         aria-busy={loading}
       >

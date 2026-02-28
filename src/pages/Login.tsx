@@ -6,7 +6,7 @@ import {
   useSearchParams,
   useNavigate,
 } from "react-router-dom";
-import { Building2, Users } from "lucide-react";
+import { Building2, Users, Loader2 } from "lucide-react";
 import { DonorLogin } from "../components/auth/DonorLogin";
 import { CharityLogin } from "../components/auth/CharityLogin";
 import { ForgotPassword } from "../components/auth/ForgotPassword";
@@ -23,22 +23,26 @@ type View =
   | "forgotPassword"
   | "forgotUsername";
 
+/** Duration in ms for the loading simulation on account-type buttons */
+const LOADING_SIMULATION_MS = 2000;
+
 interface LoginHelpersProps {
   onForgotUsername: () => void;
   onForgotPassword: () => void;
 }
 
+/** Help links below the login form for recovering username or password */
 const LoginHelpers: React.FC<LoginHelpersProps> = ({
   onForgotUsername,
   onForgotPassword,
 }) => (
-  <div className="mt-6 space-y-4">
+  <nav className="mt-6 space-y-4" aria-label="Login help options">
     <div className="relative">
       <div className="absolute inset-0 flex items-center">
-        <div className="w-full border-t border-gray-200" />
+        <div className="w-full border-t border-gray-300" />
       </div>
-      <div className="relative flex justify-center text-sm">
-        <span className="px-2 bg-white text-gray-500">Need help?</span>
+      <div className="relative flex justify-center text-base">
+        <span className="px-2 bg-white text-gray-700">Need help?</span>
       </div>
     </div>
 
@@ -46,7 +50,7 @@ const LoginHelpers: React.FC<LoginHelpersProps> = ({
       <button
         type="button"
         onClick={onForgotUsername}
-        className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
+        className="text-base text-indigo-700 hover:text-indigo-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-3 py-2 min-h-[48px] transition-colors duration-200"
         aria-label="Recover forgotten username"
       >
         Forgot username?
@@ -54,13 +58,13 @@ const LoginHelpers: React.FC<LoginHelpersProps> = ({
       <button
         type="button"
         onClick={onForgotPassword}
-        className="text-sm text-indigo-600 hover:text-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded px-2 py-1"
+        className="text-base text-indigo-700 hover:text-indigo-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-3 py-2 min-h-[48px] transition-colors duration-200"
         aria-label="Recover forgotten password"
       >
         Forgot password?
       </button>
     </div>
-  </div>
+  </nav>
 );
 
 const Login: React.FC = () => {
@@ -81,6 +85,10 @@ const Login: React.FC = () => {
     return () => cancelAnimationFrame(id);
   }, []);
 
+  // Independent loading states for account type selection buttons
+  const [loadingDonor, setLoadingDonor] = useState(false);
+  const [loadingCharity, setLoadingCharity] = useState(false);
+
   // Get the intended destination from location state, or default to dashboard
   const from =
     location.state?.from?.pathname ||
@@ -96,11 +104,19 @@ const Login: React.FC = () => {
   }, []);
 
   const handleDonorView = useCallback(() => {
-    setView("donor");
+    setLoadingDonor(true);
+    setTimeout(() => {
+      setLoadingDonor(false);
+      setView("donor");
+    }, LOADING_SIMULATION_MS);
   }, []);
 
   const handleCharityView = useCallback(() => {
-    setView("charity");
+    setLoadingCharity(true);
+    setTimeout(() => {
+      setLoadingCharity(false);
+      setView("charity");
+    }, LOADING_SIMULATION_MS);
   }, []);
 
   const handleSelectView = useCallback(() => {
@@ -121,48 +137,72 @@ const Login: React.FC = () => {
   }
 
   const visibleClass = visible ? "visible" : "";
+  const isLoading = loadingDonor || loadingCharity;
 
   const renderView = () => {
     switch (view) {
       case "select":
         return (
-          <div className="space-y-6">
-            <h2 className="text-2xl font-semibold text-center text-gray-900">
+          <div className="space-y-6" role="group" aria-labelledby="account-type-heading">
+            <h1
+              id="account-type-heading"
+              className="text-xl sm:text-2xl font-semibold text-center text-gray-900"
+            >
               Choose Account Type
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            </h1>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Button
                 onClick={handleDonorView}
                 variant="secondary"
-                className="p-6 h-auto flex flex-col items-center space-y-2"
+                disabled={isLoading}
+                aria-busy={loadingDonor}
+                className="p-6 h-auto min-h-[48px] flex flex-col items-center space-y-2 hover:-translate-y-1 hover:shadow-lg active:-translate-y-0.5 transition-all duration-200"
               >
-                <Users className="h-8 w-8" />
-                <span className="text-lg font-medium">Donor Login</span>
-                <span className="text-sm text-gray-500">
-                  For donors and volunteers
+                {loadingDonor ? (
+                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" aria-hidden="true" />
+                ) : (
+                  <Users className="h-8 w-8" aria-hidden="true" />
+                )}
+                <span className="text-lg font-medium">
+                  {loadingDonor ? "Loading\u2026" : "Donor Login"}
                 </span>
+                {!loadingDonor && (
+                  <span className="text-base text-gray-600">
+                    For donors and volunteers
+                  </span>
+                )}
               </Button>
 
               <Button
                 onClick={handleCharityView}
                 variant="secondary"
-                className="p-6 h-auto flex flex-col items-center space-y-2"
+                disabled={isLoading}
+                aria-busy={loadingCharity}
+                className="p-6 h-auto min-h-[48px] flex flex-col items-center space-y-2 hover:-translate-y-1 hover:shadow-lg active:-translate-y-0.5 transition-all duration-200"
               >
-                <Building2 className="h-8 w-8" />
-                <span className="text-lg font-medium">Charity Login</span>
-                <span className="text-sm text-gray-500">
-                  For registered charities
+                {loadingCharity ? (
+                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" aria-hidden="true" />
+                ) : (
+                  <Building2 className="h-8 w-8" aria-hidden="true" />
+                )}
+                <span className="text-lg font-medium">
+                  {loadingCharity ? "Loading\u2026" : "Charity Login"}
                 </span>
+                {!loadingCharity && (
+                  <span className="text-base text-gray-600">
+                    For registered charities
+                  </span>
+                )}
               </Button>
             </div>
 
             <div className="text-center space-y-2 mt-6">
-              <p className="text-sm text-gray-600">
+              <p className="text-base text-gray-700">
                 Don&apos;t have an account?
               </p>
               <Link
                 to="/register"
-                className="text-sm text-indigo-600 hover:text-indigo-500 font-medium"
+                className="inline-block text-base text-teal-700 hover:text-teal-800 font-medium hover:underline decoration-teal-500 decoration-2 underline-offset-4 transition-all duration-200 py-3 px-4 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
               >
                 Create new account
               </Link>
@@ -175,14 +215,15 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-sm text-gray-600 hover:text-gray-900"
+                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
+                aria-label="Go back to account type selection"
               >
                 &larr; Back to selection
               </button>
-              <h2 className="mt-4 text-2xl font-semibold text-center">
+              <h1 className="mt-4 text-xl sm:text-2xl font-semibold text-center text-gray-900">
                 Donor Login
-              </h2>
-              <p className="text-center text-sm text-gray-600 mt-1">
+              </h1>
+              <p className="text-center text-base text-gray-700 mt-1">
                 Sign in to access your giving dashboard
               </p>
             </div>
@@ -200,14 +241,15 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-sm text-gray-600 hover:text-gray-900"
+                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
+                aria-label="Go back to account type selection"
               >
                 &larr; Back to selection
               </button>
-              <h2 className="mt-4 text-2xl font-semibold text-center">
+              <h1 className="mt-4 text-xl sm:text-2xl font-semibold text-center text-gray-900">
                 Charity Portal Login
-              </h2>
-              <p className="text-center text-sm text-gray-600 mt-1">
+              </h1>
+              <p className="text-center text-base text-gray-700 mt-1">
                 Manage your charity profile and donations
               </p>
             </div>
@@ -221,14 +263,27 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full bg-white p-8 rounded-xl shadow-lg border border-gray-100">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
+      {/* Skip-to-content link for screen readers and keyboard navigation */}
+      <a
+        href="#login-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:text-indigo-700 focus:ring-2 focus:ring-indigo-500"
+      >
+        Skip to login content
+      </a>
+
+      <div
+        id="login-content"
+        role="region"
+        aria-label="Login"
+        className="max-w-md w-full bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-100"
+      >
         {/* Logo — first to appear */}
         <div
           className={`frame-reveal ${visibleClass} flex justify-center mb-8`}
           style={{ "--reveal-delay": "0.05s" } as React.CSSProperties}
         >
-          <Link to="/" className="flex items-center">
+          <Link to="/" className="flex items-center" aria-label="Go to homepage">
             <Logo className="h-12 w-12" />
           </Link>
         </div>
