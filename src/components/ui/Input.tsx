@@ -61,7 +61,7 @@ export const Input: React.FC<InputProps> = ({
         {...props}
       />
       {error && (
-        <p id={errorId} className="text-sm text-red-600 dark:text-red-400" role="alert" aria-live="polite">
+        <p id={errorId} className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       )}

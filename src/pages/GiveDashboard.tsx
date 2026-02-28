@@ -365,7 +365,7 @@ export const GiveDashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             {t("dashboard.title")}
           </h1>
-          <p className="mt-2 text-gray-600">{t("dashboard.subtitle")}</p>
+          <p className="mt-2 text-sm text-gray-600">{t("dashboard.subtitle")}</p>
         </div>
         <div className="flex space-x-3 flex-shrink-0">
           <Button
@@ -681,7 +681,7 @@ export const GiveDashboard: React.FC = () => {
               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div>
-                <h3 className="font-medium text-gray-900">{item.skill}</h3>
+                <h3 className="text-sm font-medium text-gray-900">{item.skill}</h3>
                 <p className="text-sm text-gray-500">
                   {item.endorsements} {t("skills.endorsements", "endorsements")}
                 </p>

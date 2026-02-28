@@ -93,6 +93,7 @@ const ComingSoon: React.FC = () => {
             value={email}
             onChange={handleEmailChange}
             placeholder="Enter your email for pre-launch access"
+            aria-label="Email address for waitlist"
             className="w-full px-4 py-3 rounded-lg border border-indigo-200 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-indigo-300"
             disabled={status === "loading" || status === "success"}
           />
@@ -114,7 +115,7 @@ const ComingSoon: React.FC = () => {
           </p>
         )}
         {status === "error" && (
-          <p className="mt-2 text-red-600 text-center">{errorMessage}</p>
+          <p role="alert" className="mt-2 text-red-600 text-center">{errorMessage}</p>
         )}
       </main>
 
@@ -122,7 +123,7 @@ const ComingSoon: React.FC = () => {
       <section className="mt-16 mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <article className="group p-6 bg-gradient-to-br from-white/70 to-indigo-50/30 backdrop-blur-sm rounded-xl border border-indigo-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 text-center">
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-gray-900 transition-colors mx-auto">
-            <Eye className="w-6 h-6" />
+            <Eye aria-hidden="true" className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2">
             Transparent
@@ -133,7 +134,7 @@ const ComingSoon: React.FC = () => {
         </article>
         <article className="group p-6 bg-gradient-to-br from-white/70 to-purple-50/30 backdrop-blur-sm rounded-xl border border-purple-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 text-center">
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-gray-900 transition-colors mx-auto">
-            <Zap className="w-6 h-6" />
+            <Zap aria-hidden="true" className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
             Efficient
@@ -144,7 +145,7 @@ const ComingSoon: React.FC = () => {
         </article>
         <article className="group p-6 bg-gradient-to-br from-white/70 to-indigo-50/30 backdrop-blur-sm rounded-xl border border-indigo-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 text-center">
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-gray-900 transition-colors mx-auto">
-            <TrendingUp className="w-6 h-6" />
+            <TrendingUp aria-hidden="true" className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2">
             Impactful
@@ -155,7 +156,7 @@ const ComingSoon: React.FC = () => {
         </article>
         <article className="group p-6 bg-gradient-to-br from-white/70 to-purple-50/30 backdrop-blur-sm rounded-xl border border-purple-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 text-center">
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-gray-900 transition-colors mx-auto">
-            <Infinity className="w-6 h-6" />
+            <Infinity aria-hidden="true" className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
             Sustainable

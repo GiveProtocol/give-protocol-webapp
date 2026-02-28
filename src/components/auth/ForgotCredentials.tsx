@@ -80,6 +80,7 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
         <div className="mb-4">
           <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
             <svg
+              aria-hidden="true"
               className="w-6 h-6 text-green-600"
               fill="none"
               stroke="currentColor"
@@ -98,8 +99,8 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
           Check your email
         </h3>
         <p className="text-sm text-gray-600 mb-6">{successMessage}</p>
-        <Button onClick={onBack} variant="outline" className="w-full">
-          <ArrowLeft className="w-4 h-4 mr-2" />
+        <Button onClick={onBack} variant="ghost" className="w-full">
+          <ArrowLeft aria-hidden="true" className="w-4 h-4 mr-2" />
           Back to Sign In
         </Button>
       </div>
@@ -110,7 +111,7 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
     <div>
       <div className="mb-6">
         <Button onClick={onBack} variant="ghost" size="sm" className="mb-4">
-          <ArrowLeft className="w-4 h-4 mr-2" />
+          <ArrowLeft aria-hidden="true" className="w-4 h-4 mr-2" />
           Back to Sign In
         </Button>
         <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
@@ -121,17 +122,19 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
         <div>
           <Input
             type="email"
+            label="Email"
             placeholder="Enter your email address"
             value={email}
             onChange={handleEmailChange}
+            autoComplete="email"
             className="w-full"
             required
           />
         </div>
 
-        {error && <div className="text-sm text-red-600">{error}</div>}
+        {error && <div role="alert" className="text-sm text-red-600">{error}</div>}
 
-        <Button type="submit" className="w-full" disabled={loading}>
+        <Button type="submit" className="w-full min-h-[48px]" disabled={loading} aria-busy={loading}>
           {(() => {
             if (loading) {
               return "Sending...";

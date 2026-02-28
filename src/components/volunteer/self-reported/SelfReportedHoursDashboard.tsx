@@ -295,7 +295,7 @@ export const SelfReportedHoursDashboard: React.FC<
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               Delete Record?
             </h3>
-            <p className="text-gray-600 mb-4">
+            <p className="text-sm text-gray-600 mb-4">
               Are you sure you want to delete this volunteer hours record? This
               action cannot be undone.
             </p>

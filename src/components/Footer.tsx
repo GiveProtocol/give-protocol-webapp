@@ -30,7 +30,7 @@ export const Footer: React.FC = () => {
               <li>
                 <a
                   href={DOCS_CONFIG.url}
-                  className="text-sm text-white/80 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
+                  className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
                 >
                   Documentation & FAQ
                 </a>
@@ -38,7 +38,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/governance"
-                  className="text-sm text-white/80 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
+                  className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
                 >
                   Governance
                 </Link>
@@ -46,7 +46,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/about"
-                  className="text-sm text-white/80 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
+                  className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
                 >
                   About Us
                 </Link>
@@ -62,7 +62,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/legal"
-                  className="text-sm text-white/80 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
+                  className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
                 >
                   Terms of Service
                 </Link>
@@ -70,7 +70,7 @@ export const Footer: React.FC = () => {
               <li>
                 <Link
                   to="/privacy"
-                  className="text-sm text-white/80 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
+                  className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
                 >
                   Privacy Policy
                 </Link>
@@ -85,30 +85,30 @@ export const Footer: React.FC = () => {
             <div className="flex space-x-4">
               <a
                 href="https://giveprotocol.bsky.social"
-                className="text-white/80 hover:text-white transition-colors focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded p-1"
+                className="text-white/90 hover:text-white transition-colors focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded p-2"
                 aria-label="Bluesky"
               >
-                <FaBluesky className="h-5 w-5" />
+                <FaBluesky aria-hidden="true" className="h-5 w-5" />
               </a>
               <a
                 href="https://github.com/giveprotocol"
-                className="text-white/80 hover:text-white transition-colors focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded p-1"
+                className="text-white/90 hover:text-white transition-colors focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded p-2"
                 aria-label="GitHub"
               >
-                <FaGithub className="h-5 w-5" />
+                <FaGithub aria-hidden="true" className="h-5 w-5" />
               </a>
               <a
                 href="https://discord.gg/giveprotocol"
-                className="text-white/80 hover:text-white transition-colors focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded p-1"
+                className="text-white/90 hover:text-white transition-colors focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded p-2"
                 aria-label="Discord"
               >
-                <FaDiscord className="h-5 w-5" />
+                <FaDiscord aria-hidden="true" className="h-5 w-5" />
               </a>
             </div>
           </div>
         </div>
         <div className="mt-16 border-t border-white/20 pt-8">
-          <p className="text-sm text-white/80">
+          <p className="text-sm text-white/90">
             © {new Date().getFullYear()} Give Protocol. All rights reserved.
           </p>
         </div>

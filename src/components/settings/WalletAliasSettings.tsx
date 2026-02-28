@@ -109,7 +109,7 @@ export const WalletAliasSettings: React.FC = () => {
       <Card className="p-6">
         <div className="flex items-center mb-4">
           <Wallet className="h-5 w-5 text-gray-500 mr-2" />
-          <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Wallet Alias</h2>
         </div>
         <div className="bg-amber-50 border border-amber-200 rounded-md p-4 mb-4 flex items-start">
           <AlertCircle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
@@ -132,7 +132,7 @@ export const WalletAliasSettings: React.FC = () => {
       <Card className="p-6">
         <div className="flex items-center mb-4">
           <Wallet className="h-5 w-5 text-gray-500 mr-2" />
-          <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Wallet Alias</h2>
         </div>
         <div className="bg-blue-50 border border-blue-200 rounded-md p-4 mb-4 flex items-start">
           <AlertCircle className="h-5 w-5 text-blue-500 mt-0.5 mr-2 flex-shrink-0" />
@@ -155,7 +155,7 @@ export const WalletAliasSettings: React.FC = () => {
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center">
           <Wallet className="h-5 w-5 text-gray-500 mr-2" />
-          <h2 className="text-lg font-medium text-gray-900">Wallet Alias</h2>
+          <h2 className="text-xl font-semibold text-gray-900">Wallet Alias</h2>
         </div>
         {!editMode && alias && (
           <Button
@@ -178,7 +178,7 @@ export const WalletAliasSettings: React.FC = () => {
       )}
 
       <div className="mb-4">
-        <p className="text-gray-600 mb-2">
+        <p className="text-sm text-gray-600 mb-2">
           Set a public alias for your wallet address. This alias will be
           displayed on the contribution tracker instead of your wallet address.
         </p>
@@ -227,7 +227,7 @@ export const WalletAliasSettings: React.FC = () => {
             </div>
           ) : (
             <div className="mb-4">
-              <p className="text-gray-600">
+              <p className="text-sm text-gray-600">
                 You haven&apos;t set an alias for this wallet yet. Set an alias
                 to make your contributions more recognizable.
               </p>
@@ -241,7 +241,7 @@ export const WalletAliasSettings: React.FC = () => {
 
       {aliases.length > 0 && (
         <div className="mt-6">
-          <h3 className="text-md font-medium text-gray-900 mb-3">
+          <h3 className="text-lg font-medium text-gray-900 mb-3">
             Your Wallet Aliases
           </h3>
           <div className="space-y-3">
@@ -280,7 +280,7 @@ export const WalletAliasSettings: React.FC = () => {
               </h3>
             </header>
 
-            <p className="text-gray-600">
+            <p className="text-sm text-gray-600">
               Are you sure you want to delete this wallet alias? This action
               cannot be undone.
             </p>

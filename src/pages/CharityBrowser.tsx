@@ -107,11 +107,12 @@ const CharityBrowser: React.FC = () => {
           <input
             type="text"
             placeholder="Search charities..."
+            aria-label="Search charities"
             className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             value={searchTerm}
             onChange={handleSearchChange}
           />
-          <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+          <Search aria-hidden="true" className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
         </div>
 
         <select
@@ -145,7 +146,7 @@ const CharityBrowser: React.FC = () => {
             htmlFor="verified"
             className="text-sm text-gray-700 flex items-center"
           >
-            <CheckCircle className="h-4 w-4 mr-1 text-indigo-600" />
+            <CheckCircle aria-hidden="true" className="h-4 w-4 mr-1 text-indigo-600" />
             Verified Charities Only
           </label>
         </div>

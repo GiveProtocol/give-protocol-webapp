@@ -463,8 +463,6 @@ export const AppNavbar: React.FC = () => {
       <div
         className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16"
         onKeyDown={handleKeyDown}
-        role="menubar"
-        tabIndex={0}
       >
         <div className="flex items-center">
           <NavHeader />

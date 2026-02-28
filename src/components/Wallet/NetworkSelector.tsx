@@ -130,7 +130,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
         aria-haspopup="listbox"
         aria-label={`Current network: ${currentNetworkConfig?.name || currentNetwork}`}
       >
-        <Globe className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+        <Globe aria-hidden="true" className="h-4 w-4 text-gray-500 dark:text-gray-400" />
         {currentNetworkConfig && (
           <>
             <NetworkIcon color={currentNetworkConfig.color} size={8} />
@@ -140,6 +140,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
           </>
         )}
         <ChevronDown
+          aria-hidden="true"
           className={`h-4 w-4 text-gray-400 dark:text-gray-500 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
           }`}
@@ -183,7 +184,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                     </p>
                   </div>
                   {isSelected && (
-                    <Check className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <Check aria-hidden="true" className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
                   )}
                 </button>
               );

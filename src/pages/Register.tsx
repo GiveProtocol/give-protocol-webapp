@@ -32,10 +32,10 @@ export const Register: React.FC = () => {
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
-          <Link to="/" className="inline-flex items-center mb-4">
+          <Link to="/" className="inline-flex items-center mb-4" aria-label="Go to homepage">
             <Logo className="h-12 w-12" />
           </Link>
-          <h2 className="text-3xl font-bold text-gray-900">Create Account</h2>
+          <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
           <p className="mt-2 text-sm text-gray-600">
             Already have an account?{' '}
             <Link to={`/login?type=${userType}`} className="font-medium text-indigo-600 hover:text-indigo-500">
@@ -48,33 +48,35 @@ export const Register: React.FC = () => {
           <Button
             onClick={handleDonorClick}
             variant="secondary"
+            aria-pressed={userType === 'donor'}
             className={`px-4 py-2 text-sm font-medium rounded-md flex items-center ${
               userType === 'donor'
                 ? 'bg-indigo-600 text-gray-900'
-                : 'bg-white text-gray-500 hover:text-gray-700'
+                : 'bg-white text-gray-600 hover:text-gray-700'
             }`}
           >
-            <Users className="h-5 w-5 mr-2" />
+            <Users aria-hidden="true" className="h-5 w-5 mr-2" />
             Donor Account
           </Button>
           <Button
             onClick={handleCharityClick}
             variant="secondary"
+            aria-pressed={userType === 'charity'}
             className={`px-4 py-2 text-sm font-medium rounded-md flex items-center ${
               userType === 'charity'
                 ? 'bg-indigo-600 text-gray-900'
-                : 'bg-white text-gray-500 hover:text-gray-700'
+                : 'bg-white text-gray-600 hover:text-gray-700'
             }`}
           >
-            <Building2 className="h-5 w-5 mr-2" />
+            <Building2 aria-hidden="true" className="h-5 w-5 mr-2" />
             Charity Account
           </Button>
         </div>
 
         <div className="bg-white p-8 rounded-lg shadow-md">
-          <h3 className="text-xl font-semibold mb-6 text-center">
+          <h2 className="text-xl font-semibold mb-6 text-center">
             {userType === 'donor' ? 'Create Donor Account' : 'Register Charity Organization'}
-          </h3>
+          </h2>
           {userType === 'donor' ? <DonorRegistration /> : <CharityVettingForm />}
         </div>
       </div>

@@ -96,6 +96,7 @@ export function CurrencySelector(): React.ReactElement {
         <span className="text-base">{selectedCurrency.symbol}</span>
         <span className="hidden sm:inline">{selectedCurrency.code}</span>
         <ChevronDown
+          aria-hidden="true"
           className={cn(
             "w-4 h-4 transition-transform",
             isOpen && "transform rotate-180"
