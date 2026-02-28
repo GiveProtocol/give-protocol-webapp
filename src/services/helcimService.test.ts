@@ -22,8 +22,11 @@ jest.mock("@/utils/logger", () => ({
 // Mock global fetch
 global.fetch = jest.fn() as jest.Mock;
 
+const MOCK_CHECKOUT_TOKEN = "TESTONLY-chk-000";
+const MOCK_SECRET_TOKEN = "TESTONLY-sec-000";
+
 const mockPaymentData: FiatPaymentData = {
-  checkoutToken: "test-checkout-token",
+  checkoutToken: MOCK_CHECKOUT_TOKEN,
   amount: 50,
   coverFees: true,
   charityId: "charity-123",
@@ -175,16 +178,16 @@ describe("helcimService", () => {
         ok: true,
         json: async () => ({
           success: true,
-          checkoutToken: "checkout-token-abc",
-          secretToken: "secret-xyz",
+          checkoutToken: MOCK_CHECKOUT_TOKEN,
+          secretToken: MOCK_SECRET_TOKEN,
         }),
       } as Response);
 
       const result = await fetchHelcimCheckoutToken(25, "once");
 
       expect(result).toEqual({
-        checkoutToken: "checkout-token-abc",
-        secretToken: "secret-xyz",
+        checkoutToken: MOCK_CHECKOUT_TOKEN,
+        secretToken: MOCK_SECRET_TOKEN,
       });
 
       const body = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
@@ -198,8 +201,8 @@ describe("helcimService", () => {
         ok: true,
         json: async () => ({
           success: true,
-          checkoutToken: "checkout-token-abc",
-          secretToken: "secret-xyz",
+          checkoutToken: MOCK_CHECKOUT_TOKEN,
+          secretToken: MOCK_SECRET_TOKEN,
         }),
       } as Response);
 
@@ -524,7 +527,7 @@ describe("helcimService", () => {
 
   describe("validateHelcimPayment", () => {
     const mockValidateData = {
-      checkoutToken: "checkout-token-abc",
+      checkoutToken: MOCK_CHECKOUT_TOKEN,
       transactionData: {
         transactionId: "txn-999",
         amount: "50.00",
@@ -559,7 +562,7 @@ describe("helcimService", () => {
       const fetchCall = (global.fetch as jest.Mock).mock.calls[0];
       expect(fetchCall[0]).toContain("helcim-validate");
       const body = JSON.parse(fetchCall[1].body);
-      expect(body.checkoutToken).toBe("checkout-token-abc");
+      expect(body.checkoutToken).toBe(MOCK_CHECKOUT_TOKEN);
       expect(body.hash).toBe("sha256hash");
       expect(body.donorId).toBe("donor-456");
     });
