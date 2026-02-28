@@ -130,6 +130,11 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, class
   );
 };
 
+/**
+ * Panel content associated with a tab trigger
+ * @param props - TabsContentProps
+ * @returns Tab panel element or null if not active
+ */
 export const TabsContent: React.FC<TabsContentProps> = ({ value: _value, children, className }) => {
   const context = React.useContext(TabsContext);
   if (!context) throw new Error('TabsContent must be used within Tabs');

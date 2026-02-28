@@ -138,6 +138,10 @@ function mapContributionToTransaction(c: UnifiedContribution): Transaction {
   };
 }
 
+/**
+ * Donor dashboard displaying contributions, stats, and volunteer hours
+ * @returns GiveDashboard page element
+ */
 export const GiveDashboard: React.FC = () => {
   const [_view, _setView] = useState<View>("select"); // Prefixed as unused
   const { user, userType } = useAuth();
@@ -360,13 +364,13 @@ export const GiveDashboard: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-8 flex justify-between items-start">
-        <div>
+      <header className="mb-8 flex justify-between items-start">
+        <hgroup>
           <h1 className="text-3xl font-bold text-gray-900">
             {t("dashboard.title")}
           </h1>
           <p className="mt-2 text-sm text-gray-600">{t("dashboard.subtitle")}</p>
-        </div>
+        </hgroup>
         <div className="flex space-x-3 flex-shrink-0">
           <Button
             variant="secondary"
@@ -393,7 +397,7 @@ export const GiveDashboard: React.FC = () => {
             Wallet Settings
           </Button>
         </div>
-      </div>
+      </header>
 
       {showWalletSettings && (
         <div className="mb-8">

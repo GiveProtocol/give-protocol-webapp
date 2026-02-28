@@ -126,6 +126,10 @@ const SKILLS = [
 const TYPES = ["remote", "onsite", "hybrid"];
 const LANGUAGES = Object.values(WorkLanguage);
 
+/**
+ * Browse and apply for volunteer opportunities
+ * @returns VolunteerOpportunities page element
+ */
 const VolunteerOpportunities: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedSkill, setSelectedSkill] = useState("");
@@ -214,6 +218,7 @@ const VolunteerOpportunities: React.FC = () => {
     [],
   );
 
+  /** Converts a snake_case language code to Title Case display name */
   const formatLanguageName = (language: string): string => {
     return language
       .split("_")
@@ -222,13 +227,10 @@ const VolunteerOpportunities: React.FC = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="space-y-8">
-        <div className="animate-fade-in-up">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">
-            {t("volunteer.opportunities", "Volunteer Opportunities")}
-          </h1>
-        </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4 animate-fade-in-up">
+          {t("volunteer.opportunities", "Volunteer Opportunities")}
+        </h1>
 
         <ScrollReveal direction="up" delay={100}>
           <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
@@ -366,7 +368,6 @@ const VolunteerOpportunities: React.FC = () => {
             )}
           </div>
         )}
-      </div>
 
       {showApplicationForm && selectedOpportunity && (
         <VolunteerApplicationForm

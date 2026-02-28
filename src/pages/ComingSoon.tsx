@@ -2,6 +2,10 @@ import React, { useState, useCallback } from "react";
 import { Eye, Zap, TrendingUp, Infinity } from "lucide-react";
 import { Logger } from "@/utils/logger";
 
+/**
+ * Pre-launch landing page with waitlist signup
+ * @returns ComingSoon page element
+ */
 const ComingSoon: React.FC = () => {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<

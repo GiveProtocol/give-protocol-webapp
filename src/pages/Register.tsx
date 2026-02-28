@@ -6,6 +6,10 @@ import { Building2, Users } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Logo } from '@/components/Logo';
 
+/**
+ * Account registration page for donors and charities
+ * @returns Register page element
+ */
 export const Register: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeParam = searchParams.get('type');
@@ -31,7 +35,7 @@ export const Register: React.FC = () => {
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        <div className="text-center">
+        <header className="text-center">
           <Link to="/" className="inline-flex items-center mb-4" aria-label="Go to homepage">
             <Logo className="h-12 w-12" />
           </Link>
@@ -42,7 +46,7 @@ export const Register: React.FC = () => {
               Sign in
             </Link>
           </p>
-        </div>
+        </header>
 
         <div className="flex justify-center space-x-4 mb-8">
           <Button

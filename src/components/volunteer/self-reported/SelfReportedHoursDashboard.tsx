@@ -149,44 +149,42 @@ export const SelfReportedHoursDashboard: React.FC<
   return (
     <div className="bg-white rounded-lg shadow-md">
       {/* Header */}
-      <div className="p-6 border-b border-gray-200">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Volunteer Hours
-            </h2>
-            <button
-              type="button"
-              onClick={toggleInfo}
-              className={`p-1 rounded-full transition-colors ${
-                showInfo
-                  ? "bg-blue-100 text-blue-600"
-                  : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
-              }`}
-              title="About Self-Reported Hours"
+      <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Volunteer Hours
+          </h2>
+          <button
+            type="button"
+            onClick={toggleInfo}
+            className={`p-1 rounded-full transition-colors ${
+              showInfo
+                ? "bg-blue-100 text-blue-600"
+                : "text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            }`}
+            title="About Self-Reported Hours"
+          >
+            <Info className="h-5 w-5" />
+          </button>
+        </div>
+        <div className="flex items-center gap-3">
+          {viewMode === "list" && (
+            <Button
+              onClick={handleCreate}
+              icon={<Plus className="h-4 w-4" />}
             >
-              <Info className="h-5 w-5" />
-            </button>
-          </div>
-          <div className="flex items-center gap-3">
-            {viewMode === "list" && (
-              <Button
-                onClick={handleCreate}
-                icon={<Plus className="h-4 w-4" />}
-              >
-                Log Hours
-              </Button>
-            )}
-            {onToggle && (
-              <Button
-                variant="ghost"
-                onClick={onToggle}
-                icon={<X className="h-4 w-4" />}
-              >
-                Close
-              </Button>
-            )}
-          </div>
+              Log Hours
+            </Button>
+          )}
+          {onToggle && (
+            <Button
+              variant="ghost"
+              onClick={onToggle}
+              icon={<X className="h-4 w-4" />}
+            >
+              Close
+            </Button>
+          )}
         </div>
 
         {/* Info banner - toggled by (i) button */}

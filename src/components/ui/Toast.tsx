@@ -11,6 +11,11 @@ interface ToastProps {
   onClose: () => void;
 }
 
+/**
+ * Toast notification component with screen reader support
+ * @param props - ToastProps
+ * @returns Toast notification element
+ */
 export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) => {
   const icons = {
     success: CheckCircle,

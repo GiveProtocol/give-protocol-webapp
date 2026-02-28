@@ -11,6 +11,11 @@ interface NetworkIconProps {
   size?: number;
 }
 
+/**
+ * Colored dot indicator for a blockchain network
+ * @param props - NetworkIconProps
+ * @returns Decorative dot element
+ */
 const NetworkIcon: React.FC<NetworkIconProps> = ({ color, size = 8 }) => (
   <div
     className="rounded-full flex-shrink-0"
@@ -41,6 +46,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    /** Closes the dropdown if the click target is outside the container */
     const handleClickOutside = (event: MouseEvent) => {
       if (
         containerRef.current &&
@@ -61,6 +67,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
 
   // Handle keyboard navigation
   useEffect(() => {
+    /** Closes the dropdown when Escape is pressed */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && isOpen) {
         setIsOpen(false);

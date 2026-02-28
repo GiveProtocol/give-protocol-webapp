@@ -62,21 +62,19 @@ export const SelfReportedHoursStats: React.FC<SelfReportedHoursStatsProps> = ({
       {visibleCards.map((stat) => {
         const Icon = stat.icon;
         return (
-          <Card key={stat.label} className="p-4" hover={false}>
-            <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${stat.iconBg}`}>
-                <Icon className={`h-5 w-5 ${stat.iconColor}`} />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-600">{stat.label}</p>
-                <p className={`text-2xl font-semibold ${stat.valueColor}`}>
-                  {stat.value.toFixed(1)}
-                  <span className="text-sm font-normal text-gray-500 ml-1">hrs</span>
-                </p>
-                <p className="text-xs text-gray-400">
-                  {stat.count} {stat.count === 1 ? 'record' : 'records'}
-                </p>
-              </div>
+          <Card key={stat.label} className="p-4 flex items-center gap-3" hover={false}>
+            <div className={`p-2 rounded-full ${stat.iconBg}`}>
+              <Icon className={`h-5 w-5 ${stat.iconColor}`} />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-gray-600">{stat.label}</p>
+              <p className={`text-2xl font-semibold ${stat.valueColor}`}>
+                {stat.value.toFixed(1)}
+                <span className="text-sm font-normal text-gray-500 ml-1">hrs</span>
+              </p>
+              <p className="text-xs text-gray-400">
+                {stat.count} {stat.count === 1 ? 'record' : 'records'}
+              </p>
             </div>
           </Card>
         );
