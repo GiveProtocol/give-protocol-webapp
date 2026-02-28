@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from "@jest/globals";
 import {
   processPayment,
   createSubscription,
@@ -46,7 +53,9 @@ describe("helcimService", () => {
   });
 
   afterEach(() => {
-    document.querySelectorAll('script[src*="helcim-pay"]').forEach((el) => el.remove());
+    document
+      .querySelectorAll('script[src*="helcim-pay"]')
+      .forEach((el) => el.remove());
     delete window.appendHelcimPayIframe;
     delete window.removeHelcimPayIframe;
   });
@@ -91,7 +100,9 @@ describe("helcimService", () => {
         json: () => Promise.resolve({ success: false, error: "Card declined" }),
       } as unknown as Response);
 
-      await expect(processPayment(mockPaymentData)).rejects.toThrow("Card declined");
+      await expect(processPayment(mockPaymentData)).rejects.toThrow(
+        "Card declined",
+      );
     });
 
     it("should throw default message when no error provided", async () => {
@@ -100,7 +111,9 @@ describe("helcimService", () => {
         json: () => Promise.resolve({ success: false }),
       } as Response);
 
-      await expect(processPayment(mockPaymentData)).rejects.toThrow("Payment processing failed");
+      await expect(processPayment(mockPaymentData)).rejects.toThrow(
+        "Payment processing failed",
+      );
     });
 
     it("should return empty strings for missing optional fields", async () => {
@@ -146,7 +159,9 @@ describe("helcimService", () => {
         json: () => Promise.resolve({ success: false, error: "Server error" }),
       } as unknown as Response);
 
-      await expect(createSubscription(mockPaymentData)).rejects.toThrow("Server error");
+      await expect(createSubscription(mockPaymentData)).rejects.toThrow(
+        "Server error",
+      );
     });
 
     it("should throw default message when no error provided", async () => {
@@ -155,7 +170,9 @@ describe("helcimService", () => {
         json: () => Promise.resolve({ success: false }),
       } as Response);
 
-      await expect(createSubscription(mockPaymentData)).rejects.toThrow("Subscription creation failed");
+      await expect(createSubscription(mockPaymentData)).rejects.toThrow(
+        "Subscription creation failed",
+      );
     });
 
     it("should return empty strings for missing optional fields", async () => {
@@ -176,11 +193,12 @@ describe("helcimService", () => {
     it("should fetch checkout token for one-time donation", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          checkoutToken: MOCK_CHECKOUT_TOKEN,
-          secretToken: MOCK_SECRET_TOKEN,
-        }),
+        json: () =>
+          Promise.resolve({
+            success: true,
+            checkoutToken: MOCK_CHECKOUT_TOKEN,
+            secretToken: MOCK_SECRET_TOKEN,
+          }),
       } as Response);
 
       const result = await fetchHelcimCheckoutToken(25, "once");
@@ -190,7 +208,9 @@ describe("helcimService", () => {
         secretToken: MOCK_SECRET_TOKEN,
       });
 
-      const body = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
+      const body = JSON.parse(
+        (global.fetch as jest.Mock).mock.calls[0][1].body,
+      );
       expect(body.donationType).toBe("one-time");
       expect(body.amount).toBe(25);
       expect(body.currency).toBe("USD");
@@ -199,16 +219,19 @@ describe("helcimService", () => {
     it("should fetch checkout token for monthly donation", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          checkoutToken: MOCK_CHECKOUT_TOKEN,
-          secretToken: MOCK_SECRET_TOKEN,
-        }),
+        json: () =>
+          Promise.resolve({
+            success: true,
+            checkoutToken: MOCK_CHECKOUT_TOKEN,
+            secretToken: MOCK_SECRET_TOKEN,
+          }),
       } as Response);
 
       await fetchHelcimCheckoutToken(25, "monthly");
 
-      const body = JSON.parse((global.fetch as jest.Mock).mock.calls[0][1].body);
+      const body = JSON.parse(
+        (global.fetch as jest.Mock).mock.calls[0][1].body,
+      );
       expect(body.donationType).toBe("subscription");
     });
 
@@ -219,7 +242,9 @@ describe("helcimService", () => {
         json: () => Promise.resolve({ success: false, error: "Unauthorized" }),
       } as unknown as Response);
 
-      await expect(fetchHelcimCheckoutToken(25, "once")).rejects.toThrow("Unauthorized");
+      await expect(fetchHelcimCheckoutToken(25, "once")).rejects.toThrow(
+        "Unauthorized",
+      );
     });
 
     it("should throw default message when no error provided", async () => {
@@ -247,7 +272,8 @@ describe("helcimService", () => {
     it("should return empty string for missing secretToken", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({ success: true, checkoutToken: "tok-123" }),
+        json: () =>
+          Promise.resolve({ success: true, checkoutToken: "tok-123" }),
       } as Response);
 
       const result = await fetchHelcimCheckoutToken(25, "once");
@@ -257,7 +283,8 @@ describe("helcimService", () => {
 
   describe("loadHelcimScript", () => {
     it("should resolve immediately when appendHelcimPayIframe already exists", async () => {
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
 
       await expect(loadHelcimScript()).resolves.toBeUndefined();
     });
@@ -267,11 +294,14 @@ describe("helcimService", () => {
 
       const promise = loadHelcimScript();
 
-      const script = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
+      const script = document.querySelector(
+        'script[src*="helcim-pay"]',
+      ) as HTMLScriptElement;
       expect(script).not.toBeNull();
 
       // Simulate script load, then global appears
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
       script.onload?.(new Event("load"));
 
       jest.advanceTimersByTime(300);
@@ -283,7 +313,9 @@ describe("helcimService", () => {
     it("should reject when script fails to load", async () => {
       const promise = loadHelcimScript();
 
-      const script = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
+      const script = document.querySelector(
+        'script[src*="helcim-pay"]',
+      ) as HTMLScriptElement;
       script.onerror?.(new Event("error"));
 
       await expect(promise).rejects.toThrow("Failed to load payment processor");
@@ -295,7 +327,9 @@ describe("helcimService", () => {
 
       expect(promise1).toBe(promise2);
 
-      const script = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
+      const script = document.querySelector(
+        'script[src*="helcim-pay"]',
+      ) as HTMLScriptElement;
       script.onerror?.(new Event("error"));
 
       await expect(promise1).rejects.toThrow();
@@ -306,13 +340,17 @@ describe("helcimService", () => {
 
       const promise = loadHelcimScript();
 
-      const script = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
+      const script = document.querySelector(
+        'script[src*="helcim-pay"]',
+      ) as HTMLScriptElement;
       script.onload?.(new Event("load"));
 
       // Advance past the 5s timeout
       jest.advanceTimersByTime(5100);
 
-      await expect(promise).rejects.toThrow("HelcimPay.js not ready after 5000ms");
+      await expect(promise).rejects.toThrow(
+        "HelcimPay.js not ready after 5000ms",
+      );
       jest.useRealTimers();
     });
 
@@ -320,12 +358,14 @@ describe("helcimService", () => {
       jest.useFakeTimers();
 
       const existingScript = document.createElement("script");
-      existingScript.src = "https://secure.helcim.app/helcim-pay/services/start.js";
+      existingScript.src =
+        "https://secure.helcim.app/helcim-pay/services/start.js";
       document.head.appendChild(existingScript);
 
       const promise = loadHelcimScript();
 
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
       existingScript.dispatchEvent(new Event("load"));
 
       jest.advanceTimersByTime(300);
@@ -336,7 +376,8 @@ describe("helcimService", () => {
 
     it("should handle existing script tag with error", async () => {
       const existingScript = document.createElement("script");
-      existingScript.src = "https://secure.helcim.app/helcim-pay/services/start.js";
+      existingScript.src =
+        "https://secure.helcim.app/helcim-pay/services/start.js";
       document.head.appendChild(existingScript);
 
       const promise = loadHelcimScript();
@@ -348,10 +389,12 @@ describe("helcimService", () => {
 
     it("should resolve immediately for existing script when global already available", async () => {
       const existingScript = document.createElement("script");
-      existingScript.src = "https://secure.helcim.app/helcim-pay/services/start.js";
+      existingScript.src =
+        "https://secure.helcim.app/helcim-pay/services/start.js";
       document.head.appendChild(existingScript);
 
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
 
       await expect(loadHelcimScript()).resolves.toBeUndefined();
     });
@@ -362,7 +405,9 @@ describe("helcimService", () => {
       jest.useFakeTimers();
 
       const promise1 = loadHelcimScript();
-      const script1 = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
+      const script1 = document.querySelector(
+        'script[src*="helcim-pay"]',
+      ) as HTMLScriptElement;
       script1.onerror?.(new Event("error"));
       await expect(promise1).rejects.toThrow();
 
@@ -370,10 +415,13 @@ describe("helcimService", () => {
       resetHelcimScriptState();
 
       const promise2 = loadHelcimScript();
-      const script2 = document.querySelector('script[src*="helcim-pay"]') as HTMLScriptElement;
+      const script2 = document.querySelector(
+        'script[src*="helcim-pay"]',
+      ) as HTMLScriptElement;
       expect(script2).not.toBeNull();
 
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
       script2.onload?.(new Event("load"));
       jest.advanceTimersByTime(300);
 
@@ -392,29 +440,37 @@ describe("helcimService", () => {
     it("should open iframe and resolve on SUCCESS message", async () => {
       const mockAppend = jest.fn();
       const mockRemove = jest.fn();
-      window.appendHelcimPayIframe = mockAppend as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        mockAppend as unknown as typeof window.appendHelcimPayIframe;
       window.removeHelcimPayIframe = mockRemove;
 
       const promise = openHelcimCheckout("token-123", "test@example.com");
 
-      expect(mockAppend).toHaveBeenCalledWith("token-123", true, "", "test@example.com");
+      expect(mockAppend).toHaveBeenCalledWith(
+        "token-123",
+        true,
+        "",
+        "test@example.com",
+      );
 
       // Simulate SUCCESS message from iframe
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-token-123",
-          eventStatus: "SUCCESS",
-          eventMessage: {
-            data: {
-              transactionId: "txn-999",
-              approvalCode: "APR-111",
-              cardNumber: "400000XXXX1234",
-              amount: "50.00",
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "SUCCESS",
+            eventMessage: {
+              data: {
+                transactionId: "txn-999",
+                approvalCode: "APR-111",
+                cardNumber: "400000XXXX1234",
+                amount: "50.00",
+              },
+              hash: "abc123hash",
             },
-            hash: "abc123hash",
           },
-        },
-      }));
+        }),
+      );
 
       const result = await promise;
       expect(result.data.transactionId).toBe("txn-999");
@@ -425,18 +481,21 @@ describe("helcimService", () => {
 
     it("should reject on ABORTED message and cleanup iframe", async () => {
       const mockRemove = jest.fn();
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
       window.removeHelcimPayIframe = mockRemove;
 
       const promise = openHelcimCheckout("token-123");
 
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-token-123",
-          eventStatus: "ABORTED",
-          eventMessage: "Card declined",
-        },
-      }));
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "ABORTED",
+            eventMessage: "Card declined",
+          },
+        }),
+      );
 
       await expect(promise).rejects.toThrow("Card declined");
       expect(mockRemove).toHaveBeenCalledTimes(1);
@@ -444,61 +503,72 @@ describe("helcimService", () => {
 
     it("should reject on HIDE message and cleanup iframe", async () => {
       const mockRemove = jest.fn();
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
       window.removeHelcimPayIframe = mockRemove;
 
       const promise = openHelcimCheckout("token-123");
 
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-token-123",
-          eventStatus: "HIDE",
-        },
-      }));
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "HIDE",
+          },
+        }),
+      );
 
       await expect(promise).rejects.toThrow("Payment cancelled");
       expect(mockRemove).toHaveBeenCalledTimes(1);
     });
 
     it("should ignore messages for different checkout tokens", async () => {
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
 
       const promise = openHelcimCheckout("token-123");
 
       // Message for a different token — should be ignored
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-other-token",
-          eventStatus: "SUCCESS",
-          eventMessage: { data: { transactionId: "wrong" } },
-        },
-      }));
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-other-token",
+            eventStatus: "SUCCESS",
+            eventMessage: { data: { transactionId: "wrong" } },
+          },
+        }),
+      );
 
       // Now send the correct one
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-token-123",
-          eventStatus: "SUCCESS",
-          eventMessage: { data: { transactionId: "correct" } },
-        },
-      }));
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "SUCCESS",
+            eventMessage: { data: { transactionId: "correct" } },
+          },
+        }),
+      );
 
       const result = await promise;
       expect(result.data.transactionId).toBe("correct");
     });
 
     it("should handle SUCCESS with missing eventMessage.data", async () => {
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
 
       const promise = openHelcimCheckout("token-123");
 
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-token-123",
-          eventStatus: "SUCCESS",
-          eventMessage: {},
-        },
-      }));
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "SUCCESS",
+            eventMessage: {},
+          },
+        }),
+      );
 
       const result = await promise;
       expect(result.data).toEqual({});
@@ -506,18 +576,21 @@ describe("helcimService", () => {
     });
 
     it("should handle cleanup when removeHelcimPayIframe is undefined", async () => {
-      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
       delete window.removeHelcimPayIframe;
 
       const promise = openHelcimCheckout("token-123");
 
-      window.dispatchEvent(new MessageEvent("message", {
-        data: {
-          eventName: "helcim-pay-js-token-123",
-          eventStatus: "SUCCESS",
-          eventMessage: { data: { transactionId: "txn-1" } },
-        },
-      }));
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "SUCCESS",
+            eventMessage: { data: { transactionId: "txn-1" } },
+          },
+        }),
+      );
 
       // Should not throw even without removeHelcimPayIframe
       const result = await promise;
@@ -545,13 +618,14 @@ describe("helcimService", () => {
     it("should validate a payment successfully", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve({
-          success: true,
-          transactionId: "txn-999",
-          approvalCode: "APR-111",
-          cardLastFour: "1234",
-          donationType: "one-time",
-        }),
+        json: () =>
+          Promise.resolve({
+            success: true,
+            transactionId: "txn-999",
+            approvalCode: "APR-111",
+            cardLastFour: "1234",
+            donationType: "one-time",
+          }),
       } as Response);
 
       const result = await validateHelcimPayment(mockValidateData);
@@ -571,10 +645,11 @@ describe("helcimService", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 403,
-        json: () => Promise.resolve({
-          success: false,
-          error: "Payment validation failed: hash mismatch",
-        }),
+        json: () =>
+          Promise.resolve({
+            success: false,
+            error: "Payment validation failed: hash mismatch",
+          }),
       } as unknown as Response);
 
       await expect(validateHelcimPayment(mockValidateData)).rejects.toThrow(
