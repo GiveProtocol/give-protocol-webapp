@@ -25,6 +25,10 @@ interface FiatDonationFormProps {
   onSuccess: (_result: HelcimPaymentResult) => void;
   /** Callback on error */
   onError: (_error: Error) => void;
+  /** Authenticated user's profile ID for server-side validation */
+  donorId?: string;
+  /** Connected wallet address for on-chain association */
+  donorAddress?: string;
 }
 
 /** Props for the script status display */
@@ -139,6 +143,8 @@ export function FiatDonationForm({
   onCoverFeesChange,
   onSuccess,
   onError,
+  donorId,
+  donorAddress,
 }: FiatDonationFormProps): React.ReactElement {
   const isMonthly = frequency === 'monthly';
 
@@ -240,6 +246,8 @@ export function FiatDonationForm({
           charityId,
           charityName,
           frequency,
+          donorId,
+          donorAddress,
         });
 
         onSuccess(result);
@@ -265,6 +273,8 @@ export function FiatDonationForm({
       charityId,
       charityName,
       frequency,
+      donorId,
+      donorAddress,
       onSuccess,
       onError,
     ]

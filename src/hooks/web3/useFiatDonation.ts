@@ -4,6 +4,7 @@ import {
   resetHelcimScriptState,
   fetchHelcimCheckoutToken,
   openHelcimCheckout,
+  validateHelcimPayment,
 } from '@/services/helcimService';
 import { Logger } from '@/utils/logger';
 import type {
@@ -30,6 +31,10 @@ export interface FiatPaymentInput {
   charityId: string;
   charityName: string;
   frequency: DonationFrequency;
+  /** Authenticated user's profile ID (enables server-side validation & donation recording) */
+  donorId?: string;
+  /** Connected wallet address (associates fiat donation with on-chain identity) */
+  donorAddress?: string;
 }
 
 /** Return type for the useFiatDonation hook */
@@ -131,7 +136,7 @@ export function useFiatDonation(): UseFiatDonationReturn {
 
         // Step 2: Open the HelcimPay.js iframe checkout
         // The iframe handles card input, validation, and payment processing
-        const txData = await openHelcimCheckout(checkoutToken, data.email);
+        const { data: txData, hash } = await openHelcimCheckout(checkoutToken, data.email);
 
         // Step 3: Build the result from the iframe transaction data
         const amountCents = txData.amount
@@ -143,6 +148,35 @@ export function useFiatDonation(): UseFiatDonationReturn {
         const cardLastFour = cardNumber.length >= 4
           ? cardNumber.slice(-4)
           : undefined;
+
+        // Step 4: Validate payment server-side and persist donation
+        // Non-blocking: the payment was already processed by Helcim,
+        // so validation failure should not prevent the user from seeing success
+        if (data.donorId) {
+          try {
+            await validateHelcimPayment({
+              checkoutToken,
+              transactionData: txData,
+              hash,
+              charityId: data.charityId,
+              charityName: data.charityName,
+              donorName: data.name,
+              donorEmail: data.email,
+              coverFees: data.coverFees,
+              donorId: data.donorId,
+              donorAddress: data.donorAddress,
+            });
+          } catch (validationErr) {
+            Logger.error('Server-side payment validation failed (non-blocking)', {
+              error: validationErr,
+              transactionId: txData.transactionId,
+            });
+          }
+        } else {
+          Logger.warn('Skipping server-side validation: no donorId (guest checkout)', {
+            transactionId: txData.transactionId,
+          });
+        }
 
         return {
           transactionId: txData.transactionId || '',

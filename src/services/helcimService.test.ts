@@ -6,6 +6,7 @@ import {
   loadHelcimScript,
   resetHelcimScriptState,
   openHelcimCheckout,
+  validateHelcimPayment,
 } from "./helcimService";
 import type { FiatPaymentData } from "@/components/web3/donation/types/donation";
 
@@ -387,7 +388,9 @@ describe("helcimService", () => {
 
     it("should open iframe and resolve on SUCCESS message", async () => {
       const mockAppend = jest.fn();
+      const mockRemove = jest.fn();
       window.appendHelcimPayIframe = mockAppend as unknown as typeof window.appendHelcimPayIframe;
+      window.removeHelcimPayIframe = mockRemove;
 
       const promise = openHelcimCheckout("token-123", "test@example.com");
 
@@ -405,17 +408,22 @@ describe("helcimService", () => {
               cardNumber: "400000XXXX1234",
               amount: "50.00",
             },
+            hash: "abc123hash",
           },
         },
       }));
 
       const result = await promise;
-      expect(result.transactionId).toBe("txn-999");
-      expect(result.approvalCode).toBe("APR-111");
+      expect(result.data.transactionId).toBe("txn-999");
+      expect(result.data.approvalCode).toBe("APR-111");
+      expect(result.hash).toBe("abc123hash");
+      expect(mockRemove).toHaveBeenCalledTimes(1);
     });
 
-    it("should reject on ABORTED message", async () => {
+    it("should reject on ABORTED message and cleanup iframe", async () => {
+      const mockRemove = jest.fn();
       window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.removeHelcimPayIframe = mockRemove;
 
       const promise = openHelcimCheckout("token-123");
 
@@ -428,10 +436,13 @@ describe("helcimService", () => {
       }));
 
       await expect(promise).rejects.toThrow("Card declined");
+      expect(mockRemove).toHaveBeenCalledTimes(1);
     });
 
-    it("should reject on HIDE message", async () => {
+    it("should reject on HIDE message and cleanup iframe", async () => {
+      const mockRemove = jest.fn();
       window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      window.removeHelcimPayIframe = mockRemove;
 
       const promise = openHelcimCheckout("token-123");
 
@@ -443,6 +454,7 @@ describe("helcimService", () => {
       }));
 
       await expect(promise).rejects.toThrow("Payment cancelled");
+      expect(mockRemove).toHaveBeenCalledTimes(1);
     });
 
     it("should ignore messages for different checkout tokens", async () => {
@@ -469,7 +481,7 @@ describe("helcimService", () => {
       }));
 
       const result = await promise;
-      expect(result.transactionId).toBe("correct");
+      expect(result.data.transactionId).toBe("correct");
     });
 
     it("should handle SUCCESS with missing eventMessage.data", async () => {
@@ -486,7 +498,96 @@ describe("helcimService", () => {
       }));
 
       const result = await promise;
-      expect(result).toEqual({});
+      expect(result.data).toEqual({});
+      expect(result.hash).toBe("");
+    });
+
+    it("should handle cleanup when removeHelcimPayIframe is undefined", async () => {
+      window.appendHelcimPayIframe = jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+      delete window.removeHelcimPayIframe;
+
+      const promise = openHelcimCheckout("token-123");
+
+      window.dispatchEvent(new MessageEvent("message", {
+        data: {
+          eventName: "helcim-pay-js-token-123",
+          eventStatus: "SUCCESS",
+          eventMessage: { data: { transactionId: "txn-1" } },
+        },
+      }));
+
+      // Should not throw even without removeHelcimPayIframe
+      const result = await promise;
+      expect(result.data.transactionId).toBe("txn-1");
+    });
+  });
+
+  describe("validateHelcimPayment", () => {
+    const mockValidateData = {
+      checkoutToken: "checkout-token-abc",
+      transactionData: {
+        transactionId: "txn-999",
+        amount: "50.00",
+        approvalCode: "APR-111",
+      },
+      hash: "sha256hash",
+      charityId: "charity-123",
+      charityName: "Test Charity",
+      donorName: "John Doe",
+      donorEmail: "john@example.com",
+      coverFees: false,
+      donorId: "donor-456",
+    };
+
+    it("should validate a payment successfully", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          success: true,
+          transactionId: "txn-999",
+          approvalCode: "APR-111",
+          cardLastFour: "1234",
+          donationType: "one-time",
+        }),
+      } as Response);
+
+      const result = await validateHelcimPayment(mockValidateData);
+
+      expect(result.success).toBe(true);
+      expect(result.transactionId).toBe("txn-999");
+
+      const fetchCall = (global.fetch as jest.Mock).mock.calls[0];
+      expect(fetchCall[0]).toContain("helcim-validate");
+      const body = JSON.parse(fetchCall[1].body);
+      expect(body.checkoutToken).toBe("checkout-token-abc");
+      expect(body.hash).toBe("sha256hash");
+      expect(body.donorId).toBe("donor-456");
+    });
+
+    it("should throw on validation failure", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: false,
+        status: 403,
+        json: async () => ({
+          success: false,
+          error: "Payment validation failed: hash mismatch",
+        }),
+      } as unknown as Response);
+
+      await expect(validateHelcimPayment(mockValidateData)).rejects.toThrow(
+        "Payment validation failed: hash mismatch",
+      );
+    });
+
+    it("should throw default message when no error provided", async () => {
+      (global.fetch as jest.Mock).mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: false }),
+      } as Response);
+
+      await expect(validateHelcimPayment(mockValidateData)).rejects.toThrow(
+        "Payment validation failed",
+      );
     });
   });
 });

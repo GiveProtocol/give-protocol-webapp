@@ -360,6 +360,27 @@ export function resetHelcimScriptState(): void {
   helcimScriptPromise = null;
 }
 
+/** Result from the HelcimPay.js iframe checkout */
+export interface HelcimCheckoutResult {
+  /** Transaction data from eventMessage.data */
+  data: HelcimTransactionData;
+  /** SHA-256 hash from eventMessage for server-side validation */
+  hash: string;
+}
+
+/**
+ * Remove the HelcimPay.js iframe from the DOM.
+ * Called after the checkout promise settles to prevent the iframe
+ * from covering the success/error screen.
+ */
+function cleanupHelcimIframe(): void {
+  try {
+    window.removeHelcimPayIframe?.();
+  } catch (err) {
+    Logger.warn('Failed to remove HelcimPay.js iframe', { error: err });
+  }
+}
+
 /**
  * Open the HelcimPay.js iframe checkout and wait for the payment result.
  *
@@ -368,16 +389,17 @@ export function resetHelcimScriptState(): void {
  *   - `eventName`: `'helcim-pay-js-' + checkoutToken`
  *   - `eventStatus`: `'SUCCESS'` | `'ABORTED'` | `'HIDE'`
  *   - `eventMessage.data`: transaction details on SUCCESS
+ *   - `eventMessage.hash`: SHA-256 hash for server-side validation
  *
  * @param checkoutToken - Token from fetchHelcimCheckoutToken
  * @param email - Pre-fill email in the checkout iframe
- * @returns Transaction data from the completed payment
+ * @returns Checkout result with transaction data and validation hash
  * @throws Error if user cancels, payment is aborted, or script not loaded
  */
 export function openHelcimCheckout(
   checkoutToken: string,
   email?: string,
-): Promise<HelcimTransactionData> {
+): Promise<HelcimCheckoutResult> {
   if (!isHelcimReady()) {
     return Promise.reject(new Error('HelcimPay.js not loaded'));
   }
@@ -400,17 +422,20 @@ export function openHelcimCheckout(
       if (msg.eventStatus === 'SUCCESS') {
         settled = true;
         window.removeEventListener('message', handleMessage);
+        cleanupHelcimIframe();
         const txData: HelcimTransactionData = msg.eventMessage?.data || {};
+        const hash: string = msg.eventMessage?.hash || '';
         Logger.info('HelcimPay.js payment succeeded', {
           transactionId: txData.transactionId,
         });
-        resolve(txData);
+        resolve({ data: txData, hash });
         return;
       }
 
       if (msg.eventStatus === 'ABORTED') {
         settled = true;
         window.removeEventListener('message', handleMessage);
+        cleanupHelcimIframe();
         const reason = msg.eventMessage || 'Transaction aborted';
         Logger.error('HelcimPay.js payment aborted', { reason });
         reject(new Error(typeof reason === 'string' ? reason : 'Payment was declined'));
@@ -420,6 +445,7 @@ export function openHelcimCheckout(
       if (msg.eventStatus === 'HIDE') {
         settled = true;
         window.removeEventListener('message', handleMessage);
+        cleanupHelcimIframe();
         Logger.info('HelcimPay.js modal closed');
         reject(new Error('Payment cancelled'));
       }
@@ -436,4 +462,76 @@ export function openHelcimCheckout(
     appendFn(checkoutToken, true, '', email || '');
     Logger.info('HelcimPay.js checkout iframe opened');
   });
+}
+
+// ---------------------------------------------------------------------------
+// Server-side validation
+// ---------------------------------------------------------------------------
+
+/** Request body for the helcim-validate edge function */
+export interface ValidatePaymentRequest {
+  checkoutToken: string;
+  transactionData: HelcimTransactionData;
+  hash: string;
+  charityId: string;
+  charityName: string;
+  donorName: string;
+  donorEmail: string;
+  coverFees: boolean;
+  donorId: string;
+  donorAddress?: string;
+}
+
+/** Response from the helcim-validate edge function */
+interface ValidatePaymentResponse {
+  success: boolean;
+  transactionId?: string;
+  approvalCode?: string;
+  cardLastFour?: string;
+  donationType?: string;
+  error?: string;
+}
+
+/**
+ * Validate a HelcimPay.js payment server-side and persist the donation.
+ *
+ * Calls the `helcim-validate` edge function which:
+ *   1. Verifies the SHA-256 hash using the stored secretToken
+ *   2. Marks the checkout session as validated (prevents replay)
+ *   3. Persists the donation to the `fiat_donations` table
+ *   4. Triggers attestation (fire-and-forget)
+ *
+ * @param data - Validation request with transaction data and donor metadata
+ * @returns Validated payment details
+ * @throws Error if validation fails
+ */
+export async function validateHelcimPayment(
+  data: ValidatePaymentRequest
+): Promise<ValidatePaymentResponse> {
+  Logger.info('Validating Helcim payment server-side', {
+    checkoutToken: data.checkoutToken,
+    transactionId: data.transactionData.transactionId,
+  });
+
+  const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-validate`, {
+    method: 'POST',
+    headers: getHeaders(),
+    body: JSON.stringify(data),
+  });
+
+  const result: ValidatePaymentResponse = await response.json();
+
+  if (!response.ok || !result.success) {
+    Logger.error('Payment validation failed', {
+      status: response.status,
+      error: result.error,
+    });
+    throw new Error(result.error || 'Payment validation failed');
+  }
+
+  Logger.info('Payment validated and recorded', {
+    transactionId: result.transactionId,
+  });
+
+  return result;
 }

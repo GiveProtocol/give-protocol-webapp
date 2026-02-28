@@ -26,6 +26,7 @@ import { calculateFeeOffset } from './types/donation';
 import { getERC20TokensForChain, type TokenConfig } from '@/config/tokens';
 import { getContractAddress, CHAIN_IDS } from '@/config/contracts';
 import { useWeb3 } from '@/contexts/Web3Context';
+import { useAuth } from '@/contexts/AuthContext';
 
 /** Shared modal overlay + card shell with close button */
 function ModalShell({ onClose, children, dark }: {
@@ -223,7 +224,8 @@ export const DonationModal: React.FC<DonationModalProps> = ({
   const [isMounted, setIsMounted] = useState(false);
   useEffect(() => { setIsMounted(true); }, []);
 
-  const { chainId, isConnected } = useWeb3();
+  const { chainId, isConnected, address } = useWeb3();
+  const { user } = useAuth();
   const [state, dispatch] = useReducer(
     donationReducer,
     frequency,
@@ -301,8 +303,9 @@ export const DonationModal: React.FC<DonationModalProps> = ({
       };
       dispatch({ type: 'SET_SUCCESS', payload: result });
       onSuccess?.(result);
+      setTimeout(onClose, 3000);
     },
-    [state.amount, state.coverFees, frequency, onSuccess]
+    [state.amount, state.coverFees, frequency, onSuccess, onClose]
   );
 
   const handleFiatError = useCallback((error: Error) => {
@@ -429,6 +432,8 @@ export const DonationModal: React.FC<DonationModalProps> = ({
                   onCoverFeesChange={handleCoverFeesChange}
                   onSuccess={handleFiatSuccess}
                   onError={handleFiatError}
+                  donorId={user?.id}
+                  donorAddress={address ?? undefined}
                 />
               </div>
             )}
