@@ -63,7 +63,7 @@ describe("helcimService", () => {
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
       } as Response);
 
       const result = await processPayment(mockPaymentData);
@@ -88,7 +88,7 @@ describe("helcimService", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 400,
-        json: async () => ({ success: false, error: "Card declined" }),
+        json: () => Promise.resolve({ success: false, error: "Card declined" }),
       } as unknown as Response);
 
       await expect(processPayment(mockPaymentData)).rejects.toThrow("Card declined");
@@ -97,7 +97,7 @@ describe("helcimService", () => {
     it("should throw default message when no error provided", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: false }),
+        json: () => Promise.resolve({ success: false }),
       } as Response);
 
       await expect(processPayment(mockPaymentData)).rejects.toThrow("Payment processing failed");
@@ -106,7 +106,7 @@ describe("helcimService", () => {
     it("should return empty strings for missing optional fields", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true }),
+        json: () => Promise.resolve({ success: true }),
       } as Response);
 
       const result = await processPayment(mockPaymentData);
@@ -127,7 +127,7 @@ describe("helcimService", () => {
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => mockResponse,
+        json: () => Promise.resolve(mockResponse),
       } as Response);
 
       const result = await createSubscription(mockPaymentData);
@@ -143,7 +143,7 @@ describe("helcimService", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 500,
-        json: async () => ({ success: false, error: "Server error" }),
+        json: () => Promise.resolve({ success: false, error: "Server error" }),
       } as unknown as Response);
 
       await expect(createSubscription(mockPaymentData)).rejects.toThrow("Server error");
@@ -152,7 +152,7 @@ describe("helcimService", () => {
     it("should throw default message when no error provided", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: false }),
+        json: () => Promise.resolve({ success: false }),
       } as Response);
 
       await expect(createSubscription(mockPaymentData)).rejects.toThrow("Subscription creation failed");
@@ -161,7 +161,7 @@ describe("helcimService", () => {
     it("should return empty strings for missing optional fields", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true }),
+        json: () => Promise.resolve({ success: true }),
       } as Response);
 
       const result = await createSubscription(mockPaymentData);
@@ -176,7 +176,7 @@ describe("helcimService", () => {
     it("should fetch checkout token for one-time donation", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: () => Promise.resolve({
           success: true,
           checkoutToken: MOCK_CHECKOUT_TOKEN,
           secretToken: MOCK_SECRET_TOKEN,
@@ -199,7 +199,7 @@ describe("helcimService", () => {
     it("should fetch checkout token for monthly donation", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: () => Promise.resolve({
           success: true,
           checkoutToken: MOCK_CHECKOUT_TOKEN,
           secretToken: MOCK_SECRET_TOKEN,
@@ -216,7 +216,7 @@ describe("helcimService", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 401,
-        json: async () => ({ success: false, error: "Unauthorized" }),
+        json: () => Promise.resolve({ success: false, error: "Unauthorized" }),
       } as unknown as Response);
 
       await expect(fetchHelcimCheckoutToken(25, "once")).rejects.toThrow("Unauthorized");
@@ -225,7 +225,7 @@ describe("helcimService", () => {
     it("should throw default message when no error provided", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: false }),
+        json: () => Promise.resolve({ success: false }),
       } as Response);
 
       await expect(fetchHelcimCheckoutToken(25, "once")).rejects.toThrow(
@@ -236,7 +236,7 @@ describe("helcimService", () => {
     it("should throw when no checkout token in response", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, checkoutToken: "" }),
+        json: () => Promise.resolve({ success: true, checkoutToken: "" }),
       } as Response);
 
       await expect(fetchHelcimCheckoutToken(25, "once")).rejects.toThrow(
@@ -247,7 +247,7 @@ describe("helcimService", () => {
     it("should return empty string for missing secretToken", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: true, checkoutToken: "tok-123" }),
+        json: () => Promise.resolve({ success: true, checkoutToken: "tok-123" }),
       } as Response);
 
       const result = await fetchHelcimCheckoutToken(25, "once");
@@ -545,7 +545,7 @@ describe("helcimService", () => {
     it("should validate a payment successfully", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({
+        json: () => Promise.resolve({
           success: true,
           transactionId: "txn-999",
           approvalCode: "APR-111",
@@ -571,7 +571,7 @@ describe("helcimService", () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: false,
         status: 403,
-        json: async () => ({
+        json: () => Promise.resolve({
           success: false,
           error: "Payment validation failed: hash mismatch",
         }),
@@ -585,7 +585,7 @@ describe("helcimService", () => {
     it("should throw default message when no error provided", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ success: false }),
+        json: () => Promise.resolve({ success: false }),
       } as Response);
 
       await expect(validateHelcimPayment(mockValidateData)).rejects.toThrow(
