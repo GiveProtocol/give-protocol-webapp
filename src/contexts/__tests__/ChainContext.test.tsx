@@ -110,7 +110,7 @@ describe("ChainContext", () => {
       expect(screen.getByTestId("selected-chain-id")).toHaveTextContent("8453");
     });
 
-    it("selects chain and persists to localStorage", async () => {
+    it("selects chain and persists to localStorage", () => {
       render(
         <ChainProvider>
           <TestComponent />
@@ -119,7 +119,7 @@ describe("ChainContext", () => {
 
       const selectOptimismButton = screen.getByTestId("select-optimism");
 
-      await act(async () => {
+      act(() => {
         selectOptimismButton.click();
       });
 

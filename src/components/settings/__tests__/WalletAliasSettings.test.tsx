@@ -137,7 +137,7 @@ describe("WalletAliasSettings", () => {
     const input = screen.getByTestId("alias-input");
     if (value) fireEvent.change(input, { target: { value } });
     // Submit form via Save Alias button
-    await act(async () => {
+    await act(() => {
       fireEvent.click(screen.getByText(/save alias/i));
     });
   };
@@ -248,7 +248,7 @@ describe("WalletAliasSettings", () => {
       render(<WalletAliasSettings />);
       fireEvent.click(screen.getByText("Set Wallet Alias"));
       // Submit without entering text
-      await act(async () => {
+      await act(() => {
         fireEvent.click(screen.getByText(/save alias/i));
       });
 

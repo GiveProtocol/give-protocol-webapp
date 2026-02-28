@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from "react";
-import { Eye, Zap, TrendingUp, Infinity } from "lucide-react";
+import { Eye, Zap, TrendingUp, Infinity as InfinityIcon } from "lucide-react";
 import { Logger } from "@/utils/logger";
 
 /**
@@ -160,7 +160,7 @@ const ComingSoon: React.FC = () => {
         </article>
         <article className="group p-6 bg-gradient-to-br from-white/70 to-purple-50/30 backdrop-blur-sm rounded-xl border border-purple-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 text-center">
           <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-gray-900 transition-colors mx-auto">
-            <Infinity aria-hidden="true" className="w-6 h-6" />
+            <InfinityIcon aria-hidden="true" className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
             Sustainable

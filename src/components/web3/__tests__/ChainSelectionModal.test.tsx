@@ -89,7 +89,7 @@ describe("ChainSelectionModal", () => {
   });
 
   describe("selection behavior", () => {
-    it("allows selecting a chain", async () => {
+    it("allows selecting a chain", () => {
       render(
         <TestWrapper>
           <ChainSelectionModal isOpen onComplete={mockOnComplete} />

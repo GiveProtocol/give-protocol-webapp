@@ -56,7 +56,7 @@ export const ForgotCredentials: React.FC<ForgotCredentialsProps> = ({
           await sendUsernameReminder(email);
         }
         setSubmitted(true);
-      } catch (err) {
+      } catch (_err) {
         setError("An error occurred. Please try again.");
       }
     },
