@@ -79,7 +79,7 @@ describe('Footer', () => {
 
   it('shows company description', () => {
     renderFooter();
-    
-    expect(screen.getByText(/empowering charitable giving/i)).toBeInTheDocument();
+
+    expect(screen.getByText(/removing barriers to sustainable charitable giving/i)).toBeInTheDocument();
   });
 });

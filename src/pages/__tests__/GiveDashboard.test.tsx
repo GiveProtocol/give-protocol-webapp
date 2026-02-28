@@ -3,24 +3,26 @@ import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { GiveDashboard } from "../GiveDashboard";
-import { useAuth } from "@/contexts/AuthContext";
-import { useWeb3 } from "@/contexts/Web3Context";
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   createMockAuth,
   createMockWeb3,
   createMockTranslation,
 } from "@/test-utils/mockSetup";
 
+// Declare jest.fn() mocks BEFORE jest.mock() so .mockReturnValue() works
+const mockUseAuth = jest.fn();
+const mockUseWeb3 = jest.fn();
+const mockUseTranslation = jest.fn();
+
 // Top-level mocks with explicit factories for ESM compatibility
 jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: jest.fn(),
+  useAuth: (...args: unknown[]) => mockUseAuth(...args),
 }));
 jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: jest.fn(),
+  useWeb3: (...args: unknown[]) => mockUseWeb3(...args),
 }));
 jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(),
+  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
 }));
 
 jest.mock("@/utils/date", () => ({
@@ -112,15 +114,15 @@ jest.mock("@/components/volunteer/self-reported", () => ({
 }));
 
 jest.mock("@/hooks/useProfile", () => ({
-  useProfile: jest.fn(() => ({
+  useProfile: () => ({
     profile: { id: "profile-1", user_id: "1", type: "donor", created_at: "" },
     loading: false,
     error: null,
-  })),
+  }),
 }));
 
 jest.mock("@/hooks/useContributionStats", () => ({
-  useUserContributionStats: jest.fn(() => ({
+  useUserContributionStats: () => ({
     data: {
       userId: "1",
       totalDonated: 2000,
@@ -134,18 +136,12 @@ jest.mock("@/hooks/useContributionStats", () => ({
       organizationsHelped: 4,
     },
     isLoading: false,
-  })),
-  useUnifiedContributions: jest.fn(() => ({
+  }),
+  useUnifiedContributions: () => ({
     data: [],
     isLoading: false,
-  })),
+  }),
 }));
-
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
-const mockUseWeb3 = useWeb3 as jest.MockedFunction<typeof useWeb3>;
-const mockUseTranslation = useTranslation as jest.MockedFunction<
-  typeof useTranslation
->;
 
 const renderWithRouter = (initialEntries = ["/give-dashboard"]) => {
   return render(

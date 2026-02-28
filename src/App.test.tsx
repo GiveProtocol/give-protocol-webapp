@@ -38,6 +38,10 @@ jest.mock("./hooks/useSafeAutoConnect", () => ({
   useSafeAutoConnect: jest.fn(),
 }));
 
+jest.mock("./hooks/useWalletAuthSync", () => ({
+  useWalletAuthSync: jest.fn(),
+}));
+
 jest.mock("./utils/monitoring", () => ({
   MonitoringService: {
     getInstance: jest.fn(),

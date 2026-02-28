@@ -7,6 +7,42 @@ import { jest } from "@jest/globals";
 export const mockLatestRoundData = jest.fn();
 export const mockDecimals = jest.fn();
 
+/** Simple keccak256 stand-in: produces a deterministic 0x-prefixed 64-char hex string */
+const simpleKeccak256 = (data) => {
+  // Accept Uint8Array or hex string; convert to a regular string for hashing
+  let str;
+  if (data instanceof Uint8Array) {
+    str = Array.from(data).map((b) => b.toString(16).padStart(2, "0")).join("");
+  } else if (typeof data === "string") {
+    str = data;
+  } else {
+    str = String(data);
+  }
+  // Simple hash: use a basic FNV-like approach to produce a 64-char hex digest
+  let h1 = 0x811c9dc5 >>> 0;
+  let h2 = 0x01000193 >>> 0;
+  for (let i = 0; i < str.length; i++) {
+    const c = str.charCodeAt(i);
+    h1 = Math.imul(h1 ^ c, 0x01000193) >>> 0;
+    h2 = Math.imul(h2 ^ c, 0x811c9dc5) >>> 0;
+  }
+  const hex1 = (h1 >>> 0).toString(16).padStart(8, "0");
+  const hex2 = (h2 >>> 0).toString(16).padStart(8, "0");
+  const hex3 = ((h1 ^ h2) >>> 0).toString(16).padStart(8, "0");
+  const hex4 = (Math.imul(h1, h2) >>> 0).toString(16).padStart(8, "0");
+  const hex5 = (Math.imul(h1 ^ 0xa5a5a5a5, h2 ^ 0x5a5a5a5a) >>> 0).toString(16).padStart(8, "0");
+  const hex6 = ((h1 + h2) >>> 0).toString(16).padStart(8, "0");
+  const hex7 = (Math.imul(h1, 0xdeadbeef) >>> 0).toString(16).padStart(8, "0");
+  const hex8 = (Math.imul(h2, 0xcafebabe) >>> 0).toString(16).padStart(8, "0");
+  return "0x" + hex1 + hex2 + hex3 + hex4 + hex5 + hex6 + hex7 + hex8;
+};
+
+/** Convert a UTF-8 string to a Uint8Array, mirroring ethers.toUtf8Bytes */
+const toUtf8Bytes = (text) => {
+  const buf = Buffer.from(text, "utf-8");
+  return new Uint8Array(buf.buffer, buf.byteOffset, buf.byteLength);
+};
+
 export const ethers = {
   Contract: jest.fn().mockImplementation(() => ({
     latestRoundData: mockLatestRoundData,
@@ -15,9 +51,14 @@ export const ethers = {
   JsonRpcProvider: jest.fn().mockImplementation(() => ({
     _isProvider: true,
   })),
+  BrowserProvider: jest.fn().mockImplementation(() => ({
+    getSigner: jest.fn().mockResolvedValue({}),
+  })),
   formatUnits: (value, decimals) => {
     return (Number(value) / Math.pow(10, Number(decimals))).toString();
   },
+  keccak256: simpleKeccak256,
+  toUtf8Bytes,
 };
 
 // Reset helpers for use in beforeEach

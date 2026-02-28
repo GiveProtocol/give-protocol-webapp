@@ -14,12 +14,47 @@ jest.mock("@/hooks/useAuth", () => ({
   })),
 }));
 
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: jest.fn(() => ({
+    login: mockLogin,
+    loading: false,
+    error: null,
+    user: null,
+    userType: null,
+  })),
+}));
+
 jest.mock("@/contexts/Web3Context", () => ({
   useWeb3: jest.fn(() => ({
     disconnect: mockDisconnect,
     isConnected: false,
     account: null,
     chainId: 1287,
+  })),
+}));
+
+jest.mock("@/contexts/ToastContext", () => ({
+  useToast: jest.fn(() => ({
+    showToast: jest.fn(),
+  })),
+}));
+
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(() => ({
+    t: jest.fn((key: string, fallback?: string) => fallback || key),
+  })),
+}));
+
+jest.mock("@/contexts/SettingsContext", () => ({
+  useSettings: jest.fn(() => ({
+    language: "en",
+    setLanguage: jest.fn(),
+    currency: "USD",
+    setCurrency: jest.fn(),
+    theme: "light",
+    setTheme: jest.fn(),
+    languageOptions: [],
+    currencyOptions: [],
   })),
 }));
 

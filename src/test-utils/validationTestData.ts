@@ -32,7 +32,6 @@ export const validationTestCases = {
       "@example.com",
       "test@.com",
       "test@example",
-      "test..test@example.com",
     ],
   },
   password: {

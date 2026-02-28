@@ -13,6 +13,55 @@ jest.mock("@/hooks/useAuth", () => ({
   }),
 }));
 
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: jest.fn(() => ({
+    resetPassword: mockResetPassword,
+    sendUsernameReminder: mockSendUsernameReminder,
+    loading: false,
+    user: null,
+    userType: null,
+  })),
+}));
+
+jest.mock("@/contexts/Web3Context", () => ({
+  useWeb3: jest.fn(() => ({
+    disconnect: jest.fn(),
+    isConnected: false,
+    account: null,
+    chainId: null,
+  })),
+}));
+
+jest.mock("@/contexts/ToastContext", () => ({
+  useToast: jest.fn(() => ({
+    showToast: jest.fn(),
+  })),
+}));
+
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(() => ({
+    t: jest.fn((key: string, fallback?: string) => fallback || key),
+  })),
+}));
+
+jest.mock("@/contexts/SettingsContext", () => ({
+  useSettings: jest.fn(() => ({
+    language: "en",
+    setLanguage: jest.fn(),
+    currency: "USD",
+    setCurrency: jest.fn(),
+    theme: "light",
+    setTheme: jest.fn(),
+    languageOptions: [],
+    currencyOptions: [],
+  })),
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => jest.fn(),
+}));
+
 jest.mock("@/utils/validation", () => ({
   validateEmail: jest.fn((email: string) => email.includes("@")),
 }));

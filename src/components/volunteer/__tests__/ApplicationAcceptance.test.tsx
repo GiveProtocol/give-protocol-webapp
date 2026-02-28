@@ -2,25 +2,53 @@ import React from "react"; // eslint-disable-line no-unused-vars
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ApplicationAcceptance } from "../ApplicationAcceptance";
-import { useVolunteerVerification } from "@/hooks/useVolunteerVerification";
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   createMockVolunteerVerification,
   createMockTranslation,
   testPropsDefaults,
-  setupCommonMocks,
 } from "@/test-utils/mockSetup";
 import { cssClasses } from "@/test-utils/types";
 
-// Setup common mocks to reduce duplication
-setupCommonMocks();
+// Top-level jest.fn() instances for robust ESM mock support
+const mockUseVolunteerVerification = jest.fn();
+const mockUseTranslation = jest.fn();
 
-// Mock the specific dependencies with explicit factories for ESM compatibility
 jest.mock("@/hooks/useVolunteerVerification", () => ({
-  useVolunteerVerification: jest.fn(),
+  useVolunteerVerification: (
+    ...args: unknown[]
+  ) => mockUseVolunteerVerification(...args),
 }));
 jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(),
+  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
+}));
+jest.mock("@/utils/logger", () => ({
+  Logger: {
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+jest.mock("@/components/ui/Button", () => ({
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    className,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: string;
+    size?: string;
+  }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={className}
+      {...props}
+    >
+      {children}
+    </button>
+  ),
 }));
 
 describe("ApplicationAcceptance", () => {
@@ -36,13 +64,13 @@ describe("ApplicationAcceptance", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useVolunteerVerification as jest.Mock).mockReturnValue(
+    mockUseVolunteerVerification.mockReturnValue(
       createMockVolunteerVerification({
         acceptApplication: mockAcceptApplication,
       }),
     );
 
-    (useTranslation as jest.Mock).mockReturnValue(
+    mockUseTranslation.mockReturnValue(
       createMockTranslation({
         t: mockT,
       }),
@@ -91,7 +119,7 @@ describe("ApplicationAcceptance", () => {
     });
 
     it("shows loading state during acceptance", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue(
+      mockUseVolunteerVerification.mockReturnValue(
         createMockVolunteerVerification({
           acceptApplication: mockAcceptApplication,
           loading: true,
@@ -104,7 +132,7 @@ describe("ApplicationAcceptance", () => {
     });
 
     it("disables button during loading", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue(
+      mockUseVolunteerVerification.mockReturnValue(
         createMockVolunteerVerification({
           acceptApplication: mockAcceptApplication,
           loading: true,
@@ -172,7 +200,7 @@ describe("ApplicationAcceptance", () => {
 
   describe("error handling", () => {
     it("displays error message when provided", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue(
+      mockUseVolunteerVerification.mockReturnValue(
         createMockVolunteerVerification({
           acceptApplication: mockAcceptApplication,
           error: "Connection failed",
@@ -261,7 +289,7 @@ describe("ApplicationAcceptance", () => {
     });
 
     it("applies error styling when error present", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue(
+      mockUseVolunteerVerification.mockReturnValue(
         createMockVolunteerVerification({
           acceptApplication: mockAcceptApplication,
           error: "Error message",
@@ -285,7 +313,7 @@ describe("ApplicationAcceptance", () => {
     });
 
     it("uses translation for dynamic loading text", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue(
+      mockUseVolunteerVerification.mockReturnValue(
         createMockVolunteerVerification({
           acceptApplication: mockAcceptApplication,
           loading: true,

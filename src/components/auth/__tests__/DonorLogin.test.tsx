@@ -40,6 +40,31 @@ jest.mock("@/contexts/Web3Context", () => ({
   })),
 }));
 
+jest.mock("@/contexts/ToastContext", () => ({
+  useToast: jest.fn(() => ({
+    showToast: jest.fn(),
+  })),
+}));
+
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(() => ({
+    t: jest.fn((key: string, fallback?: string) => fallback || key),
+  })),
+}));
+
+jest.mock("@/contexts/SettingsContext", () => ({
+  useSettings: jest.fn(() => ({
+    language: "en",
+    setLanguage: jest.fn(),
+    currency: "USD",
+    setCurrency: jest.fn(),
+    theme: "light",
+    setTheme: jest.fn(),
+    languageOptions: [],
+    currencyOptions: [],
+  })),
+}));
+
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useNavigate: () => jest.fn(),

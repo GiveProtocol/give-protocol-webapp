@@ -7,6 +7,55 @@ const mockRegister = jest.fn();
 jest.mock("@/hooks/useAuth", () => ({
   useAuth: () => ({ register: mockRegister, loading: false }),
 }));
+
+jest.mock("@/contexts/AuthContext", () => ({
+  useAuth: jest.fn(() => ({
+    register: mockRegister,
+    loading: false,
+    user: null,
+    userType: null,
+  })),
+}));
+
+jest.mock("@/contexts/Web3Context", () => ({
+  useWeb3: jest.fn(() => ({
+    disconnect: jest.fn(),
+    isConnected: false,
+    account: null,
+    chainId: null,
+  })),
+}));
+
+jest.mock("@/contexts/ToastContext", () => ({
+  useToast: jest.fn(() => ({
+    showToast: jest.fn(),
+  })),
+}));
+
+jest.mock("@/hooks/useTranslation", () => ({
+  useTranslation: jest.fn(() => ({
+    t: jest.fn((key: string, fallback?: string) => fallback || key),
+  })),
+}));
+
+jest.mock("@/contexts/SettingsContext", () => ({
+  useSettings: jest.fn(() => ({
+    language: "en",
+    setLanguage: jest.fn(),
+    currency: "USD",
+    setCurrency: jest.fn(),
+    theme: "light",
+    setTheme: jest.fn(),
+    languageOptions: [],
+    currencyOptions: [],
+  })),
+}));
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => jest.fn(),
+}));
+
 jest.mock("@/hooks/useCountries", () => ({
   useCountries: () => ({ countries: [{ code: "US", name: "United States" }] }),
 }));

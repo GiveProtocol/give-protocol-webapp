@@ -2,9 +2,6 @@ import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen, waitFor } from "@testing-library/react";
 import { CharityPortal } from "../CharityPortal";
-import { useAuth } from "@/contexts/AuthContext";
-import { useProfile } from "@/hooks/useProfile";
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   createMockAuth,
   createMockProfile,
@@ -12,15 +9,20 @@ import {
 } from "@/test-utils/mockSetup";
 import { MemoryRouter } from "react-router-dom";
 
+// Declare jest.fn() mocks BEFORE jest.mock() so .mockReturnValue() works
+const mockUseAuth = jest.fn();
+const mockUseProfile = jest.fn();
+const mockUseTranslation = jest.fn();
+
 // Top-level mocks with explicit factories for ESM compatibility
 jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: jest.fn(),
+  useAuth: (...args: unknown[]) => mockUseAuth(...args),
 }));
 jest.mock("@/hooks/useProfile", () => ({
-  useProfile: jest.fn(),
+  useProfile: (...args: unknown[]) => mockUseProfile(...args),
 }));
 jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(),
+  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
 }));
 jest.mock("@/utils/logger", () => ({
   Logger: {
@@ -149,11 +151,6 @@ jest.mock("@/lib/supabase", () => {
   };
 });
 
-const mockUseAuth = useAuth as jest.MockedFunction<typeof useAuth>;
-const mockUseProfile = useProfile as jest.MockedFunction<typeof useProfile>;
-const mockUseTranslation = useTranslation as jest.MockedFunction<
-  typeof useTranslation
->;
 
 describe("CharityPortal", () => {
   const renderWithRouter = (props = {}) => {

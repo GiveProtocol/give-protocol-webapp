@@ -30,11 +30,11 @@ describe("ProtocolStats", () => {
     expect(container).toHaveClass("grid-cols-2", "gap-8");
   });
 
-  it("renders icons for each stat", () => {
-    const { container } = render(<ProtocolStats />);
+  it("renders stat value elements for each stat", () => {
+    render(<ProtocolStats />);
 
-    // Check that SVG icons are rendered
-    const svgElements = container.querySelectorAll("svg");
-    expect(svgElements.length).toBe(2);
+    // Check that both stat values are rendered
+    expect(screen.getByText("3+")).toBeInTheDocument();
+    expect(screen.getByText("7")).toBeInTheDocument();
   });
 });

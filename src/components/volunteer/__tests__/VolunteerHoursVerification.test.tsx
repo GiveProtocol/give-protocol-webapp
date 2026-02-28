@@ -2,24 +2,58 @@ import React from "react"; // eslint-disable-line no-unused-vars
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { VolunteerHoursVerification } from "../VolunteerHoursVerification";
-import { useVolunteerVerification } from "@/hooks/useVolunteerVerification";
-import { useTranslation } from "@/hooks/useTranslation";
 import {
   createMockVolunteerVerification,
   createMockTranslation,
   testPropsDefaults,
-  setupCommonMocks,
 } from "@/test-utils/mockSetup";
 
-// Setup common mocks to reduce duplication
-setupCommonMocks();
+// Top-level jest.fn() instances for robust ESM mock support
+const mockUseVolunteerVerification = jest.fn();
+const mockUseTranslation = jest.fn();
 
-// Mock the specific dependencies with explicit factories for ESM compatibility
 jest.mock("@/hooks/useVolunteerVerification", () => ({
-  useVolunteerVerification: jest.fn(),
+  useVolunteerVerification: (
+    ...args: unknown[]
+  ) => mockUseVolunteerVerification(...args),
 }));
 jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(),
+  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
+}));
+jest.mock("@/utils/date", () => ({
+  formatDate: jest.fn(
+    (date: string, includeTime?: boolean) =>
+      includeTime ? `${date} 10:00 AM` : date,
+  ),
+}));
+jest.mock("@/utils/logger", () => ({
+  Logger: {
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+jest.mock("@/components/ui/Button", () => ({
+  Button: ({
+    children,
+    onClick,
+    disabled,
+    className,
+    ...props
+  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: string;
+    size?: string;
+  }) => (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      className={className}
+      {...props}
+    >
+      {children}
+    </button>
+  ),
 }));
 
 describe("VolunteerHoursVerification", () => {
@@ -35,13 +69,13 @@ describe("VolunteerHoursVerification", () => {
   beforeEach(() => {
     jest.clearAllMocks();
 
-    (useVolunteerVerification as jest.Mock).mockReturnValue(
+    mockUseVolunteerVerification.mockReturnValue(
       createMockVolunteerVerification({
         verifyHours: mockVerifyHours,
       }),
     );
 
-    (useTranslation as jest.Mock).mockReturnValue(
+    mockUseTranslation.mockReturnValue(
       createMockTranslation({
         t: mockT,
       }),
@@ -121,11 +155,12 @@ describe("VolunteerHoursVerification", () => {
     });
 
     it("shows loading state during verification", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue({
-        verifyHours: mockVerifyHours,
-        loading: true,
-        error: null,
-      });
+      mockUseVolunteerVerification.mockReturnValue(
+        createMockVolunteerVerification({
+          verifyHours: mockVerifyHours,
+          loading: true,
+        }),
+      );
 
       render(<VolunteerHoursVerification {...defaultProps} />);
 
@@ -133,11 +168,12 @@ describe("VolunteerHoursVerification", () => {
     });
 
     it("disables button during loading", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue({
-        verifyHours: mockVerifyHours,
-        loading: true,
-        error: null,
-      });
+      mockUseVolunteerVerification.mockReturnValue(
+        createMockVolunteerVerification({
+          verifyHours: mockVerifyHours,
+          loading: true,
+        }),
+      );
 
       render(<VolunteerHoursVerification {...defaultProps} />);
 
@@ -200,11 +236,12 @@ describe("VolunteerHoursVerification", () => {
 
   describe("error handling", () => {
     it("displays error message when provided", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue({
-        verifyHours: mockVerifyHours,
-        loading: false,
-        error: "Network connection failed",
-      });
+      mockUseVolunteerVerification.mockReturnValue(
+        createMockVolunteerVerification({
+          verifyHours: mockVerifyHours,
+          error: "Network connection failed",
+        }),
+      );
 
       render(<VolunteerHoursVerification {...defaultProps} />);
 
@@ -317,11 +354,12 @@ describe("VolunteerHoursVerification", () => {
     });
 
     it("applies error styling when error present", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue({
-        verifyHours: mockVerifyHours,
-        loading: false,
-        error: "Error message",
-      });
+      mockUseVolunteerVerification.mockReturnValue(
+        createMockVolunteerVerification({
+          verifyHours: mockVerifyHours,
+          error: "Error message",
+        }),
+      );
 
       render(<VolunteerHoursVerification {...defaultProps} />);
 
@@ -347,11 +385,12 @@ describe("VolunteerHoursVerification", () => {
     });
 
     it("uses translation for dynamic loading text", () => {
-      (useVolunteerVerification as jest.Mock).mockReturnValue({
-        verifyHours: mockVerifyHours,
-        loading: true,
-        error: null,
-      });
+      mockUseVolunteerVerification.mockReturnValue(
+        createMockVolunteerVerification({
+          verifyHours: mockVerifyHours,
+          loading: true,
+        }),
+      );
 
       render(<VolunteerHoursVerification {...defaultProps} />);
 

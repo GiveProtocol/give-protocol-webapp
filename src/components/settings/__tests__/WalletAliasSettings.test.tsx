@@ -1,10 +1,7 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { WalletAliasSettings } from "../WalletAliasSettings";
-import { useWalletAlias } from "@/hooks/useWalletAlias";
-import { useWeb3 } from "@/contexts/Web3Context";
-import { useAuth } from "@/contexts/AuthContext";
 import {
   createMockWalletAlias,
   createMockWeb3,
@@ -12,20 +9,23 @@ import {
   testAddresses,
 } from "@/test-utils/mockSetup";
 
-// Top-level mocks with explicit factories for ESM compatibility
+// Top-level jest.fn() instances for robust ESM mock support
+const mockUseWalletAlias = jest.fn();
+const mockUseWeb3 = jest.fn();
+const mockUseAuth = jest.fn();
+const mockUseToast = jest.fn();
+
 jest.mock("@/hooks/useWalletAlias", () => ({
-  useWalletAlias: jest.fn(),
+  useWalletAlias: (...args: unknown[]) => mockUseWalletAlias(...args),
 }));
 jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: jest.fn(),
+  useWeb3: (...args: unknown[]) => mockUseWeb3(...args),
 }));
 jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: jest.fn(),
+  useAuth: (...args: unknown[]) => mockUseAuth(...args),
 }));
 jest.mock("@/hooks/useToast", () => ({
-  useToast: jest.fn(() => ({
-    showToast: jest.fn(),
-  })),
+  useToast: (...args: unknown[]) => mockUseToast(...args),
 }));
 jest.mock("@/utils/web3", () => ({
   shortenAddress: jest.fn(
@@ -99,6 +99,7 @@ jest.mock("@/components/ui/Card", () => ({
 describe("WalletAliasSettings", () => {
   const mockSetWalletAlias = jest.fn();
   const mockDeleteWalletAlias = jest.fn();
+  const mockShowToast = jest.fn();
 
   const defaultMocks = {
     walletAlias: createMockWalletAlias({
@@ -114,13 +115,16 @@ describe("WalletAliasSettings", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useWalletAlias as jest.Mock).mockReturnValue(defaultMocks.walletAlias);
-    (useWeb3 as jest.Mock).mockReturnValue(defaultMocks.web3);
-    (useAuth as jest.Mock).mockReturnValue(
+    mockUseWalletAlias.mockReturnValue(defaultMocks.walletAlias);
+    mockUseWeb3.mockReturnValue(defaultMocks.web3);
+    mockUseAuth.mockReturnValue(
       createMockAuth({
         user: { id: "user-123" },
       }),
     );
+    mockUseToast.mockReturnValue({
+      showToast: mockShowToast,
+    });
     mockSetWalletAlias.mockResolvedValue(true);
     mockDeleteWalletAlias.mockResolvedValue(true);
   });
@@ -133,7 +137,9 @@ describe("WalletAliasSettings", () => {
     const input = screen.getByTestId("alias-input");
     if (value) fireEvent.change(input, { target: { value } });
     // Submit form via Save Alias button
-    fireEvent.click(screen.getByText(/save alias/i));
+    await act(async () => {
+      fireEvent.click(screen.getByText(/save alias/i));
+    });
   };
 
   describe("Component Rendering", () => {
@@ -192,7 +198,7 @@ describe("WalletAliasSettings", () => {
     });
 
     beforeEach(() => {
-      (useWalletAlias as jest.Mock).mockReturnValue(existingAliasMock);
+      mockUseWalletAlias.mockReturnValue(existingAliasMock);
     });
 
     it("displays the existing alias", () => {
@@ -242,7 +248,9 @@ describe("WalletAliasSettings", () => {
       render(<WalletAliasSettings />);
       fireEvent.click(screen.getByText("Set Wallet Alias"));
       // Submit without entering text
-      fireEvent.click(screen.getByText(/save alias/i));
+      await act(async () => {
+        fireEvent.click(screen.getByText(/save alias/i));
+      });
 
       await waitFor(() => {
         expect(screen.getByText("Alias cannot be empty")).toBeInTheDocument();
@@ -295,7 +303,7 @@ describe("WalletAliasSettings", () => {
 
   describe("State Handling", () => {
     it("shows loading state when setting alias", () => {
-      (useWalletAlias as jest.Mock).mockReturnValue({
+      mockUseWalletAlias.mockReturnValue({
         ...defaultMocks.walletAlias,
         loading: true,
       });
@@ -305,7 +313,7 @@ describe("WalletAliasSettings", () => {
     });
 
     it("handles disconnected wallet state", () => {
-      (useWeb3 as jest.Mock).mockReturnValue(
+      mockUseWeb3.mockReturnValue(
         createMockWeb3({
           address: null,
           isConnected: false,
@@ -317,7 +325,7 @@ describe("WalletAliasSettings", () => {
     });
 
     it("handles unauthenticated state", () => {
-      (useAuth as jest.Mock).mockReturnValue(
+      mockUseAuth.mockReturnValue(
         createMockAuth({
           user: null,
         }),
