@@ -69,6 +69,7 @@ export class SafeProvider implements UnifiedWalletProvider {
    * @returns True if in Safe context
    */
   isInSafeContext(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Check if we're in an iframe
@@ -153,9 +154,10 @@ export class SafeProvider implements UnifiedWalletProvider {
    * @param _chainId - Target chain ID (ignored)
    * @param _chainType - Chain type (must be EVM)
    */
-  async switchChain(_chainId: number | string, _chainType: ChainType): Promise<void> {
+  switchChain(_chainId: number | string, _chainType: ChainType): Promise<void> {
     // Safe Apps cannot switch chains - the chain is determined by the Safe
-    Logger.warn("Safe Apps cannot switch chains. Please switch in the Safe interface.");
+    Logger.warn(`${this.name}: Cannot switch chains. Please switch in the Safe interface.`);
+    return Promise.resolve();
   }
 
   /**

@@ -33,7 +33,7 @@ export class SubWalletProvider extends BaseMultiChainProvider {
   get providers() {
     return {
       evm: this.getEVMProvider(),
-      polkadot: this.getPolkadotExtensionName(),
+      polkadot: SubWalletProvider.getPolkadotExtensionName(),
     };
   }
 
@@ -49,8 +49,9 @@ export class SubWalletProvider extends BaseMultiChainProvider {
    * Override: Polkadot doesn't have chain switching in the same way
    * @param chainId - Target chain ID
    */
-  protected override async switchSecondaryChain(chainId: number | string): Promise<void> {
-    Logger.info("Polkadot chain switch requested", { chainId });
+  protected override switchSecondaryChain(chainId: number | string): Promise<void> {
+    Logger.info(`${this.name}: Polkadot chain switch requested`, { chainId });
+    return Promise.resolve();
   }
 
   /**
@@ -58,6 +59,7 @@ export class SubWalletProvider extends BaseMultiChainProvider {
    * @returns True if SubWallet extension is available
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Check for SubWallet's EVM provider
@@ -78,7 +80,7 @@ export class SubWalletProvider extends BaseMultiChainProvider {
    * Get SubWallet EVM provider from window
    */
   protected getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
+    if (!this.isInstalled()) return null;
 
     // SubWallet injects as window.SubWallet for EVM
     const subwallet = (window as { SubWallet?: unknown }).SubWallet;
@@ -92,19 +94,19 @@ export class SubWalletProvider extends BaseMultiChainProvider {
    * @returns Array of Polkadot accounts
    */
   protected async connectSecondary(): Promise<UnifiedAccount[]> {
-    const extensionName = this.getPolkadotExtensionName();
+    const extensionName = SubWalletProvider.getPolkadotExtensionName();
     if (!extensionName) {
       throw new Error("SubWallet Polkadot extension not available");
     }
 
     this.polkadotAdapter = new PolkadotAdapter(extensionName);
-    return this.polkadotAdapter.connect();
+    return await this.polkadotAdapter.connect();
   }
 
   /**
    * Get SubWallet Polkadot extension name
    */
-  private getPolkadotExtensionName(): string | null {
+  private static getPolkadotExtensionName(): string | null {
     if (typeof window === "undefined") return null;
 
     const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> }).injectedWeb3;

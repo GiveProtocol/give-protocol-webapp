@@ -19,6 +19,7 @@ export class RabbyProvider extends BaseEVMProvider {
    * @returns True if Rabby extension is available
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Rabby injects as window.rabby or sets isRabby flag on window.ethereum
@@ -34,7 +35,7 @@ export class RabbyProvider extends BaseEVMProvider {
    * Get Rabby EVM provider from window
    */
   protected getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
+    if (!this.isInstalled()) return null;
 
     // Rabby can inject as window.rabby
     const rabby = (window as { rabby?: unknown }).rabby;

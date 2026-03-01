@@ -18,6 +18,7 @@ export class MetaMaskProvider extends BaseEVMProvider {
    * @returns True if MetaMask extension is available
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
     return Boolean(window.ethereum?.isMetaMask);
   }
@@ -26,7 +27,7 @@ export class MetaMaskProvider extends BaseEVMProvider {
    * Get MetaMask EVM provider from window
    */
   protected getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
+    if (!this.isInstalled()) return null;
     if (window.ethereum?.isMetaMask) {
       return window.ethereum;
     }

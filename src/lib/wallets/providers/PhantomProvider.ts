@@ -32,7 +32,7 @@ export class PhantomProvider extends BaseMultiChainProvider {
   get providers() {
     return {
       evm: this.getEVMProvider(),
-      solana: this.getSolanaProvider(),
+      solana: PhantomProvider.getSolanaProvider(),
     };
   }
 
@@ -49,6 +49,7 @@ export class PhantomProvider extends BaseMultiChainProvider {
    * @returns True if Phantom extension is available
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Check for Phantom's multi-chain providers
@@ -62,7 +63,7 @@ export class PhantomProvider extends BaseMultiChainProvider {
    * Get Phantom EVM provider from window
    */
   protected getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
+    if (!this.isInstalled()) return null;
     const phantom = (window as { phantom?: { ethereum?: unknown } }).phantom;
     return phantom?.ethereum ?? null;
   }
@@ -72,19 +73,19 @@ export class PhantomProvider extends BaseMultiChainProvider {
    * @returns Array of Solana accounts
    */
   protected async connectSecondary(): Promise<UnifiedAccount[]> {
-    const solanaProvider = this.getSolanaProvider();
+    const solanaProvider = PhantomProvider.getSolanaProvider();
     if (!solanaProvider || !isSolanaProvider(solanaProvider)) {
       throw new Error("Phantom Solana provider not available");
     }
 
     this.solanaAdapter = new SolanaAdapter(solanaProvider, DEFAULT_SOLANA_CLUSTER);
-    return this.solanaAdapter.connect();
+    return await this.solanaAdapter.connect();
   }
 
   /**
    * Get Phantom Solana provider from window
    */
-  private getSolanaProvider(): unknown {
+  private static getSolanaProvider(): unknown {
     if (typeof window === "undefined") return null;
     const phantom = (window as { phantom?: { solana?: unknown } }).phantom;
     return phantom?.solana ?? null;

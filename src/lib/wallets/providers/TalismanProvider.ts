@@ -54,6 +54,7 @@ export class TalismanProvider extends BaseMultiChainProvider {
    * @returns True if Talisman extension is available
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Check for Talisman EVM provider
@@ -72,6 +73,7 @@ export class TalismanProvider extends BaseMultiChainProvider {
    * @returns True if Talisman EVM provider exists
    */
   hasEVMSupport(): boolean {
+    if (!this.supportedChainTypes.includes("evm")) return false;
     return typeof window !== "undefined" && typeof window.talismanEth !== "undefined";
   }
 
@@ -80,6 +82,7 @@ export class TalismanProvider extends BaseMultiChainProvider {
    * @returns True if Talisman Polkadot extension exists
    */
   hasPolkadotSupport(): boolean {
+    if (!this.supportedChainTypes.includes("polkadot")) return false;
     if (typeof window === "undefined") return false;
     const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> })
       .injectedWeb3;
@@ -136,7 +139,7 @@ export class TalismanProvider extends BaseMultiChainProvider {
    * Get Talisman EVM provider from window
    */
   protected getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
+    if (!this.isInstalled()) return null;
     return window.talismanEth ?? null;
   }
 
