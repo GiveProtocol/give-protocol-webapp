@@ -253,6 +253,95 @@ function HomeFooterLinks({ title, links }: { title: string; links: FooterLink[] 
   );
 }
 
+/** Card showcasing an individual planned impact fund. */
+function ImpactFundCard({ icon, gradient, hoverBorder, title, description }: {
+  icon: React.ReactNode;
+  gradient: string;
+  hoverBorder: string;
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className={`bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden ${hoverBorder} transition-all`}>
+      <div className={`h-48 ${gradient} flex items-center justify-center`}>
+        {icon}
+      </div>
+      <div className="p-6">
+        <h3 className="text-2xl font-bold mb-2">{title}</h3>
+        <p className="text-gray-400 mb-4">{description}</p>
+      </div>
+    </div>
+  );
+}
+
+/** Single statistic item in the multichain section. */
+function MultichainStat({ value, label, color }: { value: string; label: string; color: string }) {
+  return (
+    <div>
+      <div className={`text-3xl font-bold ${color} mb-2`}>{value}</div>
+      <div className="text-sm text-gray-400">{label}</div>
+    </div>
+  );
+}
+
+/** Section explaining the multichain deployment strategy with key stats. */
+function MultichainSection() {
+  return (
+    <section className="relative z-10 container mx-auto px-6 py-20">
+      <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-12 text-center">
+        <h2 className="text-4xl font-bold mb-6">
+          Why We&apos;re Building Multichain
+        </h2>
+        <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+          No single chain serves every donor. By deploying across leading
+          EVM networks, we keep fees low, reach more wallets, and let
+          organizations receive funds however works best for them.
+        </p>
+        <div className="grid md:grid-cols-4 gap-6 text-center">
+          <MultichainStat value="3+" label="Supported Chains" color="text-emerald-400" />
+          <MultichainStat value="Low Fees" label="L2 Transaction Costs" color="text-teal-400" />
+          <MultichainStat value="Crypto + Fiat" label="Donation Options" color="text-cyan-400" />
+          <MultichainStat value="EVM" label="Compatible" color="text-green-400" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Call-to-action section inviting users to join the platform. */
+function CTASection() {
+  return (
+    <section className="relative z-10 container mx-auto px-6 py-20">
+      <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-12 text-center">
+        <h2 className="text-5xl font-bold mb-6">
+          Ready to Transform Giving?
+        </h2>
+        <p className="text-xl mb-8 max-w-2xl mx-auto">
+          Be among the first to experience transparent, blockchain-powered
+          philanthropy. Join our community building a better future for
+          charitable giving.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <button
+            disabled
+            className="bg-white/50 text-emerald-600/70 px-8 py-4 rounded-full font-semibold text-lg cursor-not-allowed opacity-60"
+          >
+            Coming Soon
+          </button>
+          <a
+            href="https://docs.giveprotocol.io/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-white/20 backdrop-blur-sm border border-white/30 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/30 transition-all"
+          >
+            Read Documentation
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /** Home page footer with links and copyright. */
 function HomeFooter() {
   const productLinks: FooterLink[] = [
@@ -292,10 +381,12 @@ function HomeFooter() {
   );
 }
 
+/** Landing page showcasing Give Protocol features, impact funds, and multichain strategy. */
 const Home: React.FC = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
+    /** Calculates mouse position offset for parallax animation effects. */
     const handleMouseMove = (e: MouseEvent) => {
       setMousePosition({
         x: (e.clientX / window.innerWidth - 0.5) * 20,
@@ -407,107 +498,28 @@ const Home: React.FC = () => {
           Planned Impact Funds
         </h2>
         <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden hover:border-emerald-500/30 transition-all">
-            <div className="h-48 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-              <Globe className="w-24 h-24 text-white/80" />
-            </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold mb-2">
-                Environmental Impact Fund
-              </h3>
-              <p className="text-gray-400 mb-4">
-                Supporting reforestation, ocean cleanup, and renewable energy
-                initiatives. Pooled donations directed to verified environmental
-                organizations making measurable impact.
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl overflow-hidden hover:border-teal-500/30 transition-all">
-            <div className="h-48 bg-gradient-to-br from-teal-500 to-cyan-600 flex items-center justify-center">
-              <Users className="w-24 h-24 text-white/80" />
-            </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold mb-2">
-                Education Opportunity Fund
-              </h3>
-              <p className="text-gray-400 mb-4">
-                Providing scholarships, digital learning tools, and teacher
-                training. Collective funding amplified to support educational
-                initiatives in underserved communities.
-              </p>
-            </div>
-          </div>
+          <ImpactFundCard
+            icon={<Globe className="w-24 h-24 text-white/80" />}
+            gradient="bg-gradient-to-br from-emerald-500 to-teal-600"
+            hoverBorder="hover:border-emerald-500/30"
+            title="Environmental Impact Fund"
+            description="Supporting reforestation, ocean cleanup, and renewable energy initiatives. Pooled donations directed to verified environmental organizations making measurable impact."
+          />
+          <ImpactFundCard
+            icon={<Users className="w-24 h-24 text-white/80" />}
+            gradient="bg-gradient-to-br from-teal-500 to-cyan-600"
+            hoverBorder="hover:border-teal-500/30"
+            title="Education Opportunity Fund"
+            description="Providing scholarships, digital learning tools, and teacher training. Collective funding amplified to support educational initiatives in underserved communities."
+          />
         </div>
       </section>
 
       {/* Why Multichain Section */}
-      <section className="relative z-10 container mx-auto px-6 py-20">
-        <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-12 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Why We&apos;re Building Multichain
-          </h2>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-            No single chain serves every donor. By deploying across leading
-            EVM networks, we keep fees low, reach more wallets, and let
-            organizations receive funds however works best for them.
-          </p>
-          <div className="grid md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-3xl font-bold text-emerald-400 mb-2">
-                3+
-              </div>
-              <div className="text-sm text-gray-400">Supported Chains</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-teal-400 mb-2">
-                Low Fees
-              </div>
-              <div className="text-sm text-gray-400">L2 Transaction Costs</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-cyan-400 mb-2">
-                Crypto + Fiat
-              </div>
-              <div className="text-sm text-gray-400">Donation Options</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold text-green-400 mb-2">EVM</div>
-              <div className="text-sm text-gray-400">Compatible</div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <MultichainSection />
 
       {/* CTA Section */}
-      <section className="relative z-10 container mx-auto px-6 py-20">
-        <div className="bg-gradient-to-r from-emerald-600 to-teal-600 rounded-3xl p-12 text-center">
-          <h2 className="text-5xl font-bold mb-6">
-            Ready to Transform Giving?
-          </h2>
-          <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Be among the first to experience transparent, blockchain-powered
-            philanthropy. Join our community building a better future for
-            charitable giving.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              disabled
-              className="bg-white/50 text-emerald-600/70 px-8 py-4 rounded-full font-semibold text-lg cursor-not-allowed opacity-60"
-            >
-              Coming Soon
-            </button>
-            <a
-              href="https://docs.giveprotocol.io/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-white/20 backdrop-blur-sm border border-white/30 px-8 py-4 rounded-full font-semibold text-lg hover:bg-white/30 transition-all"
-            >
-              Read Documentation
-            </a>
-          </div>
-        </div>
-      </section>
+      <CTASection />
 
       <HomeFooter />
     </div>

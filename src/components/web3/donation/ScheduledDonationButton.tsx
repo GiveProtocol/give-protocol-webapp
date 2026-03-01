@@ -14,6 +14,7 @@ interface ScheduledDonationButtonProps {
   onSuccess?: () => void;
 }
 
+/** Button that opens a monthly/scheduled donation modal for a given charity. */
 export const ScheduledDonationButton: React.FC<ScheduledDonationButtonProps> = ({
   charityName,
   charityAddress,

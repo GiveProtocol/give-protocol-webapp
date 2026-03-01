@@ -148,6 +148,86 @@ function OpportunitySearchInput({ value, onChange, placeholder, ariaLabel }: {
   );
 }
 
+/** Filter bar with search, skill, type, and language selectors. */
+function OpportunityFilterBar({
+  searchTerm,
+  selectedSkill,
+  selectedType,
+  selectedLanguage,
+  onSearchChange,
+  onSkillChange,
+  onTypeChange,
+  onLanguageChange,
+  formatLanguageName,
+  t,
+}: {
+  searchTerm: string;
+  selectedSkill: string;
+  selectedType: string;
+  selectedLanguage: string;
+  onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSkillChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onTypeChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onLanguageChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  formatLanguageName: (_language: string) => string;
+  t: (_key: string, _fallback?: string) => string;
+}) {
+  return (
+    <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+      <OpportunitySearchInput
+        value={searchTerm}
+        onChange={onSearchChange}
+        placeholder={t("volunteer.searchOpportunities", "Search opportunities...")}
+        ariaLabel={t("volunteer.searchOpportunities", "Search opportunities")}
+      />
+      <select
+        value={selectedSkill}
+        onChange={onSkillChange}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        aria-label={t("volunteer.selectSkill", "Select skill")}
+      >
+        <option value="">{t("volunteer.allSkills", "All Skills")}</option>
+        {SKILLS.map((skill) => (
+          <option key={skill} value={skill}>
+            {skill}
+          </option>
+        ))}
+      </select>
+      <select
+        value={selectedType}
+        onChange={onTypeChange}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        aria-label={t("volunteer.selectType", "Select type")}
+      >
+        <option value="">{t("volunteer.allTypes", "All Types")}</option>
+        {TYPES.map((type) => (
+          <option key={type} value={type}>
+            {t(
+              `volunteer.type.${type}`,
+              type.charAt(0).toUpperCase() + type.slice(1),
+            )}
+          </option>
+        ))}
+      </select>
+      <select
+        value={selectedLanguage}
+        onChange={onLanguageChange}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        aria-label={t("volunteer.selectLanguage", "Select language")}
+      >
+        <option value="">
+          {t("volunteer.allLanguages", "All Languages")}
+        </option>
+        {LANGUAGES.map((language) => (
+          <option key={language} value={language}>
+            {t(`language.${language}`, formatLanguageName(language))}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 /**
  * Browse and apply for volunteer opportunities
  * @returns VolunteerOpportunities page element
@@ -255,64 +335,18 @@ const VolunteerOpportunities: React.FC = () => {
         </h1>
 
         <ScrollReveal direction="up" delay={100}>
-          <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-            <OpportunitySearchInput
-              value={searchTerm}
-              onChange={handleSearchChange}
-              placeholder={t(
-                "volunteer.searchOpportunities",
-                "Search opportunities...",
-              )}
-              ariaLabel={t("volunteer.searchOpportunities", "Search opportunities")}
-            />
-
-            <select
-              value={selectedSkill}
-              onChange={handleSkillChange}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              aria-label={t("volunteer.selectSkill", "Select skill")}
-            >
-              <option value="">{t("volunteer.allSkills", "All Skills")}</option>
-              {SKILLS.map((skill) => (
-                <option key={skill} value={skill}>
-                  {skill}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedType}
-              onChange={handleTypeChange}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              aria-label={t("volunteer.selectType", "Select type")}
-            >
-              <option value="">{t("volunteer.allTypes", "All Types")}</option>
-              {TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {t(
-                    `volunteer.type.${type}`,
-                    type.charAt(0).toUpperCase() + type.slice(1),
-                  )}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              aria-label={t("volunteer.selectLanguage", "Select language")}
-            >
-              <option value="">
-                {t("volunteer.allLanguages", "All Languages")}
-              </option>
-              {LANGUAGES.map((language) => (
-                <option key={language} value={language}>
-                  {t(`language.${language}`, formatLanguageName(language))}
-                </option>
-              ))}
-            </select>
-          </div>
+          <OpportunityFilterBar
+            searchTerm={searchTerm}
+            selectedSkill={selectedSkill}
+            selectedType={selectedType}
+            selectedLanguage={selectedLanguage}
+            onSearchChange={handleSearchChange}
+            onSkillChange={handleSkillChange}
+            onTypeChange={handleTypeChange}
+            onLanguageChange={handleLanguageChange}
+            formatLanguageName={formatLanguageName}
+            t={t}
+          />
         </ScrollReveal>
 
         <ScrollReveal direction="up" delay={200}>

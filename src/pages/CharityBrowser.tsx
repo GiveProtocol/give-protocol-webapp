@@ -30,6 +30,39 @@ function SearchInput({ value, onChange, placeholder, ariaLabel }: {
   );
 }
 
+/** Filter bar with search input and category selector. */
+function CharityFilterBar({ searchTerm, selectedCategory, onSearchChange, onCategoryChange }: {
+  searchTerm: string;
+  selectedCategory: string;
+  onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onCategoryChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+}) {
+  return (
+    <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
+      <SearchInput
+        value={searchTerm}
+        onChange={onSearchChange}
+        placeholder="Search charities..."
+        ariaLabel="Search charities"
+      />
+      <select
+        value={selectedCategory}
+        onChange={onCategoryChange}
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        aria-label="Select category"
+      >
+        <option value="">All Categories</option>
+        <option value="Water & Sanitation">Water &amp; Sanitation</option>
+        <option value="Education">Education</option>
+        <option value="Healthcare">Healthcare</option>
+        <option value="Environment">Environment</option>
+        <option value="Poverty Relief">Poverty Relief</option>
+        <option value="Animal Welfare">Animal Welfare</option>
+      </select>
+    </div>
+  );
+}
+
 /** Page component for browsing and filtering charities, causes, and portfolio funds. */
 const CharityBrowser: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("charities");
@@ -124,29 +157,12 @@ const CharityBrowser: React.FC = () => {
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={200}>
-      <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
-        <SearchInput
-          value={searchTerm}
-          onChange={handleSearchChange}
-          placeholder="Search charities..."
-          ariaLabel="Search charities"
+        <CharityFilterBar
+          searchTerm={searchTerm}
+          selectedCategory={selectedCategory}
+          onSearchChange={handleSearchChange}
+          onCategoryChange={handleCategoryChange}
         />
-
-        <select
-          value={selectedCategory}
-          onChange={handleCategoryChange}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-          aria-label="Select category"
-        >
-          <option value="">All Categories</option>
-          <option value="Water & Sanitation">Water & Sanitation</option>
-          <option value="Education">Education</option>
-          <option value="Healthcare">Healthcare</option>
-          <option value="Environment">Environment</option>
-          <option value="Poverty Relief">Poverty Relief</option>
-          <option value="Animal Welfare">Animal Welfare</option>
-        </select>
-      </div>
       </ScrollReveal>
 
       {viewMode === "charities" && (

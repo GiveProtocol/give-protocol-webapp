@@ -258,6 +258,35 @@ function CharityPortalSkeleton() {
   );
 }
 
+/** Overview header with title, last-updated timestamp, and refresh button. */
+function OverviewHeader({ lastUpdatedText, onRefresh, t }: {
+  lastUpdatedText: string;
+  onRefresh: () => void;
+  t: (_key: string, _fallback?: string) => string;
+}) {
+  return (
+    <div className="flex items-center justify-between mb-4">
+      <h2 className="text-lg font-semibold text-gray-900">
+        {t("dashboard.overview", "Overview")}
+      </h2>
+      <div className="flex items-center gap-3 text-sm text-gray-500">
+        {lastUpdatedText && (
+          <span>
+            {t("dashboard.lastUpdated", "Last updated")}: {lastUpdatedText}
+          </span>
+        )}
+        <button
+          onClick={onRefresh}
+          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          title={t("common.refresh", "Refresh")}
+        >
+          <RefreshCw className="h-4 w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 /** Header for the charity portal with title and action buttons. */
 function CharityPortalHeader({ displayName, t }: { displayName?: string; t: (_key: string, _fallback?: string) => string }) {
   return (
@@ -873,26 +902,11 @@ export const CharityPortal: React.FC = () => {
         <CharityPortalHeader displayName={profile?.display_name} t={t} />
 
         {/* Stats Row with Last Updated */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {t("dashboard.overview", "Overview")}
-          </h2>
-          <div className="flex items-center gap-3 text-sm text-gray-500">
-            {lastUpdated && (
-              <span>
-                {t("dashboard.lastUpdated", "Last updated")}:{" "}
-                {formatLastUpdated()}
-              </span>
-            )}
-            <button
-              onClick={handleRefresh}
-              className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-              title={t("common.refresh", "Refresh")}
-            >
-              <RefreshCw className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
+        <OverviewHeader
+          lastUpdatedText={lastUpdated ? formatLastUpdated() : ""}
+          onRefresh={handleRefresh}
+          t={t}
+        />
 
         {/* Enhanced Metrics Grid */}
         <StatsCards

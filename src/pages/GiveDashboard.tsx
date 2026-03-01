@@ -240,43 +240,35 @@ function ContributionsTableHeader({
     <thead>
       <tr>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
           onClick={onSortByDate}
         >
-          <div className="flex items-center space-x-1">
-            <span>{t("contributions.date")}</span>
-            {getSortIcon("date")}
-          </div>
+          {t("contributions.date")}
+          {getSortIcon("date")}
         </th>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
           onClick={onSortByType}
         >
-          <div className="flex items-center space-x-1">
-            <span>{t("contributions.type")}</span>
-            {getSortIcon("type")}
-          </div>
+          {t("contributions.type")}
+          {getSortIcon("type")}
         </th>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
           onClick={onSortByOrganization}
         >
-          <div className="flex items-center space-x-1">
-            <span>{t("contributions.organization")}</span>
-            {getSortIcon("organization")}
-          </div>
+          {t("contributions.organization")}
+          {getSortIcon("organization")}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           {t("contributions.details")}
         </th>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
           onClick={onSortByStatus}
         >
-          <div className="flex items-center space-x-1">
-            <span>{t("contributions.status")}</span>
-            {getSortIcon("status")}
-          </div>
+          {t("contributions.status")}
+          {getSortIcon("status")}
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           {t("contributions.verification")}
