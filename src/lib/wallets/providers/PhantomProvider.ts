@@ -24,9 +24,7 @@ export class PhantomProvider extends BaseMultiChainProvider {
 
   private solanaAdapter: SolanaAdapter | null = null;
 
-  protected get secondaryChainType(): ChainType {
-    return "solana";
-  }
+  protected readonly secondaryChainType: ChainType = "solana";
 
   /**
    * Get underlying provider objects

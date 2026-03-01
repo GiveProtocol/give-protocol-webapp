@@ -42,7 +42,7 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
   protected connectedChainType: ChainType | null = null;
 
   /** The non-EVM chain type this provider supports ("solana" or "polkadot") */
-  protected abstract get secondaryChainType(): ChainType;
+  protected abstract readonly secondaryChainType: ChainType;
 
   abstract isInstalled(): boolean;
 
@@ -111,7 +111,7 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
     }
 
     this.evmAdapter = new EVMAdapter(evmProvider);
-    return this.evmAdapter.connect(this.defaultEVMChainId);
+    return await this.evmAdapter.connect(this.defaultEVMChainId);
   }
 
   /**
@@ -198,12 +198,12 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
    */
   async signTransaction(tx: UnifiedTransactionRequest): Promise<string> {
     if (tx.chainType === "evm" && this.evmAdapter) {
-      return this.evmAdapter.signTransaction(tx);
+      return await this.evmAdapter.signTransaction(tx);
     }
 
     const secondary = this.getSecondaryAdapter();
     if (tx.chainType === this.secondaryChainType && secondary) {
-      return secondary.signTransaction(tx);
+      return await secondary.signTransaction(tx);
     }
 
     throw new Error(`Cannot sign transaction for ${tx.chainType}`);
@@ -217,12 +217,12 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
    */
   async signMessage(message: string | Uint8Array, chainType: ChainType): Promise<string> {
     if (chainType === "evm" && this.evmAdapter) {
-      return this.evmAdapter.signMessage(message);
+      return await this.evmAdapter.signMessage(message);
     }
 
     const secondary = this.getSecondaryAdapter();
     if (chainType === this.secondaryChainType && secondary) {
-      return secondary.signMessage(message);
+      return await secondary.signMessage(message);
     }
 
     throw new Error(`Cannot sign message for ${chainType}`);

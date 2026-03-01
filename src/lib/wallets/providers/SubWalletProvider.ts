@@ -25,9 +25,7 @@ export class SubWalletProvider extends BaseMultiChainProvider {
 
   private polkadotAdapter: PolkadotAdapter | null = null;
 
-  protected get secondaryChainType(): ChainType {
-    return "polkadot";
-  }
+  protected readonly secondaryChainType: ChainType = "polkadot";
 
   /**
    * Get underlying provider objects

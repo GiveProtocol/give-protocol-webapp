@@ -24,9 +24,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
 
   private solanaAdapter: SolanaAdapter | null = null;
 
-  protected get secondaryChainType(): ChainType {
-    return "solana";
-  }
+  protected readonly secondaryChainType: ChainType = "solana";
 
   /**
    * Get underlying provider objects
@@ -38,10 +36,12 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
     };
   }
 
+  /** @returns The Solana adapter instance, or null if not connected */
   protected getSecondaryAdapter(): SecondaryChainAdapter | null {
     return this.solanaAdapter;
   }
 
+  /** Clears the Solana adapter reference during disconnect */
   protected clearSecondaryAdapter(): void {
     this.solanaAdapter = null;
   }
@@ -51,6 +51,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
    * @returns True if Coinbase Wallet extension is available
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Check for Coinbase Wallet extension
@@ -68,6 +69,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
    * @returns True if Coinbase Solana provider exists
    */
   hasSolanaSupport(): boolean {
+    if (!this.supportedChainTypes.includes("solana")) return false;
     const provider = CoinbaseProvider.getSolanaProvider();
     return isSolanaProvider(provider);
   }
