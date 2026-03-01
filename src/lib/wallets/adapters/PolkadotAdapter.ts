@@ -218,7 +218,7 @@ export class PolkadotAdapter {
     const data =
       typeof message === "string"
         ? message
-        : this.bytesToHex(message);
+        : PolkadotAdapter.bytesToHex(message);
 
     const { signature } = await this.extension.signer.signRaw({
       address: signerAddress,
@@ -238,6 +238,7 @@ export class PolkadotAdapter {
   subscribeAccounts(
     callback: (_accounts: UnifiedAccount[]) => void
   ): () => void {
+    /** Handles account changes from the Polkadot extension */
     const handleAccountsChanged = (accounts: InjectedAccountWithMeta[]) => {
       this.accounts = accounts;
       callback(this.toUnifiedAccounts(accounts));
@@ -277,7 +278,7 @@ export class PolkadotAdapter {
    * @param bytes - Bytes to encode
    * @returns Hex encoded string
    */
-  private bytesToHex(bytes: Uint8Array): string {
+  private static bytesToHex(bytes: Uint8Array): string {
     return `0x${Array.from(bytes)
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("")}`;

@@ -126,12 +126,12 @@ export class SolanaAdapter {
    * Get current accounts
    * @returns Array of connected accounts
    */
-  async getAccounts(): Promise<UnifiedAccount[]> {
+  getAccounts(): Promise<UnifiedAccount[]> {
     if (!this.provider.publicKey) {
-      return [];
+      return Promise.resolve([]);
     }
     const address = this.provider.publicKey.toBase58();
-    return this.toUnifiedAccounts([address]);
+    return Promise.resolve(this.toUnifiedAccounts([address]));
   }
 
   /**
@@ -140,7 +140,7 @@ export class SolanaAdapter {
    * This updates the local cluster reference only
    * @param clusterId - Target cluster ID
    */
-  async switchCluster(clusterId: string): Promise<void> {
+  switchCluster(clusterId: string): Promise<void> {
     if (!isSolanaClusterSupported(clusterId)) {
       throw new Error(`Unsupported Solana cluster: ${clusterId}`);
     }
@@ -150,6 +150,7 @@ export class SolanaAdapter {
 
     // Note: Most Solana wallets require users to switch networks manually in the wallet UI
     // This adapter only tracks the intended cluster for RPC calls
+    return Promise.resolve();
   }
 
   /**
@@ -198,7 +199,7 @@ export class SolanaAdapter {
     Logger.info("Solana message signed");
 
     // Convert signature to base58
-    return this.bytesToBase58(signature);
+    return SolanaAdapter.bytesToBase58(signature);
   }
 
   /**
@@ -213,10 +214,12 @@ export class SolanaAdapter {
     onDisconnect: () => void,
     onAccountChange: (_publicKey: string | null) => void
   ): () => void {
+    /** Forwards connect event with base58 public key */
     const handleConnect = (publicKey: { toBase58(): string }) => {
       onConnect(publicKey.toBase58());
     };
 
+    /** Forwards account change event with base58 public key or null */
     const handleAccountChange = (publicKey: { toBase58(): string } | null) => {
       onAccountChange(publicKey?.toBase58() || null);
     };
@@ -257,7 +260,7 @@ export class SolanaAdapter {
    * @param bytes - Bytes to encode
    * @returns Base58 encoded string
    */
-  private bytesToBase58(bytes: Uint8Array): string {
+  private static bytesToBase58(bytes: Uint8Array): string {
     const ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
     let result = "";
     let num = BigInt(0);
