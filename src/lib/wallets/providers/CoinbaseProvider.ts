@@ -34,7 +34,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
   get providers() {
     return {
       evm: this.getEVMProvider(),
-      solana: this.getSolanaProvider(),
+      solana: CoinbaseProvider.getSolanaProvider(),
     };
   }
 
@@ -68,7 +68,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
    * @returns True if Coinbase Solana provider exists
    */
   hasSolanaSupport(): boolean {
-    const provider = this.getSolanaProvider();
+    const provider = CoinbaseProvider.getSolanaProvider();
     return isSolanaProvider(provider);
   }
 
@@ -107,7 +107,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
       throw new Error("Coinbase Wallet Solana support not available");
     }
 
-    const solanaProvider = this.getSolanaProvider();
+    const solanaProvider = CoinbaseProvider.getSolanaProvider();
     if (!solanaProvider || !isSolanaProvider(solanaProvider)) {
       throw new Error("Coinbase Wallet Solana provider not available");
     }
@@ -120,7 +120,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
    * Get Coinbase Solana provider from window
    * Note: Coinbase Wallet may inject Solana provider differently
    */
-  private getSolanaProvider(): unknown {
+  private static getSolanaProvider(): unknown {
     if (typeof window === "undefined") return null;
 
     // Check for Coinbase-specific Solana provider

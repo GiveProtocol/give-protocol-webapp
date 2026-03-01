@@ -145,13 +145,14 @@ export class PolkadotAdapter {
   /**
    * Disconnect from the extension
    */
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     if (this.unsubscribe) {
       this.unsubscribe();
       this.unsubscribe = null;
     }
     this.accounts = [];
     Logger.info("Polkadot adapter disconnected");
+    return Promise.resolve();
   }
 
   /**
@@ -168,7 +169,7 @@ export class PolkadotAdapter {
    * Switch to a different Polkadot chain
    * @param chainId - Target chain ID
    */
-  async switchChain(chainId: string): Promise<void> {
+  switchChain(chainId: string): Promise<void> {
     if (!isPolkadotChainSupported(chainId)) {
       throw new Error(`Unsupported Polkadot chain: ${chainId}`);
     }
@@ -178,6 +179,7 @@ export class PolkadotAdapter {
 
     // Note: Polkadot extensions support multiple chains simultaneously
     // The chain selection affects which RPC endpoint we use for transactions
+    return Promise.resolve();
   }
 
   /**

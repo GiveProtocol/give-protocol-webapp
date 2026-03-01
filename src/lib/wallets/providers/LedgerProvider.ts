@@ -135,9 +135,9 @@ export class LedgerProvider implements UnifiedWalletProvider {
       if (chainType === "evm") {
         return this.connectEVM();
       } else if (chainType === "solana") {
-        return this.connectSolana();
+        return LedgerProvider.connectSolana();
       } else if (chainType === "polkadot") {
-        return this.connectPolkadot();
+        return LedgerProvider.connectPolkadot();
       }
 
       throw new Error(`Unsupported chain type: ${chainType}`);
@@ -204,9 +204,8 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * Connect to Ledger for Solana
    * @returns Array of Solana accounts
    */
-  private async connectSolana(): Promise<UnifiedAccount[]> {
+  private static connectSolana(): Promise<UnifiedAccount[]> {
     // Solana support would require @ledgerhq/hw-app-solana
-    // For now, throw not implemented
     throw new Error("Ledger Solana support coming soon");
   }
 
@@ -214,9 +213,8 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * Connect to Ledger for Polkadot
    * @returns Array of Polkadot accounts
    */
-  private async connectPolkadot(): Promise<UnifiedAccount[]> {
+  private static connectPolkadot(): Promise<UnifiedAccount[]> {
     // Polkadot support would require @ledgerhq/hw-app-polkadot
-    // For now, throw not implemented
     throw new Error("Ledger Polkadot support coming soon");
   }
 

@@ -161,7 +161,7 @@ export class PriceFeedService {
     now: number
   ): Promise<void> {
     try {
-      const coingeckoPrices = await this.fetchCoingeckoPrices(
+      const coingeckoPrices = await PriceFeedService.fetchCoingeckoPrices(
         missingTokens,
         targetCurrency
       );
@@ -218,7 +218,7 @@ export class PriceFeedService {
   /**
    * Fetch prices from CoinGecko API (fallback)
    */
-  private async fetchCoingeckoPrices(
+  private static async fetchCoingeckoPrices(
     tokenIds: string[],
     targetCurrency: string
   ): Promise<Record<string, number>> {
