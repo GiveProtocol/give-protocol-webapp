@@ -129,11 +129,12 @@ export class SafeProvider implements UnifiedWalletProvider {
    * Disconnect from Safe
    * Note: Safe Apps cannot truly disconnect, just clear local state
    */
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     this.sdk = null;
     this.safeInfo = null;
     this.isInSafe = false;
     Logger.info("Safe disconnected");
+    return Promise.resolve();
   }
 
   /**
@@ -141,11 +142,11 @@ export class SafeProvider implements UnifiedWalletProvider {
    * @param _chainType - Ignored, Safe only supports EVM
    * @returns Array of Safe accounts
    */
-  async getAccounts(_chainType?: ChainType): Promise<UnifiedAccount[]> {
+  getAccounts(_chainType?: ChainType): Promise<UnifiedAccount[]> {
     if (!this.safeInfo) {
-      return [];
+      return Promise.resolve([]);
     }
-    return this.toUnifiedAccounts();
+    return Promise.resolve(this.toUnifiedAccounts());
   }
 
   /**
@@ -199,7 +200,7 @@ export class SafeProvider implements UnifiedWalletProvider {
    * @param _chainType - Chain type (must be EVM)
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
+  signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
     if (!this.sdk) {
       throw new Error("Safe not connected");
     }

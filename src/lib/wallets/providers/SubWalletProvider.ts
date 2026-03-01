@@ -37,10 +37,12 @@ export class SubWalletProvider extends BaseMultiChainProvider {
     };
   }
 
+  /** @returns The Polkadot adapter instance, or null if not connected */
   protected getSecondaryAdapter(): SecondaryChainAdapter | null {
     return this.polkadotAdapter;
   }
 
+  /** Clears the Polkadot adapter reference during disconnect */
   protected clearSecondaryAdapter(): void {
     this.polkadotAdapter = null;
   }

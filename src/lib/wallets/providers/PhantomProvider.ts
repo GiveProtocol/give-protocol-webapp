@@ -36,10 +36,12 @@ export class PhantomProvider extends BaseMultiChainProvider {
     };
   }
 
+  /** @returns The Solana adapter instance, or null if not connected */
   protected getSecondaryAdapter(): SecondaryChainAdapter | null {
     return this.solanaAdapter;
   }
 
+  /** Clears the Solana adapter reference during disconnect */
   protected clearSecondaryAdapter(): void {
     this.solanaAdapter = null;
   }
