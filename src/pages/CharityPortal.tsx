@@ -198,6 +198,96 @@ function CharityTabNav({
   );
 }
 
+/** Skeleton placeholder for a single stat card. */
+function SkeletonStatCard() {
+  return (
+    <div className="bg-white rounded-xl p-6 shadow-md animate-pulse">
+      <div className="flex items-center">
+        <div className="h-14 w-14 bg-gray-200 rounded-full" />
+        <div className="ml-4 flex-1">
+          <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
+          <div className="h-8 bg-gray-200 rounded w-20" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Skeleton placeholder for content area. */
+function SkeletonContent() {
+  return (
+    <div className="bg-white rounded-xl p-6 shadow-md animate-pulse">
+      <div className="h-6 bg-gray-200 rounded w-48 mb-6" />
+      <div className="space-y-4">
+        {[1, 2, 3].map((i) => (
+          <div key={i} className="h-16 bg-gray-100 rounded-lg" />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/** Loading skeleton for the charity portal dashboard. */
+function CharityPortalSkeleton() {
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Skeleton Header */}
+        <div className="mb-8 animate-pulse">
+          <div className="h-9 bg-gray-200 rounded w-64 mb-2" />
+          <div className="h-5 bg-gray-200 rounded w-80" />
+        </div>
+        {/* Skeleton Stats */}
+        <div className="grid gap-6 mb-8 grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <SkeletonStatCard key={i} />
+          ))}
+        </div>
+        {/* Skeleton Tabs */}
+        <div className="bg-gray-100 rounded-xl p-1 mb-6 animate-pulse">
+          <div className="flex gap-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-10 bg-gray-200 rounded-lg flex-1" />
+            ))}
+          </div>
+        </div>
+        {/* Skeleton Content */}
+        <SkeletonContent />
+      </div>
+    </div>
+  );
+}
+
+/** Header for the charity portal with title and action buttons. */
+function CharityPortalHeader({ displayName, t }: { displayName?: string; t: (_key: string, _fallback?: string) => string }) {
+  return (
+    <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+      <div>
+        <h1 className="text-3xl font-bold text-gray-900">
+          {displayName || t("charity.dashboard", "Charity Dashboard")}
+        </h1>
+        <p className="mt-1 text-gray-600">
+          {t("charity.subtitle", "Manage your charity dashboard")}
+        </p>
+      </div>
+      <nav className="mt-4 md:mt-0 flex flex-wrap gap-3">
+        <Link to="/charity-portal/create-opportunity">
+          <Button variant="secondary" className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            {t("volunteer.createOpportunity", "Create Opportunity")}
+          </Button>
+        </Link>
+        <Link to="/charity-portal/create-cause">
+          <Button variant="secondary" className="flex items-center gap-2">
+            <Heart className="h-4 w-4" />
+            {t("cause.createCause", "Create Cause")}
+          </Button>
+        </Link>
+      </nav>
+    </header>
+  );
+}
+
 /** Charity management dashboard with tabs for transactions, volunteer hours, applications, opportunities, causes, and organization settings. */
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
@@ -739,51 +829,7 @@ export const CharityPortal: React.FC = () => {
   }
 
   if (profileLoading || loading) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Skeleton Header */}
-          <div className="mb-8 animate-pulse">
-            <div className="h-9 bg-gray-200 rounded w-64 mb-2" />
-            <div className="h-5 bg-gray-200 rounded w-80" />
-          </div>
-          {/* Skeleton Stats */}
-          <div className="grid gap-6 mb-8 grid-cols-2 lg:grid-cols-4">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className="bg-white rounded-xl p-6 shadow-md animate-pulse"
-              >
-                <div className="flex items-center">
-                  <div className="h-14 w-14 bg-gray-200 rounded-full" />
-                  <div className="ml-4 flex-1">
-                    <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
-                    <div className="h-8 bg-gray-200 rounded w-20" />
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* Skeleton Tabs */}
-          <div className="bg-gray-100 rounded-xl p-1 mb-6 animate-pulse">
-            <div className="flex gap-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="h-10 bg-gray-200 rounded-lg flex-1" />
-              ))}
-            </div>
-          </div>
-          {/* Skeleton Content */}
-          <div className="bg-white rounded-xl p-6 shadow-md animate-pulse">
-            <div className="h-6 bg-gray-200 rounded w-48 mb-6" />
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="h-16 bg-gray-100 rounded-lg" />
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
+    return <CharityPortalSkeleton />;
   }
 
   if (error) {
@@ -824,31 +870,7 @@ export const CharityPortal: React.FC = () => {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">
-              {profile?.display_name ||
-                t("charity.dashboard", "Charity Dashboard")}
-            </h1>
-            <p className="mt-1 text-gray-600">
-              {t("charity.subtitle", "Manage your charity dashboard")}
-            </p>
-          </div>
-          <nav className="mt-4 md:mt-0 flex flex-wrap gap-3">
-            <Link to="/charity-portal/create-opportunity">
-              <Button variant="secondary" className="flex items-center gap-2">
-                <Plus className="h-4 w-4" />
-                {t("volunteer.createOpportunity", "Create Opportunity")}
-              </Button>
-            </Link>
-            <Link to="/charity-portal/create-cause">
-              <Button variant="secondary" className="flex items-center gap-2">
-                <Heart className="h-4 w-4" />
-                {t("cause.createCause", "Create Cause")}
-              </Button>
-            </Link>
-          </nav>
-        </header>
+        <CharityPortalHeader displayName={profile?.display_name} t={t} />
 
         {/* Stats Row with Last Updated */}
         <div className="flex items-center justify-between mb-4">

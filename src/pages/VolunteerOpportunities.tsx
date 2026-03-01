@@ -126,6 +126,28 @@ const SKILLS = [
 const TYPES = ["remote", "onsite", "hybrid"];
 const LANGUAGES = Object.values(WorkLanguage);
 
+/** Search input with magnifying glass icon. */
+function OpportunitySearchInput({ value, onChange, placeholder, ariaLabel }: {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  placeholder: string;
+  ariaLabel: string;
+}) {
+  return (
+    <div className="relative flex-grow">
+      <input
+        type="text"
+        placeholder={placeholder}
+        aria-label={ariaLabel}
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        value={value}
+        onChange={onChange}
+      />
+      <Search aria-hidden="true" className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+    </div>
+  );
+}
+
 /**
  * Browse and apply for volunteer opportunities
  * @returns VolunteerOpportunities page element
@@ -234,20 +256,15 @@ const VolunteerOpportunities: React.FC = () => {
 
         <ScrollReveal direction="up" delay={100}>
           <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
-            <div className="relative flex-grow">
-              <input
-                type="text"
-                placeholder={t(
-                  "volunteer.searchOpportunities",
-                  "Search opportunities...",
-                )}
-                aria-label={t("volunteer.searchOpportunities", "Search opportunities")}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-              <Search aria-hidden="true" className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-            </div>
+            <OpportunitySearchInput
+              value={searchTerm}
+              onChange={handleSearchChange}
+              placeholder={t(
+                "volunteer.searchOpportunities",
+                "Search opportunities...",
+              )}
+              ariaLabel={t("volunteer.searchOpportunities", "Search opportunities")}
+            />
 
             <select
               value={selectedSkill}

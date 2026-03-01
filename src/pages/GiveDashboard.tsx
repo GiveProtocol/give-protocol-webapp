@@ -138,6 +138,154 @@ function mapContributionToTransaction(c: UnifiedContribution): Transaction {
   };
 }
 
+/** Skeleton placeholder for a single dashboard stat card. */
+function DashboardSkeletonCard() {
+  return (
+    <Card className="p-6 flex items-center animate-pulse">
+      <div className="h-12 w-12 bg-gray-200 rounded-full mr-4" />
+      <div className="flex-1">
+        <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
+        <div className="h-7 bg-gray-200 rounded w-16" />
+      </div>
+    </Card>
+  );
+}
+
+/** Filter bar with year/type selectors and export button for contributions. */
+function ContributionsFilterBar({
+  selectedYear,
+  selectedType,
+  years,
+  onYearChange,
+  onTypeChange,
+  onExport,
+  t,
+}: {
+  selectedYear: string;
+  selectedType: string;
+  years: string[];
+  onYearChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onTypeChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onExport: () => void;
+  t: (_key: string, _fallback?: string) => string;
+}) {
+  return (
+    <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+      <h2 className="text-xl font-semibold text-gray-900">
+        {t("dashboard.contributions")}
+      </h2>
+      <div className="flex items-center space-x-4 flex-wrap gap-2">
+        <select
+          value={selectedYear}
+          onChange={onYearChange}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          aria-label="Filter by year"
+        >
+          {years.map((year) => (
+            <option key={year} value={year}>
+              {year === "all" ? t("filter.allYears", "All Years") : year}
+            </option>
+          ))}
+        </select>
+        <select
+          value={selectedType}
+          onChange={onTypeChange}
+          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          aria-label="Filter by type"
+        >
+          <option value="all">{t("filter.allTypes", "All Types")}</option>
+          <option value="Donation">
+            {t("filter.donations", "Donations")}
+          </option>
+          <option value="Fiat Donation">
+            {t("filter.fiatDonations", "Fiat Donations")}
+          </option>
+          <option value="Volunteer Application">
+            {t("filter.volunteerApplications", "Volunteer Applications")}
+          </option>
+          <option value="Volunteer Hours">
+            {t("filter.volunteerHours", "Volunteer Hours")}
+          </option>
+        </select>
+        <Button
+          onClick={onExport}
+          variant="secondary"
+          className="flex items-center"
+        >
+          <Download className="h-4 w-4 mr-2" />
+          {t("contributions.export")}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/** Sortable table header for the contributions table. */
+function ContributionsTableHeader({
+  onSortByDate,
+  onSortByType,
+  onSortByOrganization,
+  onSortByStatus,
+  getSortIcon,
+  t,
+}: {
+  onSortByDate: () => void;
+  onSortByType: () => void;
+  onSortByOrganization: () => void;
+  onSortByStatus: () => void;
+  getSortIcon: (_key: "date" | "type" | "status" | "organization") => React.ReactNode;
+  t: (_key: string, _fallback?: string) => string;
+}) {
+  return (
+    <thead>
+      <tr>
+        <th
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          onClick={onSortByDate}
+        >
+          <div className="flex items-center space-x-1">
+            <span>{t("contributions.date")}</span>
+            {getSortIcon("date")}
+          </div>
+        </th>
+        <th
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          onClick={onSortByType}
+        >
+          <div className="flex items-center space-x-1">
+            <span>{t("contributions.type")}</span>
+            {getSortIcon("type")}
+          </div>
+        </th>
+        <th
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          onClick={onSortByOrganization}
+        >
+          <div className="flex items-center space-x-1">
+            <span>{t("contributions.organization")}</span>
+            {getSortIcon("organization")}
+          </div>
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {t("contributions.details")}
+        </th>
+        <th
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
+          onClick={onSortByStatus}
+        >
+          <div className="flex items-center space-x-1">
+            <span>{t("contributions.status")}</span>
+            {getSortIcon("status")}
+          </div>
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          {t("contributions.verification")}
+        </th>
+      </tr>
+    </thead>
+  );
+}
+
 /**
  * Donor dashboard displaying contributions, stats, and volunteer hours
  * @returns GiveDashboard page element
@@ -421,13 +569,7 @@ export const GiveDashboard: React.FC = () => {
       {statsLoading || contribLoading ? (
         <div className="grid gap-6 mb-8 md:grid-cols-3">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="p-6 flex items-center animate-pulse">
-              <div className="h-12 w-12 bg-gray-200 rounded-full mr-4" />
-              <div className="flex-1">
-                <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
-                <div className="h-7 bg-gray-200 rounded w-16" />
-              </div>
-            </Card>
+            <DashboardSkeletonCard key={i} />
           ))}
         </div>
       ) : (
@@ -476,100 +618,24 @@ export const GiveDashboard: React.FC = () => {
 
       {/* Contributions - Flattened to reduce nesting */}
       <div className="bg-white rounded-lg shadow-md mb-8 overflow-x-auto">
-        <div className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t("dashboard.contributions")}
-          </h2>
-          <div className="flex items-center space-x-4 flex-wrap gap-2">
-            <select
-              value={selectedYear}
-              onChange={handleYearChange}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              aria-label="Filter by year"
-            >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year === "all" ? t("filter.allYears", "All Years") : year}
-                </option>
-              ))}
-            </select>
-            <select
-              value={selectedType}
-              onChange={handleTypeChange}
-              className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-              aria-label="Filter by type"
-            >
-              <option value="all">{t("filter.allTypes", "All Types")}</option>
-              <option value="Donation">
-                {t("filter.donations", "Donations")}
-              </option>
-              <option value="Fiat Donation">
-                {t("filter.fiatDonations", "Fiat Donations")}
-              </option>
-              <option value="Volunteer Application">
-                {t("filter.volunteerApplications", "Volunteer Applications")}
-              </option>
-              <option value="Volunteer Hours">
-                {t("filter.volunteerHours", "Volunteer Hours")}
-              </option>
-            </select>
-            <Button
-              onClick={handleShowExportModal}
-              variant="secondary"
-              className="flex items-center"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              {t("contributions.export")}
-            </Button>
-          </div>
-        </div>
+        <ContributionsFilterBar
+          selectedYear={selectedYear}
+          selectedType={selectedType}
+          years={years}
+          onYearChange={handleYearChange}
+          onTypeChange={handleTypeChange}
+          onExport={handleShowExportModal}
+          t={t}
+        />
         <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
-                onClick={handleSortByDate}
-              >
-                <div className="flex items-center space-x-1">
-                  <span>{t("contributions.date")}</span>
-                  {getSortIcon("date")}
-                </div>
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
-                onClick={handleSortByType}
-              >
-                <div className="flex items-center space-x-1">
-                  <span>{t("contributions.type")}</span>
-                  {getSortIcon("type")}
-                </div>
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
-                onClick={handleSortByOrganization}
-              >
-                <div className="flex items-center space-x-1">
-                  <span>{t("contributions.organization")}</span>
-                  {getSortIcon("organization")}
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("contributions.details")}
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
-                onClick={handleSortByStatus}
-              >
-                <div className="flex items-center space-x-1">
-                  <span>{t("contributions.status")}</span>
-                  {getSortIcon("status")}
-                </div>
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                {t("contributions.verification")}
-              </th>
-            </tr>
-          </thead>
+          <ContributionsTableHeader
+            onSortByDate={handleSortByDate}
+            onSortByType={handleSortByType}
+            onSortByOrganization={handleSortByOrganization}
+            onSortByStatus={handleSortByStatus}
+            getSortIcon={getSortIcon}
+            t={t}
+          />
           <tbody className="divide-y divide-gray-200">
             {filteredContributions.map((contribution) => (
               <tr key={contribution.id}>

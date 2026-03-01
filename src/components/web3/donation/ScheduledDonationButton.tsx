@@ -9,6 +9,8 @@ interface ScheduledDonationButtonProps {
   /** Optional charity ID for payment metadata (defaults to charityAddress) */
   charityId?: string;
   buttonText?: string;
+  /** Custom render function for the trigger element. Receives an onClick handler. */
+  renderTrigger?: (_props: { onClick: () => void }) => React.ReactNode;
   onSuccess?: () => void;
 }
 
@@ -17,6 +19,7 @@ export const ScheduledDonationButton: React.FC<ScheduledDonationButtonProps> = (
   charityAddress,
   charityId,
   buttonText = "Give Monthly",
+  renderTrigger,
   onSuccess
 }) => {
   const [showModal, setShowModal] = useState(false);
@@ -31,13 +34,17 @@ export const ScheduledDonationButton: React.FC<ScheduledDonationButtonProps> = (
 
   return (
     <>
-      <Button
-        icon={<Calendar className="w-4 h-4" />}
-        onClick={handleOpenModal}
-        className="w-full flex items-center justify-center"
-      >
-        {buttonText}
-      </Button>
+      {renderTrigger ? (
+        renderTrigger({ onClick: handleOpenModal })
+      ) : (
+        <Button
+          icon={<Calendar className="w-4 h-4" />}
+          onClick={handleOpenModal}
+          className="w-full flex items-center justify-center"
+        >
+          {buttonText}
+        </Button>
+      )}
 
       {showModal && (
         <DonationModal

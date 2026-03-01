@@ -21,6 +21,176 @@ interface ScheduledDonation {
   active: boolean;
 }
 
+/** Confirmation modal for cancelling a scheduled donation. */
+function CancelConfirmationModal({
+  schedule,
+  loading,
+  cancelError,
+  onConfirm,
+  onClose,
+}: {
+  schedule: ScheduledDonation;
+  loading: boolean;
+  cancelError: string | null;
+  onConfirm: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 text-center">
+        <div className="bg-red-100 dark:bg-red-900/30 rounded-full p-3 mx-auto w-fit"><AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" /></div>
+
+        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+          Confirm Cancellation
+        </h3>
+
+        <div className="space-y-3">
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Are you sure you want to cancel your monthly donation schedule to:
+          </p>
+          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+            <p className="font-medium text-gray-900 dark:text-gray-100">
+              {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...`}
+            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+              {schedule.monthsRemaining} payments remaining
+            </p>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            The remaining funds will be returned to your wallet:
+          </p>
+          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center">
+            <p className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+              {(Number.parseFloat(schedule.amountPerMonth) * schedule.monthsRemaining).toFixed(2)} {schedule.tokenSymbol || 'tokens'}
+            </p>
+          </div>
+        </div>
+
+        {cancelError && (
+          <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md">
+            {cancelError}
+          </div>
+        )}
+
+        <div className="flex justify-center space-x-3">
+          <Button variant="secondary" onClick={onClose}>
+            Keep Schedule
+          </Button>
+          <Button
+            variant="danger"
+            onClick={onConfirm}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Cancel Schedule"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** Individual schedule item row with details and cancel button. */
+function ScheduleItem({
+  schedule,
+  loading,
+  onCancel,
+}: {
+  schedule: ScheduledDonation;
+  loading: boolean;
+  onCancel: () => void;
+}) {
+  return (
+    <div className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
+      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+        <div className="flex-1 space-y-4">
+          {/* Charity Name and Icon */}
+          <div className="flex items-start gap-3">
+            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" /></div>
+            <div className="flex-1">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
+              </h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">{schedule.charity}</p>
+            </div>
+          </div>
+
+          {/* Schedule Details Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Total Commitment */}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                Total Commitment
+              </p>
+              <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                {schedule.totalAmount} {schedule.tokenSymbol || 'tokens'}
+              </p>
+            </div>
+
+            {/* Monthly Amount */}
+            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                Monthly Payment
+              </p>
+              <p className="text-base font-semibold text-green-700 dark:text-green-400">
+                {schedule.amountPerMonth} {schedule.tokenSymbol || 'tokens'}
+              </p>
+            </div>
+
+            {/* Progress */}
+            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                Progress
+              </p>
+              <p className="text-base font-semibold text-blue-700 dark:text-blue-400">
+                {12 - schedule.monthsRemaining} of 12 months
+              </p>
+              <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+                <div
+                  className="bg-blue-600 dark:bg-blue-500 h-1.5 rounded-full"
+                  style={{ width: `${((12 - schedule.monthsRemaining) / 12) * 100}%` }}
+                />
+              </div>
+            </div>
+
+            {/* Next Payment */}
+            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
+              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                Next Payment
+              </p>
+              <p className="text-base font-semibold text-amber-700 dark:text-amber-400">
+                {formatDate(schedule.nextDistribution.toISOString())}
+              </p>
+            </div>
+          </div>
+
+          {/* Token Address */}
+          <div className="mt-3 flex items-center gap-2">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Token Contract:
+            </p>
+            <p className="text-xs text-gray-600 dark:text-gray-300 font-mono">
+              {schedule.token.substring(0, 6)}...{schedule.token.substring(38)}
+            </p>
+          </div>
+        </div>
+
+        {/* Cancel Button */}
+        <div className="flex items-center">
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onCancel}
+            disabled={loading}
+            className="whitespace-nowrap"
+          >
+            Cancel Schedule
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Displays and manages the donor's active monthly donation schedules with cancellation support. */
 export const ScheduledDonations: React.FC = () => {
   const { getDonorSchedules, cancelSchedule, loading, error } =
@@ -144,150 +314,20 @@ export const ScheduledDonations: React.FC = () => {
         </div>
         <div className="divide-y divide-gray-200 dark:divide-gray-700">
           {schedules.map((schedule) => (
-            <div key={schedule.id} className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-              <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-                <div className="flex-1 space-y-4">
-                  {/* Charity Name and Icon */}
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" /></div>
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                        {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
-                      </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">{schedule.charity}</p>
-                    </div>
-                  </div>
-
-                  {/* Schedule Details Grid */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {/* Total Commitment */}
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                        Total Commitment
-                      </p>
-                      <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                        {schedule.totalAmount} {schedule.tokenSymbol || 'tokens'}
-                      </p>
-                    </div>
-
-                    {/* Monthly Amount */}
-                    <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                        Monthly Payment
-                      </p>
-                      <p className="text-base font-semibold text-green-700 dark:text-green-400">
-                        {schedule.amountPerMonth} {schedule.tokenSymbol || 'tokens'}
-                      </p>
-                    </div>
-
-                    {/* Progress */}
-                    <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                        Progress
-                      </p>
-                      <p className="text-base font-semibold text-blue-700 dark:text-blue-400">
-                        {12 - schedule.monthsRemaining} of 12 months
-                      </p>
-                      <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                        <div
-                          className="bg-blue-600 dark:bg-blue-500 h-1.5 rounded-full"
-                          style={{ width: `${((12 - schedule.monthsRemaining) / 12) * 100}%` }}
-                        />
-                      </div>
-                    </div>
-
-                    {/* Next Payment */}
-                    <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
-                      <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                        Next Payment
-                      </p>
-                      <p className="text-base font-semibold text-amber-700 dark:text-amber-400">
-                        {formatDate(schedule.nextDistribution.toISOString())}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Token Address */}
-                  <div className="mt-3 flex items-center gap-2">
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Token Contract:
-                    </p>
-                    <p className="text-xs text-gray-600 dark:text-gray-300 font-mono">
-                      {schedule.token.substring(0, 6)}...{schedule.token.substring(38)}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Cancel Button */}
-                <div className="flex items-center">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={createCancelHandler(schedule)}
-                    disabled={loading}
-                    className="whitespace-nowrap"
-                  >
-                    Cancel Schedule
-                  </Button>
-                </div>
-              </div>
-            </div>
+            <ScheduleItem key={schedule.id} schedule={schedule} loading={loading} onCancel={createCancelHandler(schedule)} />
           ))}
         </div>
       </Card>
 
       {/* Cancel Confirmation Modal */}
       {isCancelModalOpen && selectedSchedule && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full p-6 space-y-4 text-center">
-            <div className="bg-red-100 dark:bg-red-900/30 rounded-full p-3 mx-auto w-fit"><AlertTriangle className="h-6 w-6 text-red-600 dark:text-red-400" /></div>
-
-            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              Confirm Cancellation
-            </h3>
-
-            <div className="space-y-3">
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                Are you sure you want to cancel your monthly donation schedule to:
-              </p>
-              <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-                <p className="font-medium text-gray-900 dark:text-gray-100">
-                  {selectedSchedule.charityName || `Charity ${selectedSchedule.charity.substring(0, 6)}...`}
-                </p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                  {selectedSchedule.monthsRemaining} payments remaining
-                </p>
-              </div>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
-                The remaining funds will be returned to your wallet:
-              </p>
-              <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center">
-                <p className="text-lg font-semibold text-blue-700 dark:text-blue-400">
-                  {(Number.parseFloat(selectedSchedule.amountPerMonth) * selectedSchedule.monthsRemaining).toFixed(2)} {selectedSchedule.tokenSymbol || 'tokens'}
-                </p>
-              </div>
-            </div>
-
-            {cancelError && (
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md">
-                {cancelError}
-              </div>
-            )}
-
-            <div className="flex justify-center space-x-3">
-              <Button variant="secondary" onClick={handleCloseModal}>
-                Keep Schedule
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleConfirmCancel}
-                disabled={loading}
-              >
-                {loading ? "Processing..." : "Cancel Schedule"}
-              </Button>
-            </div>
-          </div>
-        </div>
+        <CancelConfirmationModal
+          schedule={selectedSchedule}
+          loading={loading}
+          cancelError={cancelError}
+          onConfirm={handleConfirmCancel}
+          onClose={handleCloseModal}
+        />
       )}
     </div>
   );
