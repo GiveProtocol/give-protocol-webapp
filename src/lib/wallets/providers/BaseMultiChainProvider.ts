@@ -59,9 +59,7 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
   protected abstract clearSecondaryAdapter(): void;
 
   /** Default EVM chain ID for this provider. Override to change (e.g., Coinbase defaults to Base). */
-  protected defaultEVMChainId(): number {
-    return DEFAULT_EVM_CHAIN_ID;
-  }
+  protected defaultEVMChainId: number = DEFAULT_EVM_CHAIN_ID;
 
   /**
    * Connect to the wallet
@@ -113,7 +111,7 @@ export abstract class BaseMultiChainProvider implements UnifiedWalletProvider {
     }
 
     this.evmAdapter = new EVMAdapter(evmProvider);
-    return this.evmAdapter.connect(this.defaultEVMChainId());
+    return this.evmAdapter.connect(this.defaultEVMChainId);
   }
 
   /**

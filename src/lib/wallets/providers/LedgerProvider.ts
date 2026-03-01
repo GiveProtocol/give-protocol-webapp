@@ -84,6 +84,7 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * @returns True if browser supports required APIs
    */
   isInstalled(): boolean {
+    if (this.supportedChainTypes.length === 0) return false;
     if (typeof window === "undefined") return false;
 
     // Check for WebUSB support
@@ -221,7 +222,7 @@ export class LedgerProvider implements UnifiedWalletProvider {
   /**
    * Disconnect from Ledger
    */
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     if (this.dmk) {
       this.dmk.stopDiscovery();
     }
@@ -232,6 +233,7 @@ export class LedgerProvider implements UnifiedWalletProvider {
     this.connectedAddress = null;
 
     Logger.info("Ledger disconnected");
+    return Promise.resolve();
   }
 
   /**
@@ -239,12 +241,12 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * @param chainType - Optional chain type filter
    * @returns Array of accounts
    */
-  async getAccounts(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
+  getAccounts(chainType: ChainType = "evm"): Promise<UnifiedAccount[]> {
     if (!this.connectedAddress) {
-      return [];
+      return Promise.resolve([]);
     }
 
-    return this.toUnifiedAccounts([this.connectedAddress], chainType);
+    return Promise.resolve(this.toUnifiedAccounts([this.connectedAddress], chainType));
   }
 
   /**
@@ -252,13 +254,14 @@ export class LedgerProvider implements UnifiedWalletProvider {
    * @param chainId - Target chain ID
    * @param chainType - Chain type
    */
-  async switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
+  switchChain(chainId: number | string, chainType: ChainType): Promise<void> {
     if (chainType !== "evm") {
       throw new Error("Ledger chain switching only supported for EVM");
     }
 
     this.currentChainId = chainId as number;
     Logger.info("Ledger chain switched", { chainId });
+    return Promise.resolve();
   }
 
   /**

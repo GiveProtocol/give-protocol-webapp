@@ -75,15 +75,13 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
   /**
    * Default to Base chain for Coinbase Wallet users
    */
-  protected override defaultEVMChainId(): number {
-    return EVM_CHAIN_IDS.BASE;
-  }
+  protected override defaultEVMChainId = EVM_CHAIN_IDS.BASE;
 
   /**
    * Get Coinbase EVM provider from window
    */
   protected getEVMProvider(): unknown {
-    if (typeof window === "undefined") return null;
+    if (!this.isInstalled()) return null;
 
     // Prefer dedicated extension
     if (window.coinbaseWalletExtension) {
@@ -113,7 +111,7 @@ export class CoinbaseProvider extends BaseMultiChainProvider {
     }
 
     this.solanaAdapter = new SolanaAdapter(solanaProvider, DEFAULT_SOLANA_CLUSTER);
-    return this.solanaAdapter.connect();
+    return await this.solanaAdapter.connect();
   }
 
   /**
