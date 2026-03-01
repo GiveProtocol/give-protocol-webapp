@@ -161,6 +161,7 @@ interface DonationModalProps {
   onSuccess?: (_result: DonationResult) => void;
 }
 
+/** Creates the initial reducer state for the donation modal based on the selected frequency. */
 function createInitialState(frequency: DonationFrequency): DonationModalState {
   return {
     paymentMethod: 'card',
@@ -173,6 +174,7 @@ function createInitialState(frequency: DonationFrequency): DonationModalState {
   };
 }
 
+/** Reducer that manages donation modal state transitions for payment method, amount, and processing status. */
 function donationReducer(
   state: DonationModalState,
   action: DonationModalAction

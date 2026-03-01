@@ -94,6 +94,7 @@ export function buildHelcimReceiptFields(
   };
 }
 
+/** Builds a human-readable receipt comment string based on the giving type and resolved entity names. */
 function buildComments(
   names: ResolvedNames,
   givingType: GivingType
@@ -135,6 +136,7 @@ function buildComments(
   }
 }
 
+/** Builds a pipe-delimited line item description for the Helcim invoice based on giving type. */
 function buildLineItemDescription(
   names: ResolvedNames,
   givingType: GivingType

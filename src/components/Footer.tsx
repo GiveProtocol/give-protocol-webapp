@@ -4,6 +4,7 @@ import { FaBluesky, FaGithub, FaDiscord } from "react-icons/fa6";
 import { Logo } from "@/components/Logo";
 import { DOCS_CONFIG } from "@/config/docs";
 
+/** Site-wide footer with resource links, legal links, and social media icons. */
 export const Footer: React.FC = () => {
   return (
     <footer className="bg-gradient-to-r from-emerald-600 to-teal-600 border-t border-emerald-700">

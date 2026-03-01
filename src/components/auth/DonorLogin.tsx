@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { AlertCircle } from "lucide-react";
 
+/** Login form component for donor accounts with email and password authentication. */
 export const DonorLogin: React.FC = () => {
   const { login, loading } = useAuth();
   const { disconnect } = useWeb3();

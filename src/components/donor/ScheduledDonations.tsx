@@ -21,6 +21,7 @@ interface ScheduledDonation {
   active: boolean;
 }
 
+/** Displays and manages the donor's active monthly donation schedules with cancellation support. */
 export const ScheduledDonations: React.FC = () => {
   const { getDonorSchedules, cancelSchedule, loading, error } =
     useScheduledDonation();

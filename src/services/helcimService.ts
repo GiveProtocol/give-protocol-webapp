@@ -317,6 +317,7 @@ export function loadHelcimScript(): Promise<void> {
         return;
       }
 
+      /** Handles the script load event and waits for the HelcimPay.js global to become available. */
       const handleLoad = (): void => {
         Logger.info('HelcimPay.js script loaded (existing), waiting for global');
         waitForHelcimGlobal()
@@ -327,6 +328,7 @@ export function loadHelcimScript(): Promise<void> {
           });
       };
 
+      /** Handles the script error event when the HelcimPay.js script fails to load. */
       const handleError = (): void => {
         helcimScriptPromise = null;
         reject(new Error('Failed to load payment processor'));
@@ -427,6 +429,7 @@ export function openHelcimCheckout(
 
     const expectedEvent = `helcim-pay-js-${checkoutToken}`;
 
+    /** Handles incoming postMessage events from the HelcimPay.js iframe. */
     const handleMessage = (event: MessageEvent): void => {
       const msg = event.data;
 

@@ -33,6 +33,7 @@ interface TabsContentProps {
 
 const TabsContext = React.createContext<TabsContextValue | null>(null);
 
+/** Container component that provides tab state context to its children. */
 export const Tabs: React.FC<TabsProps> = ({ defaultValue, children, className }) => {
   const [value, setValue] = React.useState(defaultValue);
   const idPrefix = useId();
@@ -52,6 +53,7 @@ export const Tabs: React.FC<TabsProps> = ({ defaultValue, children, className })
   );
 };
 
+/** Wrapper component that renders a styled tab bar with the tablist role. */
 export const TabsList: React.FC<TabsListProps> = ({ children, className }) => {
   return (
     <div role="tablist" className={cn('flex space-x-1 rounded-lg bg-gray-100 p-1', className)}>
@@ -60,6 +62,7 @@ export const TabsList: React.FC<TabsListProps> = ({ children, className }) => {
   );
 };
 
+/** Individual tab button that activates its associated panel and supports keyboard navigation. */
 export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, className }) => {
   const context = React.useContext(TabsContext);
   if (!context) throw new Error('TabsTrigger must be used within Tabs');

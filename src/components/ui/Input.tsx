@@ -8,6 +8,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   variant?: 'default' | 'enhanced';
 }
 
+/** Reusable text input component with label, error, and helper text support in default or enhanced variants. */
 export const Input: React.FC<InputProps> = ({
   label,
   error,

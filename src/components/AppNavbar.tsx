@@ -324,6 +324,7 @@ const NavActions: React.FC<{
   );
 };
 
+/** Main application navigation bar with responsive desktop/mobile menus, wallet connection, and network selection. */
 export const AppNavbar: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();

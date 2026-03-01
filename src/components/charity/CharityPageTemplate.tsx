@@ -137,7 +137,7 @@ export const CharityPageTemplate: React.FC<CharityPageTemplateProps> = ({
                 buttonText="Give Monthly"
               />
               <a
-                href="https://docs.giveprotocol.io/user-guides/donors/#giving-options"
+                href="https://docs.giveprotocol.io/docs/donors/making-donations/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block text-sm text-indigo-600 hover:text-indigo-800 mt-2 text-center"

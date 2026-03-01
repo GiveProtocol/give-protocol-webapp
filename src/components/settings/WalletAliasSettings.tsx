@@ -9,6 +9,7 @@ import { Card } from "@/components/ui/Card";
 import { Wallet, Edit, Trash2, AlertCircle, Check } from "lucide-react";
 import { shortenAddress } from "@/utils/web3";
 
+/** Settings panel for managing wallet aliases displayed on the contribution tracker. */
 export const WalletAliasSettings: React.FC = () => {
   const { user } = useAuth();
   const { address, isConnected } = useWeb3();

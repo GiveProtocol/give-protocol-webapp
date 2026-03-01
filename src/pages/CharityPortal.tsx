@@ -198,6 +198,7 @@ function CharityTabNav({
   );
 }
 
+/** Charity management dashboard with tabs for transactions, volunteer hours, applications, opportunities, causes, and organization settings. */
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
   const { profile, loading: profileLoading } = useProfile();

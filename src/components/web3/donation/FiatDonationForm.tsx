@@ -283,6 +283,7 @@ export function FiatDonationForm({
   const displayError = formError || paymentError;
   const isBusy = loading || isSubmitting;
 
+  /** Returns the submit button label based on loading state and donation frequency. */
   const getButtonText = (): string => {
     if (isBusy) {
       return isMonthly ? 'Setting up subscription...' : 'Processing...';

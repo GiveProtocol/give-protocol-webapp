@@ -67,6 +67,7 @@ const LoginHelpers: React.FC<LoginHelpersProps> = ({
   </nav>
 );
 
+/** Login page component that handles account type selection, donor/charity login, and password recovery flows. */
 const Login: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeParam = searchParams.get("type");
@@ -139,6 +140,7 @@ const Login: React.FC = () => {
   const visibleClass = visible ? "visible" : "";
   const isLoading = loadingDonor || loadingCharity;
 
+  /** Renders the appropriate login view based on the current view state. */
   const renderView = () => {
     switch (view) {
       case "select":

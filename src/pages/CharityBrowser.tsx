@@ -8,6 +8,7 @@ import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 type ViewMode = "charities" | "causes" | "portfolios";
 
+/** Page component for browsing and filtering charities, causes, and portfolio funds. */
 const CharityBrowser: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("charities");
   const [searchTerm, setSearchTerm] = useState("");
@@ -47,6 +48,7 @@ const CharityBrowser: React.FC = () => {
     [],
   );
 
+  /** Renders the appropriate grid component based on the selected view mode. */
   const renderContent = () => {
     switch (viewMode) {
       case "causes":

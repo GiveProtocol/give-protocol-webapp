@@ -41,6 +41,7 @@ export function CurrencySelector(): React.ReactElement {
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    /** Handles clicks outside the dropdown to close it. */
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -61,6 +62,7 @@ export function CurrencySelector(): React.ReactElement {
 
   // Close on escape key
   useEffect(() => {
+    /** Handles the Escape key press to close the dropdown. */
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsOpen(false);
