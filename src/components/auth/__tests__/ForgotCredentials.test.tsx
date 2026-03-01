@@ -73,8 +73,8 @@ describe("ForgotCredentials", () => {
     mockResetPassword.mockClear();
     mockSendUsernameReminder.mockClear();
     mockOnBack.mockClear();
-    mockResetPassword.mockResolvedValue(undefined);
-    mockSendUsernameReminder.mockResolvedValue(undefined);
+    mockResetPassword.mockResolvedValue();
+    mockSendUsernameReminder.mockResolvedValue();
   });
 
   it("renders forgot password form", () => {

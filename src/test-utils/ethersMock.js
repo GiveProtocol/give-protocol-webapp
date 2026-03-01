@@ -10,7 +10,7 @@ export const mockDecimals = jest.fn();
 /** Simple keccak256 stand-in: produces a deterministic 0x-prefixed 64-char hex string */
 const simpleKeccak256 = (data) => {
   // Accept Uint8Array or hex string; convert to a regular string for hashing
-  let str;
+  let str = "";
   if (data instanceof Uint8Array) {
     str = Array.from(data).map((b) => b.toString(16).padStart(2, "0")).join("");
   } else if (typeof data === "string") {
@@ -34,7 +34,7 @@ const simpleKeccak256 = (data) => {
   const hex6 = ((h1 + h2) >>> 0).toString(16).padStart(8, "0");
   const hex7 = (Math.imul(h1, 0xdeadbeef) >>> 0).toString(16).padStart(8, "0");
   const hex8 = (Math.imul(h2, 0xcafebabe) >>> 0).toString(16).padStart(8, "0");
-  return "0x" + hex1 + hex2 + hex3 + hex4 + hex5 + hex6 + hex7 + hex8;
+  return `0x${hex1}${hex2}${hex3}${hex4}${hex5}${hex6}${hex7}${hex8}`;
 };
 
 /** Convert a UTF-8 string to a Uint8Array, mirroring ethers.toUtf8Bytes */

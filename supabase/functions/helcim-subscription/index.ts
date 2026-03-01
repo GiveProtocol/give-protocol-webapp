@@ -96,7 +96,7 @@ async function getOrCreateCustomer(
       contactName: name,
       businessName: name,
       cellPhone: '',
-      email: email,
+      email,
     }),
   });
 
@@ -127,7 +127,7 @@ async function storeCard(
     },
     body: JSON.stringify({
       customerCode: customerId,
-      cardToken: cardToken,
+      cardToken,
       verify: true,
     }),
   });
@@ -183,7 +183,7 @@ async function createHelcimSubscription(
 
   return {
     subscriptionId: result.subscriptionId || result.id,
-    customerId: customerId,
+    customerId,
     status: result.status || 'active',
     nextBillingDate: result.nextBillingDate || nextBilling.toISOString(),
     amount: request.amount,

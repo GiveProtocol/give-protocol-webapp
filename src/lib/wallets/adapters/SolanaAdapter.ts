@@ -274,7 +274,7 @@ export class SolanaAdapter {
     // Add leading zeros
     for (const byte of bytes) {
       if (byte === 0) {
-        result = "1" + result;
+        result = `1${result}`;
       } else {
         break;
       }
