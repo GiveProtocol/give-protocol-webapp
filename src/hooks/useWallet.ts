@@ -103,7 +103,12 @@ class EVMWalletBase implements WalletProvider {
         params: [{ chainId: `0x${chainId.toString(16)}` }],
       });
     } catch (error: unknown) {
-      if (error.code === 4902) {
+      const errorCode =
+        typeof error === "object" && error !== null
+          ? (error as { code?: number }).code
+          : undefined;
+
+      if (errorCode === 4902) {
         // Chain not added, add it
         await this.addChain(chainId);
       } else {
@@ -116,7 +121,11 @@ class EVMWalletBase implements WalletProvider {
     const chainParams = this.getChainParams(chainId);
     if (!chainParams) throw new Error("Unsupported chain");
 
-    await this.provider.request({
+    if (!this.provider || typeof (this.provider as { request?: unknown }).request !== "function") {
+      throw new Error(`${this.name} provider not found`);
+    }
+
+    await (this.provider as { request: (_args: { method: string; params?: unknown[] }) => Promise<unknown> }).request({
       method: "wallet_addEthereumChain",
       params: [chainParams],
     });

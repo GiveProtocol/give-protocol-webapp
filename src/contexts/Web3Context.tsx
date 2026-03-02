@@ -172,6 +172,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   // Get selected chain from ChainContext
   const { selectedChainId } = useChain();
 
+  // MultiChainContext for syncing connection state
+  const multiChain = useMultiChainContext();
+
   const [provider, setProvider] = useState<ethers.Provider | null>(null);
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [address, setAddress] = useState<string | null>(null);
@@ -185,6 +188,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const isConnectingRef = React.useRef(false);
   // Track current address for polling to avoid stale closure issues
   const addressRef = React.useRef<string | null>(null);
+  // Track whether current connection was synced from MultiChainContext
+  const syncedFromMultiChainRef = React.useRef(false);
 
   // Keep refs in sync with state
   React.useEffect(() => {
@@ -207,17 +212,40 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  // Handle chain changes
-  const handleChainChanged = useCallback((chainIdHex: string) => {
-    const newChainId = Number.parseInt(chainIdHex, 16);
-    setChainId(newChainId);
-    Logger.info("Chain changed", { chainId: newChainId });
+  // Handle chain changes — refresh provider/signer instead of reloading page
+  const handleChainChanged = useCallback(
+    async (chainIdHex: string) => {
+      const newChainId = Number.parseInt(chainIdHex, 16);
+      setChainId(newChainId);
+      Logger.info("Chain changed", { chainId: newChainId });
 
-    // Reload the page when chain changes to ensure all state is fresh
-    if (typeof window !== "undefined") {
-      window.location.reload();
-    }
-  }, []);
+      // Rebuild ethers provider and signer for the new chain
+      const walletProvider =
+        currentWalletProvider ||
+        (typeof window !== "undefined" ? window.ethereum : null);
+
+      if (walletProvider && isEIP1193Provider(walletProvider)) {
+        try {
+          const newProvider = new ethers.BrowserProvider(
+            walletProvider as ethers.Eip1193Provider,
+          );
+          const newSigner = await newProvider.getSigner();
+          startTransition(() => {
+            setProvider(newProvider);
+            setSigner(newSigner);
+          });
+          Logger.info("Provider refreshed after chain change", {
+            chainId: newChainId,
+          });
+        } catch (err) {
+          Logger.error("Failed to refresh provider after chain change", {
+            error: err,
+          });
+        }
+      }
+    },
+    [currentWalletProvider],
+  );
 
   // Initialize provider and check for existing connection
   useEffect(() => {
@@ -271,6 +299,74 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
     initProvider();
   }, []);
+
+  // Sync Web3Context from MultiChainContext when it connects/disconnects.
+  // This ensures all 39+ components using useWeb3() see the connection
+  // established via the WalletModal → MultiChainContext flow.
+  useEffect(() => {
+    const evmAccount = multiChain.accounts.find(
+      (a) => a.chainType === "evm",
+    );
+
+    if (multiChain.isConnected && multiChain.wallet && evmAccount) {
+      const evmProvider = multiChain.wallet.providers.evm;
+      if (!evmProvider || !isEIP1193Provider(evmProvider)) return;
+
+      // Already synced with this address
+      if (
+        addressRef.current === evmAccount.address &&
+        syncedFromMultiChainRef.current
+      ) {
+        return;
+      }
+
+      const syncProvider = async () => {
+        try {
+          isConnectingRef.current = true;
+
+          const ethersProvider = new ethers.BrowserProvider(
+            evmProvider as ethers.Eip1193Provider,
+          );
+          const ethersSigner = await ethersProvider.getSigner();
+          const network = await ethersProvider.getNetwork();
+
+          startTransition(() => {
+            setProvider(ethersProvider);
+            setSigner(ethersSigner);
+            setAddress(evmAccount.address);
+            setChainId(Number(network.chainId));
+            setCurrentWalletProvider(evmProvider);
+            setError(null);
+          });
+
+          syncedFromMultiChainRef.current = true;
+          Logger.info("Web3Context synced from MultiChainContext", {
+            address: evmAccount.address,
+            chainId: Number(network.chainId),
+          });
+        } catch (err) {
+          Logger.error("Failed to sync Web3Context from MultiChainContext", {
+            error: err,
+          });
+        } finally {
+          isConnectingRef.current = false;
+        }
+      };
+
+      syncProvider();
+    } else if (!multiChain.isConnected && syncedFromMultiChainRef.current) {
+      // MultiChain disconnected — clear only if we were synced from it
+      startTransition(() => {
+        setProvider(null);
+        setSigner(null);
+        setAddress(null);
+        setChainId(null);
+        setCurrentWalletProvider(null);
+      });
+      syncedFromMultiChainRef.current = false;
+      Logger.info("Web3Context cleared after MultiChainContext disconnect");
+    }
+  }, [multiChain.isConnected, multiChain.wallet, multiChain.accounts]);
 
   // Set up event listeners
   useEffect(() => {
