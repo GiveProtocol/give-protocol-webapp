@@ -88,8 +88,10 @@ export interface DonationModalState {
   frequency: DonationFrequency;
   /** Current step in the flow */
   step: ModalStep;
-  /** Amount to donate in fiat (USD) */
+  /** Amount to donate in selected fiat currency */
   amount: number;
+  /** Selected fiat currency code for card payments */
+  fiatCurrencyCode: string;
   /** Whether to cover processing fees */
   coverFees: boolean;
   /** Error message if any */
@@ -103,6 +105,7 @@ export type DonationModalAction =
   | { type: 'SET_PAYMENT_METHOD'; payload: PaymentMethod }
   | { type: 'SET_FREQUENCY'; payload: DonationFrequency }
   | { type: 'SET_AMOUNT'; payload: number }
+  | { type: 'SET_FIAT_CURRENCY'; payload: string }
   | { type: 'SET_COVER_FEES'; payload: boolean }
   | { type: 'START_PROCESSING' }
   | { type: 'SET_SUCCESS'; payload: DonationResult }

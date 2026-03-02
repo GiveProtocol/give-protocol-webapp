@@ -5,7 +5,7 @@ import { useCurrencyContext } from '@/contexts/CurrencyContext';
 import { calculateFeeOffset } from './types/donation';
 
 interface FeeOffsetCheckboxProps {
-  /** Amount in dollars */
+  /** Amount in the payment currency */
   amount: number;
   /** Whether fees are being covered */
   checked: boolean;
@@ -13,6 +13,8 @@ interface FeeOffsetCheckboxProps {
   onChange: (_checked: boolean) => void;
   /** Whether the checkbox is disabled */
   disabled?: boolean;
+  /** Optional formatter for displaying amounts in the payment currency */
+  formatAmount?: (_amount: number) => string;
 }
 
 /**
@@ -32,10 +34,16 @@ export function FeeOffsetCheckbox({
   checked,
   onChange,
   disabled = false,
+  formatAmount,
 }: FeeOffsetCheckboxProps): React.ReactElement {
   const { selectedCurrency } = useCurrencyContext();
 
   const { fee, total } = useMemo(() => calculateFeeOffset(amount), [amount]);
+
+  const fmt = useCallback((value: number) => {
+    if (formatAmount) return formatAmount(value);
+    return formatFiat(value, selectedCurrency, { decimals: 2 });
+  }, [formatAmount, selectedCurrency]);
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,21 +91,21 @@ export function FeeOffsetCheckbox({
           </span>
           {checked && (
             <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
-              +{formatFiat(fee, selectedCurrency, { decimals: 2 })}
+              +{fmt(fee)}
             </span>
           )}
         </div>
         <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
           {checked ? (
             <span>
-              {formatFiat(amount, selectedCurrency, { decimals: 2 })} + {formatFiat(fee, selectedCurrency, { decimals: 2 })} fees ={' '}
+              {fmt(amount)} + {fmt(fee)} fees ={' '}
               <span className="font-semibold text-gray-700 dark:text-gray-300">
-                {formatFiat(total, selectedCurrency, { decimals: 2 })}
+                {fmt(total)}
               </span>
             </span>
           ) : (
             <span>
-              Add {formatFiat(fee, selectedCurrency, { decimals: 2 })} to ensure 100% of your {formatFiat(amount, selectedCurrency, { decimals: 2 })} goes to the charity
+              Add {fmt(fee)} to ensure 100% of your {fmt(amount)} goes to the charity
             </span>
           )}
         </p>

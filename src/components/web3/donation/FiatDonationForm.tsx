@@ -1,19 +1,21 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Loader2, CheckCircle2, AlertCircle, Mail, User, RefreshCw, CreditCard, Shield } from 'lucide-react';
+import { Loader2, CheckCircle2, AlertCircle, Mail, User, RefreshCw, CreditCard, Shield, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { useFiatDonation } from '@/hooks/web3/useFiatDonation';
+import { useStripePayment } from '@/hooks/web3/useStripePayment';
 import { PremiumInput } from './PremiumInput';
 import { FeeOffsetCheckbox } from './FeeOffsetCheckbox';
 import { calculateFeeOffset } from './types/donation';
 import type { DonationFrequency, HelcimPaymentResult } from './types/donation';
+import { type FiatCurrencyConfig, formatCurrencyAmount, getFiatCurrencyByCode } from '@/config/fiatCurrencies';
 
 interface FiatDonationFormProps {
   /** Unique ID for the charity */
   charityId: string;
   /** Display name of the charity */
   charityName: string;
-  /** Amount to donate in dollars */
+  /** Amount to donate in the selected currency */
   amount: number;
   /** Donation frequency */
   frequency: DonationFrequency;
@@ -21,7 +23,7 @@ interface FiatDonationFormProps {
   coverFees: boolean;
   /** Callback when cover fees changes */
   onCoverFeesChange: (_cover: boolean) => void;
-  /** Callback on successful payment */
+  /** Callback on successful payment (Helcim only — Stripe redirects) */
   onSuccess: (_result: HelcimPaymentResult) => void;
   /** Callback on error */
   onError: (_error: Error) => void;
@@ -29,6 +31,8 @@ interface FiatDonationFormProps {
   donorId?: string;
   /** Connected wallet address for on-chain association */
   donorAddress?: string;
+  /** Selected fiat currency (defaults to USD) */
+  currency?: FiatCurrencyConfig;
 }
 
 /** Props for the script status display */
@@ -91,12 +95,12 @@ function ScriptStatus({
  * Disclaimer shown at the bottom of the form
  * @param {Object} props - Component props
  * @param {boolean} props.isMonthly - Whether this is a monthly donation
- * @param {number} props.chargeAmount - Amount to charge
+ * @param {string} props.formattedAmount - Pre-formatted charge amount with currency symbol
  * @returns {React.ReactElement} Disclaimer section
  */
-function PaymentDisclaimer({ isMonthly, chargeAmount }: {
+function PaymentDisclaimer({ isMonthly, formattedAmount }: {
   isMonthly: boolean;
-  chargeAmount: number;
+  formattedAmount: string;
 }): React.ReactElement {
   return (
     <div className={cn(
@@ -109,7 +113,7 @@ function PaymentDisclaimer({ isMonthly, chargeAmount }: {
         <>
           <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" aria-hidden="true" />
           <p className="text-xs text-amber-700 dark:text-amber-300">
-            <span className="font-semibold">Recurring charge:</span> Your card will be billed ${chargeAmount.toFixed(2)} monthly.
+            <span className="font-semibold">Recurring charge:</span> Your card will be billed {formattedAmount} monthly.
             You can cancel anytime via the link in your receipt email.
           </p>
         </>
@@ -125,12 +129,16 @@ function PaymentDisclaimer({ isMonthly, chargeAmount }: {
   );
 }
 
+/** Default USD currency config used when no currency prop is provided */
+const DEFAULT_CURRENCY: FiatCurrencyConfig = getFiatCurrencyByCode('USD') ?? {
+  code: 'USD', name: 'US Dollar', symbol: '$', processor: 'helcim', presets: [25, 50, 100, 250], enabled: true,
+};
+
 /**
- * Card payment form with guest checkout via HelcimPay.js
+ * Card payment form supporting Helcim (USD) and Stripe (non-USD) processors.
  * @component FiatDonationForm
- * @description Form for card payments. On submit, opens a secure Helcim-hosted
- * payment modal (iframe) where the user enters card details. No card data
- * touches this application.
+ * @description For Helcim (USD): opens a secure Helcim-hosted iframe for card entry.
+ * For Stripe (non-USD): redirects to Stripe Checkout hosted page.
  * @param {FiatDonationFormProps} props - Component props
  * @returns {React.ReactElement} Fiat donation form
  */
@@ -145,8 +153,10 @@ export function FiatDonationForm({
   onError,
   donorId,
   donorAddress,
+  currency = DEFAULT_CURRENCY,
 }: FiatDonationFormProps): React.ReactElement {
   const isMonthly = frequency === 'monthly';
+  const isStripe = currency.processor === 'stripe';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -160,18 +170,32 @@ export function FiatDonationForm({
     setMounted(true);
   }, []);
 
+  // Helcim hook (USD only)
   const {
     processFiatPayment,
-    loading,
-    error: paymentError,
+    loading: helcimLoading,
+    error: helcimError,
     scriptReady,
     retryInitialization,
     retryCount,
   } = useFiatDonation();
 
+  // Stripe hook (non-USD currencies)
+  const {
+    processStripePayment,
+    loading: stripeLoading,
+    error: stripeError,
+  } = useStripePayment();
+
   // Calculate final amount
   const { total: finalAmount } = calculateFeeOffset(coverFees ? amount : 0);
   const chargeAmount = coverFees ? finalAmount : amount;
+
+  /** Format amount with the correct currency symbol */
+  const fmtAmount = useCallback(
+    (value: number) => formatCurrencyAmount(value, currency),
+    [currency],
+  );
 
   const validateForm = useCallback((): boolean => {
     let isValid = true;
@@ -221,49 +245,29 @@ export function FiatDonationForm({
     retryInitialization();
   }, [retryInitialization]);
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-
-      if (!validateForm()) {
-        return;
-      }
-
+  /** Handle Helcim (USD) submit */
+  const handleHelcimSubmit = useCallback(
+    async () => {
       if (!scriptReady) {
         setFormError('Payment processor is loading. Please wait.');
         return;
       }
 
-      setIsSubmitting(true);
-      setFormError('');
+      const result = await processFiatPayment({
+        name: name.trim(),
+        email: email.trim(),
+        amount: chargeAmount,
+        coverFees,
+        charityId,
+        charityName,
+        frequency,
+        donorId,
+        donorAddress,
+      });
 
-      try {
-        const result = await processFiatPayment({
-          name: name.trim(),
-          email: email.trim(),
-          amount: chargeAmount,
-          coverFees,
-          charityId,
-          charityName,
-          frequency,
-          donorId,
-          donorAddress,
-        });
-
-        onSuccess(result);
-      } catch (err) {
-        const error = err instanceof Error ? err : new Error('Payment failed');
-        // Don't show "Payment cancelled" as a form error
-        if (error.message !== 'Payment cancelled') {
-          setFormError(error.message);
-          onError(error);
-        }
-      } finally {
-        setIsSubmitting(false);
-      }
+      onSuccess(result);
     },
     [
-      validateForm,
       scriptReady,
       processFiatPayment,
       name,
@@ -276,27 +280,88 @@ export function FiatDonationForm({
       donorId,
       donorAddress,
       onSuccess,
-      onError,
     ]
   );
 
+  /** Handle Stripe (non-USD) submit — redirects to Stripe Checkout */
+  const handleStripeSubmit = useCallback(
+    async () => {
+      await processStripePayment({
+        amount: chargeAmount,
+        currency: currency.code,
+        charityId,
+        donationType: isMonthly ? 'subscription' : 'one-time',
+        donorEmail: email.trim(),
+        donorName: name.trim(),
+        feeCovered: coverFees,
+      });
+    },
+    [
+      processStripePayment,
+      chargeAmount,
+      currency.code,
+      charityId,
+      isMonthly,
+      email,
+      name,
+      coverFees,
+    ]
+  );
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+
+      if (!validateForm()) {
+        return;
+      }
+
+      setIsSubmitting(true);
+      setFormError('');
+
+      try {
+        if (isStripe) {
+          await handleStripeSubmit();
+        } else {
+          await handleHelcimSubmit();
+        }
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Payment failed');
+        // Don't show "Payment cancelled" as a form error
+        if (error.message !== 'Payment cancelled') {
+          setFormError(error.message);
+          onError(error);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [validateForm, isStripe, handleStripeSubmit, handleHelcimSubmit, onError]
+  );
+
+  const loading = isStripe ? stripeLoading : helcimLoading;
+  const paymentError = isStripe ? stripeError : helcimError;
   const displayError = formError || paymentError;
   const isBusy = loading || isSubmitting;
+  const isReady = isStripe || scriptReady;
 
-  /** Returns the submit button label based on loading state and donation frequency. */
+  /** Returns the submit button label based on loading state and donation frequency */
   const getButtonText = (): string => {
     if (isBusy) {
+      if (isStripe) return 'Redirecting to Stripe...';
       return isMonthly ? 'Setting up subscription...' : 'Processing...';
     }
     if (isMonthly) {
-      return `Start Monthly Gift – $${chargeAmount.toFixed(2)}/mo`;
+      return `Start Monthly Gift – ${fmtAmount(chargeAmount)}/mo`;
     }
-    return `Donate $${chargeAmount.toFixed(2)}`;
+    return `Donate ${fmtAmount(chargeAmount)}`;
   };
 
-  const submitIcon = isMonthly
-    ? <RefreshCw className="w-5 h-5" />
-    : <CreditCard className="w-5 h-5" />;
+  const submitIcon = isStripe
+    ? <ExternalLink className="w-5 h-5" />
+    : isMonthly
+      ? <RefreshCw className="w-5 h-5" />
+      : <CreditCard className="w-5 h-5" />;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
@@ -368,21 +433,22 @@ export function FiatDonationForm({
         checked={coverFees}
         onChange={onCoverFeesChange}
         disabled={isBusy}
+        formatAmount={fmtAmount}
       />
 
-      {/* Script loading status */}
-      {!scriptReady && (
+      {/* Helcim script loading status (USD only) */}
+      {!isStripe && !scriptReady && (
         <div className={cn(
           'p-4 rounded-xl',
           'bg-gray-50 dark:bg-slate-800/70',
           'border-2 border-gray-200 dark:border-slate-600',
           'flex items-center justify-center',
-          mounted && paymentError && 'border-red-300 dark:border-red-700'
+          mounted && helcimError && 'border-red-300 dark:border-red-700'
         )}>
           <ScriptStatus
             scriptReady={scriptReady}
             mounted={mounted}
-            paymentError={paymentError}
+            paymentError={helcimError}
             retryCount={retryCount}
             onRetry={handleRetryPayment}
           />
@@ -390,11 +456,13 @@ export function FiatDonationForm({
       )}
 
       {/* Secure checkout notice */}
-      {scriptReady && (
+      {isReady && (
         <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
           <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" aria-hidden="true" />
           <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-            A secure payment window will open for card details.
+            {isStripe
+              ? 'You will be redirected to Stripe for secure card payment.'
+              : 'A secure payment window will open for card details.'}
           </p>
         </div>
       )}
@@ -402,7 +470,7 @@ export function FiatDonationForm({
       {/* Submit button */}
       <Button
         type="submit"
-        disabled={isBusy || !scriptReady || amount <= 0}
+        disabled={isBusy || !isReady || amount <= 0}
         fullWidth
         size="lg"
         icon={isBusy ? <Loader2 className="w-5 h-5 animate-spin" /> : submitIcon}
@@ -416,7 +484,7 @@ export function FiatDonationForm({
         {getButtonText()}
       </Button>
 
-      <PaymentDisclaimer isMonthly={isMonthly} chargeAmount={chargeAmount} />
+      <PaymentDisclaimer isMonthly={isMonthly} formattedAmount={fmtAmount(chargeAmount)} />
     </form>
   );
 }

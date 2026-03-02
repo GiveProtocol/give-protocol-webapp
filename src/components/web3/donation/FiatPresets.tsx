@@ -9,6 +9,12 @@ interface FiatPresetsProps {
   onAmountSelect: (_amount: number) => void;
   /** When true, pass fiat amounts directly without crypto conversion */
   directFiat?: boolean;
+  /** Override default preset amounts (e.g., for non-USD currencies) */
+  presets?: number[];
+  /** Currency symbol to display (defaults to $ via selectedCurrency) */
+  currencySymbol?: string;
+  /** Whether amounts are zero-decimal (no cents, e.g., JPY, KRW) */
+  zeroDecimal?: boolean;
 }
 
 const PRESET_AMOUNTS = [10, 50, 100, 500];
@@ -26,6 +32,9 @@ export function FiatPresets({
   selectedToken,
   onAmountSelect,
   directFiat = false,
+  presets,
+  currencySymbol,
+  zeroDecimal = false,
 }: FiatPresetsProps): React.ReactElement {
   const { selectedCurrency, tokenPrices, convertFromFiat } =
     useCurrencyContext();
@@ -71,8 +80,9 @@ export function FiatPresets({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const raw = e.target.value;
 
-      // Allow empty, digits, and one decimal point
-      if (raw !== "" && !/^\d*\.?\d{0,2}$/.test(raw)) return;
+      // Validate based on currency decimal rules
+      const pattern = zeroDecimal ? /^\d*$/ : /^\d*\.?\d{0,2}$/;
+      if (raw !== "" && !pattern.test(raw)) return;
 
       setCustomValue(raw);
       setSelectedAmount(null);
@@ -85,7 +95,23 @@ export function FiatPresets({
         onAmountSelect(0);
       }
     },
-    [emitAmount, onAmountSelect],
+    [emitAmount, onAmountSelect, zeroDecimal],
+  );
+
+  const symbol = currencySymbol ?? "$";
+
+  /** Format a preset amount for display */
+  const formatPreset = useCallback(
+    (value: number) => {
+      if (currencySymbol !== undefined) {
+        const formatted = zeroDecimal
+          ? value.toLocaleString()
+          : value.toFixed(0);
+        return `${symbol}${formatted}`;
+      }
+      return formatFiat(value, selectedCurrency, { decimals: 0 });
+    },
+    [currencySymbol, zeroDecimal, symbol, selectedCurrency],
   );
 
   if (!directFiat && !hasPrice) {
@@ -97,6 +123,7 @@ export function FiatPresets({
   }
 
   const isCustomActive = selectedAmount === null && customValue !== "";
+  const activePresets = presets ?? PRESET_AMOUNTS;
 
   return (
     <div className="space-y-3">
@@ -104,7 +131,7 @@ export function FiatPresets({
         Quick Amounts
       </h3>
       <div className="grid grid-cols-4 gap-3">
-        {PRESET_AMOUNTS.map((amount) => {
+        {activePresets.map((amount) => {
           const isSelected = selectedAmount === amount;
           return (
             <button
@@ -122,7 +149,7 @@ export function FiatPresets({
                   : "bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-indigo-500 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 hover:shadow-md focus:ring-indigo-500",
               )}
             >
-              {formatFiat(amount, selectedCurrency, { decimals: 0 })}
+              {formatPreset(amount)}
             </button>
           );
         })}
@@ -138,16 +165,16 @@ export function FiatPresets({
               : "text-gray-400 dark:text-gray-500",
           )}
         >
-          $
+          {symbol}
         </span>
         <input
           ref={inputRef}
           type="text"
-          inputMode="decimal"
+          inputMode={zeroDecimal ? "numeric" : "decimal"}
           placeholder="Custom amount"
           value={customValue}
           onChange={handleCustomChange}
-          aria-label="Custom donation amount in dollars"
+          aria-label={`Custom donation amount in ${symbol}`}
           className={cn(
             "w-full pl-7 pr-4 py-3 text-sm font-medium rounded-xl",
             "border-2 transition-all duration-200",
