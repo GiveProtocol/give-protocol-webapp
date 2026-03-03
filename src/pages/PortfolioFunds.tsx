@@ -7,7 +7,7 @@ import {
 } from "../hooks/web3/usePortfolioFunds";
 import { useToast } from "../contexts/ToastContext";
 import { useTranslation } from "../hooks/useTranslation";
-import { Heart, Users, TrendingUp, Clock, AlertCircle } from "lucide-react";
+import { Heart, Users, AlertCircle } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 interface DonationModalProps {
@@ -353,14 +353,6 @@ const PortfolioFunds: React.FC = () => {
                 <div className="flex items-center text-sm text-gray-500">
                   <Users className="h-4 w-4 mr-2" />
                   {fund.charities.length} Verified Charities
-                </div>
-                <div className="flex items-center text-sm text-gray-500">
-                  <TrendingUp className="h-4 w-4 mr-2" />
-                  {fund.totalRaised} Total Raised
-                </div>
-                <div className="flex items-center text-sm text-gray-500">
-                  <Clock className="h-4 w-4 mr-2" />
-                  {fund.totalDistributed} Distributed
                 </div>
               </div>
 

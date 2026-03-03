@@ -5,7 +5,6 @@ import {
   ChevronUp,
   ChevronDown,
   FileText,
-  Share2,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { Transaction } from "@/types/contribution";
@@ -124,19 +123,12 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             {t("transactions.noTransactionsYet", "No transactions yet")}
           </h3>
-          <p className="text-gray-500 mb-6 max-w-sm mx-auto">
+          <p className="text-gray-500 max-w-sm mx-auto">
             {t(
               "transactions.noTransactionsDescription",
               "Your donation history will appear here once you receive contributions.",
             )}
           </p>
-          <Button
-            variant="secondary"
-            className="inline-flex items-center gap-2"
-          >
-            <Share2 className="h-4 w-4" />
-            {t("transactions.shareDonationPage", "Share donation page")}
-          </Button>
         </div>
       </div>
     );
