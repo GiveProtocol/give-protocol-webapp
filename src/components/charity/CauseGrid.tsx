@@ -1,8 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Cause } from '../../types/charity';
-import { formatCurrency } from '../../utils/money';
-import { Button } from '../ui/Button';
 
 interface CauseGridProps {
   searchTerm: string;
@@ -75,19 +73,13 @@ export const CauseGrid: React.FC<CauseGridProps> = ({ searchTerm, category }) =>
           <div className="p-6 space-y-4">
             <h3 className="text-xl font-semibold text-gray-900 mb-2">{cause.name}</h3>
             <p className="text-gray-600 mb-4">{cause.description}</p>
-            <div className="flex justify-between text-sm text-gray-500 mb-1">
-              <span>Progress</span>
-              <span>{formatCurrency(cause.raisedAmount)} of {formatCurrency(cause.targetAmount)}</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 mb-4 relative overflow-hidden">
-              <div
-                className="absolute inset-y-0 left-0 bg-indigo-600"
-                style={{ width: `${(cause.raisedAmount / cause.targetAmount) * 100}%` }}
-              />
-            </div>
-            <Button className="w-full">
+            <div
+              className="w-full h-[48px] rounded-full bg-[#0d9f6e] text-white flex items-center justify-center gap-2.5 uppercase"
+              style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.05em' }}
+            >
+              <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>
               Give to Cause
-            </Button>
+            </div>
           </div>
         </Link>
       ))}

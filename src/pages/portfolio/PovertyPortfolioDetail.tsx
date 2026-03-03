@@ -1,8 +1,6 @@
 import React from 'react';
 import { CharityCard } from '@/components/charity/CharityCard';
-import { DonationButton } from '@/components/web3/donation/DonationButton';
-import { ScheduledDonationButton } from '@/components/web3/donation/ScheduledDonationButton';
-import { formatCurrency } from '@/utils/money';
+import { GivingOptionsCard } from '@/components/web3/donation/GivingButtons';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 const PORTFOLIO = {
@@ -10,7 +8,6 @@ const PORTFOLIO = {
   name: 'Poverty Relief Impact Fund',
   description: 'Empowering communities through sustainable poverty alleviation programs and initiatives that create lasting change.',
   category: 'Poverty Relief',
-  totalDonated: 850000,
   image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=800'
 };
 
@@ -82,24 +79,9 @@ const PovertyPortfolioDetail: React.FC = () => {
         </div>
       </ScrollReveal>
 
-      <ScrollReveal direction="up" delay={100} className="flex items-center justify-between mb-8">
-        <div>
-          <p className="text-sm text-gray-500">Total Donated</p>
-          <p className="text-2xl font-bold text-gray-900">
-            {formatCurrency(PORTFOLIO.totalDonated)}
-          </p>
-        </div>
-        <div className="w-1/2 space-y-3">
-          <DonationButton
-            charityName={PORTFOLIO.name}
-            charityAddress={PORTFOLIO.id}
-            buttonText="Give Once"
-          />
-          <ScheduledDonationButton
-            charityName={PORTFOLIO.name}
-            charityAddress={PORTFOLIO.id}
-            buttonText="Give Monthly"
-          />
+      <ScrollReveal direction="up" delay={100} className="flex items-center justify-end mb-8">
+        <div className="w-1/2">
+          <GivingOptionsCard charityName={PORTFOLIO.name} charityAddress={PORTFOLIO.id} />
         </div>
       </ScrollReveal>
 

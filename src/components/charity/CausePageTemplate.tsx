@@ -1,44 +1,8 @@
 import React from "react";
-import { DonationButton } from "@/components/web3/donation/DonationButton";
-import { ScheduledDonationButton } from "@/components/web3/donation/ScheduledDonationButton";
-import { formatCurrency } from "@/utils/money";
+import { GivingOptionsCard } from "@/components/web3/donation/GivingButtons";
 import { HeroSection } from "@/components/ui/HeroSection";
 import type { CauseProfileData } from "@/types/charity";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
-
-function FundingProgressCard({ cause, progressPercentage }: {
-  cause: CauseProfileData;
-  progressPercentage: number;
-}): React.ReactElement {
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-      <h2 className="text-xl font-semibold text-gray-900">
-        Funding Progress
-      </h2>
-      <div className="flex justify-between text-sm text-gray-500 mb-1">
-        <span>Progress</span>
-        <span>
-          {formatCurrency(cause.raisedAmount)} of{" "}
-          {formatCurrency(cause.targetAmount)}
-        </span>
-      </div>
-      <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
-        <div
-          className="bg-indigo-600 h-2 rounded-full"
-          style={{ width: `${Math.min(progressPercentage, 100)}%` }}
-        />
-      </div>
-      <DonationButton
-        charityName={cause.name}
-        charityAddress={cause.charityId}
-      />
-      <ScheduledDonationButton
-        charityName={cause.name}
-        charityAddress={cause.charityId}
-      />
-    </div>
-  );
-}
 
 function ProjectDetailsCard({ cause }: {
   cause: CauseProfileData;
@@ -99,8 +63,7 @@ interface CausePageTemplateProps {
  * Reusable template component for rendering cause/project detail pages.
  * Provides a consistent layout for all cause pages with:
  * - Hero section with image and basic info
- * - Funding progress bar
- * - Donation button
+ * - Donation buttons
  * - Project details (timeline, location, partners)
  * - Impact highlights
  *
@@ -133,8 +96,6 @@ interface CausePageTemplateProps {
 export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
   cause,
 }) => {
-  const progressPercentage = (cause.raisedAmount / cause.targetAmount) * 100;
-
   return (
     <>
       <HeroSection
@@ -145,7 +106,7 @@ export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <ScrollReveal direction="up" delay={100} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <FundingProgressCard cause={cause} progressPercentage={progressPercentage} />
+          <GivingOptionsCard heading="Support This Cause" charityName={cause.name} charityAddress={cause.charityId} />
           <ProjectDetailsCard cause={cause} />
         </ScrollReveal>
 

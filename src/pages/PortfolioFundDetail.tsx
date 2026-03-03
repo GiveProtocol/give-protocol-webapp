@@ -1,8 +1,7 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
 import { CharityCard } from '@/components/charity/CharityCard';
-import { DonationButton } from '@/components/web3/donation/DonationButton';
-import { formatCurrency } from '@/utils/money';
+import { GivingOptionsCard } from '@/components/web3/donation/GivingButtons';
 
 // Sample data - replace with actual API calls
 const SAMPLE_PORTFOLIO = {
@@ -10,7 +9,6 @@ const SAMPLE_PORTFOLIO = {
   name: 'Environmental Impact Fund',
   description: 'Supporting climate action and conservation projects across multiple organizations focused on environmental conservation, renewable energy, and sustainable practices.',
   category: 'Environmental',
-  totalDonated: 1000000,
   image: 'https://images.unsplash.com/photo-1498925008800-019c7d59d903?auto=format&fit=crop&w=800'
 };
 
@@ -85,19 +83,9 @@ const PortfolioFundDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <p className="text-sm text-gray-500">Total Donated</p>
-            <p className="text-2xl font-bold text-gray-900">
-              {formatCurrency(SAMPLE_PORTFOLIO.totalDonated)}
-            </p>
-          </div>
+        <div className="flex items-center justify-end mb-8">
           <div className="w-1/2">
-            <DonationButton
-              charityName={SAMPLE_PORTFOLIO.name}
-              charityAddress={SAMPLE_PORTFOLIO.id}
-              buttonText="Donate to Fund"
-            />
+            <GivingOptionsCard charityName={SAMPLE_PORTFOLIO.name} charityAddress={SAMPLE_PORTFOLIO.id} />
           </div>
         </div>
       </div>
