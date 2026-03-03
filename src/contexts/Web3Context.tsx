@@ -718,18 +718,19 @@ export function useWeb3MultiChain() {
               source: "Legacy",
             }));
           },
-          disconnect: async () => {
+          disconnect: () => {
             // EVM wallets typically don't have disconnect
+            return Promise.resolve();
           },
-          getAccounts: async () => [],
+          getAccounts: () => Promise.resolve([]),
           switchChain: async (newChainId: number | string) => {
             await walletProvider.request({
               method: "wallet_switchEthereumChain",
               params: [{ chainId: `0x${Number(newChainId).toString(16)}` }],
             });
           },
-          signTransaction: async () => "",
-          signMessage: async () => "",
+          signTransaction: () => Promise.resolve(""),
+          signMessage: () => Promise.resolve(""),
         };
 
         await multiChain.connect(unifiedProvider, "evm");

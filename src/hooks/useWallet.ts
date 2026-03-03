@@ -88,9 +88,10 @@ class EVMWalletBase implements WalletProvider {
     }
   }
 
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     this.disconnectionAttempts++;
     // Most EVM wallets don't have a disconnect method
+    return Promise.resolve();
   }
 
   async switchChain(chainId: number): Promise<void> {
@@ -270,29 +271,31 @@ class WalletConnect implements WalletProvider {
     return Boolean(this.name);
   }
 
-  async isConnected(_address: string): Promise<boolean> {
+  isConnected(_address: string): Promise<boolean> {
     // Implementation would check WalletConnect session
     this.connectionAttempts++;
-    return false;
+    return Promise.resolve(false);
   }
 
-  async connect(): Promise<string> {
+  connect(): Promise<string> {
     this.connectionAttempts++;
     // In a real implementation, this would initialize WalletConnect
-    throw new Error("WalletConnect integration pending");
+    return Promise.reject(new Error("WalletConnect integration pending"));
   }
 
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     // WalletConnect disconnect would be implemented here
     this.connectionAttempts++;
+    return Promise.resolve();
   }
 
-  async switchChain(_chainId: number | string): Promise<void> {
+  switchChain(_chainId: number | string): Promise<void> {
     Logger.info("WalletConnect chain switch requested", {
       chainId: _chainId,
       provider: this.provider,
       connectionAttempts: this.connectionAttempts,
     });
+    return Promise.resolve();
   }
 }
 
