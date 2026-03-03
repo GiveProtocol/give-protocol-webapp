@@ -40,14 +40,6 @@ function FooterResources() {
         </li>
         <li>
           <Link
-            to="/governance"
-            className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
-          >
-            Governance
-          </Link>
-        </li>
-        <li>
-          <Link
             to="/about"
             className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
           >

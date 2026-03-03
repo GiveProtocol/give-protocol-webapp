@@ -123,7 +123,6 @@ export const Navbar: React.FC = () => {
     "/about",
     "/legal",
     "/privacy",
-    "/governance",
   ].includes(location.pathname);
 
   return (

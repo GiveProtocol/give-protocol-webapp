@@ -93,12 +93,6 @@ const DesktopNavLinks: React.FC<{
           Monthly Donations
         </Link>
       )}
-      <Link
-        to="/governance"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/governance")}`}
-      >
-        {t("nav.governance")}
-      </Link>
     </>
   );
 };
@@ -200,13 +194,6 @@ const MobileNavLinks: React.FC<{
           <span>Monthly Donations</span>
         </Link>
       )}
-      <Link
-        to="/governance"
-        className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/governance")}`}
-        onClick={handleLinkClick}
-      >
-        {t("nav.governance")}
-      </Link>
     </>
   );
 };
@@ -411,7 +398,7 @@ export const AppNavbar: React.FC = () => {
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(
     () =>
-      ["/about", "/legal", "/privacy", "/governance"].includes(
+      ["/about", "/legal", "/privacy"].includes(
         location.pathname,
       ),
     [location.pathname],
