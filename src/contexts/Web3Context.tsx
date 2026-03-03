@@ -161,7 +161,7 @@ interface Web3ContextType {
   switchChain: (_chainId: number) => Promise<void>;
 }
 
-const Web3Context = createContext<Web3ContextType | undefined>(undefined);
+const Web3Context = createContext<Web3ContextType | undefined>();
 
 /**
  * Web3 provider component that manages blockchain wallet connections and state
@@ -249,6 +249,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   // Initialize provider and check for existing connection
   useEffect(() => {
+    /** Check for existing wallet connection and restore provider state */
     const initProvider = async () => {
       if (typeof window.ethereum !== "undefined") {
         try {
@@ -320,6 +321,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         return;
       }
 
+      /** Sync Web3Context state from MultiChainContext EVM connection */
       const syncProvider = async () => {
         try {
           isConnectingRef.current = true;
@@ -373,6 +375,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
     const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
     if (!walletProvider || typeof walletProvider.on !== "function") return;
 
+    /** Clear all connection state when wallet fires disconnect event */
     const handleDisconnect = () => {
       setProvider(null);
       setSigner(null);
@@ -666,6 +669,7 @@ export function useWeb3MultiChain() {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
 
   useEffect(() => {
+    /** Create ethers provider and signer from unified wallet EVM provider */
     const setupEthers = async () => {
       if (!multiChain.wallet?.providers.evm) {
         setProvider(null);

@@ -52,10 +52,12 @@ class EVMWalletBase implements WalletProvider {
     this.provider = provider;
   }
 
+  /** Check whether the wallet extension is available in the browser */
   isInstalled(): boolean {
     return Boolean(this.provider);
   }
 
+  /** Check whether the given address is currently connected */
   async isConnected(address: string): Promise<boolean> {
     try {
       if (!this.provider || typeof this.provider.request !== "function") {
@@ -68,6 +70,7 @@ class EVMWalletBase implements WalletProvider {
     }
   }
 
+  /** Request account access and return the connected address */
   async connect(): Promise<string> {
     try {
       if (!this.provider || typeof this.provider.request !== "function") {
@@ -88,12 +91,14 @@ class EVMWalletBase implements WalletProvider {
     }
   }
 
+  /** Disconnect the wallet (no-op for most EVM wallets) */
   disconnect(): Promise<void> {
     this.disconnectionAttempts++;
     // Most EVM wallets don't have a disconnect method
     return Promise.resolve();
   }
 
+  /** Switch the wallet to the specified chain, adding it if necessary */
   async switchChain(chainId: number): Promise<void> {
     try {
       if (!this.provider || typeof this.provider.request !== "function") {
@@ -118,6 +123,7 @@ class EVMWalletBase implements WalletProvider {
     }
   }
 
+  /** Add a new chain to the wallet via wallet_addEthereumChain */
   protected async addChain(chainId: number): Promise<void> {
     const chainParams = this.getChainParams(chainId);
     if (!chainParams) throw new Error("Unsupported chain");
@@ -132,6 +138,7 @@ class EVMWalletBase implements WalletProvider {
     });
   }
 
+  /** Look up the RPC/explorer config for a supported chain ID */
   protected getChainParams(chainId: number) {
     if (!this.chainParams) {
       this.chainParams = {};
@@ -239,6 +246,7 @@ class MetaMaskWallet extends EVMWalletBase {
     );
   }
 
+  /** Check whether MetaMask extension is available */
   isInstalled(): boolean {
     this.installationChecks++;
     if (typeof window === "undefined") return false;
@@ -271,12 +279,14 @@ class WalletConnect implements WalletProvider {
     return Boolean(this.name);
   }
 
+  /** Check WalletConnect session status (stub) */
   isConnected(_address: string): Promise<boolean> {
     // Implementation would check WalletConnect session
     this.connectionAttempts++;
     return Promise.resolve(false);
   }
 
+  /** Initialize WalletConnect session (not yet implemented) */
   connect(): Promise<string> {
     this.connectionAttempts++;
     // In a real implementation, this would initialize WalletConnect
@@ -289,6 +299,7 @@ class WalletConnect implements WalletProvider {
     return Promise.resolve();
   }
 
+  /** Request chain switch via WalletConnect (stub) */
   switchChain(_chainId: number | string): Promise<void> {
     Logger.info("WalletConnect chain switch requested", {
       chainId: _chainId,
@@ -325,6 +336,7 @@ class NovaWallet extends EVMWalletBase {
     );
   }
 
+  /** Check whether Nova Wallet is available */
   isInstalled(): boolean {
     this.installationChecks++;
     if (typeof window === "undefined") return false;
@@ -360,6 +372,7 @@ class SubWallet extends EVMWalletBase {
     );
   }
 
+  /** Check whether SubWallet extension is available */
   isInstalled(): boolean {
     this.installationChecks++;
     if (typeof window === "undefined") return false;
@@ -395,6 +408,7 @@ class TalismanWallet extends EVMWalletBase {
     );
   }
 
+  /** Check whether Talisman wallet is available */
   isInstalled(): boolean {
     this.installationChecks++;
     if (typeof window === "undefined") return false;
@@ -430,6 +444,7 @@ class CoinbaseWallet extends EVMWalletBase {
     super("Coinbase Wallet", "coinbase", provider);
   }
 
+  /** Check whether Coinbase Wallet extension is available */
   isInstalled(): boolean {
     this.installationChecks++;
     if (typeof window === "undefined") return false;
@@ -475,6 +490,7 @@ export function useWallet() {
     new NovaWallet(),
   ];
 
+  /** Return only wallets whose browser extension is detected */
   const getInstalledWallets = () => {
     return wallets.filter((wallet) => wallet.isInstalled());
   };

@@ -65,6 +65,7 @@ const SAMPLE_CHARITIES = [
   }
 ];
 
+/** Detail page for a single portfolio fund showing charities and giving options */
 const PortfolioFundDetail: React.FC = () => {
   const { id: _id } = useParams<{ id: string }>(); // Prefixed as unused
   

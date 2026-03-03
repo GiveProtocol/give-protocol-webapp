@@ -24,6 +24,11 @@ interface TransactionsTabProps {
   onShowExportModal: () => void;
 }
 
+/**
+ * Tab displaying sortable transaction history with export capability.
+ * @param props - Transaction data, sort config, and callbacks
+ * @returns Rendered transactions table or empty state
+ */
 export const TransactionsTab: React.FC<TransactionsTabProps> = ({
   transactions,
   sortConfig,

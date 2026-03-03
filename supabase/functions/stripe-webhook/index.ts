@@ -16,6 +16,110 @@ const corsHeaders = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 
+/** Build a JSON response with CORS headers */
+function jsonResponse(body: Record<string, unknown>, status: number): Response {
+  return new Response(
+    JSON.stringify(body),
+    { status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
+  );
+}
+
+/** Handle checkout.session.completed: persist the one-time or first subscription donation */
+async function handleCheckoutCompleted(
+  supabase: ReturnType<typeof createClient>,
+  session: Stripe.Checkout.Session,
+): Promise<void> {
+  const metadata = session.metadata ?? {};
+
+  const names = await resolveNames(supabase, {
+    charityId: metadata.charityId || undefined,
+    causeId: metadata.causeId || undefined,
+    fundId: metadata.fundId || undefined,
+    amountUsd: (session.amount_total ?? 0) / 100,
+    donationType: session.mode === 'subscription' ? 'subscription' : 'one-time',
+  });
+
+  const { error: donationError } = await supabase
+    .from('fiat_donations')
+    .insert({
+      charity_id: metadata.charityId || null,
+      cause_id: metadata.causeId || null,
+      fund_id: metadata.fundId || null,
+      charity_name: names.charityName || 'Unknown Charity',
+      donor_name: metadata.donorName || session.customer_details?.name || '',
+      donor_email: session.customer_details?.email || '',
+      amount: (session.amount_total ?? 0) / 100,
+      currency: (session.currency ?? 'usd').toUpperCase(),
+      donation_type: session.mode === 'subscription' ? 'subscription' : 'one-time',
+      fee_covered: metadata.feeCovered === 'true',
+      stripe_session_id: session.id,
+      stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
+      validated: true,
+    });
+
+  if (donationError) {
+    console.error('Failed to persist fiat donation:', donationError);
+  }
+
+  await supabase
+    .from('checkout_sessions')
+    .update({ validated: true })
+    .eq('checkout_token', session.id);
+}
+
+/** Handle invoice.paid: persist a recurring subscription donation */
+async function handleInvoicePaid(
+  supabase: ReturnType<typeof createClient>,
+  stripe: Stripe,
+  invoice: Stripe.Invoice,
+): Promise<void> {
+  const subscriptionId = typeof invoice.subscription === 'string' ? invoice.subscription : null;
+  if (!subscriptionId) return;
+
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId);
+  const metadata = subscription.metadata ?? {};
+
+  const names = await resolveNames(supabase, {
+    charityId: metadata.charityId || undefined,
+    causeId: metadata.causeId || undefined,
+    fundId: metadata.fundId || undefined,
+    amountUsd: (invoice.amount_paid ?? 0) / 100,
+    donationType: 'subscription',
+  });
+
+  const { error: donationError } = await supabase
+    .from('fiat_donations')
+    .insert({
+      charity_id: metadata.charityId || null,
+      cause_id: metadata.causeId || null,
+      fund_id: metadata.fundId || null,
+      charity_name: names.charityName || 'Unknown Charity',
+      donor_name: metadata.donorName || '',
+      donor_email: invoice.customer_email || '',
+      amount: (invoice.amount_paid ?? 0) / 100,
+      currency: (invoice.currency ?? 'usd').toUpperCase(),
+      donation_type: 'subscription',
+      fee_covered: metadata.feeCovered === 'true',
+      stripe_payment_intent_id: typeof invoice.payment_intent === 'string' ? invoice.payment_intent : null,
+      validated: true,
+    });
+
+  if (donationError) {
+    console.error('Failed to persist recurring donation:', donationError);
+  }
+}
+
+/** Verify required environment variables are set */
+function getRequiredEnv(...keys: string[]): Record<string, string> | null {
+  const result: Record<string, string> = {};
+  for (const key of keys) {
+    const value = Deno.env.get(key);
+    if (!value) return null;
+    result[key] = value;
+  }
+  return result;
+}
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
@@ -23,158 +127,56 @@ serve(async (req: Request) => {
 
   try {
     if (req.method !== 'POST') {
-      return new Response(
-        JSON.stringify({ error: 'Method not allowed' }),
-        { status: 405, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return jsonResponse({ error: 'Method not allowed' }, 405);
     }
 
-    const stripeSecretKey = Deno.env.get('STRIPE_SECRET_KEY');
-    const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET');
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!stripeSecretKey || !webhookSecret) {
+    const stripeEnv = getRequiredEnv('STRIPE_SECRET_KEY', 'STRIPE_WEBHOOK_SECRET');
+    if (!stripeEnv) {
       console.error('Stripe env vars not configured');
-      return new Response(
-        JSON.stringify({ error: 'Webhook not configured' }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return jsonResponse({ error: 'Webhook not configured' }, 503);
     }
 
-    const stripe = new Stripe(stripeSecretKey, { apiVersion: '2023-10-16' });
+    const stripe = new Stripe(stripeEnv.STRIPE_SECRET_KEY, { apiVersion: '2023-10-16' });
 
     const body = await req.text();
     const signature = req.headers.get('stripe-signature');
 
     if (!signature) {
-      return new Response(
-        JSON.stringify({ error: 'Missing stripe-signature header' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return jsonResponse({ error: 'Missing stripe-signature header' }, 400);
     }
 
     let event: Stripe.Event;
     try {
-      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      event = stripe.webhooks.constructEvent(body, signature, stripeEnv.STRIPE_WEBHOOK_SECRET);
     } catch (err) {
       console.error('Webhook signature verification failed:', err);
-      return new Response(
-        JSON.stringify({ error: 'Invalid signature' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return jsonResponse({ error: 'Invalid signature' }, 400);
     }
 
-    if (!supabaseUrl || !supabaseKey) {
+    const dbEnv = getRequiredEnv('SUPABASE_URL', 'SUPABASE_SERVICE_ROLE_KEY');
+    if (!dbEnv) {
       console.error('Supabase env vars not configured');
-      return new Response(
-        JSON.stringify({ error: 'Database not configured' }),
-        { status: 503, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-      );
+      return jsonResponse({ error: 'Database not configured' }, 503);
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabase = createClient(dbEnv.SUPABASE_URL, dbEnv.SUPABASE_SERVICE_ROLE_KEY);
 
     switch (event.type) {
-      case 'checkout.session.completed': {
-        const session = event.data.object as Stripe.Checkout.Session;
-        const metadata = session.metadata ?? {};
-
-        // Resolve charity name for the donation record
-        const names = await resolveNames(supabase, {
-          charityId: metadata.charityId || undefined,
-          causeId: metadata.causeId || undefined,
-          fundId: metadata.fundId || undefined,
-          amountUsd: (session.amount_total ?? 0) / 100,
-          donationType: session.mode === 'subscription' ? 'subscription' : 'one-time',
-        });
-
-        // Persist to fiat_donations
-        const { error: donationError } = await supabase
-          .from('fiat_donations')
-          .insert({
-            charity_id: metadata.charityId || null,
-            cause_id: metadata.causeId || null,
-            fund_id: metadata.fundId || null,
-            charity_name: names.charityName || 'Unknown Charity',
-            donor_name: metadata.donorName || session.customer_details?.name || '',
-            donor_email: session.customer_details?.email || '',
-            amount: (session.amount_total ?? 0) / 100,
-            currency: (session.currency ?? 'usd').toUpperCase(),
-            donation_type: session.mode === 'subscription' ? 'subscription' : 'one-time',
-            fee_covered: metadata.feeCovered === 'true',
-            stripe_session_id: session.id,
-            stripe_payment_intent_id: typeof session.payment_intent === 'string' ? session.payment_intent : null,
-            validated: true,
-          });
-
-        if (donationError) {
-          console.error('Failed to persist fiat donation:', donationError);
-        }
-
-        // Mark checkout session as validated
-        await supabase
-          .from('checkout_sessions')
-          .update({ validated: true })
-          .eq('checkout_token', session.id);
-
+      case 'checkout.session.completed':
+        await handleCheckoutCompleted(supabase, event.data.object as Stripe.Checkout.Session);
         break;
-      }
 
-      case 'invoice.paid': {
-        const invoice = event.data.object as Stripe.Invoice;
-        const subscriptionId = typeof invoice.subscription === 'string' ? invoice.subscription : null;
-
-        if (subscriptionId) {
-          // Fetch the subscription to get metadata
-          const subscription = await stripe.subscriptions.retrieve(subscriptionId);
-          const metadata = subscription.metadata ?? {};
-
-          const names = await resolveNames(supabase, {
-            charityId: metadata.charityId || undefined,
-            causeId: metadata.causeId || undefined,
-            fundId: metadata.fundId || undefined,
-            amountUsd: (invoice.amount_paid ?? 0) / 100,
-            donationType: 'subscription',
-          });
-
-          const { error: donationError } = await supabase
-            .from('fiat_donations')
-            .insert({
-              charity_id: metadata.charityId || null,
-              cause_id: metadata.causeId || null,
-              fund_id: metadata.fundId || null,
-              charity_name: names.charityName || 'Unknown Charity',
-              donor_name: metadata.donorName || '',
-              donor_email: invoice.customer_email || '',
-              amount: (invoice.amount_paid ?? 0) / 100,
-              currency: (invoice.currency ?? 'usd').toUpperCase(),
-              donation_type: 'subscription',
-              fee_covered: metadata.feeCovered === 'true',
-              stripe_payment_intent_id: typeof invoice.payment_intent === 'string' ? invoice.payment_intent : null,
-              validated: true,
-            });
-
-          if (donationError) {
-            console.error('Failed to persist recurring donation:', donationError);
-          }
-        }
+      case 'invoice.paid':
+        await handleInvoicePaid(supabase, stripe, event.data.object as Stripe.Invoice);
         break;
-      }
 
       default:
         console.log(`Unhandled event type: ${event.type}`);
     }
 
-    return new Response(
-      JSON.stringify({ received: true }),
-      { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return jsonResponse({ received: true }, 200);
   } catch (error) {
     console.error('Stripe webhook error:', error);
-    return new Response(
-      JSON.stringify({ error: 'Webhook processing failed' }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } },
-    );
+    return jsonResponse({ error: 'Webhook processing failed' }, 500);
   }
 });

@@ -40,6 +40,7 @@ export const PortfolioGrid: React.FC<PortfolioGridProps> = ({ searchTerm, catego
     }
   ];
 
+  /** Extract the category slug from a portfolio fund name */
   const getPortfolioSlug = (name: string): string => {
     const category = name.split(' ')[0].toLowerCase();
     return category;

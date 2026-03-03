@@ -16,6 +16,7 @@ interface DonationModalProps {
   onSuccess: () => void;
 }
 
+/** Modal for donating to a portfolio fund with native or token currency */
 const DonationModal: React.FC<DonationModalProps> = ({
   fund,
   onClose,
@@ -31,6 +32,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
   const [platformFee, setPlatformFee] = useState(100); // 1% default
 
   useEffect(() => {
+    /** Fetch the current platform fee percentage from the contract */
     const loadPlatformFee = async () => {
       const fee = await getPlatformFee();
       setPlatformFee(fee);
@@ -72,6 +74,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
     onClose,
   ]);
 
+  /** Calculate the platform fee and net amount for the current donation */
   const calculateFee = () => {
     if (!amount) return { fee: "0", net: "0" };
     const donationAmount = Number.parseFloat(amount);
@@ -244,6 +247,7 @@ const DonationModal: React.FC<DonationModalProps> = ({
   );
 };
 
+/** Page listing all portfolio funds with donation functionality */
 const PortfolioFunds: React.FC = () => {
   const [funds, setFunds] = useState<PortfolioFund[]>([]);
   const [loading, setLoading] = useState(true);

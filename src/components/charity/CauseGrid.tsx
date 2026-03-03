@@ -42,6 +42,7 @@ export const CauseGrid: React.FC<CauseGridProps> = ({ searchTerm, category }) =>
     }
   ];
 
+  /** Convert a cause name to a URL-friendly slug */
   const getCauseSlug = (name: string): string => {
     return name.toLowerCase().replaceAll(/\s+/g, '-');
   };

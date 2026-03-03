@@ -14,6 +14,12 @@ interface DonationButtonProps {
   onSuccess?: () => void;
 }
 
+/**
+ * Button that opens the one-time donation modal.
+ * Supports a custom render trigger or falls back to a default Button.
+ * @param props - Donation button configuration
+ * @returns Rendered donation trigger with modal
+ */
 export const DonationButton: React.FC<DonationButtonProps> = ({
   charityName,
   charityAddress,

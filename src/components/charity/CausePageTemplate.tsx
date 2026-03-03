@@ -4,6 +4,7 @@ import { HeroSection } from "@/components/ui/HeroSection";
 import type { CauseProfileData } from "@/types/charity";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
+/** Card showing project timeline, location, and key partners */
 function ProjectDetailsCard({ cause }: {
   cause: CauseProfileData;
 }): React.ReactElement {
@@ -34,6 +35,7 @@ function ProjectDetailsCard({ cause }: {
   );
 }
 
+/** Card displaying a grid of impact highlight items */
 function ImpactHighlightsCard({ impact }: {
   impact: string[];
 }): React.ReactElement {

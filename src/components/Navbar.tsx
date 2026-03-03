@@ -97,6 +97,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
   </div>
 );
 
+/** Top-level navigation bar with desktop/mobile responsive layout */
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
