@@ -26,7 +26,7 @@ export function useImpactMetrics(fundId: string): UseImpactMetricsResult {
 
     try {
       const { data, error: dbError } = await supabase
-        .from('impact_metrics')
+        .from('fund_impact_metrics')
         .select('id, fund_id, unit_name, unit_cost_usd, unit_icon, description_template, sort_order, updated_at')
         .eq('fund_id', fundId)
         .order('sort_order', { ascending: true });

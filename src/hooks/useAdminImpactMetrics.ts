@@ -47,7 +47,7 @@ export function useAdminImpactMetrics(): UseAdminImpactMetricsResult {
     setError(null);
     try {
       const { data, error: dbError } = await supabase
-        .from('impact_metrics')
+        .from('fund_impact_metrics')
         .select('*')
         .order('fund_id', { ascending: true })
         .order('sort_order', { ascending: true });
@@ -65,7 +65,7 @@ export function useAdminImpactMetrics(): UseAdminImpactMetricsResult {
     setError(null);
     try {
       const { error: dbError } = await supabase
-        .from('impact_metrics')
+        .from('fund_impact_metrics')
         .insert(data);
 
       if (dbError) throw dbError;
@@ -81,7 +81,7 @@ export function useAdminImpactMetrics(): UseAdminImpactMetricsResult {
     setError(null);
     try {
       const { error: dbError } = await supabase
-        .from('impact_metrics')
+        .from('fund_impact_metrics')
         .update(data)
         .eq('id', id);
 
@@ -98,7 +98,7 @@ export function useAdminImpactMetrics(): UseAdminImpactMetricsResult {
     setError(null);
     try {
       const { error: dbError } = await supabase
-        .from('impact_metrics')
+        .from('fund_impact_metrics')
         .delete()
         .eq('id', id);
 
