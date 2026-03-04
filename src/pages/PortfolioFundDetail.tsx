@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { CharityCard } from '@/components/charity/CharityCard';
 import { GivingOptionsCard } from '@/components/web3/donation/GivingButtons';
+import { ImpactCalculator } from '@/components/impact/ImpactCalculator';
 
 // Sample data - replace with actual API calls
 const SAMPLE_PORTFOLIO = {
@@ -84,10 +85,9 @@ const PortfolioFundDetail: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center justify-end mb-8">
-          <div className="w-1/2">
-            <GivingOptionsCard charityName={SAMPLE_PORTFOLIO.name} charityAddress={SAMPLE_PORTFOLIO.id} />
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          <ImpactCalculator fundId={SAMPLE_PORTFOLIO.id} fundName={SAMPLE_PORTFOLIO.name} />
+          <GivingOptionsCard charityName={SAMPLE_PORTFOLIO.name} charityAddress={SAMPLE_PORTFOLIO.id} />
         </div>
       </div>
 

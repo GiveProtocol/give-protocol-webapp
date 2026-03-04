@@ -58,6 +58,7 @@ const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const CharityRegistration = lazy(() => import("@/pages/admin/CharityRegistration"));
 const CharityDiagnostics = lazy(() => import("@/pages/admin/CharityDiagnostics"));
 const TokenManagement = lazy(() => import("@/pages/admin/TokenManagement"));
+const ImpactMetricsAdmin = lazy(() => import("@/pages/admin/ImpactMetricsAdmin"));
 const _SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
 // Lazy load cause pages
@@ -141,6 +142,18 @@ export function AppRoutes() {
                 <TokenManagement />
               </Suspense>
             </RouteTransition>
+          }
+        />
+        <Route
+          path="/admin/impact-metrics"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <ImpactMetricsAdmin />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
           }
         />
         <Route

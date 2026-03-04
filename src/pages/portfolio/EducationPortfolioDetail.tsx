@@ -1,6 +1,7 @@
 import React from 'react';
 import { CharityCard } from '@/components/charity/CharityCard';
 import { GivingOptionsCard } from '@/components/web3/donation/GivingButtons';
+import { ImpactCalculator } from '@/components/impact/ImpactCalculator';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 const PORTFOLIO = {
@@ -80,10 +81,9 @@ const EducationPortfolioDetail: React.FC = () => {
         </div>
       </ScrollReveal>
 
-      <ScrollReveal direction="up" delay={100} className="flex items-center justify-end mb-8">
-        <div className="w-1/2">
-          <GivingOptionsCard charityName={PORTFOLIO.name} charityAddress={PORTFOLIO.id} />
-        </div>
+      <ScrollReveal direction="up" delay={100} className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <ImpactCalculator fundId={PORTFOLIO.id} fundName={PORTFOLIO.name} />
+        <GivingOptionsCard charityName={PORTFOLIO.name} charityAddress={PORTFOLIO.id} />
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={200}>

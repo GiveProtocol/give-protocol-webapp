@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/Card';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAuth } from '@/contexts/AuthContext';
@@ -20,6 +21,7 @@ interface AdminStats {
 
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +125,10 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  const handleNavigateImpactMetrics = useCallback(() => {
+    navigate('/admin/impact-metrics');
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -223,6 +229,11 @@ const AdminDashboard: React.FC = () => {
           <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
             <span className="font-medium block mb-1">System Settings</span>
             <span className="text-sm text-gray-500 block">Configure platform parameters</span>
+          </button>
+
+          <button onClick={handleNavigateImpactMetrics} className="p-4 border rounded-lg hover:bg-gray-50 text-left">
+            <span className="font-medium block mb-1">Manage Impact Metrics</span>
+            <span className="text-sm text-gray-500 block">Configure impact calculator data</span>
           </button>
         </div>
       </Card>
