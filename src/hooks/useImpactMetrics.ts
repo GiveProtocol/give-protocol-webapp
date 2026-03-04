@@ -35,8 +35,14 @@ export function useImpactMetrics(fundId: string): UseImpactMetricsResult {
 
       // Table may not exist yet — treat as empty rather than erroring
       if (dbError) {
-        const code = (dbError as Record<string, unknown>).code as string | undefined;
-        if (code === '42P01' || code === 'PGRST204') {
+        const code = String((dbError as Record<string, unknown>).code ?? '');
+        const msg = String((dbError as Record<string, unknown>).message ?? '');
+        const isTableMissing =
+          code === '42P01' ||
+          code.startsWith('PGRST') ||
+          msg.includes('does not exist') ||
+          msg.includes('schema cache');
+        if (isTableMissing) {
           setMetrics([]);
           return;
         }

@@ -37,7 +37,7 @@ interface ImpactCalculatorProps {
  * @param props - Component props
  * @returns Rendered impact calculator card
  */
-export function ImpactCalculator({ fundId, fundName }: ImpactCalculatorProps): React.ReactElement {
+export function ImpactCalculator({ fundId, fundName: _fundName }: ImpactCalculatorProps): React.ReactElement | null {
   const { metrics, loading, error } = useImpactMetrics(fundId);
   const [amount, setAmount] = useState(50);
 
@@ -60,13 +60,8 @@ export function ImpactCalculator({ fundId, fundName }: ImpactCalculatorProps): R
     if (amount < 5) setAmount(5);
   }, [amount]);
 
-  if (error) {
-    return (
-      <div className="bg-white dark:bg-[#111110] p-6 rounded-lg shadow-md">
-        <p className="text-sm text-red-600">Unable to load impact data for {fundName}.</p>
-      </div>
-    );
-  }
+  // If the query fails (e.g. table not migrated yet), hide the calculator silently
+  if (error) return null;
 
   return (
     <div className="bg-white dark:bg-[#111110] p-6 rounded-lg shadow-md">
