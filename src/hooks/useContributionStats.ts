@@ -22,8 +22,8 @@ export function useUserContributionStats() {
 
   return useQuery<UserContributionStats | null>({
     queryKey: ["userContributionStats", user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null;
+    queryFn: () => {
+      if (!user?.id) return Promise.resolve(null);
       return getUserContributionStats(user.id);
     },
     enabled: Boolean(user?.id),

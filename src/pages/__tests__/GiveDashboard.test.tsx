@@ -38,6 +38,7 @@ jest.mock("@/utils/logger", () => ({
   },
 }));
 
+/* eslint-disable react/prop-types */
 jest.mock("@/components/ui/Button", () => ({
   Button: ({
     children,
@@ -71,6 +72,7 @@ jest.mock("@/components/ui/Card", () => ({
     </div>
   ),
 }));
+/* eslint-enable react/prop-types */
 
 jest.mock("@/components/CurrencyDisplay", () => ({
   CurrencyDisplay: ({ amount }: { amount: number }) => (

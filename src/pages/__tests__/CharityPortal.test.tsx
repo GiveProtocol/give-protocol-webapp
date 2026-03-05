@@ -34,6 +34,7 @@ jest.mock("@/utils/logger", () => ({
 }));
 
 // Mock UI components
+/* eslint-disable react/prop-types */
 jest.mock("@/components/ui/Button", () => ({
   Button: ({
     children,
@@ -71,6 +72,7 @@ jest.mock("@/components/CurrencyDisplay", () => ({
     <span data-testid="currency-display">${amount}</span>
   ),
 }));
+/* eslint-enable react/prop-types */
 
 // Mock sub-components to avoid deep dependency chains
 jest.mock("../charity-portal/components", () => ({

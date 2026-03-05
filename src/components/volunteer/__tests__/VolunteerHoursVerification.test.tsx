@@ -34,6 +34,7 @@ jest.mock("@/utils/logger", () => ({
     debug: jest.fn(),
   },
 }));
+/* eslint-disable react/prop-types */
 jest.mock("@/components/ui/Button", () => ({
   Button: ({
     children,
@@ -55,6 +56,7 @@ jest.mock("@/components/ui/Button", () => ({
     </button>
   ),
 }));
+/* eslint-enable react/prop-types */
 
 describe("VolunteerHoursVerification", () => {
   const mockVerifyHours = jest.fn();

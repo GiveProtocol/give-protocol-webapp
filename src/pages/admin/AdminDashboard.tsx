@@ -19,6 +19,20 @@ interface AdminStats {
   }>;
 }
 
+/** Quick action button with title and description text. */
+function QuickActionButton({ title, description, onClick }: {
+  title: string;
+  description: string;
+  onClick?: () => void;
+}): React.ReactElement {
+  return (
+    <button onClick={onClick} className="p-4 border rounded-lg hover:bg-gray-50 text-left">
+      <span className="font-medium block mb-1">{title}</span>
+      <span className="text-sm text-gray-500 block">{description}</span>
+    </button>
+  );
+}
+
 /** Single activity entry showing type badge, description, timestamp, and optional amount. */
 function ActivityItem({ activity, formatRelativeTime, formatCurrency, getActivityLabel }: {
   activity: AdminStats['recentActivity'][number];
@@ -232,29 +246,14 @@ const AdminDashboard: React.FC = () => {
         ))}
       </Card>
 
-      {/* Quick Actions - Flattened to 3 levels */}
+      {/* Quick Actions */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="font-medium block mb-1">View Reports</span>
-            <span className="text-sm text-gray-500 block">Generate detailed analytics</span>
-          </button>
-
-          <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="font-medium block mb-1">Manage Charities</span>
-            <span className="text-sm text-gray-500 block">Review and approve organizations</span>
-          </button>
-
-          <button className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="font-medium block mb-1">System Settings</span>
-            <span className="text-sm text-gray-500 block">Configure platform parameters</span>
-          </button>
-
-          <button onClick={handleNavigateImpactMetrics} className="p-4 border rounded-lg hover:bg-gray-50 text-left">
-            <span className="font-medium block mb-1">Manage Impact Metrics</span>
-            <span className="text-sm text-gray-500 block">Configure impact calculator data</span>
-          </button>
+          <QuickActionButton title="View Reports" description="Generate detailed analytics" />
+          <QuickActionButton title="Manage Charities" description="Review and approve organizations" />
+          <QuickActionButton title="System Settings" description="Configure platform parameters" />
+          <QuickActionButton title="Manage Impact Metrics" description="Configure impact calculator data" onClick={handleNavigateImpactMetrics} />
         </div>
       </Card>
     </div>

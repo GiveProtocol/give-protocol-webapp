@@ -122,6 +122,41 @@ function NarrativeCard({ title, content }: {
   );
 }
 
+/** Left column with narrative "Problem" and "Solution" cards wrapped in scroll reveals. */
+function NarrativeColumn({ cause, solutionFallback }: {
+  cause: CauseProfileData;
+  solutionFallback: string;
+}): React.ReactElement {
+  return (
+    <div className="lg:col-span-3 space-y-8">
+      <ScrollReveal direction="up" delay={100}>
+        <NarrativeCard title="The Problem" content={cause.problem ?? cause.description} />
+      </ScrollReveal>
+      <ScrollReveal direction="up" delay={200}>
+        <NarrativeCard title="How We're Helping" content={cause.solution ?? solutionFallback} />
+      </ScrollReveal>
+    </div>
+  );
+}
+
+/** Right sticky sidebar with giving options and project details. */
+function SidebarColumn({ cause }: {
+  cause: CauseProfileData;
+}): React.ReactElement {
+  return (
+    <aside className="lg:col-span-2">
+      <div className="sticky top-8 space-y-6">
+        <ScrollReveal direction="up" delay={100}>
+          <GivingOptionsCard heading="Support This Cause" charityName={cause.name} charityAddress={cause.charityId} />
+        </ScrollReveal>
+        <ScrollReveal direction="up" delay={200}>
+          <ProjectDetailsCard cause={cause} />
+        </ScrollReveal>
+      </div>
+    </aside>
+  );
+}
+
 interface CausePageTemplateProps {
   /** The cause profile data to display */
   cause: CauseProfileData;
@@ -150,28 +185,8 @@ export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
       <main className="bg-slate-50/50 dark:bg-transparent min-h-screen">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
-            {/* Left Column (60%) — Narrative */}
-            <div className="lg:col-span-3 space-y-8">
-              <ScrollReveal direction="up" delay={100}>
-                <NarrativeCard title="The Problem" content={cause.problem ?? cause.description} />
-              </ScrollReveal>
-
-              <ScrollReveal direction="up" delay={200}>
-                <NarrativeCard title="How We're Helping" content={cause.solution ?? solutionFallback} />
-              </ScrollReveal>
-            </div>
-
-            {/* Right Column (40%) — Sticky Sidebar */}
-            <aside className="lg:col-span-2">
-              <div className="sticky top-8 space-y-6">
-                <ScrollReveal direction="up" delay={100}>
-                  <GivingOptionsCard heading="Support This Cause" charityName={cause.name} charityAddress={cause.charityId} />
-                </ScrollReveal>
-                <ScrollReveal direction="up" delay={200}>
-                  <ProjectDetailsCard cause={cause} />
-                </ScrollReveal>
-              </div>
-            </aside>
+            <NarrativeColumn cause={cause} solutionFallback={solutionFallback} />
+            <SidebarColumn cause={cause} />
           </div>
 
           {/* Full-Width Impact Highlights (bottom) */}

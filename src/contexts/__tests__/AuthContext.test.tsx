@@ -19,8 +19,7 @@ jest.mock("@/config/env", () => ({
   },
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const mockSupabase = supabase as any;
+const mockSupabase = supabase as jest.Mocked<typeof supabase>;
 const mockUseToast = useToast as jest.MockedFunction<typeof useToast>;
 const mockLogger = Logger as jest.Mocked<typeof Logger>;
 const mockSetSentryUser = setSentryUser as jest.MockedFunction<

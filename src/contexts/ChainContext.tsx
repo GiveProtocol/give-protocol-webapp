@@ -35,7 +35,7 @@ interface ChainContextType {
   getChain: (_chainId: ChainId) => ChainConfig | undefined;
 }
 
-const ChainContext = createContext<ChainContextType | undefined>(undefined);
+const ChainContext = createContext<ChainContextType | undefined>();
 
 /**
  * Hook to access chain context

@@ -51,6 +51,21 @@ function MetricRowBase({ metric, fundLabel, onEdit, onDelete }: MetricRowProps):
 
 const MetricRow = React.memo(MetricRowBase);
 
+const METRIC_COLUMNS = ['Fund', 'Unit Name', 'Cost (USD)', 'Icon', 'Order', 'Actions'];
+
+/** Header row for the metrics table. */
+function MetricsTableHeader(): React.ReactElement {
+  return (
+    <thead>
+      <tr className="border-b bg-gray-50">
+        {METRIC_COLUMNS.map((col) => (
+          <th key={col} className="px-4 py-3 font-medium text-gray-600">{col}</th>
+        ))}
+      </tr>
+    </thead>
+  );
+}
+
 /** Table displaying impact metrics with edit/delete actions per row. */
 function MetricsTable({ metrics, fundLabel, onEdit, onDelete }: {
   metrics: FundImpactMetric[];
@@ -61,16 +76,7 @@ function MetricsTable({ metrics, fundLabel, onEdit, onDelete }: {
   return (
     <Card className="overflow-x-auto">
       <table className="w-full text-sm text-left">
-        <thead>
-          <tr className="border-b bg-gray-50">
-            <th className="px-4 py-3 font-medium text-gray-600">Fund</th>
-            <th className="px-4 py-3 font-medium text-gray-600">Unit Name</th>
-            <th className="px-4 py-3 font-medium text-gray-600">Cost (USD)</th>
-            <th className="px-4 py-3 font-medium text-gray-600">Icon</th>
-            <th className="px-4 py-3 font-medium text-gray-600">Order</th>
-            <th className="px-4 py-3 font-medium text-gray-600">Actions</th>
-          </tr>
-        </thead>
+        <MetricsTableHeader />
         <tbody>
           {metrics.length === 0 ? (
             <tr>
@@ -92,6 +98,62 @@ function MetricsTable({ metrics, fundLabel, onEdit, onDelete }: {
         </tbody>
       </table>
     </Card>
+  );
+}
+
+/** Form for creating or editing an impact metric. */
+function MetricForm({ form, saving, editingId, onFormChange, onSubmit, onCancel }: {
+  form: FormState;
+  saving: boolean;
+  editingId: string | null;
+  onFormChange: (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  onSubmit: (_e: React.FormEvent) => void;
+  onCancel: () => void;
+}): React.ReactElement {
+  return (
+    <form onSubmit={onSubmit} className="space-y-4">
+      <div>
+        <label htmlFor="form-fund" className="block text-sm font-medium text-gray-700 mb-1">Fund</label>
+        <select id="form-fund" name="fund_id" value={form.fund_id} onChange={onFormChange} className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none">
+          {FUND_OPTIONS.map((f) => (
+            <option key={f.value} value={f.value}>{f.label}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="form-unit-name" className="block text-sm font-medium text-gray-700 mb-1">Unit Name</label>
+        <input id="form-unit-name" name="unit_name" type="text" required value={form.unit_name} onChange={onFormChange} placeholder='e.g. "Acres of Rainforest Protected"' className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none" />
+      </div>
+      <div>
+        <label htmlFor="form-cost" className="block text-sm font-medium text-gray-700 mb-1">Cost per Unit (USD)</label>
+        <input id="form-cost" name="unit_cost_usd" type="number" required min="0.01" step="0.01" value={form.unit_cost_usd} onChange={onFormChange} placeholder="25.00" className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none" />
+      </div>
+      <div>
+        <label htmlFor="form-icon" className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
+        <select id="form-icon" name="unit_icon" value={form.unit_icon} onChange={onFormChange} className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none">
+          {ICON_OPTIONS.map((icon) => (
+            <option key={icon} value={icon}>{icon}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="form-template" className="block text-sm font-medium text-gray-700 mb-1">Description Template</label>
+        <input id="form-template" name="description_template" type="text" required value={form.description_template} onChange={onFormChange} className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none" />
+        <p className="text-xs text-gray-500 mt-1">{'Use {{value}} and {{unit_name}} as placeholders.'}</p>
+      </div>
+      <div>
+        <label htmlFor="form-sort" className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+        <input id="form-sort" name="sort_order" type="number" required min="0" value={form.sort_order} onChange={onFormChange} className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none" />
+      </div>
+      <div className="flex justify-end gap-3 pt-2">
+        <button type="button" onClick={onCancel} className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Cancel</button>
+        <button type="submit" disabled={saving} className="px-4 py-2 bg-[#0d9f6e] text-white rounded-lg hover:bg-[#0a8a5e] disabled:opacity-60">
+          {saving && 'Saving...'}
+          {!saving && editingId && 'Update'}
+          {!saving && !editingId && 'Create'}
+        </button>
+      </div>
+    </form>
   );
 }
 
@@ -297,116 +359,7 @@ const ImpactMetricsAdmin: React.FC = () => {
         title={editingId ? 'Edit Metric' : 'Add Metric'}
         size="lg"
       >
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="form-fund" className="block text-sm font-medium text-gray-700 mb-1">Fund</label>
-            <select
-              id="form-fund"
-              name="fund_id"
-              value={form.fund_id}
-              onChange={handleFormChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none"
-            >
-              {FUND_OPTIONS.map((f) => (
-                <option key={f.value} value={f.value}>{f.label}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="form-unit-name" className="block text-sm font-medium text-gray-700 mb-1">Unit Name</label>
-            <input
-              id="form-unit-name"
-              name="unit_name"
-              type="text"
-              required
-              value={form.unit_name}
-              onChange={handleFormChange}
-              placeholder='e.g. "Acres of Rainforest Protected"'
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="form-cost" className="block text-sm font-medium text-gray-700 mb-1">Cost per Unit (USD)</label>
-            <input
-              id="form-cost"
-              name="unit_cost_usd"
-              type="number"
-              required
-              min="0.01"
-              step="0.01"
-              value={form.unit_cost_usd}
-              onChange={handleFormChange}
-              placeholder="25.00"
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="form-icon" className="block text-sm font-medium text-gray-700 mb-1">Icon</label>
-            <select
-              id="form-icon"
-              name="unit_icon"
-              value={form.unit_icon}
-              onChange={handleFormChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 bg-white focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none"
-            >
-              {ICON_OPTIONS.map((icon) => (
-                <option key={icon} value={icon}>{icon}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="form-template" className="block text-sm font-medium text-gray-700 mb-1">Description Template</label>
-            <input
-              id="form-template"
-              name="description_template"
-              type="text"
-              required
-              value={form.description_template}
-              onChange={handleFormChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none"
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              {'Use {{value}} and {{unit_name}} as placeholders.'}
-            </p>
-          </div>
-
-          <div>
-            <label htmlFor="form-sort" className="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
-            <input
-              id="form-sort"
-              name="sort_order"
-              type="number"
-              required
-              min="0"
-              value={form.sort_order}
-              onChange={handleFormChange}
-              className="w-full border-2 border-gray-200 rounded-lg px-3 py-2 focus:border-[#0d9f6e] focus:ring-1 focus:ring-[#0d9f6e] outline-none"
-            />
-          </div>
-
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={handleCloseModal}
-              className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={saving}
-              className="px-4 py-2 bg-[#0d9f6e] text-white rounded-lg hover:bg-[#0a8a5e] disabled:opacity-60"
-            >
-              {saving && 'Saving...'}
-              {!saving && editingId && 'Update'}
-              {!saving && !editingId && 'Create'}
-            </button>
-          </div>
-        </form>
+        <MetricForm form={form} saving={saving} editingId={editingId} onFormChange={handleFormChange} onSubmit={handleSubmit} onCancel={handleCloseModal} />
       </Modal>
 
       {/* Delete confirmation modal */}

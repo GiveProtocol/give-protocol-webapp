@@ -45,6 +45,7 @@ jest.mock("@/utils/logger", () => ({
     debug: jest.fn(),
   },
 }));
+/* eslint-disable react/prop-types */
 jest.mock("@/components/ui/Button", () => ({
   Button: ({
     children,
@@ -95,6 +96,7 @@ jest.mock("@/components/ui/Card", () => ({
     </div>
   ),
 }));
+/* eslint-enable react/prop-types */
 
 describe("WalletAliasSettings", () => {
   const mockSetWalletAlias = jest.fn();
