@@ -21,9 +21,9 @@ interface FooterLink {
 const features = [
   {
     icon: <Heart className="w-10 h-10" />,
-    title: "Direct Donations",
+    title: "High-Efficiency Giving",
     description:
-      "Send crypto directly to verified charities and projects. Transparent on-chain tracking ensures your donation reaches those in need.",
+      "Contribute directly to verified organizations with zero ambiguity. Our automated ledger provides real-time verification, ensuring your support is deployed exactly where it is needed most.",
     color: "from-emerald-500 to-teal-500",
     badge: null,
   },
@@ -31,7 +31,7 @@ const features = [
     icon: <TrendingUp className="w-10 h-10" />,
     title: "Charitable Equity Funds",
     description:
-      "Transform donations into sustainable yield streams. Your contribution generates ongoing support through conservative DeFi strategies.",
+      "Move beyond one-off donations by contributing to smart-managed equity funds. We utilize sophisticated, low-risk digital strategies to turn your principal into a perpetual stream of funding, sustaining charitable missions for generations to come.",
     color: "from-teal-500 to-cyan-500",
     badge: "Coming Soon",
   },
@@ -61,9 +61,9 @@ const features = [
   },
   {
     icon: <Globe className="w-10 h-10" />,
-    title: "Cross-Chain Connected",
+    title: "Bridging Modes of Giving",
     description:
-      "Live on Base, Optimism, and Moonbeam. Give in ETH, USDC, or other major tokens — with more chains on the way.",
+      "Whether you are giving in USD or digital assets, our multi-network architecture ensures your contribution moves at the speed of the modern world.",
     color: "from-teal-500 to-emerald-500",
     badge: "Coming Soon",
   },
@@ -87,8 +87,9 @@ function HeroSection({ mousePosition }: { mousePosition: { x: number; y: number 
           </span>
         </h1>
         <p className="text-xl text-gray-300 mb-8 max-w-3xl mx-auto">
-          Crypto-native giving with full on-chain transparency.
-          Fiat-friendly when you need it. Every dollar traceable.
+          Radically transparent philanthropy for the digital age. Built for
+          impact, backed by verifiable technology. Every contribution
+          traceable from donor to destination.
         </p>
       </div>
 
@@ -98,12 +99,12 @@ function HeroSection({ mousePosition }: { mousePosition: { x: number; y: number 
           Our Vision
         </h3>
         <p className="text-gray-300 text-lg leading-relaxed">
-          Give Protocol is building the infrastructure for transparent,
-          sustainable philanthropy across multiple blockchains. By deploying
-          on Base, Optimism, and Moonbeam, we&apos;re meeting donors where
-          they already are — whether they give in crypto or fiat — and
-          creating funding mechanisms that transform one-time donations
-          into lasting impact for charitable organizations worldwide.
+          Give Protocol is architecting the future of high-integrity giving.
+          We leverage advanced technological infrastructure to bridge the gap
+          between global capital and local impact. By integrating seamless
+          digital-asset support with traditional giving methods, we are creating
+          resilient funding ecosystems that transform one-time gifts into
+          perpetual engines of support for the world&apos;s most vital causes.
         </p>
       </div>
 
@@ -150,15 +151,22 @@ function FeatureCard({ feature }: { feature: { icon: React.ReactNode; title: str
 }
 
 /** Column listing benefits for a specific user role. */
-function UserRoleColumn({ title, color, items }: { title: string; color: string; items: string[] }) {
+function UserRoleColumn({ title, color, items }: { title: string; color: string; items: { label: string; comingSoon?: boolean }[] }) {
   return (
     <div>
       <div className={`${color} font-semibold mb-3`}>{title}</div>
       <ul className="space-y-2 text-gray-300">
         {items.map((item) => (
-          <li key={item} className="flex items-start">
+          <li key={item.label} className="flex items-start">
             <Check className="w-5 h-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
-            <span>{item}</span>
+            <span>
+              {item.label}
+              {item.comingSoon && (
+                <span className="ml-2 text-xs text-emerald-300 bg-emerald-500/20 border border-emerald-500/50 px-2 py-0.5 rounded-full">
+                  Coming Soon
+                </span>
+              )}
+            </span>
           </li>
         ))}
       </ul>
@@ -183,27 +191,27 @@ function UserRoleSection({ mousePosition }: { mousePosition: { x: number; y: num
           title="For Donors"
           color="text-emerald-400"
           items={[
-            "Give in crypto or fiat — your choice",
-            "Governance participation via NFTs",
-            "On-chain reputation building",
+            { label: "Give in crypto or fiat — your choice" },
+            { label: "Governance participation", comingSoon: true },
+            { label: "On-chain reputation building" },
           ]}
         />
         <UserRoleColumn
           title="For Non-Profit Organizations"
           color="text-teal-400"
           items={[
-            "Access new donor demographics",
-            "Sustainable funding via CEFs",
-            "Enhanced transparency reporting",
+            { label: "Access new donor demographics" },
+            { label: "Sustainable funding via CEFs", comingSoon: true },
+            { label: "Enhanced transparency reporting" },
           ]}
         />
         <UserRoleColumn
           title="For Volunteers"
           color="text-cyan-400"
           items={[
-            "Verifiable contribution records",
-            "Portable skill credentials (SBTs)",
-            "Achievement badges & recognition",
+            { label: "Verifiable contribution records" },
+            { label: "Portable skill credentials (SBTs)" },
+            { label: "Achievement badges & recognition" },
           ]}
         />
       </div>
@@ -274,39 +282,6 @@ function ImpactFundCard({ icon, gradient, hoverBorder, title, description }: {
   );
 }
 
-/** Single statistic item in the multichain section. */
-function MultichainStat({ value, label, color }: { value: string; label: string; color: string }) {
-  return (
-    <div>
-      <div className={`text-3xl font-bold ${color} mb-2`}>{value}</div>
-      <div className="text-sm text-gray-400">{label}</div>
-    </div>
-  );
-}
-
-/** Section explaining the multichain deployment strategy with key stats. */
-function MultichainSection() {
-  return (
-    <section className="relative z-10 container mx-auto px-6 py-20">
-      <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-12 text-center">
-        <h2 className="text-4xl font-bold mb-6">
-          Why We&apos;re Building Multichain
-        </h2>
-        <p className="text-xl text-gray-300 max-w-3xl mx-auto mb-8">
-          No single chain serves every donor. By deploying across leading
-          EVM networks, we keep fees low, reach more wallets, and let
-          organizations receive funds however works best for them.
-        </p>
-        <div className="grid md:grid-cols-4 gap-6 text-center">
-          <MultichainStat value="3+" label="Supported Chains" color="text-emerald-400" />
-          <MultichainStat value="Low Fees" label="L2 Transaction Costs" color="text-teal-400" />
-          <MultichainStat value="Crypto + Fiat" label="Donation Options" color="text-cyan-400" />
-          <MultichainStat value="EVM" label="Compatible" color="text-green-400" />
-        </div>
-      </div>
-    </section>
-  );
-}
 
 /** Call-to-action section inviting users to join the platform. */
 function CTASection() {
@@ -514,9 +489,6 @@ const Home: React.FC = () => {
           />
         </div>
       </section>
-
-      {/* Why Multichain Section */}
-      <MultichainSection />
 
       {/* CTA Section */}
       <CTASection />

@@ -5,8 +5,8 @@ import { FeatureCard } from './FeatureCard';
 const features = [
   {
     icon: Heart,
-    title: 'Direct Donations',
-    description: 'Support NGOs directly with immediate impact'
+    title: 'Donation & Volunteer Tracking',
+    description: 'Track Your Impact All in One Place'
   },
   {
     icon: TrendingUp,
@@ -16,7 +16,7 @@ const features = [
   {
     icon: Globe,
     title: 'Portfolio Funds',
-    description: 'Support multiple NGOs in the same sector'
+    description: 'Broadly Support Charitable Sectors without needing Split Gifts'
   }
 ];
 
