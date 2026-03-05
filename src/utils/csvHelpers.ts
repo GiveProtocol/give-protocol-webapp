@@ -21,9 +21,14 @@ export function convertToCSV<T extends Record<string, unknown>>(
       .map((header) => {
         // Handle values that might contain commas, quotes, or objects
         const raw = row[header];
-        const value = raw === null || raw === undefined ? ""
-          : typeof raw === "object" ? JSON.stringify(raw)
-          : String(raw);
+        let value: string;
+        if (raw === null || raw === undefined) {
+          value = "";
+        } else if (typeof raw === "object") {
+          value = JSON.stringify(raw);
+        } else {
+          value = String(raw);
+        }
         const escaped = value.replaceAll('"', '""');
         return `"${escaped}"`;
       })
