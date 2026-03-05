@@ -427,6 +427,7 @@ export const AppNavbar: React.FC = () => {
 
   // Close mobile menu on Escape key
   useEffect(() => {
+    /** Closes the mobile menu when the Escape key is pressed. */
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsMenuOpen(false);

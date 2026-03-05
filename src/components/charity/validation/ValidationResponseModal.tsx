@@ -160,18 +160,17 @@ export const ValidationResponseModal: React.FC<
           {mode === "view" ? (
             <>
               {/* Volunteer Info */}
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-500 mb-2">
-                  Volunteer
-                </h3>
-                <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                    <User className="h-5 w-5 text-indigo-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900">
-                      {item.volunteerName}
-                    </p>
+              <h3 className="text-sm font-medium text-gray-500 mb-2">
+                Volunteer
+              </h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-indigo-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-gray-900">
+                    {item.volunteerName}
+                  </p>
                     {item.volunteerEmail && (
                       <p className="text-sm text-gray-500">
                         {item.volunteerEmail}
@@ -179,7 +178,6 @@ export const ValidationResponseModal: React.FC<
                     )}
                   </div>
                 </div>
-              </div>
 
               {/* Activity Details */}
               <div className="bg-gray-50 rounded-lg p-4 mb-6">

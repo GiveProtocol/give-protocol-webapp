@@ -64,17 +64,14 @@ export const PortfolioGrid: React.FC<PortfolioGridProps> = ({ searchTerm, catego
               alt={portfolio.name}
               className="w-full h-48 object-cover"
             />
-            <div className="p-6">
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{portfolio.name}</h3>
-              <p className="text-gray-600 mb-4">{portfolio.description}</p>
-              
-              <div
-                className="w-full h-[48px] rounded-full bg-[#0d9f6e] text-white flex items-center justify-center gap-2.5 uppercase"
-                style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.05em' }}
-              >
-                <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>{' '}
-                Donate to Fund
-              </div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2 px-6 pt-6">{portfolio.name}</h3>
+            <p className="text-gray-600 mb-4 px-6">{portfolio.description}</p>
+            <div
+              className="w-full h-[48px] rounded-full bg-[#0d9f6e] text-white flex items-center justify-center gap-2.5 uppercase mx-6 mb-6"
+              style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.05em', width: 'calc(100% - 3rem)' }}
+            >
+              <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>{' '}
+              Donate to Fund
             </div>
           </Card>
         </Link>
