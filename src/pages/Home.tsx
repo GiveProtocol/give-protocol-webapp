@@ -348,7 +348,7 @@ function HomeFooter() {
       </div>
       <div className="pt-8 border-t border-white/10 text-center text-gray-400 text-sm">
         <p>
-          © {new Date().getFullYear()} Give Protocol Foundation. Multichain
+          © {new Date().getFullYear()} Give Protocol. Multichain
           by design. Powered by Give Protocol volunteers.
         </p>
       </div>
