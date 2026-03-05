@@ -282,7 +282,7 @@ describe("AuthContext", () => {
       });
 
       // Simulate auth state change
-      await act(async () => {
+      await act(() => {
         authCallback("SIGNED_IN", { user: MOCK_USER });
       });
 
@@ -317,7 +317,7 @@ describe("AuthContext", () => {
         expect(mockSupabase.auth.onAuthStateChange).toHaveBeenCalled();
       });
 
-      await act(async () => {
+      await act(() => {
         authCallback("SIGNED_OUT", null);
       });
 
@@ -338,7 +338,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => screen.getByTestId("login-btn").click());
+      act(() => screen.getByTestId("login-btn").click());
 
       await waitFor(() => {
         expect(mockSupabase.auth.signInWithPassword).toHaveBeenCalledWith({
@@ -358,7 +358,7 @@ describe("AuthContext", () => {
       });
 
       renderWithAuthProvider();
-      await act(async () => screen.getByTestId("login-btn").click());
+      act(() => screen.getByTestId("login-btn").click());
 
       await waitFor(() =>
         expect(mockShowToast).toHaveBeenCalledWith(
@@ -375,7 +375,7 @@ describe("AuthContext", () => {
       );
 
       renderWithAuthProvider();
-      await act(async () => screen.getByTestId("login-btn").click());
+      await act(() => screen.getByTestId("login-btn").click());
 
       await waitFor(() =>
         expect(mockShowToast).toHaveBeenCalledWith(
@@ -396,7 +396,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("google-btn").click();
       });
 
@@ -424,7 +424,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("google-btn").click();
       });
 
@@ -444,7 +444,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("logout-btn").click();
       });
 
@@ -465,7 +465,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("logout-btn").click();
       });
 
@@ -498,7 +498,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("register-btn").click();
       });
 
@@ -558,7 +558,7 @@ describe("AuthContext", () => {
         </AuthProvider>,
       );
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("register-metadata-btn").click();
       });
 
@@ -588,7 +588,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("register-btn").click();
       });
 
@@ -610,7 +610,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      act(() => {
         screen.getByTestId("reset-btn").click();
       });
 
@@ -634,7 +634,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("reset-btn").click();
       });
 
@@ -657,7 +657,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("refresh-btn").click();
       });
 
@@ -675,7 +675,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      act(() => {
         screen.getByTestId("refresh-btn").click();
       });
 
