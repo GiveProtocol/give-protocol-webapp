@@ -164,4 +164,4 @@ export function useMultiChainLegacyEVM() {
   return useMultiChainEVM();
 }
 
-export { useMultiChainEVM, useMultiChainSigner };
+export { useMultiChainEVM, useMultiChainSigner } from "@/contexts/MultiChainContext";

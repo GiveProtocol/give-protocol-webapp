@@ -30,6 +30,23 @@ interface ValidationResponseModalProps {
   ) => Promise<boolean>;
 }
 
+/** Single field in the activity details grid showing an icon, label, and value. */
+function ActivityDetailField({ icon: Icon, label, value }: {
+  icon: React.FC<{ className?: string }>;
+  label: string;
+  value: string;
+}): React.ReactElement {
+  return (
+    <div className="flex items-start gap-2">
+      <Icon className="h-5 w-5 text-gray-400 mt-0.5" />
+      <div>
+        <p className="text-sm text-gray-500">{label}</p>
+        <p className="font-medium text-gray-900">{value}</p>
+      </div>
+    </div>
+  );
+}
+
 /**
  * Modal for approving or rejecting validation requests
  * @param props - Component props
@@ -128,7 +145,6 @@ export const ValidationResponseModal: React.FC<
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
       onKeyDown={handleKeyDown}
-      role="presentation"
     >
       <dialog
         open
@@ -185,43 +201,11 @@ export const ValidationResponseModal: React.FC<
                   Activity Details
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="flex items-start gap-2">
-                    <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Date</p>
-                      <p className="font-medium text-gray-900">
-                        {formatDate(item.activityDate, false)}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <Clock className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Hours</p>
-                      <p className="font-medium text-gray-900">
-                        {item.hours} {item.hours === 1 ? "hour" : "hours"}
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <FileText className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <p className="text-sm text-gray-500">Activity Type</p>
-                      <p className="font-medium text-gray-900">
-                        {activityTypeLabel}
-                      </p>
-                    </div>
-                  </div>
+                  <ActivityDetailField icon={Calendar} label="Date" value={formatDate(item.activityDate, false)} />
+                  <ActivityDetailField icon={Clock} label="Hours" value={`${item.hours} ${item.hours === 1 ? "hour" : "hours"}`} />
+                  <ActivityDetailField icon={FileText} label="Activity Type" value={activityTypeLabel} />
                   {item.location && (
-                    <div className="flex items-start gap-2">
-                      <MapPin className="h-5 w-5 text-gray-400 mt-0.5" />
-                      <div>
-                        <p className="text-sm text-gray-500">Location</p>
-                        <p className="font-medium text-gray-900">
-                          {item.location}
-                        </p>
-                      </div>
-                    </div>
+                    <ActivityDetailField icon={MapPin} label="Location" value={item.location} />
                   )}
                 </div>
               </div>

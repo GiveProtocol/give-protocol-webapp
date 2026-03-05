@@ -11,7 +11,6 @@ import {
   type VolunteerLeaderboardEntry,
   type DonorLeaderboardEntry,
   type ContributionFilters,
-  type ContributionSource,
 } from "@/services/contributionAggregationService";
 
 /**
@@ -102,4 +101,4 @@ export type {
   DonorLeaderboardEntry,
   ContributionFilters,
   ContributionSource,
-};
+} from "@/services/contributionAggregationService";

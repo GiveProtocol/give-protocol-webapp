@@ -20,6 +20,7 @@ const features = [
   }
 ];
 
+/** Grid of feature cards displayed on the app dashboard page. */
 export const FeatureCards: React.FC = () => {
   return (
     <div className="mt-12 grid gap-8 md:grid-cols-3">

@@ -77,7 +77,8 @@ function formatMetadataFields(metadata: Record<string, unknown>) {
   return {
     organization: metadata.organization || "",
     verificationHash: metadata.verificationHash || "",
-    blockNumber: metadata.blockNumber ? metadata.blockNumber.toString() : "",
+    blockNumber: typeof metadata.blockNumber === "number" || typeof metadata.blockNumber === "string"
+      ? String(metadata.blockNumber) : "",
     description: metadata.description || metadata.category || "",
   };
 }
@@ -105,7 +106,8 @@ function formatFiatFields(metadata: Record<string, unknown>) {
  */
 function formatVolunteerFields(metadata: Record<string, unknown>) {
   return {
-    volunteerHours: metadata.hours ? metadata.hours.toString() : "",
+    volunteerHours: typeof metadata.hours === "number" || typeof metadata.hours === "string"
+      ? String(metadata.hours) : "",
     startTime: metadata.startTime || "",
     endTime: metadata.endTime || "",
     skills: Array.isArray(metadata.skills) ? metadata.skills.join("; ") : "",

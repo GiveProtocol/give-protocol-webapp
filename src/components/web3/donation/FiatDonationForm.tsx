@@ -357,6 +357,7 @@ export function FiatDonationForm({
     return `Donate ${fmtAmount(chargeAmount)}`;
   };
 
+  /** Returns the appropriate icon for the submit button based on payment provider and frequency. */
   const getSubmitIcon = (): React.ReactElement => {
     if (isStripe) return <ExternalLink className="w-5 h-5" />;
     if (isMonthly) return <RefreshCw className="w-5 h-5" />;

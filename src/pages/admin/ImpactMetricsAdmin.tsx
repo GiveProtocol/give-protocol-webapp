@@ -5,6 +5,96 @@ import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { useAdminImpactMetrics } from '@/hooks/useAdminImpactMetrics';
 import type { FundImpactMetric } from '@/types/impact';
 
+interface MetricRowProps {
+  metric: FundImpactMetric;
+  fundLabel: string;
+  onEdit: (_metric: FundImpactMetric) => void;
+  onDelete: (_id: string) => void;
+}
+
+/** Table row displaying a single impact metric with edit and delete actions. */
+function MetricRowBase({ metric, fundLabel, onEdit, onDelete }: MetricRowProps): React.ReactElement {
+  const handleEdit = useCallback(() => {
+    onEdit(metric);
+  }, [metric, onEdit]);
+
+  const handleDelete = useCallback(() => {
+    onDelete(metric.id);
+  }, [metric.id, onDelete]);
+
+  return (
+    <tr className="border-b hover:bg-gray-50">
+      <td className="px-4 py-3 text-gray-900">{fundLabel}</td>
+      <td className="px-4 py-3 text-gray-900">{metric.unitName}</td>
+      <td className="px-4 py-3 text-gray-900">${metric.unitCostUsd.toFixed(2)}</td>
+      <td className="px-4 py-3 text-gray-500">{metric.unitIcon}</td>
+      <td className="px-4 py-3 text-gray-500">{metric.sortOrder}</td>
+      <td className="px-4 py-3">
+        <div className="flex gap-2">
+          <button
+            onClick={handleEdit}
+            className="text-sm text-[#0d9f6e] hover:underline"
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="text-sm text-red-600 hover:underline"
+          >
+            Delete
+          </button>
+        </div>
+      </td>
+    </tr>
+  );
+}
+
+const MetricRow = React.memo(MetricRowBase);
+
+/** Table displaying impact metrics with edit/delete actions per row. */
+function MetricsTable({ metrics, fundLabel, onEdit, onDelete }: {
+  metrics: FundImpactMetric[];
+  fundLabel: (_fundId: string) => string;
+  onEdit: (_metric: FundImpactMetric) => void;
+  onDelete: (_id: string) => void;
+}): React.ReactElement {
+  return (
+    <Card className="overflow-x-auto">
+      <table className="w-full text-sm text-left">
+        <thead>
+          <tr className="border-b bg-gray-50">
+            <th className="px-4 py-3 font-medium text-gray-600">Fund</th>
+            <th className="px-4 py-3 font-medium text-gray-600">Unit Name</th>
+            <th className="px-4 py-3 font-medium text-gray-600">Cost (USD)</th>
+            <th className="px-4 py-3 font-medium text-gray-600">Icon</th>
+            <th className="px-4 py-3 font-medium text-gray-600">Order</th>
+            <th className="px-4 py-3 font-medium text-gray-600">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {metrics.length === 0 ? (
+            <tr>
+              <td colSpan={6} className="px-4 py-6 text-center text-gray-500">
+                No metrics found.
+              </td>
+            </tr>
+          ) : (
+            metrics.map((metric) => (
+              <MetricRow
+                key={metric.id}
+                metric={metric}
+                fundLabel={fundLabel(metric.fundId)}
+                onEdit={onEdit}
+                onDelete={onDelete}
+              />
+            ))
+          )}
+        </tbody>
+      </table>
+    </Card>
+  );
+}
+
 const FUND_OPTIONS = [
   { value: '1', label: 'Environmental Impact Fund' },
   { value: '2', label: 'Poverty Relief Impact Fund' },
@@ -198,39 +288,7 @@ const ImpactMetricsAdmin: React.FC = () => {
       </div>
 
       {/* Metrics table */}
-      <Card className="overflow-x-auto">
-        <table className="w-full text-sm text-left">
-          <thead>
-            <tr className="border-b bg-gray-50">
-              <th className="px-4 py-3 font-medium text-gray-600">Fund</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Unit Name</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Cost (USD)</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Icon</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Order</th>
-              <th className="px-4 py-3 font-medium text-gray-600">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {filteredMetrics.length === 0 ? (
-              <tr>
-                <td colSpan={6} className="px-4 py-6 text-center text-gray-500">
-                  No metrics found.
-                </td>
-              </tr>
-            ) : (
-              filteredMetrics.map((metric) => (
-                <MetricRow
-                  key={metric.id}
-                  metric={metric}
-                  fundLabel={fundLabel(metric.fundId)}
-                  onEdit={handleOpenEdit}
-                  onDelete={handleOpenDelete}
-                />
-              ))
-            )}
-          </tbody>
-        </table>
-      </Card>
+      <MetricsTable metrics={filteredMetrics} fundLabel={fundLabel} onEdit={handleOpenEdit} onDelete={handleOpenDelete} />
 
       {/* Add / Edit Modal */}
       <Modal
@@ -380,50 +438,5 @@ const ImpactMetricsAdmin: React.FC = () => {
     </div>
   );
 };
-
-interface MetricRowProps {
-  metric: FundImpactMetric;
-  fundLabel: string;
-  onEdit: (_metric: FundImpactMetric) => void;
-  onDelete: (_id: string) => void;
-}
-
-function MetricRowBase({ metric, fundLabel, onEdit, onDelete }: MetricRowProps): React.ReactElement {
-  const handleEdit = useCallback(() => {
-    onEdit(metric);
-  }, [metric, onEdit]);
-
-  const handleDelete = useCallback(() => {
-    onDelete(metric.id);
-  }, [metric.id, onDelete]);
-
-  return (
-    <tr className="border-b hover:bg-gray-50">
-      <td className="px-4 py-3 text-gray-900">{fundLabel}</td>
-      <td className="px-4 py-3 text-gray-900">{metric.unitName}</td>
-      <td className="px-4 py-3 text-gray-900">${metric.unitCostUsd.toFixed(2)}</td>
-      <td className="px-4 py-3 text-gray-500">{metric.unitIcon}</td>
-      <td className="px-4 py-3 text-gray-500">{metric.sortOrder}</td>
-      <td className="px-4 py-3">
-        <div className="flex gap-2">
-          <button
-            onClick={handleEdit}
-            className="text-sm text-[#0d9f6e] hover:underline"
-          >
-            Edit
-          </button>
-          <button
-            onClick={handleDelete}
-            className="text-sm text-red-600 hover:underline"
-          >
-            Delete
-          </button>
-        </div>
-      </td>
-    </tr>
-  );
-}
-
-const MetricRow = React.memo(MetricRowBase);
 
 export default ImpactMetricsAdmin;

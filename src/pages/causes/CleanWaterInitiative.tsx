@@ -40,6 +40,7 @@ const causeData: CauseProfileData = {
   ],
 };
 
+/** Cause detail page for the Clean Water Initiative project. */
 const CleanWaterInitiative: React.FC = () => {
   return <CausePageTemplate cause={causeData} />;
 };

@@ -31,6 +31,7 @@ export function useAdminImpactMetrics(): UseAdminImpactMetricsResult {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  /** Maps a raw database row to a typed FundImpactMetric object. */
   const mapRow = (row: Record<string, unknown>): FundImpactMetric => ({
     id: row.id as string,
     fundId: row.fund_id as string,

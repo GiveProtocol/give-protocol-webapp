@@ -35,8 +35,10 @@ export function useImpactMetrics(fundId: string): UseImpactMetricsResult {
 
       // Table may not exist yet — treat as empty rather than erroring
       if (dbError) {
-        const code = String((dbError as Record<string, unknown>).code ?? '');
-        const msg = String((dbError as Record<string, unknown>).message ?? '');
+        const rawCode = (dbError as Record<string, unknown>).code;
+        const rawMsg = (dbError as Record<string, unknown>).message;
+        const code = typeof rawCode === 'string' ? rawCode : '';
+        const msg = typeof rawMsg === 'string' ? rawMsg : '';
         const isTableMissing =
           code === '42P01' ||
           code.startsWith('PGRST') ||

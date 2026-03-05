@@ -66,24 +66,33 @@ const SAMPLE_CHARITIES = [
   }
 ];
 
-/** Detail page for a single portfolio fund showing charities and giving options */
+/** Hero banner displaying the portfolio fund image, name, and description. */
+function PortfolioHero({ portfolio }: {
+  portfolio: typeof SAMPLE_PORTFOLIO;
+}): React.ReactElement {
+  return (
+    <div className="relative h-64 rounded-xl overflow-hidden mb-6 bg-black bg-opacity-40">
+      <img
+        src={portfolio.image}
+        alt={portfolio.name}
+        className="w-full h-full object-cover opacity-60"
+      />
+      <div className="absolute bottom-0 left-0 right-0 p-6 text-gray-900">
+        <h1 className="text-3xl font-bold mb-2">{portfolio.name}</h1>
+        <p className="text-lg opacity-90">{portfolio.description}</p>
+      </div>
+    </div>
+  );
+}
+
+/** Detail page for a single portfolio fund showing charities and giving options. */
 const PortfolioFundDetail: React.FC = () => {
   const { id: _id } = useParams<{ id: string }>(); // Prefixed as unused
-  
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="mb-8">
-        <div className="relative h-64 rounded-xl overflow-hidden mb-6 bg-black bg-opacity-40">
-          <img
-            src={SAMPLE_PORTFOLIO.image}
-            alt={SAMPLE_PORTFOLIO.name}
-            className="w-full h-full object-cover opacity-60"
-          />
-          <div className="absolute bottom-0 left-0 right-0 p-6 text-gray-900">
-            <h1 className="text-3xl font-bold mb-2">{SAMPLE_PORTFOLIO.name}</h1>
-            <p className="text-lg opacity-90">{SAMPLE_PORTFOLIO.description}</p>
-          </div>
-        </div>
+        <PortfolioHero portfolio={SAMPLE_PORTFOLIO} />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           <ImpactCalculator fundId={SAMPLE_PORTFOLIO.id} fundName={SAMPLE_PORTFOLIO.name} />

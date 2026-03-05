@@ -41,6 +41,7 @@ const causeData: CauseProfileData = {
   ],
 };
 
+/** Cause detail page for the Education Access Program project. */
 const EducationAccessProgram: React.FC = () => {
   return <CausePageTemplate cause={causeData} />;
 };

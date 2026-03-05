@@ -72,6 +72,7 @@ const ReforestationProject = lazy(
   () => import("@/pages/causes/ReforestationProject"),
 );
 
+/** Full-screen centered loading spinner used as a Suspense fallback. */
 const LoadingFallback = () => (
   <div className="flex min-h-screen items-center justify-center">
     <LoadingSpinner size="lg" />

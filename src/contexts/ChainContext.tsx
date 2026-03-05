@@ -9,7 +9,6 @@ import React, {
 import {
   type ChainId,
   type ChainConfig,
-  CHAIN_IDS,
   CHAIN_CONFIGS,
   DEFAULT_CHAIN_ID,
   getAvailableChains,
@@ -151,5 +150,5 @@ export const ChainProvider: React.FC<ChainProviderProps> = ({ children }) => {
   );
 };
 
-export { CHAIN_IDS, CHAIN_CONFIGS };
-export type { ChainId, ChainConfig };
+export { CHAIN_IDS, CHAIN_CONFIGS } from "../config/contracts";
+export type { ChainId, ChainConfig } from "../config/contracts";

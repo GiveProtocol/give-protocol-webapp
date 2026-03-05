@@ -41,6 +41,7 @@ const causeData: CauseProfileData = {
   ],
 };
 
+/** Cause detail page for the Reforestation Project. */
 const ReforestationProject: React.FC = () => {
   return <CausePageTemplate cause={causeData} />;
 };

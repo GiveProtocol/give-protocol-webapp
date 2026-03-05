@@ -105,6 +105,23 @@ function ImpactHighlightsSection({ cause }: {
   );
 }
 
+/** Narrative content card with serif heading used in cause page layout. */
+function NarrativeCard({ title, content }: {
+  title: string;
+  content: string;
+}): React.ReactElement {
+  return (
+    <div className="bg-white dark:bg-[#111110] rounded-2xl shadow-sm p-8">
+      <h2 className="font-serif text-3xl font-bold text-gray-900 dark:text-white mb-4">
+        {title}
+      </h2>
+      <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
+        {content}
+      </p>
+    </div>
+  );
+}
+
 interface CausePageTemplateProps {
   /** The cause profile data to display */
   cause: CauseProfileData;
@@ -136,25 +153,11 @@ export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
             {/* Left Column (60%) — Narrative */}
             <div className="lg:col-span-3 space-y-8">
               <ScrollReveal direction="up" delay={100}>
-                <div className="bg-white dark:bg-[#111110] rounded-2xl shadow-sm p-8">
-                  <h2 className="font-serif text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                    The Problem
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-                    {cause.problem ?? cause.description}
-                  </p>
-                </div>
+                <NarrativeCard title="The Problem" content={cause.problem ?? cause.description} />
               </ScrollReveal>
 
               <ScrollReveal direction="up" delay={200}>
-                <div className="bg-white dark:bg-[#111110] rounded-2xl shadow-sm p-8">
-                  <h2 className="font-serif text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                    How We&apos;re Helping
-                  </h2>
-                  <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-lg">
-                    {cause.solution ?? solutionFallback}
-                  </p>
-                </div>
+                <NarrativeCard title="How We're Helping" content={cause.solution ?? solutionFallback} />
               </ScrollReveal>
             </div>
 

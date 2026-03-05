@@ -19,6 +19,28 @@ interface AdminStats {
   }>;
 }
 
+/** Single activity entry showing type badge, description, timestamp, and optional amount. */
+function ActivityItem({ activity, formatRelativeTime, formatCurrency, getActivityLabel }: {
+  activity: AdminStats['recentActivity'][number];
+  formatRelativeTime: (_ts: string) => string;
+  formatCurrency: (_amount: number) => string;
+  getActivityLabel: (_type: string) => string;
+}): React.ReactElement {
+  return (
+    <div className="flex items-center justify-between p-4 mb-4 border rounded-lg">
+      <div className="flex-1">
+        <span className="text-xs font-semibold text-gray-500 uppercase block mb-1">{getActivityLabel(activity.type)}</span>
+        <p className="font-medium text-gray-900">{activity.description}</p>
+        <p className="text-sm text-gray-500">{formatRelativeTime(activity.timestamp)}</p>
+      </div>
+      {activity.amount && (
+        <p className="font-semibold text-green-600 text-right">{formatCurrency(activity.amount)}</p>
+      )}
+    </div>
+  );
+}
+
+/** Admin dashboard page displaying platform statistics, recent activity, and quick actions. */
 const AdminDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -89,6 +111,7 @@ const AdminDashboard: React.FC = () => {
     trackEvent('admin_dashboard_viewed', { userId: user?.id });
   }, [user?.id, fetchAdminStats]);
 
+  /** Formats a number as a USD currency string. */
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -96,6 +119,7 @@ const AdminDashboard: React.FC = () => {
     }).format(amount);
   };
 
+  /** Converts an ISO timestamp to a human-readable relative time string. */
   const formatRelativeTime = (timestamp: string) => {
     const date = new Date(timestamp);
     const now = new Date();
@@ -112,6 +136,7 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
+  /** Returns a display label for a given activity type. */
   const getActivityLabel = (type: string) => {
     switch (type) {
       case 'donation':
@@ -193,22 +218,17 @@ const AdminDashboard: React.FC = () => {
         </Card>
       </div>
 
-      {/* Recent Activity - Flattened from 5 to 3 levels */}
+      {/* Recent Activity */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
         {stats.recentActivity.map((activity) => (
-          <div key={activity.id} className="flex items-center justify-between p-4 mb-4 border rounded-lg">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold text-gray-500 uppercase">{getActivityLabel(activity.type)}</span>
-              </div>
-              <p className="font-medium text-gray-900">{activity.description}</p>
-              <p className="text-sm text-gray-500">{formatRelativeTime(activity.timestamp)}</p>
-            </div>
-            {activity.amount && (
-              <p className="font-semibold text-green-600 text-right">{formatCurrency(activity.amount)}</p>
-            )}
-          </div>
+          <ActivityItem
+            key={activity.id}
+            activity={activity}
+            formatRelativeTime={formatRelativeTime}
+            formatCurrency={formatCurrency}
+            getActivityLabel={getActivityLabel}
+          />
         ))}
       </Card>
 

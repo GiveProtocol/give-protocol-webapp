@@ -19,10 +19,12 @@ export function convertToCSV<T extends Record<string, unknown>>(
   const rows = data.map((row) => {
     return headers
       .map((header) => {
-        // Handle values that might contain commas or quotes
-        const value =
-          row[header] === null || row[header] === undefined ? "" : row[header];
-        const escaped = String(value).replaceAll('"', '""');
+        // Handle values that might contain commas, quotes, or objects
+        const raw = row[header];
+        const value = raw === null || raw === undefined ? ""
+          : typeof raw === "object" ? JSON.stringify(raw)
+          : String(raw);
+        const escaped = value.replaceAll('"', '""');
         return `"${escaped}"`;
       })
       .join(",");
