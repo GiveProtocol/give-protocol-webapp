@@ -147,13 +147,25 @@ export interface Cause {
 }
 
 /**
+ * Structured impact statistic for cause detail pages and charity profiles.
+ */
+export interface ImpactStat {
+  value: string;
+  label: string;
+  icon?: string;
+}
+
+/**
  * Extended cause data for the cause detail page template.
  */
 export interface CauseProfileData extends Cause {
   impact: string[];
+  impactStats?: ImpactStat[];
   timeline: string;
   location: string;
   partners: string[];
+  problem?: string;
+  solution?: string;
 }
 
 /**
@@ -213,14 +225,6 @@ export interface OrganizationProfileFormData {
   facebook: string;
   linkedin: string;
   instagram: string;
-}
-
-/**
- * A single impact statistic label/value pair for charity profiles
- */
-export interface ImpactStat {
-  label: string;
-  value: string;
 }
 
 /**

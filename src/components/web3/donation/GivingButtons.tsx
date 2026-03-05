@@ -39,10 +39,10 @@ export function GivingOptionsCard({
     ({ onClick }: { onClick: () => void }) => (
       <button
         onClick={onClick}
-        className="w-full h-[58px] rounded-full bg-[#0d9f6e] hover:bg-[#0a8a5e] text-white flex items-center justify-center gap-2.5 uppercase transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0d9f6e] focus-visible:ring-offset-2"
+        className="w-full h-[58px] rounded-full border-2 border-emerald-600 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center justify-center gap-2.5 uppercase transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0d9f6e] focus-visible:ring-offset-2"
         style={SYNE_BUTTON_STYLE}
       >
-        <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>
+        <span className="w-5 h-5 rounded-full bg-emerald-600/10 dark:bg-emerald-400/10 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>
         Give Once
       </button>
     ),
@@ -53,10 +53,10 @@ export function GivingOptionsCard({
     ({ onClick }: { onClick: () => void }) => (
       <button
         onClick={onClick}
-        className="w-full h-[58px] rounded-full bg-transparent border-[1.5px] border-black/[0.15] dark:border-white/[0.15] text-gray-900 dark:text-[#f2f0ec] hover:border-[#0d9f6e] hover:text-[#0d9f6e] dark:hover:border-[#0d9f6e] dark:hover:text-[#0d9f6e] flex items-center justify-center gap-2.5 uppercase transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0d9f6e] focus-visible:ring-offset-2"
+        className="w-full h-[58px] rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2.5 uppercase transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0d9f6e] focus-visible:ring-offset-2"
         style={SYNE_BUTTON_STYLE}
       >
-        <span className="w-5 h-5 rounded-full bg-black/[0.06] dark:bg-white/[0.08] flex items-center justify-center text-[0.65rem] leading-none">&#8635;</span>
+        <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#8635;</span>
         Give Monthly
       </button>
     ),
@@ -64,11 +64,11 @@ export function GivingOptionsCard({
   );
 
   return (
-    <div className="bg-white dark:bg-[#111110] p-6 rounded-lg shadow-md">
+    <div className="bg-white dark:bg-[#111110] p-6 rounded-2xl shadow-sm">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-[#f2f0ec] mb-4">{heading}</h2>
       <div className="flex flex-col gap-4">
-        <DonationButton charityName={charityName} charityAddress={charityAddress} renderTrigger={renderGiveOnce} />
         <ScheduledDonationButton charityName={charityName} charityAddress={charityAddress} renderTrigger={renderGiveMonthly} />
+        <DonationButton charityName={charityName} charityAddress={charityAddress} renderTrigger={renderGiveOnce} />
         <a
           href="https://docs.giveprotocol.io/docs/donors/making-donations/"
           target="_blank"
