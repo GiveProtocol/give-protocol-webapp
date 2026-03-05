@@ -101,6 +101,17 @@ function MetricsTable({ metrics, fundLabel, onEdit, onDelete }: {
   );
 }
 
+const FUND_OPTIONS = [
+  { value: '1', label: 'Environmental Impact Fund' },
+  { value: '2', label: 'Poverty Relief Impact Fund' },
+  { value: '3', label: 'Education Impact Fund' },
+];
+
+const ICON_OPTIONS = [
+  'heart', 'trees', 'sprout', 'wind', 'utensils',
+  'heart-pulse', 'hand-coins', 'graduation-cap', 'book-open', 'award',
+];
+
 /** Form for creating or editing an impact metric. */
 function MetricForm({ form, saving, editingId, onFormChange, onSubmit, onCancel }: {
   form: FormState;
@@ -156,17 +167,6 @@ function MetricForm({ form, saving, editingId, onFormChange, onSubmit, onCancel 
     </form>
   );
 }
-
-const FUND_OPTIONS = [
-  { value: '1', label: 'Environmental Impact Fund' },
-  { value: '2', label: 'Poverty Relief Impact Fund' },
-  { value: '3', label: 'Education Impact Fund' },
-];
-
-const ICON_OPTIONS = [
-  'heart', 'trees', 'sprout', 'wind', 'utensils',
-  'heart-pulse', 'hand-coins', 'graduation-cap', 'book-open', 'award',
-];
 
 interface FormState {
   fund_id: string;

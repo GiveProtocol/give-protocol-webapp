@@ -31,8 +31,8 @@ const STATUS_CLASSES: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
 };
 
+/** Sortable column headers for the transactions table. */
 function TransactionTableHeader({
-  sortConfig,
   getSortIcon,
   onSortDate,
   onSortType,
@@ -40,7 +40,6 @@ function TransactionTableHeader({
   onSortStatus,
   t,
 }: {
-  sortConfig: SortConfig;
   getSortIcon: (_key: SortKey) => React.ReactNode;
   onSortDate: () => void;
   onSortType: () => void;
@@ -48,7 +47,6 @@ function TransactionTableHeader({
   onSortStatus: () => void;
   t: (_key: string, _fallback?: string) => string;
 }): React.ReactElement {
-  void sortConfig;
   return (
     <thead className="bg-gray-50">
       <tr>
@@ -99,6 +97,7 @@ function TransactionTableHeader({
   );
 }
 
+/** Single transaction row with formatted date, status badge, and verification link. */
 function TransactionRow({
   transaction,
   t,
@@ -295,7 +294,6 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <TransactionTableHeader
-            sortConfig={sortConfig}
             getSortIcon={getSortIcon}
             onSortDate={handleSortByDate}
             onSortType={handleSortByType}

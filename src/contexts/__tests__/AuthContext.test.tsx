@@ -692,7 +692,7 @@ describe("AuthContext", () => {
     it("handles successful username reminder", async () => {
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("username-reminder-btn").click();
       });
 
@@ -708,7 +708,7 @@ describe("AuthContext", () => {
     it("handles username reminder shows success message", async () => {
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("username-reminder-btn").click();
       });
 
@@ -823,7 +823,7 @@ describe("AuthContext", () => {
 
       renderWithAuthProvider();
 
-      await act(async () => {
+      await act(() => {
         screen.getByTestId("login-btn").click();
       });
 
