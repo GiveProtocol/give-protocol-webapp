@@ -26,8 +26,8 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
   const Icon = icons[type];
 
   return (
-    <div
-      role={type === 'error' ? 'alert' : 'status'}
+    <output
+      role={type === 'error' ? 'alert' : undefined}
       aria-live={type === 'error' ? 'assertive' : 'polite'}
       className={cn(
         "pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 p-4",
@@ -58,6 +58,6 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
           <X aria-hidden="true" className="h-5 w-5" />
         </button>
       </div>
-    </div>
+    </output>
   );
 };

@@ -72,7 +72,7 @@ export const PortfolioGrid: React.FC<PortfolioGridProps> = ({ searchTerm, catego
                 className="w-full h-[48px] rounded-full bg-[#0d9f6e] text-white flex items-center justify-center gap-2.5 uppercase"
                 style={{ fontFamily: "'Syne', sans-serif", fontSize: '0.85rem', fontWeight: 600, letterSpacing: '0.05em' }}
               >
-                <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>
+                <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>{' '}
                 Donate to Fund
               </div>
             </div>

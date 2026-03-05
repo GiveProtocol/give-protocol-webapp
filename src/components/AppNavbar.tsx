@@ -425,11 +425,15 @@ export const AppNavbar: React.FC = () => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Handle keyboard navigation
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "Escape") {
-      setIsMenuOpen(false);
-    }
+  // Close mobile menu on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
 
   // Handle dashboard navigation based on user type
@@ -447,7 +451,6 @@ export const AppNavbar: React.FC = () => {
     <nav
       className="bg-gradient-to-r from-emerald-600 to-teal-600 border-b border-emerald-700 shadow-lg"
       aria-label="Application navigation"
-      onKeyDown={handleKeyDown}
     >
       <div
         className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16"

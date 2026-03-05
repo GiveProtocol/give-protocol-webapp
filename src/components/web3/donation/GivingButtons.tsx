@@ -42,7 +42,7 @@ export function GivingOptionsCard({
         className="w-full h-[58px] rounded-full border-2 border-emerald-600 text-emerald-600 dark:border-emerald-400 dark:text-emerald-400 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 flex items-center justify-center gap-2.5 uppercase transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0d9f6e] focus-visible:ring-offset-2"
         style={SYNE_BUTTON_STYLE}
       >
-        <span className="w-5 h-5 rounded-full bg-emerald-600/10 dark:bg-emerald-400/10 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>
+        <span className="w-5 h-5 rounded-full bg-emerald-600/10 dark:bg-emerald-400/10 flex items-center justify-center text-[0.65rem] leading-none">&#9829;</span>{' '}
         Give Once
       </button>
     ),
@@ -56,7 +56,7 @@ export function GivingOptionsCard({
         className="w-full h-[58px] rounded-full bg-emerald-600 hover:bg-emerald-700 text-white flex items-center justify-center gap-2.5 uppercase transition-all duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0d9f6e] focus-visible:ring-offset-2"
         style={SYNE_BUTTON_STYLE}
       >
-        <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#8635;</span>
+        <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center text-[0.65rem] leading-none">&#8635;</span>{' '}
         Give Monthly
       </button>
     ),

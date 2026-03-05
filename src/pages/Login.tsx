@@ -145,7 +145,7 @@ const Login: React.FC = () => {
     switch (view) {
       case "select":
         return (
-          <div className="space-y-6" role="group" aria-labelledby="account-type-heading">
+          <fieldset className="space-y-6 border-none p-0 m-0" aria-labelledby="account-type-heading">
             <h1
               id="account-type-heading"
               className="text-xl sm:text-2xl font-semibold text-center text-gray-900"
@@ -209,7 +209,7 @@ const Login: React.FC = () => {
                 Create new account
               </Link>
             </div>
-          </div>
+          </fieldset>
         );
       case "donor":
         return (
@@ -274,9 +274,8 @@ const Login: React.FC = () => {
         Skip to login content
       </a>
 
-      <div
+      <section
         id="login-content"
-        role="region"
         aria-label="Login"
         className="max-w-md w-full bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-100"
       >
@@ -297,7 +296,7 @@ const Login: React.FC = () => {
         >
           {renderView()}
         </div>
-      </div>
+      </section>
     </div>
   );
 };
