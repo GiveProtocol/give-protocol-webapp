@@ -239,6 +239,17 @@ function HomeFooterBrand() {
   );
 }
 
+/** Renders a single footer link based on its type. */
+function HomeFooterLink({ link }: { link: FooterLink }) {
+  if (link.isDisabled) {
+    return <span className="opacity-60">{link.label}</span>;
+  }
+  if (link.isExternal) {
+    return <a href={link.href} className="hover:text-emerald-400" target="_blank" rel="noopener noreferrer">{link.label}</a>;
+  }
+  return <a href={link.href} className="hover:text-emerald-400">{link.label}</a>;
+}
+
 /** Footer column with title and list of links. */
 function HomeFooterLinks({ title, links }: { title: string; links: FooterLink[] }) {
   return (
@@ -247,13 +258,7 @@ function HomeFooterLinks({ title, links }: { title: string; links: FooterLink[] 
       <ul className="space-y-2 text-gray-400 text-sm">
         {links.map((link) => (
           <li key={link.label}>
-            {link.isDisabled ? (
-              <span className="opacity-60">{link.label}</span>
-            ) : link.isExternal ? (
-              <a href={link.href} className="hover:text-emerald-400" target="_blank" rel="noopener noreferrer">{link.label}</a>
-            ) : (
-              <a href={link.href} className="hover:text-emerald-400">{link.label}</a>
-            )}
+            <HomeFooterLink link={link} />
           </li>
         ))}
       </ul>

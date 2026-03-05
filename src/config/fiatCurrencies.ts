@@ -139,8 +139,9 @@ export function formatCurrencyAmount(
   currency: FiatCurrencyConfig,
 ): string {
   const decimals = isZeroDecimalCurrency(currency.code) ? 0 : 2;
-  const formatted = amount
-    .toFixed(decimals)
-    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const formatted = new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  }).format(amount);
   return `${currency.symbol}${formatted}`;
 }

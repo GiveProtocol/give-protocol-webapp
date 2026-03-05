@@ -447,10 +447,10 @@ export const AppNavbar: React.FC = () => {
     <nav
       className="bg-gradient-to-r from-emerald-600 to-teal-600 border-b border-emerald-700 shadow-lg"
       aria-label="Application navigation"
+      onKeyDown={handleKeyDown}
     >
       <div
         className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16"
-        onKeyDown={handleKeyDown}
       >
         <div className="flex items-center">
           <NavHeader />

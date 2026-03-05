@@ -357,11 +357,12 @@ export function FiatDonationForm({
     return `Donate ${fmtAmount(chargeAmount)}`;
   };
 
-  const submitIcon = isStripe
-    ? <ExternalLink className="w-5 h-5" />
-    : isMonthly
-      ? <RefreshCw className="w-5 h-5" />
-      : <CreditCard className="w-5 h-5" />;
+  const getSubmitIcon = (): React.ReactElement => {
+    if (isStripe) return <ExternalLink className="w-5 h-5" />;
+    if (isMonthly) return <RefreshCw className="w-5 h-5" />;
+    return <CreditCard className="w-5 h-5" />;
+  };
+  const submitIcon = getSubmitIcon();
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">

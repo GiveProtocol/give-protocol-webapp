@@ -343,7 +343,9 @@ const ImpactMetricsAdmin: React.FC = () => {
               disabled={saving}
               className="px-4 py-2 bg-[#0d9f6e] text-white rounded-lg hover:bg-[#0a8a5e] disabled:opacity-60"
             >
-              {saving ? 'Saving...' : (editingId ? 'Update' : 'Create')}
+              {saving && 'Saving...'}
+              {!saving && editingId && 'Update'}
+              {!saving && !editingId && 'Create'}
             </button>
           </div>
         </form>

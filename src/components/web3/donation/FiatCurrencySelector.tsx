@@ -41,11 +41,12 @@ export const FiatCurrencySelector: React.FC<FiatCurrencySelectorProps> = ({
 
   return (
     <div className="space-y-1.5">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label htmlFor="fiat-currency-select" className="block text-sm font-medium text-gray-700 dark:text-gray-300">
         Currency
       </label>
       <div className="relative">
         <select
+          id="fiat-currency-select"
           value={value}
           onChange={handleChange}
           disabled={disabled}

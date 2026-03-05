@@ -69,17 +69,19 @@ export function ImpactCalculator({ fundId, fundName: _fundName }: ImpactCalculat
         See Your Potential Impact
       </h2>
 
-      {loading ? (
+      {loading && (
         <div className="space-y-3">
           <Skeleton height={20} className="rounded w-full" />
           <Skeleton height={40} className="rounded w-full" />
           <Skeleton height={16} className="rounded w-3/4" count={3} />
         </div>
-      ) : metrics.length === 0 ? (
+      )}
+      {!loading && metrics.length === 0 && (
         <p className="text-sm text-gray-500 dark:text-gray-400">
           No impact metrics configured for this fund yet.
         </p>
-      ) : (
+      )}
+      {!loading && metrics.length > 0 && (
         <>
           {/* Slider */}
           <div className="mb-4">
