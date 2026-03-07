@@ -3,6 +3,7 @@ import { GivingOptionsCard } from "@/components/web3/donation/GivingButtons";
 import { formatCurrency } from "@/utils/money";
 import { CharityHeroSection } from "@/components/ui/CharityHeroSection";
 import { OrganizationInfoSection } from "@/components/charity/OrganizationInfoSection";
+import { FloatingSocialSidebar } from "@/components/social/FloatingSocialSidebar";
 import type { OrganizationProfile } from "@/types/charity";
 
 /**
@@ -134,6 +135,7 @@ export const CharityPageTemplate: React.FC<CharityPageTemplateProps> = ({
 }) => {
   return (
     <div>
+      <FloatingSocialSidebar title={charity.name} />
       <CharityHeroSection
         image={charity.image}
         title={charity.name}

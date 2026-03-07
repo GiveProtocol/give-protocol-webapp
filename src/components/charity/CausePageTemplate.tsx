@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { GivingOptionsCard } from "@/components/web3/donation/GivingButtons";
 import { HeroSection } from "@/components/ui/HeroSection";
+import { FloatingSocialSidebar } from "@/components/social/FloatingSocialSidebar";
 import type { CauseProfileData, ImpactStat } from "@/types/charity";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
@@ -176,6 +177,7 @@ export const CausePageTemplate: React.FC<CausePageTemplateProps> = ({
 
   return (
     <>
+      <FloatingSocialSidebar title={cause.name} />
       <HeroSection
         image={cause.image}
         title={cause.name}

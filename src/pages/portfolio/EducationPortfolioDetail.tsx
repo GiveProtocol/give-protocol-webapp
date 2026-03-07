@@ -3,6 +3,7 @@ import { CharityCard } from '@/components/charity/CharityCard';
 import { GivingOptionsCard } from '@/components/web3/donation/GivingButtons';
 import { ImpactCalculator } from '@/components/impact/ImpactCalculator';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { FloatingSocialSidebar } from '@/components/social/FloatingSocialSidebar';
 
 const PORTFOLIO = {
   id: '3',
@@ -69,6 +70,7 @@ const CHARITIES = [
 const EducationPortfolioDetail: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <FloatingSocialSidebar title={PORTFOLIO.name} />
       <ScrollReveal direction="up" className="relative h-64 rounded-xl overflow-hidden mb-6">
         <img
           src={PORTFOLIO.image}

@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 import { CharityCard } from '@/components/charity/CharityCard';
 import { GivingOptionsCard } from '@/components/web3/donation/GivingButtons';
 import { ImpactCalculator } from '@/components/impact/ImpactCalculator';
+import { FloatingSocialSidebar } from '@/components/social/FloatingSocialSidebar';
 
 // Sample data - replace with actual API calls
 const SAMPLE_PORTFOLIO = {
@@ -91,6 +92,7 @@ const PortfolioFundDetail: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <FloatingSocialSidebar title={SAMPLE_PORTFOLIO.name} />
       <div className="mb-8">
         <PortfolioHero portfolio={SAMPLE_PORTFOLIO} />
 
