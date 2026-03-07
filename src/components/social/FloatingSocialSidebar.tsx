@@ -92,7 +92,7 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
       <nav
         role="complementary"
         aria-label="Share this page"
-        className="hidden md:flex md:flex-col fixed left-4 top-1/2 -translate-y-1/2 z-40 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-full shadow-lg p-2 gap-1"
+        className="hidden md:flex md:flex-col fixed left-4 top-[60%] -translate-y-1/2 z-40 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-full shadow-lg p-2 gap-1"
       >
         {SOCIAL_PLATFORMS.map((platform) => (
           <SocialButton key={platform.id} platform={platform} onClick={handleShare} />
