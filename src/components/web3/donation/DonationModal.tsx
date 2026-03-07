@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 
 // Components
+import { PostDonationShare } from '@/components/social/PostDonationShare';
 import { DonationForm } from './DonationForm';
 import { ScheduledDonationForm } from './ScheduledDonationForm';
 import { FiatDonationForm } from './FiatDonationForm';
@@ -103,6 +104,7 @@ function SuccessContent({ result, charityName, onClose }: {
           A receipt has been sent to your email.
         </p>
       )}
+      <PostDonationShare charityName={charityName} />
       <Button onClick={onClose} className="mt-6" fullWidth>
         Done
       </Button>
@@ -326,8 +328,7 @@ export const DonationModal: React.FC<DonationModalProps> = ({
     };
     dispatch({ type: 'SET_SUCCESS', payload: result });
     onSuccess?.(result);
-    setTimeout(onClose, 2000);
-  }, [state.amount, frequency, selectedToken.symbol, onSuccess, onClose]);
+  }, [state.amount, frequency, selectedToken.symbol, onSuccess]);
 
   const handleFiatSuccess = useCallback(
     (paymentResult: HelcimPaymentResult) => {
@@ -344,9 +345,8 @@ export const DonationModal: React.FC<DonationModalProps> = ({
       };
       dispatch({ type: 'SET_SUCCESS', payload: result });
       onSuccess?.(result);
-      setTimeout(onClose, 3000);
     },
-    [state.amount, state.coverFees, state.fiatCurrencyCode, frequency, onSuccess, onClose]
+    [state.amount, state.coverFees, state.fiatCurrencyCode, frequency, onSuccess]
   );
 
   const handleFiatError = useCallback((error: Error) => {
