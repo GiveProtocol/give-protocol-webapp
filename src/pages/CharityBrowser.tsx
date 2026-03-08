@@ -5,6 +5,7 @@ import { PortfolioGrid } from "../components/charity/PortfolioGrid";
 import { CauseGrid } from "../components/charity/CauseGrid";
 import { Button } from "../components/ui/Button";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { US_STATES } from "@/constants/usStates";
 
 type ViewMode = "charities" | "causes" | "portfolios";
 
@@ -30,12 +31,12 @@ function SearchInput({ value, onChange, placeholder, ariaLabel }: {
   );
 }
 
-/** Filter bar with search input and category selector. */
-function CharityFilterBar({ searchTerm, selectedCategory, onSearchChange, onCategoryChange }: {
+/** Filter bar with search input and state selector. */
+function CharityFilterBar({ searchTerm, selectedState, onSearchChange, onStateChange }: {
   searchTerm: string;
-  selectedCategory: string;
+  selectedState: string;
   onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
-  onCategoryChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onStateChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
 }) {
   return (
     <div className="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4 mb-4">
@@ -46,18 +47,17 @@ function CharityFilterBar({ searchTerm, selectedCategory, onSearchChange, onCate
         ariaLabel="Search charities"
       />
       <select
-        value={selectedCategory}
-        onChange={onCategoryChange}
+        value={selectedState}
+        onChange={onStateChange}
         className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
-        aria-label="Select category"
+        aria-label="Select state"
       >
-        <option value="">All Categories</option>
-        <option value="Water & Sanitation">Water &amp; Sanitation</option>
-        <option value="Education">Education</option>
-        <option value="Healthcare">Healthcare</option>
-        <option value="Environment">Environment</option>
-        <option value="Poverty Relief">Poverty Relief</option>
-        <option value="Animal Welfare">Animal Welfare</option>
+        <option value="">All States</option>
+        {US_STATES.map((state) => (
+          <option key={state.code} value={state.code}>
+            {state.name}
+          </option>
+        ))}
       </select>
     </div>
   );
@@ -67,8 +67,8 @@ function CharityFilterBar({ searchTerm, selectedCategory, onSearchChange, onCate
 const CharityBrowser: React.FC = () => {
   const [viewMode, setViewMode] = useState<ViewMode>("charities");
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
+  const [selectedState, setSelectedState] = useState("");
+  const [onPlatformOnly, setOnPlatformOnly] = useState(false);
 
   const handleSearchChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,9 +77,9 @@ const CharityBrowser: React.FC = () => {
     [],
   );
 
-  const handleCategoryChange = useCallback(
+  const handleStateChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSelectedCategory(e.target.value);
+      setSelectedState(e.target.value);
     },
     [],
   );
@@ -96,9 +96,9 @@ const CharityBrowser: React.FC = () => {
     setViewMode("portfolios");
   }, []);
 
-  const handleVerifiedChange = useCallback(
+  const handleOnPlatformChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      setVerifiedOnly(e.target.checked);
+      setOnPlatformOnly(e.target.checked);
     },
     [],
   );
@@ -108,20 +108,19 @@ const CharityBrowser: React.FC = () => {
     switch (viewMode) {
       case "causes":
         return (
-          <CauseGrid searchTerm={searchTerm} category={selectedCategory} />
+          <CauseGrid searchTerm={searchTerm} category="" />
         );
       case "portfolios":
         return (
-          <PortfolioGrid searchTerm={searchTerm} category={selectedCategory} />
+          <PortfolioGrid searchTerm={searchTerm} category="" />
         );
       case "charities":
       default:
-        // Both "charities" and default show the CharityGrid
         return (
           <CharityGrid
             searchTerm={searchTerm}
-            category={selectedCategory}
-            verifiedOnly={verifiedOnly}
+            filterState={selectedState}
+            onPlatformOnly={onPlatformOnly}
           />
         );
     }
@@ -159,9 +158,9 @@ const CharityBrowser: React.FC = () => {
       <ScrollReveal direction="up" delay={200}>
         <CharityFilterBar
           searchTerm={searchTerm}
-          selectedCategory={selectedCategory}
+          selectedState={selectedState}
           onSearchChange={handleSearchChange}
-          onCategoryChange={handleCategoryChange}
+          onStateChange={handleStateChange}
         />
       </ScrollReveal>
 
@@ -170,17 +169,17 @@ const CharityBrowser: React.FC = () => {
         <div className="flex items-center space-x-2">
           <input
             type="checkbox"
-            id="verified"
-            checked={verifiedOnly}
-            onChange={handleVerifiedChange}
+            id="onPlatform"
+            checked={onPlatformOnly}
+            onChange={handleOnPlatformChange}
             className="h-4 w-4 text-indigo-600 rounded border-gray-300"
           />
           <label
-            htmlFor="verified"
+            htmlFor="onPlatform"
             className="text-sm text-gray-700 flex items-center"
           >
             <CheckCircle aria-hidden="true" className="h-4 w-4 mr-1 text-indigo-600" />
-            Verified Charities Only
+            On Platform Only
           </label>
         </div>
         </ScrollReveal>

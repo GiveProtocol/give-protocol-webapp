@@ -1,65 +1,65 @@
-import React from 'react';
-import { CharityCard } from './CharityCard';
-import { Charity } from '@/types/charity';
+import React, { useCallback } from 'react';
+import { useIrsOrganizationSearch } from '@/hooks/useIrsOrganizationSearch';
+import { IrsOrganizationCard } from './IrsOrganizationCard';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 
 interface CharityGridProps {
   searchTerm: string;
-  category: string;
-  verifiedOnly: boolean;
+  filterState: string;
+  onPlatformOnly: boolean;
   className?: string;
 }
 
+/**
+ * Grid of IRS organization cards with server-side search and pagination.
+ * @param props - Search term, state filter, on-platform toggle, and optional className
+ * @returns The rendered grid component
+ */
 export const CharityGrid: React.FC<CharityGridProps> = ({
   searchTerm,
-  category,
-  verifiedOnly,
-  className
+  filterState,
+  onPlatformOnly,
+  className,
 }) => {
-  // Sample charities - replace with actual data fetching
-  const charities: Charity[] = [
-    {
-      id: '1',
-      name: "Global Water Foundation",
-      category: "Water & Sanitation",
-      description: "Providing clean water solutions worldwide",
-      image: "https://images.unsplash.com/photo-1538300342682-cf57afb97285?auto=format&fit=crop&w=800",
-      verified: true,
-      country: "United States",
-      causes: []
-    },
-    {
-      id: '2',
-      name: "Education for All",
-      category: "Education",
-      description: "Supporting education in developing countries",
-      image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?auto=format&fit=crop&w=800",
-      verified: true,
-      country: "Kenya",
-      causes: []
-    },
-    {
-      id: '3',
-      name: "Climate Action Now",
-      category: "Environment",
-      description: "Fighting climate change globally",
-      image: "https://images.unsplash.com/photo-1498925008800-019c7d59d903?auto=format&fit=crop&w=800",
-      verified: false,
-      country: "United Kingdom",
-      causes: []
-    }
-  ];
-
-  const filteredCharities = charities.filter(charity => {
-    const matchesSearch = charity.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         charity.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !category || charity.category === category;
-    const matchesVerified = !verifiedOnly || charity.verified;
-    
-    return matchesSearch && matchesCategory && matchesVerified;
+  const { organizations, loading, hasMore, error, loadMore } = useIrsOrganizationSearch({
+    searchTerm,
+    filterState,
+    onPlatformOnly,
   });
 
-  if (filteredCharities.length === 0) {
+  const handleLoadMore = useCallback(() => {
+    loadMore();
+  }, [loadMore]);
+
+  if (error) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-red-500">{error}</p>
+      </div>
+    );
+  }
+
+  const hasInput = searchTerm.trim().length >= 2 || Boolean(filterState);
+
+  if (!hasInput && !loading) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-gray-500">Enter a search term or select a state to find charities.</p>
+      </div>
+    );
+  }
+
+  if (loading && organizations.length === 0) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  if (organizations.length === 0) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">No charities found matching your criteria.</p>
@@ -68,10 +68,24 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
   }
 
   return (
-    <div className={cn("grid gap-6 md:grid-cols-2 lg:grid-cols-3", className)}>
-      {filteredCharities.map((charity) => (
-        <CharityCard key={charity.id} charity={charity} />
-      ))}
+    <div>
+      <div className={cn("grid gap-6 md:grid-cols-2 lg:grid-cols-3", className)}>
+        {organizations.map((org) => (
+          <IrsOrganizationCard key={org.ein} organization={org} />
+        ))}
+      </div>
+
+      {hasMore && (
+        <div className="flex justify-center mt-8">
+          <Button
+            variant="secondary"
+            onClick={handleLoadMore}
+            disabled={loading}
+          >
+            {loading ? 'Loading...' : 'Load More'}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
