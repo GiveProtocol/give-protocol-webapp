@@ -21,6 +21,9 @@ const EducationForAll = lazy(() => import("@/pages/charities/EducationForAll"));
 const ClimateActionNow = lazy(
   () => import("@/pages/charities/ClimateActionNow"),
 );
+const CharityProfilePage = lazy(
+  () => import("@/pages/CharityProfilePage"),
+);
 const EnvironmentPortfolioDetail = lazy(
   () => import("@/pages/portfolio/EnvironmentPortfolioDetail"),
 );
@@ -229,6 +232,17 @@ export function AppRoutes() {
             <RouteTransition>
               <Suspense fallback={<LoadingFallback />}>
                 <ClimateActionNow />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
+
+        <Route
+          path="/charity/:ein"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <CharityProfilePage />
               </Suspense>
             </RouteTransition>
           }
