@@ -4,7 +4,9 @@ import { DonorRegistration } from '../components/auth/DonorRegistration';
 import { CharityVettingForm } from '../components/auth/CharityVettingForm';
 import { IrsOrganizationSearch } from '../components/auth/IrsOrganizationSearch';
 import { CharityClaimForm } from '../components/auth/CharityClaimForm';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Link as LinkIcon } from 'lucide-react';
+import { useWeb3 } from '@/contexts/Web3Context';
+import { formatAddress } from '@/components/Wallet/utils';
 import { Logo } from '@/components/Logo';
 import type { IrsOrganization } from '@/types/irsOrganization';
 
@@ -36,6 +38,10 @@ export const Register: React.FC = () => {
   const [userType, setUserType] = useState<'donor' | 'charity'>(typeParam === 'charity' ? 'charity' : 'donor');
   const [charityStep, setCharityStep] = useState<CharityStep>('search');
   const [selectedOrg, setSelectedOrg] = useState<IrsOrganization | null>(null);
+  const [linkWallet, setLinkWallet] = useState(true);
+
+  const { address, isConnected } = useWeb3();
+  const truncatedAddress = address ? formatAddress(address, 'short') : '';
 
   // Set user type based on URL parameter on mount and when it changes
   useEffect(() => {
@@ -68,6 +74,10 @@ export const Register: React.FC = () => {
   const handleBackToSearch = useCallback(() => {
     setSelectedOrg(null);
     setCharityStep('search');
+  }, []);
+
+  const handleLinkWalletToggle = useCallback(() => {
+    setLinkWallet((prev) => !prev);
   }, []);
 
   const renderCharityContent = () => {
@@ -108,6 +118,22 @@ export const Register: React.FC = () => {
           <p className="text-slate-400 text-base leading-relaxed max-w-sm">
             Blockchain-powered charitable giving with full transparency, accountability, and real-time impact tracking.
           </p>
+          {isConnected && address && (
+            <div className="mt-8 bg-white/5 border border-white/10 rounded-lg p-4">
+              <div className="flex items-start gap-3">
+                <LinkIcon className="h-5 w-5 text-indigo-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-white text-sm font-medium">
+                    Wallet detected: {truncatedAddress}
+                  </p>
+                  <p className="text-slate-400 text-sm mt-1">
+                    Create an account to link this wallet and access your donation history,
+                    CEF portfolio, and SBT credentials across sessions.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         <div className="relative z-10" />
       </div>
@@ -162,6 +188,65 @@ export const Register: React.FC = () => {
               Charity
             </button>
           </div>
+
+          {/* Wallet row */}
+          {userType === 'donor' && isConnected && (
+            <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg p-4 mb-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <LinkIcon className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Link wallet {truncatedAddress}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Auto-link your connected wallet to this account
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={linkWallet}
+                  onClick={handleLinkWalletToggle}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ${
+                    linkWallet ? 'bg-emerald-600' : 'bg-gray-200 dark:bg-gray-600'
+                  }`}
+                >
+                  <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform transition-transform duration-200 ${
+                    linkWallet ? 'translate-x-5' : 'translate-x-0'
+                  }`} />
+                </button>
+              </div>
+            </div>
+          )}
+          {userType === 'donor' && !isConnected && (
+            <div className="bg-slate-50 dark:bg-gray-800 border border-slate-200 dark:border-gray-700 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-3">
+                <LinkIcon className="h-5 w-5 text-slate-400 shrink-0" />
+                <p className="text-sm text-slate-500 dark:text-gray-400">
+                  You can connect a wallet from your dashboard after signup.
+                </p>
+              </div>
+            </div>
+          )}
+          {userType === 'charity' && (
+            <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-lg p-4 mb-6">
+              <div className="flex items-start gap-3">
+                <LinkIcon className="h-5 w-5 text-amber-600 dark:text-amber-400 mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">
+                    Organization wallet setup
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                    Charity digital asset wallets are configured after account creation
+                    by an authorized admin using your organization&apos;s dedicated wallet —
+                    kept separate from any personal wallets.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Form card */}
           <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8">
