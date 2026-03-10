@@ -2,6 +2,7 @@ import React, { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { PasswordStrengthBar } from "@/components/auth/PasswordStrengthBar";
 import { useCountries } from "@/hooks/useCountries";
 import {
   validateEmail,
@@ -190,6 +191,7 @@ export const CharityVettingForm: React.FC = () => {
       <Input
         label="Organization Name"
         name="organizationName"
+        variant="fintech"
         value={formData.organizationName}
         onChange={handleChange}
         required
@@ -203,7 +205,7 @@ export const CharityVettingForm: React.FC = () => {
           value={formData.description}
           onChange={handleChange}
           rows={4}
-          className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50 mt-1"
+          className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-indigo-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 mt-1"
           required
         />
         {validationErrors["description"] && (
@@ -216,6 +218,7 @@ export const CharityVettingForm: React.FC = () => {
       <Input
         label="Category of Entity"
         name="category"
+        variant="fintech"
         value={formData.category}
         onChange={handleChange}
         required
@@ -225,6 +228,7 @@ export const CharityVettingForm: React.FC = () => {
       <Input
         label="Tax or Registration ID"
         name="taxId"
+        variant="fintech"
         value={formData.taxId}
         onChange={handleChange}
         required
@@ -235,6 +239,7 @@ export const CharityVettingForm: React.FC = () => {
       <Input
         label="Street Address"
         name="streetAddress"
+        variant="fintech"
         value={formData.streetAddress}
         onChange={handleChange}
         required
@@ -245,6 +250,7 @@ export const CharityVettingForm: React.FC = () => {
         <Input
           label="City"
           name="city"
+          variant="fintech"
           value={formData.city}
           onChange={handleChange}
           required
@@ -253,6 +259,7 @@ export const CharityVettingForm: React.FC = () => {
         <Input
           label="State/Province"
           name="state"
+          variant="fintech"
           value={formData.state}
           onChange={handleChange}
           required
@@ -269,7 +276,7 @@ export const CharityVettingForm: React.FC = () => {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50"
+            className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-indigo-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100"
             required
           >
             <option value="">Select Country</option>
@@ -288,6 +295,7 @@ export const CharityVettingForm: React.FC = () => {
         <Input
           label="Postal Code"
           name="postalCode"
+          variant="fintech"
           value={formData.postalCode}
           onChange={handleChange}
           required
@@ -301,6 +309,7 @@ export const CharityVettingForm: React.FC = () => {
       <Input
         label="Contact Name"
         name="contactName"
+        variant="fintech"
         value={formData.contactName}
         onChange={handleChange}
         required
@@ -310,6 +319,7 @@ export const CharityVettingForm: React.FC = () => {
         label="Contact Email"
         type="email"
         name="contactEmail"
+        variant="fintech"
         value={formData.contactEmail}
         onChange={handleChange}
         required
@@ -319,6 +329,7 @@ export const CharityVettingForm: React.FC = () => {
         label="Contact Phone"
         type="tel"
         name="contactPhone"
+        variant="fintech"
         value={formData.contactPhone}
         onChange={handleChange}
         required
@@ -326,26 +337,35 @@ export const CharityVettingForm: React.FC = () => {
       />
 
       <h3 className="text-lg font-semibold text-gray-900">Account Security</h3>
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        value={formData.password}
-        onChange={handleChange}
-        required
-        error={validationErrors["password"]}
-      />
+      <div className="space-y-1">
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          variant="fintech"
+          value={formData.password}
+          onChange={handleChange}
+          required
+          error={validationErrors["password"]}
+        />
+        <PasswordStrengthBar password={formData.password} />
+      </div>
       <Input
         label="Confirm Password"
         type="password"
         name="confirmPassword"
+        variant="fintech"
         value={formData.confirmPassword}
         onChange={handleChange}
         required
         error={validationErrors["confirmPassword"]}
       />
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button
+        type="submit"
+        className="w-full bg-gradient-to-b from-indigo-500 to-indigo-600 border border-indigo-700 shadow-none hover:from-indigo-600 hover:to-indigo-700 hover:shadow-none"
+        disabled={loading}
+      >
         {loading ? "Submitting Application..." : "Submit Charity Application"}
       </Button>
     </form>

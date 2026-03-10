@@ -5,7 +5,7 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helperText?: string;
-  variant?: 'default' | 'enhanced';
+  variant?: 'default' | 'enhanced' | 'fintech';
 }
 
 /** Reusable text input component with label, error, and helper text support in default or enhanced variants. */
@@ -36,6 +36,11 @@ export const Input: React.FC<InputProps> = ({
       "border-[1.5px] border-[#e1e4e8] dark:border-gray-600 rounded-lg px-4 py-3 text-base bg-[#fafbfc] dark:bg-gray-700",
       "focus:border-[#0366d6] dark:focus:border-indigo-400 focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white dark:focus:bg-gray-600",
       error && "border-red-300 dark:border-red-600 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
+    ),
+    fintech: cn(
+      "border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 text-base",
+      "focus:border-indigo-600 dark:focus:border-indigo-400 focus:ring-0 focus:ring-offset-0",
+      error && "border-red-300 dark:border-red-600 focus:border-red-500"
     )
   };
 

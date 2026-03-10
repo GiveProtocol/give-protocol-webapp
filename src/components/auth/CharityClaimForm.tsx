@@ -1,0 +1,293 @@
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft, AlertCircle } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Input } from '@/components/ui/Input';
+import { PasswordStrengthBar } from '@/components/auth/PasswordStrengthBar';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/useToast';
+import {
+  validateEmail,
+  validatePassword,
+  validateName,
+  validatePhoneNumber,
+} from '@/utils/validation';
+import { Logger } from '@/utils/logger';
+import type { IrsOrganization } from '@/types/irsOrganization';
+
+interface CharityClaimFormProps {
+  organization: IrsOrganization;
+  onBack: () => void;
+}
+
+/**
+ * Claim registration form for a charity found via IRS search.
+ * Displays read-only IRS data and collects contact/password fields.
+ * @param props - Component props
+ * @param props.organization - The IRS organization to claim
+ * @param props.onBack - Called when user clicks back to search
+ * @returns The rendered claim form
+ */
+export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
+  organization,
+  onBack,
+}) => {
+  const navigate = useNavigate();
+  const { showToast } = useToast();
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  const [formData, setFormData] = useState({
+    contactName: '',
+    contactEmail: '',
+    contactPhone: '',
+    password: '',
+    confirmPassword: '',
+  });
+
+  const irsLocation = [organization.city, organization.state, organization.zip]
+    .filter(Boolean)
+    .join(', ');
+
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const { name, value } = e.target;
+      setFormData((prev) => ({ ...prev, [name]: value }));
+      setError('');
+
+      if (validationErrors[name]) {
+        setValidationErrors((prev) => {
+          const { [name]: _, ...rest } = prev;
+          return rest;
+        });
+      }
+    },
+    [validationErrors],
+  );
+
+  const validateField = useCallback(
+    (name: string, value: string): string => {
+      switch (name) {
+        case 'contactName':
+          return validateName(value) ? '' : 'Name must be between 2 and 100 characters';
+        case 'contactEmail':
+          return validateEmail(value) ? '' : 'Please enter a valid email address';
+        case 'contactPhone':
+          return validatePhoneNumber(value) ? '' : 'Please enter a valid phone number';
+        case 'password':
+          return validatePassword(value) ? '' : 'Password must be at least 8 characters long';
+        case 'confirmPassword':
+          return value === formData.password ? '' : 'Passwords do not match';
+        default:
+          return '';
+      }
+    },
+    [formData.password],
+  );
+
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setError('');
+      setValidationErrors({});
+
+      const errors: Record<string, string> = {};
+      const fieldsToValidate = [
+        { name: 'contactName', value: formData.contactName },
+        { name: 'contactEmail', value: formData.contactEmail },
+        { name: 'contactPhone', value: formData.contactPhone },
+        { name: 'password', value: formData.password },
+        { name: 'confirmPassword', value: formData.confirmPassword },
+      ];
+
+      fieldsToValidate.forEach(({ name, value }) => {
+        const fieldError = validateField(name, value);
+        if (fieldError) {
+          errors[name] = fieldError;
+        }
+      });
+
+      if (Object.keys(errors).length > 0) {
+        setValidationErrors(errors);
+        setError('Please correct the validation errors');
+        return;
+      }
+
+      setSubmitting(true);
+
+      try {
+        // 1. Sign up the user
+        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+          email: formData.contactEmail,
+          password: formData.password,
+          options: {
+            data: {
+              type: 'charity',
+              organizationName: organization.name,
+              ein: organization.ein,
+            },
+          },
+        });
+
+        if (signUpError) {
+          setError(signUpError.message);
+          return;
+        }
+
+        const userId = signUpData.user?.id;
+        if (!userId) {
+          setError('Account creation failed');
+          return;
+        }
+
+        // 2. Create profiles row
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({ user_id: userId, type: 'charity' });
+
+        if (profileError) {
+          Logger.error('Failed to create profile row', { error: profileError });
+        }
+
+        // 3. Ensure charity_profiles row exists
+        const { error: getOrCreateError } = await supabase.rpc('get_or_create_charity_profile', {
+          lookup_ein: organization.ein,
+        });
+
+        if (getOrCreateError) {
+          Logger.error('Failed to get/create charity profile', { error: getOrCreateError });
+        }
+
+        // 4. Claim the charity profile
+        const { error: claimError } = await supabase.rpc('claim_charity_profile', {
+          p_ein: organization.ein,
+          p_signer_name: formData.contactName,
+          p_signer_email: formData.contactEmail,
+          p_signer_phone: formData.contactPhone,
+        });
+
+        if (claimError) {
+          Logger.error('Failed to claim charity profile', { error: claimError });
+        }
+
+        showToast('success', 'Account Created', 'Please check your email to verify your account.');
+        navigate('/login');
+      } catch (err) {
+        const message = err instanceof Error ? err.message : 'Failed to create account';
+        setError(message);
+      } finally {
+        setSubmitting(false);
+      }
+    },
+    [formData, organization, validateField, navigate, showToast],
+  );
+
+  return (
+    <div>
+      <button
+        type="button"
+        onClick={onBack}
+        className="flex items-center text-sm text-gray-600 hover:text-gray-900 mb-4"
+      >
+        <ArrowLeft aria-hidden="true" className="h-4 w-4 mr-1" />
+        Back to search
+      </button>
+
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {error && (
+          <div className="p-3 bg-red-50 text-red-600 rounded-md flex items-start">
+            <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+            Organization Details (from IRS)
+          </h3>
+          <div className="space-y-1 text-sm">
+            <p>
+              <span className="font-medium text-gray-700">Name:</span>{' '}
+              <span className="text-gray-900">{organization.name}</span>
+            </p>
+            <p>
+              <span className="font-medium text-gray-700">EIN:</span>{' '}
+              <span className="text-gray-900">{organization.ein}</span>
+            </p>
+            {irsLocation && (
+              <p>
+                <span className="font-medium text-gray-700">Location:</span>{' '}
+                <span className="text-gray-900">{irsLocation}</span>
+              </p>
+            )}
+          </div>
+        </div>
+
+        <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+        <Input
+          label="Contact Name"
+          name="contactName"
+          variant="fintech"
+          value={formData.contactName}
+          onChange={handleChange}
+          required
+          error={validationErrors['contactName']}
+        />
+        <Input
+          label="Contact Email"
+          type="email"
+          name="contactEmail"
+          variant="fintech"
+          value={formData.contactEmail}
+          onChange={handleChange}
+          required
+          error={validationErrors['contactEmail']}
+        />
+        <Input
+          label="Contact Phone"
+          type="tel"
+          name="contactPhone"
+          variant="fintech"
+          value={formData.contactPhone}
+          onChange={handleChange}
+          required
+          error={validationErrors['contactPhone']}
+        />
+
+        <h3 className="text-lg font-semibold text-gray-900">Account Security</h3>
+        <div className="space-y-1">
+          <Input
+            label="Password"
+            type="password"
+            name="password"
+            variant="fintech"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            error={validationErrors['password']}
+          />
+          <PasswordStrengthBar password={formData.password} />
+        </div>
+        <Input
+          label="Confirm Password"
+          type="password"
+          name="confirmPassword"
+          variant="fintech"
+          value={formData.confirmPassword}
+          onChange={handleChange}
+          required
+          error={validationErrors['confirmPassword']}
+        />
+
+        <Button
+          type="submit"
+          className="w-full bg-gradient-to-b from-indigo-500 to-indigo-600 border border-indigo-700 shadow-none hover:from-indigo-600 hover:to-indigo-700 hover:shadow-none"
+          disabled={submitting}
+        >
+          {submitting ? 'Creating Account...' : 'Claim Organization'}
+        </Button>
+      </form>
+    </div>
+  );
+};
