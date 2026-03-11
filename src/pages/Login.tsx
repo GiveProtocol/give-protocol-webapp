@@ -204,7 +204,7 @@ const Login: React.FC = () => {
               </p>
               <Link
                 to="/register"
-                className="inline-block text-base text-teal-700 hover:text-teal-800 font-medium hover:underline decoration-teal-500 decoration-2 underline-offset-4 transition-all duration-200 py-3 px-4 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2"
+                className="inline-block text-base text-emerald-700 hover:text-emerald-800 font-medium hover:underline decoration-emerald-500 decoration-2 underline-offset-4 transition-all duration-200 py-3 px-4 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
                 Create new account
               </Link>
