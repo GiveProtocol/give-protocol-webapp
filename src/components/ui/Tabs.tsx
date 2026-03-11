@@ -56,7 +56,7 @@ export const Tabs: React.FC<TabsProps> = ({ defaultValue, children, className })
 /** Wrapper component that renders a styled tab bar with the tablist role. */
 export const TabsList: React.FC<TabsListProps> = ({ children, className }) => {
   return (
-    <div role="tablist" className={cn('flex space-x-1 rounded-lg bg-gray-100 p-1', className)}>
+    <div role="tablist" className={cn('flex space-x-1 rounded-lg bg-gray-100 dark:bg-transparent p-1', className)}>
       {children}
     </div>
   );
@@ -123,8 +123,8 @@ export const TabsTrigger: React.FC<TabsTriggerProps> = ({ value, children, class
       className={cn(
         'px-3 py-1.5 text-sm font-medium rounded-md transition-all focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 focus:outline-none',
         isActive
-          ? 'bg-white text-gray-900 shadow'
-          : 'text-gray-600 hover:text-gray-900',
+          ? 'bg-white text-gray-900 shadow dark:bg-emerald-500/20 dark:text-emerald-400 dark:shadow-none'
+          : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200',
         className
       )}
     >

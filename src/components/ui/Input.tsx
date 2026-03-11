@@ -28,16 +28,16 @@ export const Input: React.FC<InputProps> = ({
 
   const variantClasses = {
     default: cn(
-      "px-[0.9rem] py-[0.7rem] rounded-[10px] border-[1.5px] border-slate-300 dark:border-gray-600 focus:border-emerald-500 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.12)] bg-white dark:bg-gray-700",
+      "px-[0.9rem] py-[0.7rem] rounded-[10px] border-[1.5px] border-slate-300 dark:border-white/10 focus:border-emerald-500 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.12)] bg-white dark:bg-[#0E1514]",
       error && "border-red-300 dark:border-red-600 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
     ),
     enhanced: cn(
-      "border-[1.5px] border-slate-300 dark:border-gray-600 rounded-[10px] px-[0.9rem] py-[0.7rem] bg-white dark:bg-gray-700",
+      "border-[1.5px] border-slate-300 dark:border-white/10 rounded-[10px] px-[0.9rem] py-[0.7rem] bg-white dark:bg-[#0E1514]",
       "focus:border-emerald-500 dark:focus:border-emerald-400 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.12)]",
       error && "border-red-300 dark:border-red-600 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
     ),
     fintech: cn(
-      "border-[1.5px] border-slate-300 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-[10px] px-[0.9rem] py-[0.7rem]",
+      "border-[1.5px] border-slate-300 dark:border-white/10 shadow-none bg-white dark:bg-[#0E1514] rounded-[10px] px-[0.9rem] py-[0.7rem]",
       "focus:border-emerald-500 dark:focus:border-emerald-400 focus:shadow-[0_0_0_3px_rgba(16,185,129,0.12)]",
       error && "border-red-300 dark:border-red-600 focus:border-red-500 focus:shadow-[0_0_0_3px_rgba(239,68,68,0.1)]"
     )

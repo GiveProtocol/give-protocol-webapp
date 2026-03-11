@@ -30,7 +30,7 @@
 
 /* Dark mode - Applied outside @layer to ensure they work */
 .dark body {
-  background-color: rgb(17 24 39);
+  background-color: #050A09;
   color: rgb(243 244 246);
 }
 
@@ -54,14 +54,14 @@
 
 /* Dark mode component styles - Applied outside @layer */
 .dark .card {
-  background-color: rgb(31 41 55);
-  border-color: rgb(55 65 81);
+  background-color: #0E1514;
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark .btn-secondary {
-  background-color: rgb(31 41 55);
+  background-color: #0E1514;
   color: rgb(243 244 246);
-  border-color: rgb(75 85 99);
+  border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark .btn-secondary:hover {
@@ -246,6 +246,11 @@
   --slate-300: #cbd5e1;
   --slate-100: #f1f5f9;
   --slate-50:  #f8fafc;
+  --bg-deep: #050A09;
+  --bg-surface: #0E1514;
+  --border-glass: rgba(255, 255, 255, 0.1);
+  --text-muted: #D1D5DB;
+  --accent-amber: #F59E0B;
 }
 
 /* Frame animation system — use .frame-reveal + .visible for staggered page loads */
@@ -345,11 +350,11 @@
 }
 
 .dark .bg-gray-50 {
-  background-color: rgb(17 24 39) !important;
+  background-color: #050A09 !important;
 }
 
 .dark .bg-white {
-  background-color: rgb(31 41 55) !important;
+  background-color: #0E1514 !important;
 }
 
 .dark .text-gray-900 {
@@ -365,7 +370,7 @@
 }
 
 .dark .text-gray-600 {
-  color: rgb(156 163 175) !important;
+  color: #D1D5DB !important;
 }
 
 .dark .text-gray-500 {
@@ -373,13 +378,13 @@
 }
 
 .dark .border-gray-200 {
-  border-color: rgb(55 65 81) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .dark .border-gray-100 {
-  border-color: rgb(55 65 81) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 
 .dark .border-gray-300 {
-  border-color: rgb(75 85 99) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }

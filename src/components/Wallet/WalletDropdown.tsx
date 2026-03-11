@@ -148,7 +148,7 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
     <div
       ref={dropdownRef}
       data-wallet-menu
-      className="w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
+      className="w-80 bg-white dark:bg-[#0E1514] rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
       style={
         anchorRef
           ? {

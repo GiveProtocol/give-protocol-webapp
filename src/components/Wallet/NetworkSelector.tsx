@@ -126,7 +126,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
         disabled={disabled}
         className={`
           flex items-center gap-2 px-3 py-2
-          bg-white/90 hover:bg-white dark:bg-gray-800/90 dark:hover:bg-gray-800
+          bg-white/90 hover:bg-white dark:bg-[#0E1514]/90 dark:hover:bg-[#0E1514]
           border border-gray-200 dark:border-gray-700
           rounded-xl shadow-sm
           transition-all duration-200
@@ -157,7 +157,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
       {/* Dropdown Menu */}
       {isOpen && (
         <div
-          className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-800 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-[#0E1514] rounded-xl shadow-xl border border-gray-200 dark:border-gray-700 z-50 overflow-hidden"
           role="menu"
           aria-label="Select network"
         >

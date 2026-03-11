@@ -48,6 +48,8 @@ const WALLET_NOTICE_STYLE: React.CSSProperties = {
   background: 'rgba(52, 211, 153, 0.08)',
   border: '1px solid rgba(52, 211, 153, 0.2)',
   borderRadius: 12,
+  backdropFilter: 'blur(12px)',
+  WebkitBackdropFilter: 'blur(12px)',
 };
 
 /**
@@ -202,7 +204,7 @@ export const Register: React.FC = () => {
             {/* Protocol Status banner — full-width glass card */}
             <div
               className="relative flex items-center gap-4 overflow-hidden"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, padding: '1rem 1.25rem' }}
+              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, padding: '1rem 1.25rem', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
             >
               {/* Left-edge gradient wash */}
               <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(52,211,153,0.06) 0%, transparent 70%)' }} />
@@ -383,7 +385,7 @@ export const Register: React.FC = () => {
           )}
           {userType === 'charity' && (
             <div
-              className="rounded-[10px] p-4 mb-6 dark:bg-amber-900/10 dark:border-amber-800/50"
+              className="rounded-[10px] p-4 mb-6 dark:bg-transparent dark:border-[#F59E0B]"
               style={{ background: 'rgba(254,243,199,0.6)', border: '1.5px solid rgba(234,179,8,0.35)' }}
             >
               <div className="flex items-start gap-3">
@@ -394,10 +396,10 @@ export const Register: React.FC = () => {
                   <LinkIcon className="h-4 w-4" style={{ color: '#92400e' }} />
                 </div>
                 <div>
-                  <p className="dark:text-amber-300" style={{ fontWeight: 600, fontSize: '0.9rem', color: '#92400e' }}>
+                  <p className="dark:text-[#F59E0B]" style={{ fontWeight: 600, fontSize: '0.9rem', color: '#92400e' }}>
                     Organization wallet setup
                   </p>
-                  <p className="text-slate-600 dark:text-gray-400 mt-1" style={{ fontSize: '0.8rem', lineHeight: 1.5 }}>
+                  <p className="text-slate-600 dark:text-[#D1D5DB] mt-1" style={{ fontSize: '0.8rem', lineHeight: 1.5 }}>
                     Charity digital asset wallets are configured after account creation
                     by an authorized admin using your organization&apos;s dedicated wallet —
                     kept separate from any personal wallets.

@@ -139,7 +139,7 @@ export const Modal: React.FC<ModalProps> = ({
           aria-labelledby={title ? "modal-title" : undefined}
           className={`
             relative w-full ${sizeClasses[size]} mx-4
-            bg-white dark:bg-gray-800
+            bg-white dark:bg-[#0E1514] dark:border dark:border-white/10
             rounded-2xl shadow-2xl
             transform transition-all duration-200
             animate-slide-up
