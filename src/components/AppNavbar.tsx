@@ -451,7 +451,7 @@ export const AppNavbar: React.FC = () => {
 
   return (
     <nav
-      className="border-b shadow-lg"
+      className="relative z-30 border-b shadow-lg"
       style={{
         background: 'rgba(6, 78, 59, 0.92)',
         backdropFilter: 'blur(12px)',
