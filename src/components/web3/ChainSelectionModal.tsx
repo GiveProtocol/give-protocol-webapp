@@ -133,7 +133,7 @@ export const ChainSelectionModal: React.FC<ChainSelectionModalProps> = ({
               bg-white/[0.08] backdrop-blur-sm border border-white/[0.12]
               text-white transition-all duration-200
               hover:bg-white/[0.14] hover:border-white/[0.20]
-              focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+              focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
               disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-white/[0.08]
               inline-flex items-center justify-center"
           >

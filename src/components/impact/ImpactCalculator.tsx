@@ -8,7 +8,7 @@ import { calculateImpact } from '@/utils/calculateImpact';
 import { Skeleton } from '@/components/ui/Skeleton';
 
 const SYNE_LINK_STYLE: React.CSSProperties = {
-  fontFamily: "'Syne', sans-serif",
+  fontFamily: "'DM Sans', sans-serif",
   fontSize: '0.72rem',
   letterSpacing: '0.1em',
 };

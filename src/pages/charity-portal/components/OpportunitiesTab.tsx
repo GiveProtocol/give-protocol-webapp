@@ -57,8 +57,8 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
         </div>
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
           <div className="py-16 text-center">
-            <div className="mx-auto w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
-              <Briefcase className="h-8 w-8 text-indigo-400" />
+            <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
+              <Briefcase className="h-8 w-8 text-emerald-400" />
             </div>
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {t("volunteer.noOpportunitiesTitle", "No opportunities yet")}
@@ -164,7 +164,7 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
                 {opportunity.skills.slice(0, 5).map((skill) => (
                   <span
                     key={skill}
-                    className="px-2.5 py-1 text-xs bg-indigo-50 text-indigo-700 rounded-full font-medium"
+                    className="px-2.5 py-1 text-xs bg-emerald-50 text-emerald-700 rounded-full font-medium"
                   >
                     {skill}
                   </span>

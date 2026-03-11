@@ -101,7 +101,7 @@ export function DualAmountInput({
           <button
             type="button"
             onClick={handleToggleMode}
-            className="flex items-center space-x-1 text-sm text-indigo-600 hover:text-indigo-700"
+            className="flex items-center space-x-1 text-sm text-emerald-600 hover:text-emerald-700"
           >
             <ArrowLeftRight className="w-4 h-4" />
             <span>
@@ -123,7 +123,7 @@ export function DualAmountInput({
           step="any"
           className={cn(
             "w-full py-4 border-2 rounded-xl transition-all duration-200",
-            "focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500",
+            "focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500",
             "text-lg font-semibold text-right",
             // Hide native number input spin buttons to avoid clash with suffix
             "[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none",
@@ -142,7 +142,7 @@ export function DualAmountInput({
             <button
               type="button"
               onClick={handleMaxClick}
-              className="px-3 py-1 text-xs font-bold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 rounded-md uppercase transition-all duration-200 hover:shadow-md pointer-events-auto"
+              className="px-3 py-1 text-xs font-bold text-emerald-600 hover:text-white bg-emerald-50 hover:bg-emerald-600 rounded-md uppercase transition-all duration-200 hover:shadow-md pointer-events-auto"
             >
               Max
             </button>

@@ -3,14 +3,14 @@ import { DonationButton } from "@/components/web3/donation/DonationButton";
 import { ScheduledDonationButton } from "@/components/web3/donation/ScheduledDonationButton";
 
 const SYNE_BUTTON_STYLE: React.CSSProperties = {
-  fontFamily: "'Syne', sans-serif",
+  fontFamily: "'DM Sans', sans-serif",
   fontSize: '0.85rem',
   fontWeight: 600,
   letterSpacing: '0.05em',
 };
 
 const SYNE_LINK_STYLE: React.CSSProperties = {
-  fontFamily: "'Syne', sans-serif",
+  fontFamily: "'DM Sans', sans-serif",
   fontSize: '0.72rem',
   letterSpacing: '0.1em',
 };

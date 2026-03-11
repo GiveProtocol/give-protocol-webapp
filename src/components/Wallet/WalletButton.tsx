@@ -43,8 +43,8 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
   return (
     <div className="absolute bottom-0 right-0 transform translate-x-0.5 translate-y-0.5">
       <span className="relative flex h-2.5 w-2.5">
-        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
-        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500 border border-white" />
+        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500 border border-white" />
       </span>
     </div>
   );
@@ -198,7 +198,7 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
           rounded-xl shadow-sm
           transition-all duration-200
           hover:shadow-md
-          ${isDropdownOpen ? "ring-2 ring-green-500 ring-offset-1" : ""}
+          ${isDropdownOpen ? "ring-2 ring-emerald-500 ring-offset-1" : ""}
         `}
         aria-expanded={isDropdownOpen}
         aria-haspopup="true"

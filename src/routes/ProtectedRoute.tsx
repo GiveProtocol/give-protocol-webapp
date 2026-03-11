@@ -86,7 +86,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         <p className="text-gray-600">Please connect your wallet to continue</p>
         <button
           onClick={connect}
-          className="rounded-md bg-indigo-600 px-4 py-2 text-white hover:bg-indigo-700"
+          className="rounded-md bg-emerald-600 px-4 py-2 text-white hover:bg-emerald-700"
         >
           Connect Wallet
         </button>

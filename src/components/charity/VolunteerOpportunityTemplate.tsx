@@ -127,7 +127,7 @@ export const VolunteerOpportunityTemplate: React.FC<
         title={opportunity.title}
         description={opportunity.description}
       >
-        <span className="text-sm font-medium text-indigo-300 mb-2">
+        <span className="text-sm font-medium text-emerald-300 mb-2">
           {opportunity.organization}
         </span>
       </HeroSection>
@@ -140,22 +140,22 @@ export const VolunteerOpportunityTemplate: React.FC<
             </h2>
             <div className="space-y-3">
               <div className="flex items-center text-gray-700">
-                <Clock className="h-5 w-5 mr-3 text-indigo-500" />
+                <Clock className="h-5 w-5 mr-3 text-emerald-500" />
                 <span className="text-sm text-gray-500 w-24">Commitment:</span>
                 <span>{formatCommitment(opportunity.commitment)}</span>
               </div>
               <div className="flex items-center text-gray-700">
-                <Users className="h-5 w-5 mr-3 text-indigo-500" />
+                <Users className="h-5 w-5 mr-3 text-emerald-500" />
                 <span className="text-sm text-gray-500 w-24">Location:</span>
                 <span>{opportunity.location}</span>
               </div>
               <div className="flex items-center text-gray-700">
-                <Globe className="h-5 w-5 mr-3 text-indigo-500" />
+                <Globe className="h-5 w-5 mr-3 text-emerald-500" />
                 <span className="text-sm text-gray-500 w-24">Type:</span>
                 <span>{formatType(opportunity.type)}</span>
               </div>
               <div className="flex items-center text-gray-700">
-                <Globe className="h-5 w-5 mr-3 text-indigo-500" />
+                <Globe className="h-5 w-5 mr-3 text-emerald-500" />
                 <span className="text-sm text-gray-500 w-24">Language:</span>
                 <span>{formatLanguageName(opportunity.workLanguage)}</span>
               </div>
@@ -169,7 +169,7 @@ export const VolunteerOpportunityTemplate: React.FC<
                 {opportunity.skills.map((skill) => (
                   <span
                     key={skill}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800"
                   >
                     <Award className="h-4 w-4 mr-1" />
                     {skill}
@@ -195,7 +195,7 @@ export const VolunteerOpportunityTemplate: React.FC<
                 Questions? Contact us at{" "}
                 <a
                   href={`mailto:${opportunity.contactEmail}`}
-                  className="text-indigo-600 hover:text-indigo-800"
+                  className="text-emerald-600 hover:text-emerald-800"
                 >
                   {opportunity.contactEmail}
                 </a>
@@ -203,7 +203,7 @@ export const VolunteerOpportunityTemplate: React.FC<
             )}
             <button
               onClick={onApply}
-              className="w-full bg-indigo-600 text-white px-6 py-3 rounded-md hover:bg-indigo-700 transition-colors font-medium"
+              className="w-full bg-emerald-600 text-white px-6 py-3 rounded-md hover:bg-emerald-700 transition-colors font-medium"
             >
               Apply Now
             </button>
@@ -218,7 +218,7 @@ export const VolunteerOpportunityTemplate: React.FC<
             <ul className="space-y-2">
               {opportunity.responsibilities?.map((item) => (
                 <li key={item} className="flex items-start text-gray-700">
-                  <span className="w-2 h-2 mt-2 bg-indigo-500 rounded-full mr-3 flex-shrink-0" />
+                  <span className="w-2 h-2 mt-2 bg-emerald-500 rounded-full mr-3 flex-shrink-0" />
                   {item}
                 </li>
               ))}

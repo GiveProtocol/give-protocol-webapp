@@ -234,7 +234,7 @@ export const ImpactProfileForm: React.FC<ImpactProfileFormProps> = ({
         </p>
         <div>
           <textarea
-            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 resize-vertical min-h-[120px]"
+            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 resize-vertical min-h-[120px]"
             value={formData.missionStatement}
             onChange={handleMissionChange}
             placeholder={t(

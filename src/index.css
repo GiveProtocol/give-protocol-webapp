@@ -44,7 +44,7 @@
   }
 
   .btn-primary {
-    @apply bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white focus:ring-emerald-500 shadow-sm hover:shadow-lg hover:shadow-emerald-500/50 transform hover:-translate-y-0.5;
+    @apply bg-emerald-600 hover:bg-emerald-700 text-white focus:ring-emerald-500 shadow-cta hover:shadow-[0_4px_18px_rgba(5,150,105,0.5)] transform hover:-translate-y-0.5;
   }
 
   .btn-secondary {
@@ -77,16 +77,16 @@
 @layer utilities {
   .scrollbar-styled {
     scrollbar-width: thin;
-    scrollbar-color: #6366f1 transparent;
+    scrollbar-color: #10b981 transparent;
   }
   .scrollbar-styled::-webkit-scrollbar { width: 6px; }
   .scrollbar-styled::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-styled::-webkit-scrollbar-thumb {
-    background-color: #6366f1;
+    background-color: #10b981;
     border-radius: 3px;
   }
   .scrollbar-styled::-webkit-scrollbar-thumb:hover {
-    background-color: #818cf8;
+    background-color: #34d399;
   }
 }
 
@@ -227,6 +227,25 @@
   .transition-delay-500 {
     transition-delay: 500ms;
   }
+}
+
+/* Design-system custom properties */
+:root {
+  --emerald-900: #064e3b;
+  --emerald-800: #065f46;
+  --emerald-700: #047857;
+  --emerald-600: #059669;
+  --emerald-500: #10b981;
+  --emerald-400: #34d399;
+  --emerald-300: #6ee7b7;
+  --emerald-100: #d1fae5;
+  --emerald-50:  #ecfdf5;
+  --slate-900: #0f172a;
+  --slate-700: #334155;
+  --slate-500: #64748b;
+  --slate-300: #cbd5e1;
+  --slate-100: #f1f5f9;
+  --slate-50:  #f8fafc;
 }
 
 /* Frame animation system — use .frame-reveal + .visible for staggered page loads */

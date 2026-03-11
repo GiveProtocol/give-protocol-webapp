@@ -166,7 +166,7 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3 mb-2">
                 <div
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 h-3 rounded-full transition-all duration-500"
+                  className="bg-gradient-to-r from-emerald-500 to-emerald-500 h-3 rounded-full transition-all duration-500"
                   style={{
                     width: `${Math.min((cause.raised_amount / cause.target_amount) * 100, 100)}%`,
                   }}

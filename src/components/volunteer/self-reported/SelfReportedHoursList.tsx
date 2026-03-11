@@ -104,7 +104,7 @@ export const SelfReportedHoursList: React.FC<SelfReportedHoursListProps> = ({
               id="status-filter"
               value={filters.status || ""}
               onChange={handleStatusChange}
-              className="block w-36 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-36 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
             >
               <option value="">All</option>
               <option value={ValidationStatus.VALIDATED}>Validated</option>
@@ -127,7 +127,7 @@ export const SelfReportedHoursList: React.FC<SelfReportedHoursListProps> = ({
               id="activity-filter"
               value={filters.activityType || ""}
               onChange={handleActivityTypeChange}
-              className="block w-44 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="block w-44 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
             >
               <option value="">All Types</option>
               {Object.entries(ACTIVITY_TYPE_LABELS).map(([value, label]) => (
@@ -151,7 +151,7 @@ export const SelfReportedHoursList: React.FC<SelfReportedHoursListProps> = ({
               type="date"
               value={filters.dateFrom || ""}
               onChange={handleDateFromChange}
-              className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
             />
           </div>
 
@@ -167,7 +167,7 @@ export const SelfReportedHoursList: React.FC<SelfReportedHoursListProps> = ({
               type="date"
               value={filters.dateTo || ""}
               onChange={handleDateToChange}
-              className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-indigo-500 focus:border-indigo-500"
+              className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
             />
           </div>
 
@@ -176,7 +176,7 @@ export const SelfReportedHoursList: React.FC<SelfReportedHoursListProps> = ({
             <button
               type="button"
               onClick={clearFilters}
-              className="text-sm text-indigo-600 hover:text-indigo-700 underline"
+              className="text-sm text-emerald-600 hover:text-emerald-700 underline"
             >
               Clear filters
             </button>

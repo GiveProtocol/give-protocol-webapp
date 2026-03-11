@@ -31,25 +31,25 @@ const DesktopNavLinks: React.FC<{
       <>
         <Link
           to="/about"
-          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/about")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/about")}`}
         >
           {t("nav.about")}
         </Link>
         <a
           href={DOCS_CONFIG.url}
-          className="flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 text-gray-300 hover:bg-white/10 hover:text-emerald-400"
+          className="flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 text-[rgba(255,255,255,0.75)] hover:text-emerald-300"
         >
           {t("nav.docs")}
         </a>
         <Link
           to="/legal"
-          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/legal")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/legal")}`}
         >
           {t("nav.legal")}
         </Link>
         <Link
           to="/privacy"
-          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/privacy")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/privacy")}`}
         >
           Privacy
         </Link>
@@ -61,25 +61,25 @@ const DesktopNavLinks: React.FC<{
     <>
       <Link
         to="/browse"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/browse")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/browse")}`}
       >
         {t("nav.browse")}
       </Link>
       <Link
         to="/opportunities"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/opportunities")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/opportunities")}`}
       >
         {t("nav.opportunities")}
       </Link>
       <Link
         to="/contributions"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/contributions")}`}
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/contributions")}`}
       >
         {t("nav.contributions")}
       </Link>
       <button
         onClick={handleDashboardClick}
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${
+        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${
           isActive("/give-dashboard") || isActive("/charity-portal")
         }`}
       >
@@ -88,7 +88,7 @@ const DesktopNavLinks: React.FC<{
       {userType === "donor" && (
         <Link
           to="/scheduled-donations"
-          className={`flex items-center justify-center px-3 py-2 rounded-md text-sm font-medium transition-colors duration-150 ${isActive("/scheduled-donations")}`}
+          className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/scheduled-donations")}`}
         >
           Monthly Donations
         </Link>
@@ -123,28 +123,28 @@ const MobileNavLinks: React.FC<{
       <>
         <Link
           to="/about"
-          className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/about")}`}
+          className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/about")}`}
           onClick={handleLinkClick}
         >
           {t("nav.about")}
         </Link>
         <a
           href={DOCS_CONFIG.url}
-          className="block px-3 py-3 rounded-md text-base font-medium text-gray-300 hover:bg-white/10 hover:text-emerald-400"
+          className="block px-3 py-3 rounded-md text-[0.82rem] font-medium text-[rgba(255,255,255,0.75)] hover:text-emerald-300"
           onClick={handleLinkClick}
         >
           {t("nav.docs")}
         </a>
         <Link
           to="/legal"
-          className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/legal")}`}
+          className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/legal")}`}
           onClick={handleLinkClick}
         >
           {t("nav.legal")}
         </Link>
         <Link
           to="/privacy"
-          className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/privacy")}`}
+          className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/privacy")}`}
           onClick={handleLinkClick}
         >
           Privacy
@@ -157,28 +157,28 @@ const MobileNavLinks: React.FC<{
     <>
       <Link
         to="/browse"
-        className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/browse")}`}
+        className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/browse")}`}
         onClick={handleLinkClick}
       >
         {t("nav.browse")}
       </Link>
       <Link
         to="/opportunities"
-        className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/opportunities")}`}
+        className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/opportunities")}`}
         onClick={handleLinkClick}
       >
         {t("nav.opportunities")}
       </Link>
       <Link
         to="/contributions"
-        className={`block px-3 py-3 rounded-md text-base font-medium ${isActive("/contributions")}`}
+        className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/contributions")}`}
         onClick={handleLinkClick}
       >
         {t("nav.contributions")}
       </Link>
       <button
         onClick={handleDashboardAndClose}
-        className={`block w-full text-left px-3 py-3 rounded-md text-base font-medium ${
+        className={`block w-full text-left px-3 py-3 rounded-md text-[0.82rem] font-medium ${
           isActive("/give-dashboard") || isActive("/charity-portal")
         }`}
       >
@@ -187,7 +187,7 @@ const MobileNavLinks: React.FC<{
       {userType === "donor" && (
         <Link
           to="/scheduled-donations"
-          className={`flex items-center px-3 py-3 rounded-md text-base font-medium ${isActive("/scheduled-donations")}`}
+          className={`flex items-center px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/scheduled-donations")}`}
           onClick={handleLinkClick}
         >
           <Calendar className="h-4 w-4 mr-1" />
@@ -207,7 +207,7 @@ const MobileMenu: React.FC<{
 
   return (
     <nav className="md:hidden" id="mobile-menu" aria-label="Mobile navigation">
-      <div className="px-2 pt-2 pb-3 space-y-1 bg-gradient-to-r from-emerald-600 to-teal-600 shadow-lg">
+      <div className="px-2 pt-2 pb-3 space-y-1 shadow-lg" style={{ background: 'rgba(6, 78, 59, 0.95)' }}>
         {children}
       </div>
     </nav>
@@ -239,8 +239,9 @@ const MobileMenuButton: React.FC<{
 
 // Nav header component to reduce nesting
 const NavHeader: React.FC = () => (
-  <Link to="/" className="flex items-center" aria-label="Give Protocol home">
-    <Logo className="h-8 w-8" />
+  <Link to="/" className="flex items-center gap-2.5" aria-label="Give Protocol home">
+    <Logo className="h-7 w-7" />
+    <span className="font-serif text-white" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Give Protocol</span>
   </Link>
 );
 
@@ -407,8 +408,8 @@ export const AppNavbar: React.FC = () => {
   const isActive = useCallback(
     (path: string) =>
       location.pathname === path
-        ? "bg-white/20 text-white font-semibold"
-        : "text-white/90 hover:bg-white/10 hover:text-white",
+        ? "bg-white/15 text-white font-semibold"
+        : "text-[rgba(255,255,255,0.75)] hover:text-emerald-300",
     [location.pathname],
   );
 
@@ -450,11 +451,17 @@ export const AppNavbar: React.FC = () => {
 
   return (
     <nav
-      className="bg-gradient-to-r from-emerald-600 to-teal-600 border-b border-emerald-700 shadow-lg"
+      className="border-b shadow-lg"
+      style={{
+        background: 'rgba(6, 78, 59, 0.92)',
+        backdropFilter: 'blur(12px)',
+        WebkitBackdropFilter: 'blur(12px)',
+        borderColor: 'rgba(52, 211, 153, 0.15)',
+      }}
       aria-label="Application navigation"
     >
       <div
-        className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16"
+        className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]"
       >
         <div className="flex items-center">
           <NavHeader />

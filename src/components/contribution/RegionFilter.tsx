@@ -20,7 +20,7 @@ export const RegionFilter: React.FC<RegionFilterProps> = ({
     <select
       value={value}
       onChange={handleChange}
-      className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+      className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
       aria-label="Filter by region"
     >
       <option value="all">All Regions</option>

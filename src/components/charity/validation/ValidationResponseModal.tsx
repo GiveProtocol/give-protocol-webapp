@@ -182,8 +182,8 @@ export const ValidationResponseModal: React.FC<
                 Volunteer
               </h3>
               <div className="flex items-center gap-3 mb-6">
-                <div className="h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                  <User className="h-5 w-5 text-indigo-600" />
+                <div className="h-10 w-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                  <User className="h-5 w-5 text-emerald-600" />
                 </div>
                 <div>
                   <p className="font-medium text-gray-900">

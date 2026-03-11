@@ -70,13 +70,13 @@ const ComingSoon: React.FC = () => {
       {/* Hero Section */}
       <main className="py-16 sm:py-24 text-center">
         <div className="mb-8">
-          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800 animate-fade-in">
+          <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800 animate-fade-in">
             Launching Q1 2026
           </span>
         </div>
         <h1 className="text-5xl sm:text-7xl font-bold text-gray-900 mb-8 leading-relaxed overflow-visible animate-fade-in-up">
           The Future of{" "}
-          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 pb-3">
+          <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-600 pb-3">
             Transparent Giving
           </span>
         </h1>
@@ -98,7 +98,7 @@ const ComingSoon: React.FC = () => {
             onChange={handleEmailChange}
             placeholder="Enter your email for pre-launch access"
             aria-label="Email address for waitlist"
-            className="w-full px-4 py-3 rounded-lg border border-indigo-200 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-indigo-300"
+            className="w-full px-4 py-3 rounded-lg border border-emerald-200 bg-white text-gray-900 placeholder:text-gray-500 focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200 focus:outline-none hover:border-emerald-300"
             disabled={status === "loading" || status === "success"}
           />
           <button
@@ -107,7 +107,7 @@ const ComingSoon: React.FC = () => {
             className={`absolute right-2 top-2 px-4 py-1.5 rounded-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${{
               loading: "bg-gray-100 cursor-wait",
               success: "bg-green-500 text-gray-900",
-            }[status] || "bg-indigo-600 text-gray-900 hover:bg-indigo-700 focus:ring-indigo-500 active:bg-indigo-800"}`}
+            }[status] || "bg-emerald-600 text-gray-900 hover:bg-emerald-700 focus:ring-emerald-500 active:bg-emerald-700"}`}
           >
             Join Waitlist
           </button>
@@ -125,44 +125,44 @@ const ComingSoon: React.FC = () => {
 
       {/* Features Preview */}
       <section className="mt-16 mb-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        <article className="group p-6 bg-gradient-to-br from-white/70 to-indigo-50/30 backdrop-blur-sm rounded-xl border border-indigo-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 text-center">
-          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-gray-900 transition-colors mx-auto">
+        <article className="group p-6 bg-gradient-to-br from-white/70 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 text-center">
+          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-gray-900 transition-colors mx-auto">
             <Eye aria-hidden="true" className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors mb-2">
             Transparent
           </h3>
           <p className="text-gray-600">
             Track your impact with blockchain-verified donations
           </p>
         </article>
-        <article className="group p-6 bg-gradient-to-br from-white/70 to-purple-50/30 backdrop-blur-sm rounded-xl border border-purple-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 text-center">
-          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-gray-900 transition-colors mx-auto">
+        <article className="group p-6 bg-gradient-to-br from-white/70 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 text-center">
+          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-gray-900 transition-colors mx-auto">
             <Zap aria-hidden="true" className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors mb-2">
             Efficient
           </h3>
           <p className="text-gray-600">
             Smart contracts ensure funds reach their destination
           </p>
         </article>
-        <article className="group p-6 bg-gradient-to-br from-white/70 to-indigo-50/30 backdrop-blur-sm rounded-xl border border-indigo-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:ring-offset-2 text-center">
-          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-indigo-100 text-indigo-600 group-hover:bg-indigo-600 group-hover:text-gray-900 transition-colors mx-auto">
+        <article className="group p-6 bg-gradient-to-br from-white/70 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 text-center">
+          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-gray-900 transition-colors mx-auto">
             <TrendingUp aria-hidden="true" className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors mb-2">
             Impactful
           </h3>
           <p className="text-gray-600">
             Maximize your giving through innovative DeFi strategies
           </p>
         </article>
-        <article className="group p-6 bg-gradient-to-br from-white/70 to-purple-50/30 backdrop-blur-sm rounded-xl border border-purple-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 text-center">
-          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-purple-100 text-purple-600 group-hover:bg-purple-600 group-hover:text-gray-900 transition-colors mx-auto">
+        <article className="group p-6 bg-gradient-to-br from-white/70 to-emerald-50/30 backdrop-blur-sm rounded-xl border border-emerald-100/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 focus-within:ring-2 focus-within:ring-emerald-500 focus-within:ring-offset-2 text-center">
+          <div className="flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-emerald-100 text-emerald-600 group-hover:bg-emerald-600 group-hover:text-gray-900 transition-colors mx-auto">
             <InfinityIcon aria-hidden="true" className="w-6 h-6" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-purple-600 transition-colors mb-2">
+          <h3 className="text-lg font-semibold text-gray-900 group-hover:text-emerald-600 transition-colors mb-2">
             Sustainable
           </h3>
           <p className="text-gray-600">

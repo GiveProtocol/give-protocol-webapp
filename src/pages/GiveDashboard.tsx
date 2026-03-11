@@ -178,7 +178,7 @@ function ContributionsFilterBar({
         <select
           value={selectedYear}
           onChange={onYearChange}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
           aria-label="Filter by year"
         >
           {years.map((year) => (
@@ -190,7 +190,7 @@ function ContributionsFilterBar({
         <select
           value={selectedType}
           onChange={onTypeChange}
-          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+          className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
           aria-label="Filter by type"
         >
           <option value="all">{t("filter.allTypes", "All Types")}</option>
@@ -567,7 +567,7 @@ export const GiveDashboard: React.FC = () => {
       ) : (
         <div className="grid gap-6 mb-8 md:grid-cols-3">
           <Card className="p-6 flex items-center">
-            <DollarSign className="h-6 w-6 p-3 rounded-full bg-indigo-100 text-indigo-600 mr-4" />
+            <DollarSign className="h-6 w-6 p-3 rounded-full bg-emerald-100 text-emerald-600 mr-4" />
             <div>
               <p className="text-sm font-medium text-gray-600">
                 {t("dashboard.totalDonations")}
@@ -595,7 +595,7 @@ export const GiveDashboard: React.FC = () => {
           </Card>
 
           <Card className="p-6 flex items-center">
-            <Award className="h-6 w-6 p-3 rounded-full bg-purple-100 text-purple-600 mr-4" />
+            <Award className="h-6 w-6 p-3 rounded-full bg-emerald-100 text-emerald-600 mr-4" />
             <div>
               <p className="text-sm font-medium text-gray-600">
                 {t("dashboard.skillsEndorsed")}
@@ -693,7 +693,7 @@ export const GiveDashboard: React.FC = () => {
                       href={`https://moonscan.io/tx/${contribution.hash || contribution.metadata?.verificationHash}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-900 flex items-center truncate max-w-[100px] mr-1"
+                      className="text-emerald-600 hover:text-emerald-900 flex items-center truncate max-w-[100px] mr-1"
                       title={
                         contribution.hash ||
                         contribution.metadata?.verificationHash
@@ -748,7 +748,7 @@ export const GiveDashboard: React.FC = () => {
                   {item.endorsements} {t("skills.endorsements", "endorsements")}
                 </p>
               </div>
-              <Award className="h-5 w-5 text-indigo-600" />
+              <Award className="h-5 w-5 text-emerald-600" />
             </button>
           ))}
         </div>

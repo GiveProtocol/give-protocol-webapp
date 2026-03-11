@@ -14,7 +14,7 @@ export const About: React.FC = () => {
         <section className="grid md:grid-cols-2 gap-8">
           <ScrollReveal direction="left">
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
-              <Target className="h-8 w-8 text-indigo-600 mb-3" />
+              <Target className="h-8 w-8 text-emerald-600 mb-3" />
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Mission</h2>
               <p className="text-gray-600 leading-relaxed">
                 To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
@@ -24,7 +24,7 @@ export const About: React.FC = () => {
           </ScrollReveal>
           <ScrollReveal direction="right" delay={100}>
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
-              <Globe className="h-8 w-8 text-indigo-600 mb-3" />
+              <Globe className="h-8 w-8 text-emerald-600 mb-3" />
               <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Vision</h2>
               <p className="text-gray-600 leading-relaxed">
                 A world where every charitable donation creates maximum impact through transparent,
@@ -40,21 +40,21 @@ export const About: React.FC = () => {
             <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
             <div className="grid md:grid-cols-3 gap-8">
             <div className="text-center">
-              <Heart className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+              <Heart className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Direct Donations</h3>
               <p className="text-gray-600">
                 Enable cryptocurrency donations directly to verified charitable organizations with complete transparency.
               </p>
             </div>
             <div className="text-center">
-              <Users className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+              <Users className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Volunteer Connection</h3>
               <p className="text-gray-600">
                 Connect volunteers with meaningful opportunities and track verified volunteer hours on the blockchain.
               </p>
             </div>
             <div className="text-center">
-              <TrendingUp className="h-10 w-10 text-indigo-600 bg-indigo-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+              <TrendingUp className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
               <h3 className="text-xl font-semibold text-gray-900 mb-4">Portfolio Funds</h3>
               <p className="text-gray-600">
                 Support multiple organizations in the same sector through diversified giving portfolios.
@@ -70,7 +70,7 @@ export const About: React.FC = () => {
           <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">Our Values</h2>
           <div>
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <Shield className="h-6 w-6 text-indigo-600 mr-3" />
+              <Shield className="h-6 w-6 text-emerald-600 mr-3" />
               Transparency
             </h3>
             <p className="text-gray-600">
@@ -80,7 +80,7 @@ export const About: React.FC = () => {
           </div>
           <div>
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <Target className="h-6 w-6 text-indigo-600 mr-3" />
+              <Target className="h-6 w-6 text-emerald-600 mr-3" />
               Impact
             </h3>
             <p className="text-gray-600">
@@ -90,7 +90,7 @@ export const About: React.FC = () => {
           </div>
           <div>
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <Users className="h-6 w-6 text-indigo-600 mr-3" />
+              <Users className="h-6 w-6 text-emerald-600 mr-3" />
               Community
             </h3>
             <p className="text-gray-600">
@@ -100,7 +100,7 @@ export const About: React.FC = () => {
           </div>
           <div>
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <TrendingUp className="h-6 w-6 text-indigo-600 mr-3" />
+              <TrendingUp className="h-6 w-6 text-emerald-600 mr-3" />
               Innovation
             </h3>
             <p className="text-gray-600">
@@ -140,7 +140,7 @@ export const About: React.FC = () => {
 
         {/* Join Us */}
         <ScrollReveal direction="scale">
-        <section className="text-center bg-indigo-50 rounded-lg p-8">
+        <section className="text-center bg-emerald-50 rounded-lg p-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Join the Future of Giving</h2>
           <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
             Whether you&apos;re a donor looking to make an impact, a volunteer ready to contribute your time, 

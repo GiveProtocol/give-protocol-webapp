@@ -146,7 +146,7 @@ function TransactionRow({
             href={`https://moonscan.io/tx/${transaction.hash}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-indigo-600 hover:text-indigo-900 flex items-center gap-1"
+            className="text-emerald-600 hover:text-emerald-900 flex items-center gap-1"
           >
             <span className="truncate max-w-[100px]">
               {transaction.hash.substring(0, 10)}...
@@ -254,7 +254,7 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
             variant="secondary"
             className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
           >
-            <Download className="h-4 w-4 text-indigo-600" />
+            <Download className="h-4 w-4 text-emerald-600" />
             {t("contributions.export")}
           </Button>
         </div>
@@ -287,7 +287,7 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
           variant="secondary"
           className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
         >
-          <Download className="h-4 w-4 text-indigo-600" />
+          <Download className="h-4 w-4 text-emerald-600" />
           {t("contributions.export")}
         </Button>
       </div>

@@ -31,7 +31,7 @@ function SourceToggleButtonComponent(props: SourceToggleButtonProps) {
       onClick={handleClick}
       className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
         isSelected
-          ? "bg-indigo-100 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-300"
+          ? "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 text-emerald-700 dark:text-emerald-300"
           : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600"
       }`}
       aria-pressed={isSelected}
@@ -174,7 +174,7 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
           <select
             value={filters.organization}
             onChange={handleOrganizationChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
             aria-label="Select organization"
           >
             <option value="">All Organizations</option>
@@ -188,7 +188,7 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
           <select
             value={filters.category}
             onChange={handleCategoryChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
             aria-label="Select category"
           >
             <option value="">All Categories</option>
@@ -203,7 +203,7 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
           <select
             value={filters.region}
             onChange={handleRegionChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
             aria-label="Select region"
           >
             <option value="">All Regions</option>
@@ -218,7 +218,7 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
           <select
             value={filters.timeRange}
             onChange={handleTimeRangeChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
             aria-label="Select time range"
           >
             <option value="7d">Last 7 days</option>

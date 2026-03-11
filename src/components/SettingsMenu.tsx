@@ -162,7 +162,7 @@ export const SettingsMenu: React.FC = () => {
                 className={cn(
                   "flex items-center justify-between px-3 py-2 text-sm rounded-md",
                   theme === "light"
-                    ? "bg-indigo-50 text-indigo-700"
+                    ? "bg-emerald-50 text-emerald-700"
                     : "text-gray-700 hover:bg-gray-50",
                 )}
               >
@@ -171,7 +171,7 @@ export const SettingsMenu: React.FC = () => {
                   {t("settings.light", "Light")}
                 </span>
                 {theme === "light" && (
-                  <Check className="h-4 w-4 text-indigo-600" />
+                  <Check className="h-4 w-4 text-emerald-600" />
                 )}
               </button>
               <button
@@ -180,7 +180,7 @@ export const SettingsMenu: React.FC = () => {
                 className={cn(
                   "flex items-center justify-between px-3 py-2 text-sm rounded-md",
                   theme === "dark"
-                    ? "bg-indigo-50 text-indigo-700"
+                    ? "bg-emerald-50 text-emerald-700"
                     : "text-gray-700 hover:bg-gray-50",
                 )}
               >
@@ -189,7 +189,7 @@ export const SettingsMenu: React.FC = () => {
                   {t("settings.dark", "Dark")}
                 </span>
                 {theme === "dark" && (
-                  <Check className="h-4 w-4 text-indigo-600" />
+                  <Check className="h-4 w-4 text-emerald-600" />
                 )}
               </button>
             </div>
@@ -210,13 +210,13 @@ export const SettingsMenu: React.FC = () => {
                   className={cn(
                     "flex items-center justify-between px-3 py-2 text-sm rounded-md",
                     language === option.value
-                      ? "bg-indigo-50 text-indigo-700"
+                      ? "bg-emerald-50 text-emerald-700"
                       : "text-gray-700 hover:bg-gray-50",
                   )}
                 >
                   <span>{option.label}</span>
                   {language === option.value && (
-                    <Check className="h-4 w-4 text-indigo-600" />
+                    <Check className="h-4 w-4 text-emerald-600" />
                   )}
                 </button>
               ))}
@@ -238,7 +238,7 @@ export const SettingsMenu: React.FC = () => {
                   className={cn(
                     "flex items-center justify-between px-3 py-2 text-sm rounded-md",
                     currency === option.value
-                      ? "bg-indigo-50 text-indigo-700"
+                      ? "bg-emerald-50 text-emerald-700"
                       : "text-gray-700 hover:bg-gray-50",
                   )}
                 >
@@ -246,7 +246,7 @@ export const SettingsMenu: React.FC = () => {
                     {option.symbol} {option.value}
                   </span>
                   {currency === option.value && (
-                    <Check className="h-4 w-4 text-indigo-600" />
+                    <Check className="h-4 w-4 text-emerald-600" />
                   )}
                 </button>
               ))}

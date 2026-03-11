@@ -74,7 +74,7 @@ export function TokenSelector({
         onClick={handleToggle}
         aria-label="Select donation token"
         aria-expanded={isOpen}
-        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="w-full flex items-center justify-between px-4 py-3 bg-white border border-gray-300 rounded-lg hover:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
       >
         <img
           src={selectedToken.icon}
@@ -125,8 +125,8 @@ export function TokenSelector({
                 data-symbol={token.symbol}
                 onClick={handleSelect}
                 className={cn(
-                  "w-full flex items-center space-x-3 px-4 py-3 hover:bg-indigo-50 transition-colors",
-                  isSelected && "bg-indigo-50",
+                  "w-full flex items-center space-x-3 px-4 py-3 hover:bg-emerald-50 transition-colors",
+                  isSelected && "bg-emerald-50",
                 )}
               >
                 <img

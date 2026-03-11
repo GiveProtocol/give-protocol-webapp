@@ -27,7 +27,7 @@ export const Documentation: React.FC = () => {
           If you are not redirected automatically,{' '}
           <a 
             href={DOCS_CONFIG.url}
-            className="text-indigo-600 hover:text-indigo-800"
+            className="text-emerald-600 hover:text-emerald-800"
           >
             click here
           </a>

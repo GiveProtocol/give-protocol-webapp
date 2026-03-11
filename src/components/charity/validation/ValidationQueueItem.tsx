@@ -47,7 +47,7 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
 
   return (
     <div className={`p-4 border rounded-lg transition-colors ${
-      isSelected ? 'border-indigo-300 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'
+      isSelected ? 'border-emerald-300 bg-emerald-50' : 'border-gray-200 hover:border-gray-300'
     }`}>
       <div className="flex items-start gap-4">
         {/* Checkbox */}
@@ -56,7 +56,7 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
             type="checkbox"
             checked={isSelected}
             onChange={handleCheckboxChange}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
           />
         </div>
 

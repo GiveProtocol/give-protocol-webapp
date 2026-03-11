@@ -14,8 +14,8 @@ export const CharityStats: React.FC<CharityStatsType> = ({
         icon={DollarSign}
         label="Total Received"
         value={totalReceived}
-        iconColor="text-indigo-600"
-        iconBgColor="bg-indigo-100"
+        iconColor="text-emerald-600"
+        iconBgColor="bg-emerald-100"
       />
       <StatCard
         icon={TrendingUp}
@@ -28,8 +28,8 @@ export const CharityStats: React.FC<CharityStatsType> = ({
         icon={Wallet}
         label="Available Balance"
         value={availableBalance}
-        iconColor="text-purple-600"
-        iconBgColor="bg-purple-100"
+        iconColor="text-emerald-600"
+        iconBgColor="bg-emerald-100"
       />
     </div>
   );

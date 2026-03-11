@@ -43,7 +43,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
     type="button"
     variant="secondary"
     onClick={onClick}
-    className={cn("p-2", active && "bg-indigo-100 text-indigo-900")}
+    className={cn("p-2", active && "bg-emerald-100 text-emerald-900")}
     title={title}
   >
     <Icon className="h-4 w-4" />
@@ -64,7 +64,7 @@ export const Editor: React.FC<EditorProps> = ({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: "text-indigo-600 hover:text-indigo-800 underline",
+          class: "text-emerald-600 hover:text-emerald-800 underline",
         },
       }),
     ],
@@ -157,7 +157,7 @@ export const Editor: React.FC<EditorProps> = ({
   const editorClasses =
     variant === "enhanced"
       ? "px-4 py-3 min-h-[200px] max-h-[600px] overflow-y-auto bg-[#fafbfc] focus-within:bg-white"
-      : "p-4 min-h-[200px] max-h-[600px] overflow-y-auto bg-indigo-50";
+      : "p-4 min-h-[200px] max-h-[600px] overflow-y-auto bg-emerald-50";
 
   const toolbarClasses =
     variant === "enhanced"

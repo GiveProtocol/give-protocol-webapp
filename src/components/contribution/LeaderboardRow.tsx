@@ -36,7 +36,7 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   return (
     <div className={`
       flex items-center justify-between p-4 rounded-lg
-      ${isCurrentUser ? 'bg-indigo-50 border border-indigo-100' : 'bg-gray-50'}
+      ${isCurrentUser ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50'}
       ${rank <= 3 ? 'border-l-4 border-l-yellow-500' : ''}
     `}>
       <div className="flex items-center space-x-4">

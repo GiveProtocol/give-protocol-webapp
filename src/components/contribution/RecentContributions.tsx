@@ -36,7 +36,7 @@ function SourceFilterButtonComponent(props: SourceFilterButtonProps) {
       onClick={handleClick}
       className={`px-2 py-1 text-xs rounded-full border transition-colors ${
         isSelected
-          ? "bg-indigo-100 dark:bg-indigo-900/50 border-indigo-500 text-indigo-700 dark:text-indigo-300"
+          ? "bg-emerald-100 dark:bg-emerald-900/50 border-emerald-500 text-emerald-700 dark:text-emerald-300"
           : "bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
       }`}
       aria-pressed={isSelected}

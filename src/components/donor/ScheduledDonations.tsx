@@ -105,7 +105,7 @@ function ScheduleItem({
         <div className="flex-1 space-y-4">
           {/* Charity Name and Icon */}
           <div className="flex items-start gap-3">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg"><Calendar className="h-5 w-5 text-indigo-600 dark:text-indigo-400" /></div>
+            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg"><Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-400" /></div>
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}

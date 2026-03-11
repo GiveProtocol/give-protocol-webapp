@@ -131,7 +131,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
           rounded-xl shadow-sm
           transition-all duration-200
           ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:shadow-md"}
-          ${isOpen ? "ring-2 ring-green-500 ring-offset-1 dark:ring-offset-gray-900" : ""}
+          ${isOpen ? "ring-2 ring-emerald-500 ring-offset-1 dark:ring-offset-gray-900" : ""}
         `}
         aria-expanded={isOpen}
         aria-haspopup="listbox"
@@ -178,7 +178,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                     rounded-lg transition-colors
                     ${
                       isSelected
-                        ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                        ? "bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400"
                         : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                     }
                   `}
@@ -191,7 +191,7 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                     </p>
                   </div>
                   {isSelected && (
-                    <Check aria-hidden="true" className="h-4 w-4 text-green-600 dark:text-green-400 flex-shrink-0" />
+                    <Check aria-hidden="true" className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                   )}
                 </button>
               );

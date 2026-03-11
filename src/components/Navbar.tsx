@@ -87,7 +87,7 @@ const MobileMenu: React.FC<MobileMenuProps> = ({
       {!isLimitedNavPage && (
         <Link
           to="/give-dashboard"
-          className="block px-3 py-3 rounded-md text-base font-medium bg-indigo-600 text-gray-900 hover:bg-indigo-700"
+          className="block px-3 py-3 rounded-md text-base font-medium bg-emerald-600 text-white hover:bg-emerald-700"
           onClick={onMenuClose}
         >
           {t("nav.launchApp")}
@@ -142,12 +142,12 @@ export const Navbar: React.FC = () => {
         {!isLimitedNavPage && (
           <Link
             to="/give-dashboard"
-            className="inline-flex items-center px-4 py-2 border border-transparent 
-                       text-sm font-medium rounded-md text-gray-900 bg-indigo-600 
-                       hover:bg-indigo-700 shadow-sm hover:shadow-md transition-all 
-                       duration-200 transform hover:-translate-y-0.5 active:translate-y-0 
-                       active:shadow-sm focus:outline-none focus:ring-2 
-                       focus:ring-offset-2 focus:ring-indigo-500"
+            className="inline-flex items-center px-4 py-2 border border-transparent
+                       text-sm font-medium rounded-md text-white bg-emerald-600
+                       hover:bg-emerald-700 shadow-cta hover:shadow-[0_4px_18px_rgba(5,150,105,0.5)]
+                       transition-all duration-200 transform hover:-translate-y-0.5
+                       active:translate-y-0 active:shadow-sm focus:outline-none focus:ring-2
+                       focus:ring-offset-2 focus:ring-emerald-500"
           >
             {t("nav.launchApp")}
           </Link>
@@ -156,7 +156,7 @@ export const Navbar: React.FC = () => {
         {/* Mobile menu button */}
         <button
           type="button"
-          className="sm:hidden inline-flex items-center justify-center ml-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+          className="sm:hidden inline-flex items-center justify-center ml-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
           aria-controls="mobile-menu"
           aria-expanded={isMenuOpen}
           onClick={handleMenuToggle}

@@ -52,7 +52,7 @@ export const VolunteerImpact: React.FC = () => {
       <div className="grid grid-cols-3 gap-4">
         <div className="text-center">
           <div className="flex items-center justify-center">
-            <Clock className="h-8 w-8 text-indigo-600" />
+            <Clock className="h-8 w-8 text-emerald-600" />
           </div>
           <p className="mt-2 text-2xl font-semibold text-gray-900">
             {stats?.totalHours}
@@ -72,7 +72,7 @@ export const VolunteerImpact: React.FC = () => {
 
         <div className="text-center">
           <div className="flex items-center justify-center">
-            <Users className="h-8 w-8 text-purple-600" />
+            <Users className="h-8 w-8 text-emerald-600" />
           </div>
           <p className="mt-2 text-2xl font-semibold text-gray-900">
             {stats?.organizationsHelped}

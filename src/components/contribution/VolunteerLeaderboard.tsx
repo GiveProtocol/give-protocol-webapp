@@ -126,7 +126,7 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
           onClick={handleHoursTabClick}
           className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
             activeTab === "hours"
-              ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           }`}
         >
@@ -137,7 +137,7 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
           onClick={handleEndorsementsTabClick}
           className={`flex items-center px-4 py-2 rounded-lg transition-colors ${
             activeTab === "endorsements"
-              ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+              ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
           }`}
         >
@@ -152,7 +152,7 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
           value={localSearchTerm}
           onChange={handleSearchChange}
           placeholder="Search volunteers or skills..."
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-indigo-500 focus:border-indigo-500"
+          className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:ring-emerald-500 focus:border-emerald-500"
         />
         <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400 dark:text-gray-500" />
       </div>

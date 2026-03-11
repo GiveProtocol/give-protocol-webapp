@@ -65,7 +65,7 @@ export const SelfReportedHoursCard: React.FC<SelfReportedHoursCardProps> = ({
               {record.organizationDisplayName}
             </span>
             {record.isVerifiedOrganization && (
-              <span className="text-xs bg-indigo-100 text-indigo-700 px-1.5 py-0.5 rounded flex-shrink-0">
+              <span className="text-xs bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded flex-shrink-0">
                 Verified
               </span>
             )}

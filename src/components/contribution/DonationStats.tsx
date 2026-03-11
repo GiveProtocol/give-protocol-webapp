@@ -50,7 +50,7 @@ export const DonationStats: React.FC<DonationStatsProps> = ({
   return (
     <>
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center">
-        <DollarSign className="h-6 w-6 text-indigo-600 dark:text-indigo-400 p-3 rounded-full bg-indigo-100 dark:bg-indigo-900/30" />
+        <DollarSign className="h-6 w-6 text-emerald-600 dark:text-emerald-400 p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             {isPersonal
@@ -104,7 +104,7 @@ export const DonationStats: React.FC<DonationStatsProps> = ({
       </div>
 
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center">
-        <Award className="h-6 w-6 text-purple-600 dark:text-purple-400 p-3 rounded-full bg-purple-100 dark:bg-purple-900/30" />
+        <Award className="h-6 w-6 text-emerald-600 dark:text-emerald-400 p-3 rounded-full bg-emerald-100 dark:bg-emerald-900/30" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             {isPersonal

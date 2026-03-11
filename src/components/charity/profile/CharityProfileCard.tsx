@@ -18,7 +18,7 @@ const CharityProfileCard: React.FC<CharityProfileCardProps> = ({ profile }) => {
         />
       )}
       <div className="p-6">
-        <span className="text-sm font-medium text-indigo-600">
+        <span className="text-sm font-medium text-emerald-600">
           {profile.category}
         </span>
         <h3 className="mt-2 text-xl font-semibold text-gray-900">

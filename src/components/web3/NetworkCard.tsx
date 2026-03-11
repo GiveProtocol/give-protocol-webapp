@@ -57,7 +57,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({
         bg-white/[0.07] backdrop-blur-md border border-white/[0.12]
         shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]
         transition-all duration-200 hover:bg-white/[0.12] hover:border-white/[0.20]
-        focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900
+        focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900
         ${isSelected ? "border-white/[0.25]" : ""}`}
       style={{ animationDelay: `${animationDelay}ms` }}
     >
@@ -73,7 +73,7 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({
 
       {/* Checkmark */}
       {isSelected && (
-        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center">
+        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
           <Check className="w-3 h-3 text-white" />
         </div>
       )}

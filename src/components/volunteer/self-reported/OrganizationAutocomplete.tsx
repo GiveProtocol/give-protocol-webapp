@@ -126,7 +126,7 @@ export const OrganizationAutocomplete: React.FC<
           onKeyDown={handleKeyDown}
           placeholder="Search for an organization..."
           disabled={disabled}
-          className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+          className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
             error ? "border-red-300" : "border-gray-300"
           } ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white"}`}
         />
@@ -144,19 +144,19 @@ export const OrganizationAutocomplete: React.FC<
       {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
 
       {selectedOrg && (
-        <div className="mt-2 p-3 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center gap-3">
-          <Building2 className="h-5 w-5 text-indigo-600 flex-shrink-0" />
+        <div className="mt-2 p-3 bg-emerald-50 border border-emerald-200 rounded-lg flex items-center gap-3">
+          <Building2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium text-indigo-900 truncate">
+            <p className="text-sm font-medium text-emerald-900 truncate">
               {selectedOrg.name}
             </p>
             {selectedOrg.location && (
-              <p className="text-xs text-indigo-600 truncate">
+              <p className="text-xs text-emerald-600 truncate">
                 {selectedOrg.location}
               </p>
             )}
           </div>
-          <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded">
+          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded">
             Verified
           </span>
         </div>

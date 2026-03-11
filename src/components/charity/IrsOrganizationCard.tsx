@@ -35,7 +35,7 @@ export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
   }, [onSelect, organization]);
 
   const cardContent = (
-    <Card className={cn('p-6', selected && 'ring-2 ring-indigo-500')}>
+    <Card className={cn('p-6', selected && 'ring-2 ring-emerald-500')}>
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 leading-tight">
           {organization.name}
@@ -63,7 +63,7 @@ export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
 
       <div className="flex flex-wrap gap-2 mt-3">
         {organization.ntee_cd && (
-          <span className="px-2 py-1 bg-indigo-50 text-indigo-700 text-xs font-medium rounded">
+          <span className="px-2 py-1 bg-emerald-50 text-emerald-700 text-xs font-medium rounded">
             NTEE: {organization.ntee_cd}
           </span>
         )}
@@ -81,7 +81,7 @@ export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
       <button
         type="button"
         onClick={handleSelect}
-        className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-lg"
+        className="block w-full text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-lg"
       >
         {cardContent}
       </button>
@@ -91,7 +91,7 @@ export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
   return (
     <Link
       to={`/charity/${organization.ein}`}
-      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-lg"
+      className="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-lg"
     >
       {cardContent}
     </Link>

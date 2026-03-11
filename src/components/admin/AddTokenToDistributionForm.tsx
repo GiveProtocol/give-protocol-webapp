@@ -183,7 +183,7 @@ export const AddTokenToDistributionForm: React.FC = () => {
             value={tokenAddress}
             onChange={handleTokenAddressChange}
             placeholder="0x..."
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
           />
           <p className="mt-2 text-sm text-gray-500">
             Enter the token contract address (e.g., USDC, GLMR)
@@ -205,7 +205,7 @@ export const AddTokenToDistributionForm: React.FC = () => {
             value={tokenPrice}
             onChange={handleTokenPriceChange}
             placeholder="e.g., 1.00 for stablecoins, 0.025 for GLMR"
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500 transition-all duration-200"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500 transition-all duration-200"
           />
           <p className="mt-2 text-sm text-gray-500">
             Enter the current USD price of the token (will be stored with 8

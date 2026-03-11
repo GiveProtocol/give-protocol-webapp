@@ -123,12 +123,12 @@ const SimpleTokenCheck: React.FC = () => {
             value={tokenAddress}
             onChange={handleTokenAddressChange}
             placeholder="0x..."
-            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-indigo-500/30 focus:border-indigo-500"
+            className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-3 focus:ring-emerald-500/30 focus:border-emerald-500"
           />
           <button
             type="button"
             onClick={handleUseZeroAddress}
-            className="mt-2 text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+            className="mt-2 text-sm text-emerald-600 hover:text-emerald-800 font-medium"
           >
             Use zero address (native token)
           </button>

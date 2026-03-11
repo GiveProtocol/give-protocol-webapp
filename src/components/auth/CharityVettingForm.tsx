@@ -205,7 +205,7 @@ export const CharityVettingForm: React.FC = () => {
           value={formData.description}
           onChange={handleChange}
           rows={4}
-          className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-indigo-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 mt-1"
+          className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-emerald-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100 mt-1"
           required
         />
         {validationErrors["description"] && (
@@ -276,7 +276,7 @@ export const CharityVettingForm: React.FC = () => {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-indigo-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100"
+            className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-emerald-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100"
             required
           >
             <option value="">Select Country</option>
@@ -363,7 +363,7 @@ export const CharityVettingForm: React.FC = () => {
 
       <Button
         type="submit"
-        className="w-full bg-gradient-to-b from-indigo-500 to-indigo-600 border border-indigo-700 shadow-none hover:from-indigo-600 hover:to-indigo-700 hover:shadow-none"
+        className="w-full bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-700 shadow-none hover:from-emerald-600 hover:to-emerald-700 hover:shadow-none"
         disabled={loading}
       >
         {loading ? "Submitting Application..." : "Submit Charity Application"}

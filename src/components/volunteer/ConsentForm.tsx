@@ -17,7 +17,7 @@ interface ConsentCheckboxProps {
  * Modal header component - extracted to reduce nesting depth
  */
 const ConsentModalHeader: React.FC = () => (
-  <header className="bg-gradient-to-r from-purple-600 to-indigo-600 text-gray-900 p-8 text-center">
+  <header className="bg-gradient-to-r from-emerald-600 to-emerald-600 text-gray-900 p-8 text-center">
     <h1 id="consent-modal-title" className="text-3xl font-light mb-2">
       Volunteer Opportunity Application
     </h1>
@@ -61,7 +61,7 @@ const ConsentUnderstandingList: React.FC = () => (
       I can withdraw my consent at any time by contacting{" "}
       <a
         href="mailto:legal@giveprotocol.io"
-        className="text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+        className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
       >
         legal@giveprotocol.io <Mail className="h-3 w-3" aria-hidden="true" />
       </a>
@@ -92,7 +92,7 @@ const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
       id={id}
       checked={checked}
       onChange={onChange}
-      className="mt-1 h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+      className="mt-1 h-5 w-5 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
     />
     <div className="ml-4">
       <strong className="font-semibold text-gray-900">{title}</strong>
@@ -241,7 +241,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
             </p>
           </div>
 
-          <div className="bg-gray-50 rounded-xl p-6 mb-4 border-l-4 border-indigo-600 space-y-6">
+          <div className="bg-gray-50 rounded-xl p-6 mb-4 border-l-4 border-emerald-600 space-y-6">
             <ConsentCheckbox
               id="essential-processing"
               checked={essentialProcessing}
@@ -301,7 +301,7 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
             <Button
               onClick={handleAccept}
               disabled={isSubmitDisabled}
-              className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-emerald-600 hover:from-emerald-700 hover:to-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               Accept and Continue
             </Button>

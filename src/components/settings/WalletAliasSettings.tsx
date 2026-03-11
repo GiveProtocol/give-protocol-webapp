@@ -222,9 +222,9 @@ export const WalletAliasSettings: React.FC = () => {
       ) : (
         <div>
           {alias ? (
-            <div className="bg-indigo-50 p-3 rounded-md mb-4">
+            <div className="bg-emerald-50 p-3 rounded-md mb-4">
               <p className="text-sm text-gray-500">Current Alias</p>
-              <p className="font-medium text-indigo-900">{alias}</p>
+              <p className="font-medium text-emerald-900">{alias}</p>
             </div>
           ) : (
             <div className="mb-4">

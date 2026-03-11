@@ -121,7 +121,7 @@ export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps>
                   )}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-indigo-600 hover:text-indigo-800 flex items-center"
+                  className="text-sm text-emerald-600 hover:text-emerald-800 flex items-center"
                 >
                   <span className="font-mono mr-1">
                     {verification.blockchainReference.transactionId.substring(0, 10)}...

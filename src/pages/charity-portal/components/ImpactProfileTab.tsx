@@ -117,7 +117,7 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
       <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Target className="h-5 w-5 text-indigo-600" aria-hidden="true" />
+            <Target className="h-5 w-5 text-emerald-600" aria-hidden="true" />
             {t("impact.profile", "Impact Profile")}
           </h2>
           <p className="text-sm text-gray-500 mt-1">

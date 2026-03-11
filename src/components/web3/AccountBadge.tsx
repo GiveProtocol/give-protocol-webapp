@@ -22,9 +22,9 @@ const CHAIN_STYLES: Record<
     icon: "/chains/ethereum.svg",
   },
   solana: {
-    bgColor: "bg-purple-50",
-    textColor: "text-purple-700",
-    borderColor: "border-purple-200",
+    bgColor: "bg-emerald-50",
+    textColor: "text-emerald-700",
+    borderColor: "border-emerald-200",
     icon: "/chains/solana.svg",
   },
   polkadot: {
@@ -108,7 +108,7 @@ export const AccountBadge: React.FC<AccountBadgeProps> = ({
     inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-colors
     ${styles.bgColor} ${styles.borderColor}
     ${onSelect ? "cursor-pointer hover:opacity-80" : ""}
-    ${isActive ? "ring-2 ring-indigo-500 ring-offset-1" : ""}
+    ${isActive ? "ring-2 ring-emerald-500 ring-offset-1" : ""}
     ${className}
   `;
 

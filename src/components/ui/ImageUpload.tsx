@@ -177,8 +177,8 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         type="button"
         className={`
           relative w-full border-2 border-dashed rounded-lg transition-colors text-left
-          ${isDragging ? "border-indigo-500 bg-indigo-50" : "border-gray-300"}
-          ${disabled ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer hover:border-indigo-400"}
+          ${isDragging ? "border-emerald-500 bg-emerald-50" : "border-gray-300"}
+          ${disabled ? "bg-gray-100 cursor-not-allowed" : "cursor-pointer hover:border-emerald-400"}
           ${displayError ? "border-red-300" : ""}
         `}
         onDragOver={handleDragOver}
@@ -224,18 +224,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
         ) : (
           <div className="p-8 text-center">
             {uploading ? (
-              <Loader2 className="mx-auto h-12 w-12 text-indigo-500 animate-spin" />
+              <Loader2 className="mx-auto h-12 w-12 text-emerald-500 animate-spin" />
             ) : (
               <div className="space-y-2">
-                <div className="mx-auto h-12 w-12 rounded-full bg-indigo-100 flex items-center justify-center">
+                <div className="mx-auto h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
                   {isDragging ? (
-                    <ImageIcon className="h-6 w-6 text-indigo-600" />
+                    <ImageIcon className="h-6 w-6 text-emerald-600" />
                   ) : (
-                    <Upload className="h-6 w-6 text-indigo-600" />
+                    <Upload className="h-6 w-6 text-emerald-600" />
                   )}
                 </div>
                 <div className="text-sm text-gray-600">
-                  <span className="text-indigo-600 font-medium">
+                  <span className="text-emerald-600 font-medium">
                     Click to upload
                   </span>{" "}
                   or drag and drop

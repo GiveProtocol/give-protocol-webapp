@@ -123,7 +123,7 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
           <h2 className="text-xl font-semibold text-gray-900">{t("export.title")}</h2>
           <button
             onClick={handleClose}
-            className="p-0 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-purple-500 rounded"
+            className="p-0 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"
             aria-label="Close"
             type="button"
           >
@@ -166,7 +166,7 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
               id="includePersonalInfo"
               checked={options.includePersonalInfo}
               onChange={handleIncludePersonalInfoChange}
-              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded mr-2"
+              className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded mr-2"
             />
             <span className="text-sm text-gray-900">
               {t("export.includePersonal")}

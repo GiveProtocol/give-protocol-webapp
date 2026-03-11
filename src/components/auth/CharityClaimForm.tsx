@@ -282,7 +282,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
 
         <Button
           type="submit"
-          className="w-full bg-gradient-to-b from-indigo-500 to-indigo-600 border border-indigo-700 shadow-none hover:from-indigo-600 hover:to-indigo-700 hover:shadow-none"
+          className="w-full bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-700 shadow-none hover:from-emerald-600 hover:to-emerald-700 hover:shadow-none"
           disabled={submitting}
         >
           {submitting ? 'Creating Account...' : 'Claim Organization'}

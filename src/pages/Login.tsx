@@ -50,7 +50,7 @@ const LoginHelpers: React.FC<LoginHelpersProps> = ({
       <button
         type="button"
         onClick={onForgotUsername}
-        className="text-base text-indigo-700 hover:text-indigo-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-3 py-2 min-h-[48px] transition-colors duration-200"
+        className="text-base text-emerald-700 hover:text-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-3 py-2 min-h-[48px] transition-colors duration-200"
         aria-label="Recover forgotten username"
       >
         Forgot username?
@@ -58,7 +58,7 @@ const LoginHelpers: React.FC<LoginHelpersProps> = ({
       <button
         type="button"
         onClick={onForgotPassword}
-        className="text-base text-indigo-700 hover:text-indigo-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-3 py-2 min-h-[48px] transition-colors duration-200"
+        className="text-base text-emerald-700 hover:text-emerald-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-3 py-2 min-h-[48px] transition-colors duration-200"
         aria-label="Recover forgotten password"
       >
         Forgot password?
@@ -161,7 +161,7 @@ const Login: React.FC = () => {
                 className="p-6 h-auto min-h-[48px] flex flex-col items-center space-y-2 hover:-translate-y-1 hover:shadow-lg active:-translate-y-0.5 transition-all duration-200"
               >
                 {loadingDonor ? (
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" aria-hidden="true" />
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" aria-hidden="true" />
                 ) : (
                   <Users className="h-8 w-8" aria-hidden="true" />
                 )}
@@ -183,7 +183,7 @@ const Login: React.FC = () => {
                 className="p-6 h-auto min-h-[48px] flex flex-col items-center space-y-2 hover:-translate-y-1 hover:shadow-lg active:-translate-y-0.5 transition-all duration-200"
               >
                 {loadingCharity ? (
-                  <Loader2 className="h-8 w-8 animate-spin text-indigo-600" aria-hidden="true" />
+                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" aria-hidden="true" />
                 ) : (
                   <Building2 className="h-8 w-8" aria-hidden="true" />
                 )}
@@ -217,7 +217,7 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
+                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
                 aria-label="Go back to account type selection"
               >
                 &larr; Back to selection
@@ -243,7 +243,7 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
+                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
                 aria-label="Go back to account type selection"
               >
                 &larr; Back to selection
@@ -269,7 +269,7 @@ const Login: React.FC = () => {
       {/* Skip-to-content link for screen readers and keyboard navigation */}
       <a
         href="#login-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:text-indigo-700 focus:ring-2 focus:ring-indigo-500"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:text-emerald-700 focus:ring-2 focus:ring-emerald-500"
       >
         Skip to login content
       </a>

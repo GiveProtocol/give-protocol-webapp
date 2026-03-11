@@ -139,7 +139,7 @@ function OpportunitySearchInput({ value, onChange, placeholder, ariaLabel }: {
         type="text"
         placeholder={placeholder}
         aria-label={ariaLabel}
-        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
         value={value}
         onChange={onChange}
       />
@@ -183,7 +183,7 @@ function OpportunityFilterBar({
       <select
         value={selectedSkill}
         onChange={onSkillChange}
-        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
         aria-label={t("volunteer.selectSkill", "Select skill")}
       >
         <option value="">{t("volunteer.allSkills", "All Skills")}</option>
@@ -196,7 +196,7 @@ function OpportunityFilterBar({
       <select
         value={selectedType}
         onChange={onTypeChange}
-        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
         aria-label={t("volunteer.selectType", "Select type")}
       >
         <option value="">{t("volunteer.allTypes", "All Types")}</option>
@@ -212,7 +212,7 @@ function OpportunityFilterBar({
       <select
         value={selectedLanguage}
         onChange={onLanguageChange}
-        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+        className="px-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500"
         aria-label={t("volunteer.selectLanguage", "Select language")}
       >
         <option value="">
@@ -362,7 +362,7 @@ const VolunteerOpportunities: React.FC = () => {
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">
                     {opportunity.title}
                   </h3>
-                  <p className="text-sm font-medium text-indigo-600 mb-2">
+                  <p className="text-sm font-medium text-emerald-600 mb-2">
                     {opportunity.organization}
                   </p>
                   <p className="text-gray-600 mb-4">
@@ -390,7 +390,7 @@ const VolunteerOpportunities: React.FC = () => {
                       {opportunity.skills.map((skill) => (
                         <span
                           key={skill}
-                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+                          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
                         >
                           <Award aria-hidden="true" className="h-3 w-3 mr-1" />
                           {skill}
@@ -401,7 +401,7 @@ const VolunteerOpportunities: React.FC = () => {
 
                   <button
                     onClick={createApplyHandler(opportunity)}
-                    className="w-full bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                    className="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
                   >
                     {t("volunteer.applyNow", "Apply Now")}
                   </button>

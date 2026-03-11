@@ -145,8 +145,8 @@ export function FiatPresets({
                 "focus:outline-none focus:ring-3 focus:ring-offset-2",
                 "active:scale-95 transform",
                 isSelected
-                  ? "bg-gradient-to-r from-indigo-600 to-purple-600 border-indigo-600 text-white shadow-lg"
-                  : "bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-indigo-500 hover:bg-gradient-to-r hover:from-indigo-50 hover:to-purple-50 dark:hover:from-indigo-900/30 dark:hover:to-purple-900/30 hover:shadow-md focus:ring-indigo-500",
+                  ? "bg-gradient-to-r from-emerald-600 to-emerald-600 border-emerald-600 text-white shadow-lg"
+                  : "bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300 hover:border-emerald-500 hover:bg-gradient-to-r hover:from-emerald-50 hover:to-emerald-50 dark:hover:from-emerald-900/30 dark:hover:to-emerald-900/30 hover:shadow-md focus:ring-emerald-500",
               )}
             >
               {formatPreset(amount)}
@@ -161,7 +161,7 @@ export function FiatPresets({
           className={cn(
             "absolute left-3 top-1/2 -translate-y-1/2 text-sm font-medium pointer-events-none",
             isCustomActive
-              ? "text-indigo-600 dark:text-indigo-400"
+              ? "text-emerald-600 dark:text-emerald-400"
               : "text-gray-400 dark:text-gray-500",
           )}
         >
@@ -178,11 +178,11 @@ export function FiatPresets({
           className={cn(
             "w-full pl-7 pr-4 py-3 text-sm font-medium rounded-xl",
             "border-2 transition-all duration-200",
-            "focus:outline-none focus:ring-3 focus:ring-offset-2 focus:ring-indigo-500",
+            "focus:outline-none focus:ring-3 focus:ring-offset-2 focus:ring-emerald-500",
             "bg-white dark:bg-slate-800",
             "placeholder:text-gray-400 dark:placeholder:text-gray-500",
             isCustomActive
-              ? "border-indigo-500 dark:border-indigo-400 text-gray-900 dark:text-white"
+              ? "border-emerald-500 dark:border-emerald-400 text-gray-900 dark:text-white"
               : "border-gray-300 dark:border-slate-600 text-gray-700 dark:text-gray-300",
           )}
         />

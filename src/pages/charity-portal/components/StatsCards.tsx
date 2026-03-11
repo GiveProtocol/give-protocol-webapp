@@ -31,8 +31,8 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
         className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-left group cursor-pointer"
       >
         <div className="flex items-center">
-          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-indigo-100 to-indigo-200 flex items-center justify-center shadow-inner">
-            <DollarSign className="h-7 w-7 text-indigo-600" />
+          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shadow-inner">
+            <DollarSign className="h-7 w-7 text-emerald-600" />
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-500">
@@ -47,7 +47,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
             </p>
           </div>
         </div>
-        <div className="h-1 w-full bg-indigo-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="h-1 w-full bg-emerald-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
 
       {/* Volunteers Card */}
@@ -80,8 +80,8 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
         className="bg-white rounded-xl p-6 shadow-md border border-gray-100 hover:shadow-lg hover:-translate-y-1 transition-all duration-200 text-left group cursor-pointer"
       >
         <div className="flex items-center">
-          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center shadow-inner">
-            <Clock className="h-7 w-7 text-purple-600" />
+          <div className="h-14 w-14 rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shadow-inner">
+            <Clock className="h-7 w-7 text-emerald-600" />
           </div>
           <div className="ml-4">
             <p className="text-sm font-medium text-gray-500">
@@ -95,7 +95,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
             </p>
           </div>
         </div>
-        <div className="h-1 w-full bg-purple-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <div className="h-1 w-full bg-emerald-500 rounded-full mt-4 opacity-0 group-hover:opacity-100 transition-opacity" />
       </button>
 
       {/* Skills Card */}

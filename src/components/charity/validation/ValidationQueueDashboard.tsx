@@ -121,7 +121,7 @@ export const ValidationQueueDashboard: React.FC<ValidationQueueDashboardProps> =
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
-          <ClipboardCheck className="h-6 w-6 text-indigo-600" />
+          <ClipboardCheck className="h-6 w-6 text-emerald-600" />
           <div>
             <h2 className="text-xl font-semibold text-gray-900">Validation Queue</h2>
             <p className="text-sm text-gray-500">

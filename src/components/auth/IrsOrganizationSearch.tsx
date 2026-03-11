@@ -88,7 +88,7 @@ export const IrsOrganizationSearch: React.FC<IrsOrganizationSearchProps> = ({
 
       <p className="text-sm text-center text-gray-500 pt-2">
         {"Can\u2019t find your organization? "}
-        <button type="button" onClick={onSkip} className="font-medium text-indigo-600 hover:text-indigo-500">
+        <button type="button" onClick={onSkip} className="font-medium text-emerald-600 hover:text-emerald-500">
           Register manually
         </button>
       </p>

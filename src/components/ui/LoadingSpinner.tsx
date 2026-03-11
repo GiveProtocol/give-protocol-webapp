@@ -19,7 +19,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   };
 
   const colorClasses = {
-    primary: 'text-indigo-600',
+    primary: 'text-emerald-600',
     secondary: 'text-gray-600',
     white: 'text-gray-900'
   };

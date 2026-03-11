@@ -375,7 +375,7 @@ const PortfolioFunds: React.FC = () => {
 
               <Button
                 onClick={createDonateHandler(fund)}
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
+                className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
               >
                 Donate to Fund
               </Button>

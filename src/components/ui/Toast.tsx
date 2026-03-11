@@ -53,7 +53,7 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
           type="button"
           onClick={onClose}
           aria-label="Dismiss notification"
-          className="ml-4 flex-shrink-0 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-1 p-1.5 min-h-[44px] min-w-[44px]"
+          className="ml-4 flex-shrink-0 inline-flex items-center justify-center rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 p-1.5 min-h-[44px] min-w-[44px]"
         >
           <X aria-hidden="true" className="h-5 w-5" />
         </button>

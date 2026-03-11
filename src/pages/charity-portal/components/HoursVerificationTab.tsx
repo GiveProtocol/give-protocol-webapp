@@ -43,7 +43,7 @@ const VolunteerHourCard: React.FC<VolunteerHourCardProps> = ({
         {hours.volunteerName}
       </h4>
       <p className="text-sm text-gray-600 dark:text-gray-300 mb-2 flex items-center gap-2">
-        <Clock className="h-4 w-4 text-purple-500" aria-hidden="true" />
+        <Clock className="h-4 w-4 text-emerald-500" aria-hidden="true" />
         <span className="font-medium">
           {hours.hours} {hoursLabel}
         </span>
@@ -90,7 +90,7 @@ export const HoursVerificationTab: React.FC<HoursVerificationTabProps> = ({
     (mode: ViewMode) =>
       `px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
         viewMode === mode
-          ? "bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300"
+          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900 dark:text-emerald-300"
           : "text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
       }`,
     [viewMode],
@@ -151,7 +151,7 @@ export const HoursVerificationTab: React.FC<HoursVerificationTabProps> = ({
         <section>
           {viewMode === "all" && (
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
-              <Clock className="h-5 w-5 text-purple-500" aria-hidden="true" />
+              <Clock className="h-5 w-5 text-emerald-500" aria-hidden="true" />
               {t("volunteer.loggedHours", "Logged Volunteer Hours")}
             </h3>
           )}
@@ -167,7 +167,7 @@ export const HoursVerificationTab: React.FC<HoursVerificationTabProps> = ({
                 variant="secondary"
                 className="flex items-center gap-2 border border-gray-300 hover:bg-gray-50 transition-all"
               >
-                <Download className="h-4 w-4 text-indigo-600" />
+                <Download className="h-4 w-4 text-emerald-600" />
                 {t("contributions.export", "Export")}
               </Button>
             </div>
@@ -184,9 +184,9 @@ export const HoursVerificationTab: React.FC<HoursVerificationTabProps> = ({
                 ))
               ) : (
                 <div className="py-12 text-center">
-                  <span className="mx-auto w-14 h-14 bg-purple-100 dark:bg-purple-900 rounded-full flex items-center justify-center mb-4">
+                  <span className="mx-auto w-14 h-14 bg-emerald-100 dark:bg-emerald-900 rounded-full flex items-center justify-center mb-4">
                     <Clock
-                      className="h-7 w-7 text-purple-400"
+                      className="h-7 w-7 text-emerald-400"
                       aria-hidden="true"
                     />
                   </span>
@@ -212,7 +212,7 @@ export const HoursVerificationTab: React.FC<HoursVerificationTabProps> = ({
           {viewMode === "all" && (
             <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4 flex items-center gap-2">
               <ClipboardCheck
-                className="h-5 w-5 text-indigo-600"
+                className="h-5 w-5 text-emerald-600"
                 aria-hidden="true"
               />
               {t("volunteer.selfReportedHours", "Self-Reported Hours")}

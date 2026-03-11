@@ -40,7 +40,7 @@ export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({
                   {application.full_name}
                 </h3>
                 <p className="text-sm text-gray-600 flex items-center gap-2 mt-1">
-                  <Briefcase className="h-4 w-4 text-indigo-500" />
+                  <Briefcase className="h-4 w-4 text-emerald-500" />
                   {t("volunteer.appliedFor")}:{" "}
                   <span className="font-medium">
                     {application.opportunity?.title || "Unknown Opportunity"}

@@ -27,7 +27,7 @@ export const GlobalStats: React.FC = () => {
   return (
     <div className="grid gap-6 mb-8 md:grid-cols-4">
       <Card className="p-6 flex items-center">
-        <DollarSign className="h-12 w-12 p-3 rounded-full bg-indigo-100 text-indigo-600 dark:bg-indigo-900 dark:text-indigo-400" />
+        <DollarSign className="h-12 w-12 p-3 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900 dark:text-emerald-400" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Total Donated
@@ -53,7 +53,7 @@ export const GlobalStats: React.FC = () => {
       </Card>
 
       <Card className="p-6 flex items-center">
-        <Clock className="h-12 w-12 p-3 rounded-full bg-purple-100 text-purple-600 dark:bg-purple-900 dark:text-purple-400" />
+        <Clock className="h-12 w-12 p-3 rounded-full bg-emerald-100 text-emerald-600 dark:bg-emerald-900 dark:text-emerald-400" />
         <div className="ml-4">
           <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
             Volunteer Hours

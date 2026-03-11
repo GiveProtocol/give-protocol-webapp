@@ -77,7 +77,7 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
             value={formData.description}
             onChange={handleDescriptionChange}
             rows={4}
-            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50 mt-1"
+            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50 mt-1"
             required
           />
         </label>

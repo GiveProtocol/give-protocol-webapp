@@ -193,15 +193,15 @@ const TransactionRecapRow: React.FC<TransactionRecapRowProps> = ({
     "flex justify-between items-center p-3 rounded-lg shadow-sm";
   const variantClasses =
     variant === "highlight"
-      ? "bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-200 dark:border-indigo-800"
+      ? "bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-800"
       : "bg-white dark:bg-gray-700";
   const labelClasses =
     variant === "highlight"
-      ? "text-indigo-700 dark:text-indigo-400 font-semibold"
+      ? "text-emerald-700 dark:text-emerald-400 font-semibold"
       : "text-gray-600 dark:text-gray-300 font-medium";
   const valueClasses =
     variant === "highlight"
-      ? "font-bold text-indigo-900 dark:text-indigo-300"
+      ? "font-bold text-emerald-900 dark:text-emerald-300"
       : "font-semibold text-gray-900 dark:text-gray-100";
 
   return (
@@ -228,24 +228,24 @@ const ImportantNotice: React.FC<ImportantNoticeProps> = ({
   charityName,
   numberOfMonths,
 }) => (
-  <div className="flex items-start gap-3 bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border-2 border-indigo-200 dark:border-indigo-800 shadow-sm">
-    <AlertTriangle className="w-5 h-5 text-indigo-600 dark:text-indigo-400 flex-shrink-0 mt-0.5" />
+  <div className="flex items-start gap-3 bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 p-5 rounded-xl border-2 border-emerald-200 dark:border-emerald-800 shadow-sm">
+    <AlertTriangle className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
     <section>
-      <h4 className="text-sm font-bold text-indigo-900 dark:text-indigo-300 mb-2">
+      <h4 className="text-sm font-bold text-emerald-900 dark:text-emerald-300 mb-2">
         Important Notice
       </h4>
       <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
         To immediately secure your full{" "}
-        <strong className="text-indigo-900 dark:text-indigo-300">
+        <strong className="text-emerald-900 dark:text-emerald-300">
           {amount.toFixed(4)} {tokenSymbol}
         </strong>{" "}
         commitment, the total amount has been reserved today and will be
         automatically distributed to{" "}
-        <strong className="text-indigo-900 dark:text-indigo-300">
+        <strong className="text-emerald-900 dark:text-emerald-300">
           {charityName}
         </strong>{" "}
         in equal installments over the next{" "}
-        <strong className="text-indigo-900 dark:text-indigo-300">
+        <strong className="text-emerald-900 dark:text-emerald-300">
           {numberOfMonths} months
         </strong>
         {"."}
@@ -353,7 +353,7 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
               href={`https://moonbase.moonscan.io/tx/${transactionHash}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1 text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 font-medium"
+              className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 font-medium"
             >
               View on Explorer
               <ExternalLink className="w-3 h-3" />
@@ -633,10 +633,10 @@ export function ScheduledDonationForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && <ErrorAlert message={error} />}
 
-      <div className="bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-indigo-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-indigo-100 dark:border-indigo-800">
+      <div className="bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800">
         <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
           Schedule recurring donations to{" "}
-          <span className="font-semibold text-indigo-900 dark:text-indigo-300">{charityName}</span>.
+          <span className="font-semibold text-emerald-900 dark:text-emerald-300">{charityName}</span>.
           The total amount will be divided into equal monthly payments.
         </p>
       </div>
@@ -677,10 +677,10 @@ export function ScheduledDonationForm({
         />
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 p-5 rounded-xl border-2 border-blue-100 dark:border-blue-800 shadow-sm">
+      <div className="bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 p-5 rounded-xl border-2 border-blue-100 dark:border-blue-800 shadow-sm">
         <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
           <svg
-            className="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400"
+            className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -699,7 +699,7 @@ export function ScheduledDonationForm({
             <span className="text-gray-600 dark:text-gray-300">
               Monthly payment:
             </span>
-            <span className="font-bold text-indigo-900 dark:text-indigo-300">
+            <span className="font-bold text-emerald-900 dark:text-emerald-300">
               {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"}{" "}
               {selectedToken.symbol}
             </span>

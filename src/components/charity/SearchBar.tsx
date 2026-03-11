@@ -138,7 +138,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
             placeholder={placeholder}
             disabled={isLoading}
             className={cn(
-              'w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent',
+              'w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent',
               isLoading && 'bg-gray-50'
             )}
           />
@@ -176,7 +176,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 id="country-filter"
                 value={filters.country}
                 onChange={handleCountrySelectChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
               >
                 <option value="">All Countries</option>
                 {countries.map(renderCountryOption)}
@@ -189,7 +189,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 id="category-filter"
                 value={filters.category}
                 onChange={handleCategorySelectChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
               >
                 <option value="">All Categories</option>
                 {categories.map((category) => (
@@ -208,7 +208,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 id="status-filter"
                 value={filters.status}
                 onChange={handleStatusChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
               >
                 <option value="all">All</option>
                 <option value="active">Active</option>
@@ -222,7 +222,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
                 id="sort-filter"
                 value={filters.sortBy}
                 onChange={handleSortByChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
               >
                 <option value="popularity">Popularity</option>
                 <option value="date">Date</option>

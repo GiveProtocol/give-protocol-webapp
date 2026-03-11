@@ -110,13 +110,13 @@ export const OrganizationInfoSection: React.FC<OrganizationInfoSectionProps> =
       <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md mt-8">
         <button
           onClick={handleToggle}
-          className="w-full flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 rounded-lg -m-2 p-2"
+          className="w-full flex items-center justify-between text-left focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 rounded-lg -m-2 p-2"
           aria-expanded={isExpanded}
           aria-controls="organization-info-content"
         >
           <div className="flex items-center gap-2">
             <Building2
-              className="h-5 w-5 text-indigo-600 dark:text-indigo-400"
+              className="h-5 w-5 text-emerald-600 dark:text-emerald-400"
               aria-hidden="true"
             />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
@@ -195,7 +195,7 @@ export const OrganizationInfoSection: React.FC<OrganizationInfoSectionProps> =
                       <dd>
                         <a
                           href={`tel:${profile.contact.phone}`}
-                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300"
                         >
                           {profile.contact.phone}
                         </a>
@@ -217,7 +217,7 @@ export const OrganizationInfoSection: React.FC<OrganizationInfoSectionProps> =
                       <dd>
                         <a
                           href={`mailto:${profile.contact.email}`}
-                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300"
                         >
                           {profile.contact.email}
                         </a>
@@ -241,7 +241,7 @@ export const OrganizationInfoSection: React.FC<OrganizationInfoSectionProps> =
                           href={profile.contact.website}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300"
+                          className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300"
                         >
                           {profile.contact.website}
                         </a>

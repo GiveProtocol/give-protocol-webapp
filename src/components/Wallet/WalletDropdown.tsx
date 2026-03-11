@@ -168,7 +168,7 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
       aria-label="Wallet menu"
     >
       {/* Account Info Section */}
-      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20">
+      <div className="p-4 bg-gradient-to-r from-emerald-50 to-emerald-50 dark:from-emerald-900/20 dark:to-emerald-900/20">
         <div className="flex items-center gap-3">
           <WalletAvatar address={address} size={48} />
           <div className="flex-1 min-w-0">
@@ -195,8 +195,8 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
         >
           {copied ? (
             <>
-              <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-              <span className="text-green-600 dark:text-green-400">
+              <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+              <span className="text-emerald-600 dark:text-emerald-400">
                 Copied!
               </span>
             </>
@@ -227,14 +227,14 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
         </p>
         {balances.isLoading ? (
           <div className="flex items-center gap-2 text-gray-400">
-            <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-green-500 rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-gray-300 dark:border-gray-600 border-t-emerald-500 rounded-full animate-spin" />
             <span className="text-sm">Loading...</span>
           </div>
         ) : (
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Wallet className="h-4 w-4 text-green-600 dark:text-green-400" />
+                <Wallet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                 <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   {tokenSymbol}
                 </span>

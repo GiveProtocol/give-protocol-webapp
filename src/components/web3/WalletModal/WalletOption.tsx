@@ -33,7 +33,7 @@ const WALLET_INSTALL_URLS: Record<string, string> = {
  */
 const CHAIN_COLORS: Record<ChainType, { bg: string; text: string }> = {
   evm: { bg: "bg-blue-100", text: "text-blue-700" },
-  solana: { bg: "bg-purple-100", text: "text-purple-700" },
+  solana: { bg: "bg-emerald-100", text: "text-emerald-700" },
   polkadot: { bg: "bg-pink-100", text: "text-pink-700" },
 };
 
@@ -82,7 +82,7 @@ const WalletStatusBadge: React.FC<{
   onInstallClick: (_e: React.MouseEvent) => void;
 }> = ({ isConnecting, isComingSoon, isInstalled, installUrl, onInstallClick }) => {
   if (isConnecting) {
-    return <Loader2 className="w-4 h-4 text-indigo-600 animate-spin" />;
+    return <Loader2 className="w-4 h-4 text-emerald-600 animate-spin" />;
   }
   if (isComingSoon) {
     return (
@@ -96,7 +96,7 @@ const WalletStatusBadge: React.FC<{
     return (
       <button
         onClick={onInstallClick}
-        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded hover:bg-indigo-100 transition-colors"
+        className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-emerald-600 bg-emerald-50 rounded hover:bg-emerald-100 transition-colors"
       >
         <Download className="w-3 h-3" />
         Install
@@ -179,7 +179,7 @@ export const WalletOption: React.FC<WalletOptionProps> = ({
         ${isDisabled ? "opacity-50 cursor-not-allowed" : ""}
         ${dimmed && !isDisabled ? "opacity-75" : ""}
         ${!isDisabled && isInstalled ? "hover:bg-gray-50 cursor-pointer" : ""}
-        ${isThisConnecting ? "bg-indigo-50" : ""}
+        ${isThisConnecting ? "bg-emerald-50" : ""}
       `}
       role="menuitem"
     >

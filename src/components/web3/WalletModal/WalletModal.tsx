@@ -7,6 +7,7 @@ import React, { useState, useCallback, useMemo, useEffect } from "react";
 import { AlertCircle } from "lucide-react";
 import type { ChainType, UnifiedWalletProvider, WalletCategory } from "@/types/wallet";
 import { WalletGroup } from "./WalletGroup";
+import { Portal } from "@/components/ui/Portal";
 import { Logger } from "@/utils/logger";
 
 /**
@@ -14,7 +15,7 @@ import { Logger } from "@/utils/logger";
  */
 const CHAIN_TABS: { type: ChainType; label: string; color: string }[] = [
   { type: "evm", label: "EVM", color: "bg-blue-600" },
-  { type: "solana", label: "Solana", color: "bg-purple-600" },
+  { type: "solana", label: "Solana", color: "bg-emerald-600" },
   { type: "polkadot", label: "Polkadot", color: "bg-pink-600" },
 ];
 
@@ -152,99 +153,101 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      {/* Invisible backdrop button for dismiss-on-click-outside */}
-      <button
-        type="button"
-        className="absolute inset-0 w-full h-full cursor-default"
-        onClick={handleBackdropClick}
-        aria-label="Close modal"
-        tabIndex={-1}
-      />
-      <dialog
-        open
-        className="relative w-full max-w-md mx-4 bg-white rounded-xl shadow-xl"
-        aria-modal="true"
-        aria-labelledby="wallet-modal-title"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
-            Connect Wallet
-          </h3>
-          <button
-            type="button"
-            onClick={onClose}
-            disabled={isConnecting}
-            className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 text-xl leading-none"
-            aria-label="Close modal"
-          >
-            &times;
-          </button>
-        </div>
-
-        {/* Chain Type Tabs */}
-        <div className="flex px-6 pt-4 gap-2">
-          {CHAIN_TABS.map(({ type, label, color }) => (
+    <Portal>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+        {/* Invisible backdrop button for dismiss-on-click-outside */}
+        <button
+          type="button"
+          className="absolute inset-0 w-full h-full cursor-default"
+          onClick={handleBackdropClick}
+          aria-label="Close modal"
+          tabIndex={-1}
+        />
+        <dialog
+          open
+          className="relative w-full max-w-md mx-4 bg-white rounded-xl shadow-xl"
+          aria-modal="true"
+          aria-labelledby="wallet-modal-title"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+            <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
+              Connect Wallet
+            </h3>
             <button
-              key={type}
-              data-chain-type={type}
-              onClick={handleChainTabClick}
-              className={`
-                px-4 py-2 text-sm font-medium rounded-lg transition-colors
-                ${
-                  selectedChainType === type
-                    ? `${color} text-white`
-                    : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-                }
-              `}
+              type="button"
+              onClick={onClose}
+              disabled={isConnecting}
+              className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50 text-xl leading-none"
+              aria-label="Close modal"
             >
-              {label}
+              &times;
             </button>
-          ))}
-        </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
-            <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-            <p className="text-sm text-red-700">{error}</p>
           </div>
-        )}
 
-        {/* Wallet Groups */}
-        <div className="px-2 py-4 max-h-96 overflow-y-auto">
-          {filteredWallets.length === 0 ? (
-            <p className="px-4 py-8 text-center text-gray-500">
-              No wallets available for {selectedChainType.toUpperCase()} chains.
-              <span className="block text-sm text-gray-400 mt-1">
-                Try selecting a different chain type.
-              </span>
-            </p>
-          ) : (
-            CATEGORY_ORDER.map((category) => (
-              <WalletGroup
-                key={category}
-                category={category}
-                wallets={groupedWallets[category]}
-                selectedChainType={selectedChainType}
-                isConnecting={isConnecting}
-                connectingWallet={connectingWallet}
-                onSelectWallet={handleSelectWallet}
-              />
-            ))
+          {/* Chain Type Tabs */}
+          <div className="flex px-6 pt-4 gap-2">
+            {CHAIN_TABS.map(({ type, label, color }) => (
+              <button
+                key={type}
+                data-chain-type={type}
+                onClick={handleChainTabClick}
+                className={`
+                  px-4 py-2 text-sm font-medium rounded-lg transition-colors
+                  ${
+                    selectedChainType === type
+                      ? `${color} text-white`
+                      : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  }
+                `}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <p className="text-sm text-red-700">{error}</p>
+            </div>
           )}
-        </div>
 
-        {/* Footer */}
-        <p className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl text-xs text-gray-500 text-center">
-          By connecting, you agree to the{" "}
-          <a href="/terms" className="text-indigo-600 hover:underline">
-            Terms of Service
-          </a>
-        </p>
-      </dialog>
-    </div>
+          {/* Wallet Groups */}
+          <div className="px-2 py-4 max-h-96 overflow-y-auto">
+            {filteredWallets.length === 0 ? (
+              <p className="px-4 py-8 text-center text-gray-500">
+                No wallets available for {selectedChainType.toUpperCase()} chains.
+                <span className="block text-sm text-gray-400 mt-1">
+                  Try selecting a different chain type.
+                </span>
+              </p>
+            ) : (
+              CATEGORY_ORDER.map((category) => (
+                <WalletGroup
+                  key={category}
+                  category={category}
+                  wallets={groupedWallets[category]}
+                  selectedChainType={selectedChainType}
+                  isConnecting={isConnecting}
+                  connectingWallet={connectingWallet}
+                  onSelectWallet={handleSelectWallet}
+                />
+              ))
+            )}
+          </div>
+
+          {/* Footer */}
+          <p className="px-6 py-4 border-t border-gray-200 bg-gray-50 rounded-b-xl text-xs text-gray-500 text-center">
+            By connecting, you agree to the{" "}
+            <a href="/terms" className="text-emerald-600 hover:underline">
+              Terms of Service
+            </a>
+          </p>
+        </dialog>
+      </div>
+    </Portal>
   );
 };
 

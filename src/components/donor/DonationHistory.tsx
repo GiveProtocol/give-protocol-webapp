@@ -77,7 +77,7 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
           <select
             value={timeFilter}
             onChange={handleTimeFilterChange}
-            className="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+            className="rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
             aria-label="Filter by time period"
           >
             <option value="all">All Time</option>
@@ -142,7 +142,7 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
                       href={`https://moonscan.io/tx/${donation.hash}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-indigo-600 hover:text-indigo-900 truncate block max-w-xs"
+                      className="text-emerald-600 hover:text-emerald-900 truncate block max-w-xs"
                     >
                       {donation.hash.substring(0, 10)}...
                     </a>

@@ -147,7 +147,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
               type="checkbox"
               checked={formData.availability.days.includes(day)}
               onChange={handlers.handleDaysChange(day)}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"
+              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2"
             />
             {day}
           </label>
@@ -168,7 +168,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
               type="checkbox"
               checked={formData.availability.times.includes(time)}
               onChange={handlers.handleTimesChange(time)}
-              className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 mr-2"
+              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2"
             />
             {time}
           </label>
@@ -587,11 +587,11 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   );
 
   const inputClasses =
-    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50 font-sans";
+    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50 font-sans";
   const textareaClasses =
-    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50 font-sans";
+    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50 font-sans";
   const selectClasses =
-    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 bg-indigo-50 font-sans";
+    "mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 bg-emerald-50 font-sans";
 
   const handlers = {
     handleFullNameChange,

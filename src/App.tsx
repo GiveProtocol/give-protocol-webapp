@@ -148,7 +148,7 @@ function App() {
             </p>
             <button
               onClick={resetError}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
             >
               Try Again
             </button>

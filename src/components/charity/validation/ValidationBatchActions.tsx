@@ -47,7 +47,7 @@ export const ValidationBatchActions: React.FC<ValidationBatchActionsProps> = ({
             checked={allSelected}
             onChange={handleSelectAll}
             disabled={disabled}
-            className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded"
           />
           <span className="text-sm text-gray-700">
             {allSelected ? 'Deselect all' : 'Select all'}

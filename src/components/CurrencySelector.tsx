@@ -123,9 +123,9 @@ export function CurrencySelector(): React.ReactElement {
                   onClick={handleSelect}
                   className={cn(
                     "w-full text-left px-3 py-2 text-sm",
-                    "hover:bg-indigo-50 transition-colors",
+                    "hover:bg-emerald-50 transition-colors",
                     "flex items-center justify-between",
-                    isSelected && "bg-indigo-100 text-indigo-900 font-medium"
+                    isSelected && "bg-emerald-100 text-emerald-900 font-medium"
                   )}
                 >
                   <span className="flex items-center space-x-2">

@@ -31,7 +31,7 @@ interface CardProps {
  * </Card>
  *
  * // Custom styled card
- * <Card className="bg-gradient-to-r from-purple-400 to-pink-400">
+ * <Card className="bg-gradient-to-r from-emerald-400 to-pink-400">
  *   <ColorfulContent />
  * </Card>
  * ```

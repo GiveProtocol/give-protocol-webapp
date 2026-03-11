@@ -39,7 +39,7 @@ export const RejectionReasonSelect: React.FC<RejectionReasonSelectProps> = ({
           id="rejection-reason"
           value={value}
           onChange={handleReasonChange}
-          className={`block w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 ${
+          className={`block w-full border rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 ${
             error ? 'border-red-300' : 'border-gray-300'
           }`}
         >
@@ -62,7 +62,7 @@ export const RejectionReasonSelect: React.FC<RejectionReasonSelectProps> = ({
           value={notes}
           onChange={handleNotesChange}
           rows={3}
-          className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+          className="block w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
           placeholder="Provide additional context for the rejection..."
         />
       </div>
