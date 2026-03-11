@@ -268,7 +268,7 @@ export const Register: React.FC = () => {
       </div>
 
       {/* ── Right Panel ── */}
-      <div className="flex items-center justify-center bg-slate-50 dark:bg-gray-900" style={{ padding: '3rem 2rem' }}>
+      <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
         <div className="w-full animate-fadeUp" style={{ maxWidth: 440, animationDelay: '0.1s' }}>
           {/* Mobile-only logo */}
           <div className="lg:hidden mb-8">
