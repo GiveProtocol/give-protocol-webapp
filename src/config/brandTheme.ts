@@ -82,6 +82,19 @@ export const BRAND_THEME = {
     textMuted: "#D1D5DB",
   },
 
+  /* ── Glass effects ── */
+  glass: {
+    bgLight: "rgba(255, 255, 255, 0.7)",
+    bgDark: "rgba(255, 255, 255, 0.05)",
+    blur: "16px",
+  },
+
+  /* ── Gradient text stops ── */
+  gradientText: {
+    light: ["#059669", "#0d9488", "#0891b2"],  // emerald-600, teal-600, cyan-600
+    dark: ["#34d399", "#14b8a6", "#22d3ee"],   // emerald-400, teal-400, cyan-400
+  },
+
   /* ── Navbar ── */
   navbar: {
     height: 60,
