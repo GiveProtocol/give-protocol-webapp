@@ -53,8 +53,8 @@ describe("shortenAddress", () => {
   });
 
   it("should handle undefined-like input", () => {
-    // @ts-expect-error testing falsy input
-    expect(shortenAddress(undefined)).toBe("");
+    const input = undefined as unknown as string;
+    expect(shortenAddress(input)).toBe("");
   });
 });
 
