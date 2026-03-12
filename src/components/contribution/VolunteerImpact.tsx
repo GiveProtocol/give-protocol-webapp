@@ -16,9 +16,9 @@ interface Achievement {
   date: string;
 }
 
-const fetchVolunteerStats = async (): Promise<VolunteerStats> => {
-  // Simulated API call
-  return {
+const fetchVolunteerStats = (): Promise<VolunteerStats> => {
+  // Simulated API call — returns Promise to match queryFn signature
+  return Promise.resolve({
     totalHours: 156,
     skillsEndorsed: 12,
     organizationsHelped: 5,
@@ -36,7 +36,7 @@ const fetchVolunteerStats = async (): Promise<VolunteerStats> => {
         date: '2024-03-10'
       }
     ]
-  };
+  });
 };
 
 export const VolunteerImpact: React.FC = () => {

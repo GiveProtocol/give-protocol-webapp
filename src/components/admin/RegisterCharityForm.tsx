@@ -42,7 +42,7 @@ export const RegisterCharityForm: React.FC = () => {
           `Charity registered successfully! Transaction: ${txHash}`,
         );
         setCharityAddress("");
-      } catch (err) {
+      } catch (_err) {
         // Error is already handled by the hook
       }
     },
