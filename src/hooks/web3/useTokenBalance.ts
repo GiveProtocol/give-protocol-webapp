@@ -47,14 +47,16 @@ export function useTokenBalance(
         );
         setBalance(balanceFormatted);
       } else {
-        // Fetch ERC20 token balance
+        // Fetch ERC20 token balance and decimals in parallel
         const contract = new ethers.Contract(
           token.address,
           ERC20_ABI,
           provider,
         );
-        const balanceRaw = await contract.balanceOf(address);
-        const decimals = await contract.decimals();
+        const [balanceRaw, decimals] = await Promise.all([
+          contract.balanceOf(address),
+          contract.decimals(),
+        ]);
         const balanceFormatted = Number.parseFloat(
           ethers.formatUnits(balanceRaw, decimals),
         );
@@ -80,7 +82,7 @@ export function useTokenBalance(
     } finally {
       setIsLoading(false);
     }
-  }, [provider, address, token, isConnected, balance]);
+  }, [provider, address, token, isConnected]);
 
   // Fetch balance on mount and when dependencies change
   useEffect(() => {

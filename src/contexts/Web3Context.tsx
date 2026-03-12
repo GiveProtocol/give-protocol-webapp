@@ -434,8 +434,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Check every 2 seconds
-    const intervalId = setInterval(checkConnection, 2000);
+    // Check every 10 seconds (reduced from 2s to limit re-renders)
+    const intervalId = setInterval(checkConnection, 10000);
 
     return () => clearInterval(intervalId);
   }, [address, currentWalletProvider]);

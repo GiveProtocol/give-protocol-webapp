@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Search, X } from 'lucide-react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Button } from '@/components/ui/Button';
@@ -57,12 +57,17 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   });
   const [showFilters, setShowFilters] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
-  const _debouncedSearch = useDebounce(query, 300);
+  const debouncedSearch = useDebounce(query, 300);
+  const filtersRef = useRef(filters);
+  filtersRef.current = filters;
+
+  useEffect(() => {
+    onSearch(debouncedSearch, filtersRef.current);
+  }, [debouncedSearch, onSearch]);
 
   const handleSearch = useCallback((searchQuery: string) => {
     setQuery(searchQuery);
-    onSearch(searchQuery, filters);
-  }, [filters, onSearch]);
+  }, []);
 
   const handleFilterChange = useCallback((key: keyof SearchFilters, value: string) => {
     const newFilters = { ...filters, [key]: value };
@@ -88,8 +93,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
 
   const clearSearch = useCallback(() => {
     setQuery('');
-    onSearch('', filters);
-  }, [filters, onSearch]);
+  }, []);
 
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearch(e.target.value);

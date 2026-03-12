@@ -106,70 +106,35 @@ export async function getUserContributionStats(
   userId: string,
 ): Promise<UserContributionStats> {
   try {
-    // Fetch crypto donations
-    const { data: donations, error: donationsError } = await supabase
-      .from("donations")
-      .select("amount")
-      .eq("donor_id", userId);
+    // Fetch all data sources in parallel
+    const [
+      { data: donations, error: donationsError },
+      { data: fiatDonations, error: fiatDonationsError },
+      { data: formalHours, error: formalError },
+      { data: selfReported, error: selfReportedError },
+      { data: endorsements, error: endorsementsError },
+    ] = await Promise.all([
+      supabase.from("donations").select("amount").eq("donor_id", userId),
+      supabase.from("fiat_donations").select("amount_cents").eq("donor_id", userId),
+      supabase.from("volunteer_hours").select("hours, charity_id").eq("volunteer_id", userId).eq("status", "approved"),
+      supabase.from("self_reported_hours").select("hours, validation_status, organization_id, organization_name").eq("volunteer_id", userId),
+      supabase.from("skill_endorsements").select("id").eq("recipient_id", userId),
+    ]);
 
     if (donationsError) {
-      Logger.warn("Error fetching donations for stats", {
-        error: donationsError,
-        userId,
-      });
+      Logger.warn("Error fetching donations for stats", { error: donationsError, userId });
     }
-
-    // Fetch fiat donations
-    const { data: fiatDonations, error: fiatDonationsError } = await supabase
-      .from("fiat_donations")
-      .select("amount_cents")
-      .eq("donor_id", userId);
-
     if (fiatDonationsError) {
-      Logger.warn("Error fetching fiat donations for stats", {
-        error: fiatDonationsError,
-        userId,
-      });
+      Logger.warn("Error fetching fiat donations for stats", { error: fiatDonationsError, userId });
     }
-
-    // Fetch formal volunteer hours (approved only)
-    const { data: formalHours, error: formalError } = await supabase
-      .from("volunteer_hours")
-      .select("hours, charity_id")
-      .eq("volunteer_id", userId)
-      .eq("status", "approved");
-
     if (formalError) {
-      Logger.warn("Error fetching formal volunteer hours", {
-        error: formalError,
-        userId,
-      });
+      Logger.warn("Error fetching formal volunteer hours", { error: formalError, userId });
     }
-
-    // Fetch self-reported hours
-    const { data: selfReported, error: selfReportedError } = await supabase
-      .from("self_reported_hours")
-      .select("hours, validation_status, organization_id, organization_name")
-      .eq("volunteer_id", userId);
-
     if (selfReportedError) {
-      Logger.warn("Error fetching self-reported hours", {
-        error: selfReportedError,
-        userId,
-      });
+      Logger.warn("Error fetching self-reported hours", { error: selfReportedError, userId });
     }
-
-    // Fetch skill endorsements
-    const { data: endorsements, error: endorsementsError } = await supabase
-      .from("skill_endorsements")
-      .select("id")
-      .eq("recipient_id", userId);
-
     if (endorsementsError) {
-      Logger.warn("Error fetching endorsements", {
-        error: endorsementsError,
-        userId,
-      });
+      Logger.warn("Error fetching endorsements", { error: endorsementsError, userId });
     }
 
     // Calculate crypto donation stats
@@ -509,37 +474,25 @@ export async function getVolunteerLeaderboard(
   includeUnvalidated = false,
 ): Promise<VolunteerLeaderboardEntry[]> {
   try {
-    // Get formal volunteer hours aggregated by user
-    const { data: formalData, error: formalError } = await supabase
-      .from("volunteer_hours")
-      .select("volunteer_id, hours")
-      .eq("status", "approved");
+    // Build self-reported query with conditional filter
+    const selfReportedQuery = includeUnvalidated
+      ? supabase.from("self_reported_hours").select("volunteer_id, hours, validation_status")
+      : supabase.from("self_reported_hours").select("volunteer_id, hours, validation_status").eq("validation_status", "validated");
+
+    // Fetch both sources in parallel
+    const [
+      { data: formalData, error: formalError },
+      { data: selfReportedData, error: selfReportedError },
+    ] = await Promise.all([
+      supabase.from("volunteer_hours").select("volunteer_id, hours").eq("status", "approved"),
+      selfReportedQuery,
+    ]);
 
     if (formalError) {
-      Logger.warn("Error fetching formal hours for leaderboard", {
-        error: formalError,
-      });
+      Logger.warn("Error fetching formal hours for leaderboard", { error: formalError });
     }
-
-    // Get self-reported hours aggregated by user
-    let selfReportedQuery = supabase
-      .from("self_reported_hours")
-      .select("volunteer_id, hours, validation_status");
-
-    if (!includeUnvalidated) {
-      selfReportedQuery = selfReportedQuery.eq(
-        "validation_status",
-        "validated",
-      );
-    }
-
-    const { data: selfReportedData, error: selfReportedError } =
-      await selfReportedQuery;
-
     if (selfReportedError) {
-      Logger.warn("Error fetching self-reported hours for leaderboard", {
-        error: selfReportedError,
-      });
+      Logger.warn("Error fetching self-reported hours for leaderboard", { error: selfReportedError });
     }
 
     // Aggregate hours by user
@@ -582,22 +535,20 @@ export async function getDonorLeaderboard(
   limit = 10,
 ): Promise<DonorLeaderboardEntry[]> {
   try {
-    const { data, error } = await supabase
-      .from("donations")
-      .select("donor_id, amount, charity_id");
+    // Fetch both donation sources in parallel
+    const [
+      { data, error },
+      { data: fiatData, error: fiatError },
+    ] = await Promise.all([
+      supabase.from("donations").select("donor_id, amount, charity_id"),
+      supabase.from("fiat_donations").select("donor_id, amount_cents, charity_id"),
+    ]);
 
     if (error) {
       Logger.warn("Error fetching donations for leaderboard", { error });
     }
-
-    const { data: fiatData, error: fiatError } = await supabase
-      .from("fiat_donations")
-      .select("donor_id, amount_cents, charity_id");
-
     if (fiatError) {
-      Logger.warn("Error fetching fiat donations for leaderboard", {
-        error: fiatError,
-      });
+      Logger.warn("Error fetching fiat donations for leaderboard", { error: fiatError });
     }
 
     // Aggregate donations by user
@@ -673,59 +624,35 @@ export async function getGlobalContributionStats(): Promise<{
   totalSkillsEndorsed: number;
 }> {
   try {
-    // Get crypto donation stats
-    const { data: donations, error: donationsError } = await supabase
-      .from("donations")
-      .select("amount, donor_id");
+    // Fetch all global stats in parallel
+    const [
+      { data: donations, error: donationsError },
+      { data: fiatDonations, error: fiatDonationsError },
+      { data: formalHours, error: formalError },
+      { data: selfReported, error: selfReportedError },
+      { count: endorsementsCount, error: endorsementsError },
+    ] = await Promise.all([
+      supabase.from("donations").select("amount, donor_id"),
+      supabase.from("fiat_donations").select("amount_cents, donor_id"),
+      supabase.from("volunteer_hours").select("hours, volunteer_id").eq("status", "approved"),
+      supabase.from("self_reported_hours").select("hours, validation_status, volunteer_id"),
+      supabase.from("skill_endorsements").select("id", { count: "exact", head: true }),
+    ]);
 
     if (donationsError) {
-      Logger.warn("Error fetching global donation stats", {
-        error: donationsError,
-      });
+      Logger.warn("Error fetching global donation stats", { error: donationsError });
     }
-
-    // Get fiat donation stats
-    const { data: fiatDonations, error: fiatDonationsError } = await supabase
-      .from("fiat_donations")
-      .select("amount_cents, donor_id");
-
     if (fiatDonationsError) {
-      Logger.warn("Error fetching global fiat donation stats", {
-        error: fiatDonationsError,
-      });
+      Logger.warn("Error fetching global fiat donation stats", { error: fiatDonationsError });
     }
-
-    // Get formal volunteer hours
-    const { data: formalHours, error: formalError } = await supabase
-      .from("volunteer_hours")
-      .select("hours, volunteer_id")
-      .eq("status", "approved");
-
     if (formalError) {
       Logger.warn("Error fetching global formal hours", { error: formalError });
     }
-
-    // Get self-reported hours
-    const { data: selfReported, error: selfReportedError } = await supabase
-      .from("self_reported_hours")
-      .select("hours, validation_status, volunteer_id");
-
     if (selfReportedError) {
-      Logger.warn("Error fetching global self-reported hours", {
-        error: selfReportedError,
-      });
+      Logger.warn("Error fetching global self-reported hours", { error: selfReportedError });
     }
-
-    // Get skill endorsements count
-    const { count: endorsementsCount, error: endorsementsError } =
-      await supabase
-        .from("skill_endorsements")
-        .select("id", { count: "exact", head: true });
-
     if (endorsementsError) {
-      Logger.warn("Error fetching global skill endorsements", {
-        error: endorsementsError,
-      });
+      Logger.warn("Error fetching global skill endorsements", { error: endorsementsError });
     }
 
     // Calculate stats

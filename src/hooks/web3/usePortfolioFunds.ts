@@ -188,21 +188,21 @@ export function usePortfolioFunds() {
 
     try {
       const fundIds = await contract.getAllActiveFunds();
-      const funds: PortfolioFund[] = [];
-
-      for (const fundId of fundIds) {
-        const details = await contract.getFundDetails(fundId);
-        funds.push({
-          id: fundId,
-          name: details[0],
-          description: details[1],
-          active: details[2],
-          charities: details[3],
-          ratios: details[4].map((ratio: bigint) => Number(ratio)),
-          totalRaised: ethers.formatEther(details[5]),
-          totalDistributed: ethers.formatEther(details[6]),
-        });
-      }
+      const funds = await Promise.all(
+        fundIds.map(async (fundId: string) => {
+          const details = await contract.getFundDetails(fundId);
+          return {
+            id: fundId,
+            name: details[0],
+            description: details[1],
+            active: details[2],
+            charities: details[3],
+            ratios: details[4].map((ratio: bigint) => Number(ratio)),
+            totalRaised: ethers.formatEther(details[5]),
+            totalDistributed: ethers.formatEther(details[6]),
+          };
+        }),
+      );
 
       return funds;
     } catch (err) {

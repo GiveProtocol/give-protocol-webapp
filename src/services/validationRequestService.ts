@@ -85,13 +85,14 @@ function mapRowToSelfReportedHours(
 export async function getOrganizationValidationQueue(
   organizationId: string,
 ): Promise<ValidationQueueItem[]> {
-  // First, fetch validation requests with self_reported_hours
+  // Fetch validation requests with self_reported_hours and volunteer profile in a single query
   const { data, error } = await supabase
     .from("validation_requests")
     .select(
       `
       *,
-      self_reported_hours:self_reported_hours_id (*)
+      self_reported_hours:self_reported_hours_id (*),
+      volunteer:volunteer_id (user_id, display_name, email)
     `,
     )
     .eq("organization_id", organizationId)
@@ -107,21 +108,12 @@ export async function getOrganizationValidationQueue(
     return [];
   }
 
-  // Fetch volunteer profiles separately
-  const volunteerIds = [...new Set(data.map((row) => row.volunteer_id))];
-  const { data: profiles } = await supabase
-    .from("profiles")
-    .select("user_id, display_name, email")
-    .in("user_id", volunteerIds);
-
-  const profileMap = new Map((profiles || []).map((p) => [p.user_id, p]));
-
   const now = new Date().getTime();
 
   return data.map((row) => {
     const request = mapRowToValidationRequest(row);
     const hoursData = row.self_reported_hours as Record<string, unknown>;
-    const volunteerProfile = profileMap.get(row.volunteer_id);
+    const volunteerProfile = row.volunteer as { user_id: string; display_name: string | null; email: string | null } | null;
 
     const daysUntilExpiration = Math.ceil(
       (request.expiresAt - now) / (1000 * 60 * 60 * 24),
