@@ -125,6 +125,9 @@ export const supabase = {
       remove: jest.fn().mockResolvedValue({ data: null, error: null }),
     })),
   },
+  functions: {
+    invoke: jest.fn().mockResolvedValue({ data: null, error: null }),
+  },
   rpc: jest.fn().mockResolvedValue({ data: null, error: null }),
   channel: jest.fn(() => ({
     on: jest.fn().mockReturnThis(),

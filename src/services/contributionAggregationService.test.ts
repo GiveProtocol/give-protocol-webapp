@@ -477,6 +477,203 @@ describe("contributionAggregationService", () => {
     });
   });
 
+  describe("branch coverage - null/edge cases", () => {
+    it("should handle donations with null amounts", async () => {
+      setMockResult("donations", {
+        data: [{ amount: null }, { amount: 50 }],
+        error: null,
+      });
+      setMockResult("fiat_donations", { data: [], error: null });
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", { data: [], error: null });
+      setMockResult("skill_endorsements", { data: [], error: null });
+
+      const stats = await getUserContributionStats("user-null");
+
+      expect(stats.totalDonated).toBe(50);
+      expect(stats.donationCount).toBe(2);
+    });
+
+    it("should handle volunteer hours with null charity_id", async () => {
+      setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", { data: [], error: null });
+      setMockResult("volunteer_hours", {
+        data: [
+          { hours: 5, charity_id: null },
+          { hours: 3, charity_id: "org-1" },
+        ],
+        error: null,
+      });
+      setMockResult("self_reported_hours", { data: [], error: null });
+      setMockResult("skill_endorsements", { data: [], error: null });
+
+      const stats = await getUserContributionStats("user-null-charity");
+
+      expect(stats.formalVolunteerHours).toBe(8);
+      expect(stats.organizationsHelped).toBe(1);
+    });
+
+    it("should handle self-reported hours with organization_id but no organization_name", async () => {
+      setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", { data: [], error: null });
+      setMockResult("volunteer_hours", { data: [], error: null });
+      setMockResult("self_reported_hours", {
+        data: [
+          { hours: 2, validation_status: "validated", organization_id: "org-1", organization_name: null },
+        ],
+        error: null,
+      });
+      setMockResult("skill_endorsements", { data: [], error: null });
+
+      const stats = await getUserContributionStats("user-org-id-only");
+
+      expect(stats.organizationsHelped).toBe(1);
+    });
+
+    it("should handle null hours in volunteer records", async () => {
+      setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", { data: [], error: null });
+      setMockResult("volunteer_hours", {
+        data: [{ hours: null, charity_id: "org-1" }],
+        error: null,
+      });
+      setMockResult("self_reported_hours", {
+        data: [{ hours: null, validation_status: "validated", organization_id: null, organization_name: null }],
+        error: null,
+      });
+      setMockResult("skill_endorsements", { data: [], error: null });
+
+      const stats = await getUserContributionStats("user-null-hours");
+
+      expect(stats.formalVolunteerHours).toBe(0);
+      expect(stats.selfReportedHours.total).toBe(0);
+    });
+
+    it("should handle donation contributions with null charity data", async () => {
+      setMockResult("donations", {
+        data: [{
+          id: "d-1", amount: 100, created_at: "2025-01-01T00:00:00Z",
+          donor_id: "u-1", charity_id: "c-1", charity: null,
+        }],
+        error: null,
+      });
+
+      const contributions = await getUnifiedContributions({
+        userId: "u-1",
+        sources: ["donation"],
+      });
+
+      expect(contributions[0].organizationName).toBe("Unknown Charity");
+    });
+
+    it("should handle fiat donation with null charity and non-completed status", async () => {
+      setMockResult("fiat_donations", {
+        data: [{
+          id: "fd-1", amount_cents: 1000, currency: "usd", payment_method: "card",
+          transaction_id: "tx-1", card_last_four: "1234", donor_name: "Test",
+          disbursement_status: "processing", status: "processing",
+          created_at: "2025-01-01T00:00:00Z", donor_id: "u-1", charity_id: "c-1",
+          charity: null,
+        }],
+        error: null,
+      });
+
+      const contributions = await getUnifiedContributions({
+        userId: "u-1",
+        sources: ["fiat_donation"],
+      });
+
+      expect(contributions[0].organizationName).toBe("Unknown Charity");
+      expect(contributions[0].status).toBe("pending");
+    });
+
+    it("should handle self-reported hours with null organization_id", async () => {
+      setMockResult("self_reported_hours", {
+        data: [{
+          id: "sr-1", hours: 2, activity_date: "2025-01-01",
+          activity_type: "other", description: "Test",
+          validation_status: "pending", created_at: "2025-01-01T00:00:00Z",
+          volunteer_id: "u-1", organization_id: null, organization_name: null,
+        }],
+        error: null,
+      });
+
+      const contributions = await getUnifiedContributions({
+        userId: "u-1",
+        sources: ["self_reported"],
+      });
+
+      expect(contributions[0].organizationId).toBeUndefined();
+      expect(contributions[0].organizationName).toBe("Unknown Organization");
+      expect(contributions[0].status).toBe("pending");
+    });
+
+    it("should handle volunteer leaderboard with includeUnvalidated=true", async () => {
+      setMockResult("volunteer_hours", {
+        data: [{ volunteer_id: "v-1", hours: 5 }],
+        error: null,
+      });
+      setMockResult("self_reported_hours", {
+        data: [{ volunteer_id: "v-1", hours: 3, validation_status: "unvalidated" }],
+        error: null,
+      });
+
+      const leaderboard = await getVolunteerLeaderboard(10, true);
+
+      expect(leaderboard).toHaveLength(1);
+      expect(leaderboard[0].totalHours).toBe(8);
+    });
+
+    it("should handle donor with null amount and null charity_id", async () => {
+      setMockResult("donations", {
+        data: [{ donor_id: "d-1", amount: null, charity_id: null }],
+        error: null,
+      });
+      setMockResult("fiat_donations", {
+        data: [{ donor_id: "d-1", amount_cents: null, charity_id: null }],
+        error: null,
+      });
+
+      const leaderboard = await getDonorLeaderboard(10);
+
+      expect(leaderboard).toHaveLength(1);
+      expect(leaderboard[0].totalDonated).toBe(0);
+      expect(leaderboard[0].organizationsSupported).toBe(0);
+    });
+
+    it("should handle global stats with null volunteer_id", async () => {
+      setMockResult("donations", { data: [], error: null });
+      setMockResult("fiat_donations", { data: [], error: null });
+      setMockResult("volunteer_hours", {
+        data: [{ hours: 5, volunteer_id: null }],
+        error: null,
+      });
+      setMockResult("self_reported_hours", {
+        data: [
+          { hours: 3, validation_status: "validated", volunteer_id: null },
+          { hours: 2, validation_status: "other", volunteer_id: "v-1" },
+        ],
+        error: null,
+      });
+      setMockResult("skill_endorsements", { data: null, count: null, error: null });
+
+      const stats = await getGlobalContributionStats();
+
+      expect(stats.totalFormalVolunteerHours).toBe(5);
+      expect(stats.totalVolunteers).toBe(1);
+      expect(stats.totalSkillsEndorsed).toBe(0);
+    });
+
+    it("should handle aggregateHours with null data", async () => {
+      setMockResult("volunteer_hours", { data: null, error: null });
+      setMockResult("self_reported_hours", { data: null, error: null });
+
+      const leaderboard = await getVolunteerLeaderboard();
+
+      expect(leaderboard).toHaveLength(0);
+    });
+  });
+
   describe("error catch blocks", () => {
     it("should throw wrapped error when getUserContributionStats encounters fatal error", async () => {
       jest.spyOn(supabase, "from").mockImplementation(() => {

@@ -6,8 +6,9 @@
 import { loadStripe } from "@stripe/stripe-js";
 import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
+import { getEnv } from "@/config/env";
 
-const STRIPE_PUBLISHABLE_KEY = import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY;
+const STRIPE_PUBLISHABLE_KEY = getEnv("VITE_STRIPE_PUBLISHABLE_KEY");
 
 interface StripeCheckoutParams {
   amount: number;
