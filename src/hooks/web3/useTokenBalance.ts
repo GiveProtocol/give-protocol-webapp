@@ -25,7 +25,7 @@ export function useTokenBalance(
   token: TokenConfig | null,
 ): UseTokenBalanceResult {
   const { provider, address, isConnected } = useWeb3();
-  const [balance, setBalance] = useState<number | undefined>(undefined);
+  const [balance, setBalance] = useState<number>();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
