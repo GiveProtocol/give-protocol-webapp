@@ -37,6 +37,21 @@ interface SearchBarProps {
   className?: string;
 }
 
+/**
+ * SearchBar component for searching charities with optional filters.
+ *
+ * @param countries - List of available countries.
+ * @param categories - List of available categories.
+ * @param isLoading - Whether the search results are currently loading.
+ * @param error - Error object if there was an error during search.
+ * @param onSearch - Callback invoked when a search is performed.
+ * @param onCountrySelect - Callback invoked when a country is selected.
+ * @param onCategorySelect - Callback invoked when a category is selected.
+ * @param defaultCountry - Default selected country.
+ * @param placeholder - Placeholder text for the search input.
+ * @param className - Additional CSS class for the component.
+ * @returns A React functional component for searching charities.
+ */
 export const SearchBar: React.FC<SearchBarProps> = ({
   countries,
   categories,
@@ -95,30 +110,58 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     setQuery('');
   }, []);
 
+  /**
+   * Handles input change in the search field.
+   * @param e - The change event of the input element.
+   */
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     handleSearch(e.target.value);
   }, [handleSearch]);
 
+  /**
+   * Handles country selection change.
+   * @param e - The change event of the select element.
+   */
   const handleCountrySelectChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     handleCountryChange(e.target.value);
   }, [handleCountryChange]);
 
+  /**
+   * Handles category selection change.
+   * @param e - The change event of the select element.
+   */
   const handleCategorySelectChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     handleCategoryChange(e.target.value);
   }, [handleCategoryChange]);
 
+  /**
+   * Handles status filter change.
+   * @param e - The change event of the select element.
+   */
   const handleStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     handleFilterChange('status', e.target.value);
   }, [handleFilterChange]);
 
+  /**
+   * Handles sort-by filter change.
+   * @param e - The change event of the select element.
+   */
   const handleSortByChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
     handleFilterChange('sortBy', e.target.value);
   }, [handleFilterChange]);
 
+  /**
+   * Toggles the visibility of the filters panel.
+   */
   const toggleFilters = useCallback(() => {
     setShowFilters(!showFilters);
   }, [showFilters]);
 
+  /**
+   * Renders an option element for a given country.
+   * @param country - The country object containing 'code', 'name', and optional 'flag'.
+   * @returns The JSX option element for the country.
+   */
   const renderCountryOption = (country: Country) => {
     const flagEmoji = country.flag || '';
     return (
@@ -127,24 +170,6 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       </option>
     );
   };
-
-  return (
-    <div 
-      ref={searchRef}
-      className={cn('relative space-y-4', className)}
-    >
-      <div className="relative flex items-center">
-        <div className="relative flex-grow">
-          <input
-            type="text"
-            value={query}
-            onChange={handleInputChange}
-            placeholder={placeholder}
-            disabled={isLoading}
-            className={cn(
-              'w-full pl-10 pr-12 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-500 focus:border-transparent',
-              isLoading && 'bg-gray-50'
-            )}
           />
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
           {query && (

@@ -16,6 +16,18 @@ interface VolunteerHoursVerificationProps {
   onVerified?: (_hash: string) => void;
 }
 
+/**
+ * Component for verifying volunteer hours.
+ * @param {VolunteerHoursVerificationProps} props - Props for the component.
+ * @param {string} props.hoursId - The ID of the hours record to verify.
+ * @param {string} props.volunteerId - The ID of the volunteer.
+ * @param {string} props.volunteerName - The name of the volunteer.
+ * @param {number} props.hours - The number of hours performed.
+ * @param {string} props.datePerformed - The date when the hours were performed.
+ * @param {string} [props.description] - Description of the volunteer activity.
+ * @param {(hash: string) => void} [props.onVerified] - Callback invoked with the verification hash when verified.
+ * @returns {JSX.Element} The volunteer hours verification component.
+ */
 export const VolunteerHoursVerification: React.FC<
   VolunteerHoursVerificationProps
 > = ({
@@ -32,6 +44,10 @@ export const VolunteerHoursVerification: React.FC<
   const [isVerified, setIsVerified] = useState(false);
   const { t } = useTranslation();
 
+  /**
+   * Handles the verification of volunteer hours.
+   * @returns {Promise<void>} Promise that resolves when verification is complete.
+   */
   const handleVerify = useCallback(async () => {
     try {
       const hash = await verifyHours(hoursId);

@@ -32,10 +32,21 @@ export class ErrorBoundary extends Component<Props, State> {
     this.state = { hasError: false, error: null };
   }
 
+  /**
+   * Invoked when an error is thrown in a child component.
+   * Updates the state to indicate an error has been encountered.
+   * @param error - The error that was thrown.
+   * @returns The new state indicating an error.
+   */
   static getDerivedStateFromError(error: Error): State {
     return { hasError: true, error };
   }
 
+  /**
+   * Called when a child component throws an error. Increments the error count and logs the error details.
+   * @param error - The caught error object.
+   * @param errorInfo - Information about the component stack trace where the error occurred.
+   */
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.errorCount++;
     Logger.error("React error boundary caught error", {
@@ -53,6 +64,13 @@ export class ErrorBoundary extends Component<Props, State> {
     window.location.reload();
   };
 
+  /**
+   * Renders the ErrorBoundary component UI.
+   * Displays a fallback UI if an error has been caught in a child component,
+   * otherwise renders the child components.
+   *
+   * @returns {React.ReactNode} The UI to render, either the fallback UI or children.
+   */
   render() {
     if (this.state.hasError) {
       if (this.props.fallback) {

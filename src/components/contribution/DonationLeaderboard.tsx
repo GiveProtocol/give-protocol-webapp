@@ -7,6 +7,11 @@ import { FixedSizeList } from "react-window";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
 import { useDonorLeaderboard } from "@/hooks/useContributionStats";
 
+/**
+ * Returns the CSS class name for a given rank.
+ * @param rank - The rank position of the donor.
+ * @returns The CSS class for the rank badge background color.
+ */
 const getRankColor = (rank: number): string => {
   switch (rank) {
     case 1:
@@ -26,6 +31,13 @@ interface LeaderboardRowProps {
   data: LeaderboardEntry[];
 }
 
+/**
+ * Renders a single row in the leaderboard list.
+ * @param index - The index of the entry in the list.
+ * @param style - The CSS style object for positioning the row.
+ * @param data - The array of leaderboard entries.
+ * @returns A React element representing the leaderboard row, or null if entry is missing.
+ */
 const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   index,
   style,
@@ -58,6 +70,11 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   );
 };
 
+/**
+ * Renders the donation leaderboard component.
+ * Fetches top donors, allows searching, and displays the list of donors with their ranks and donations.
+ * @returns A React element of the donation leaderboard UI.
+ */
 export const DonationLeaderboard: React.FC = () => {
   const { data: leaderboardData, isLoading, error } = useDonorLeaderboard(10);
   const { getAliasForAddress } = useWalletAlias();
@@ -84,6 +101,11 @@ export const DonationLeaderboard: React.FC = () => {
   useEffect(() => {
     if (leaderboard.length === 0) return;
 
+    /**
+     * Updates display names of leaderboard entries with resolved wallet aliases.
+     * @async
+     * @returns A promise that resolves when display leaderboard is updated.
+     */
     const updateAliases = async () => {
       const updatedLeaderboard = await Promise.all(
         leaderboard.map(async (entry) => {

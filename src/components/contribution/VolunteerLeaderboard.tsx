@@ -22,6 +22,12 @@ interface VolunteerLeaderboardProps {
   section?: "hours" | "endorsements";
 }
 
+/**
+ * Returns a CSS class string representing the background color for a given rank.
+ *
+ * @param {number} rank - The rank position of the volunteer.
+ * @returns {string} The CSS class for the background color corresponding to the rank.
+ */
 const getRankColor = (rank: number): string => {
   switch (rank) {
     case 1:
@@ -35,6 +41,18 @@ const getRankColor = (rank: number): string => {
   }
 };
 
+/**
+ * Component that renders a leaderboard of volunteers based on hours or endorsements
+ * within a specified time range and region.
+ *
+ * @param {VolunteerLeaderboardProps} props - The props for the component.
+ * @param {string} [props.timeRange] - The time range filter for the leaderboard data.
+ * @param {string} [props.region] - The region filter for the leaderboard data.
+ * @param {string} [props.searchTerm] - The initial search term filter.
+ * @param {string} [props.highlightSkill] - The skill to highlight in the leaderboard.
+ * @param {"hours"|"endorsements"} [props.section="hours"] - The section to display, either hours or endorsements.
+ * @returns {JSX.Element} The VolunteerLeaderboard component.
+ */
 export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
   timeRange: _timeRange,
   region: _region,
@@ -74,6 +92,11 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
   useEffect(() => {
     if (leaders.length === 0) return;
 
+    /**
+     * Updates the displayName for each leader by fetching their alias if available.
+     *
+     * @returns {Promise<void>} Resolves when the leaders' display names are updated.
+     */
     const updateAliases = async () => {
       const updatedLeaders = await Promise.all(
         leaders.map(async (leader) => {

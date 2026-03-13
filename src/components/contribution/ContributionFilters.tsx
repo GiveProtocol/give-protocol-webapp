@@ -18,6 +18,16 @@ interface SourceToggleButtonProps {
   onToggle: (_source: ContributionSourceType) => void;
 }
 
+/**
+ * Renders a toggle button for a contribution source.
+ *
+ * @param props - The props for the source toggle button.
+ * @param props.source - The source value to toggle.
+ * @param props.label - The label displayed on the button.
+ * @param props.isSelected - Whether the button is in selected state.
+ * @param props.onToggle - Callback invoked when the button is toggled.
+ * @returns A button element for toggling the source.
+ */
 function SourceToggleButtonComponent(props: SourceToggleButtonProps) {
   const { source, label, isSelected, onToggle } = props;
 
@@ -43,11 +53,14 @@ function SourceToggleButtonComponent(props: SourceToggleButtonProps) {
 
 const SourceToggleButton = React.memo(SourceToggleButtonComponent);
 
-interface SourceFilterSectionProps {
-  selectedSources: ContributionSourceType[];
-  onToggle: (_source: ContributionSourceType) => void;
-}
-
+/**
+ * Renders a section of source filters as toggle buttons.
+ *
+ * @param props - The props for the source filter section.
+ * @param props.selectedSources - The currently selected sources.
+ * @param props.onToggle - Callback to toggle a source selection.
+ * @returns A container with source toggle buttons.
+ */
 const SourceFilterSection: React.FC<SourceFilterSectionProps> = ({
   selectedSources,
   onToggle,
@@ -70,13 +83,16 @@ const SourceFilterSection: React.FC<SourceFilterSectionProps> = ({
   </div>
 );
 
-interface ContributionFiltersProps {
-  filters: FilterType;
-  onChange: (_filters: FilterType) => void;
-  className?: string;
-  showSourceFilter?: boolean;
-}
-
+/**
+ * Renders contribution filters for organization, category, and optionally source.
+ *
+ * @param props - The props for the contribution filters component.
+ * @param props.filters - The current filter values.
+ * @param props.onChange - Callback invoked when filter values change.
+ * @param props.className - Optional CSS class name for the container.
+ * @param props.showSourceFilter - Whether to show the source filter section.
+ * @returns The contribution filters component.
+ */
 export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
   filters,
   onChange,

@@ -23,6 +23,16 @@ interface SourceFilterButtonProps {
   onToggle: (_source: ContributionSourceType) => void;
 }
 
+/**
+ * Component that renders a filter button for a given source, allowing toggling of its selected state.
+ *
+ * @param props - The props for the SourceFilterButtonComponent.
+ * @param props.source - The identifier of the source to filter.
+ * @param props.label - The label text displayed on the button.
+ * @param props.isSelected - Indicates if the button is currently selected.
+ * @param props.onToggle - Callback invoked when the button is clicked to toggle selection.
+ * @returns The JSX element representing the filter button.
+ */
 function SourceFilterButtonComponent(props: SourceFilterButtonProps) {
   const { source, label, isSelected, onToggle } = props;
 
@@ -48,6 +58,11 @@ function SourceFilterButtonComponent(props: SourceFilterButtonProps) {
 
 const SourceFilterButton = React.memo(SourceFilterButtonComponent);
 
+/**
+ * Returns the appropriate icon for the given contribution source type.
+ * @param type The source of the contribution (e.g., "donation", "formal_volunteer", "self_reported").
+ * @returns A JSX element representing the icon.
+ */
 function getContributionIcon(type: ContributionSource) {
   switch (type) {
     case "donation":
@@ -65,6 +80,11 @@ function getContributionIcon(type: ContributionSource) {
   }
 }
 
+/**
+ * Returns the user-friendly label for a contribution given its source type.
+ * @param {ContributionSource} type - The source type of the contribution.
+ * @returns {string} The label corresponding to the contribution type.
+ */
 function getContributionLabel(type: ContributionSource): string {
   switch (type) {
     case "donation":
@@ -78,6 +98,12 @@ function getContributionLabel(type: ContributionSource): string {
   }
 }
 
+/**
+ * Returns a status badge element based on the provided status string.
+ *
+ * @param {string} status - The status to determine the badge label and style.
+ * @returns {JSX.Element | null} The corresponding badge element or null if status is unrecognized.
+ */
 function getStatusBadge(status: string) {
   switch (status) {
     case "completed":
@@ -104,6 +130,11 @@ function getStatusBadge(status: string) {
   }
 }
 
+/**
+ * Component that displays recent contributions with filterable sources.
+ *
+ * @returns {JSX.Element} The RecentContributions React functional component.
+ */
 export const RecentContributions: React.FC = () => {
   const [selectedSources, setSelectedSources] = useState<
     ContributionSourceType[]
@@ -209,11 +240,12 @@ export const RecentContributions: React.FC = () => {
                     {formatCurrency(contribution.amount)}
                   </span>
                 )}
-                {contribution.amount === undefined && contribution.hours !== undefined && (
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {contribution.hours.toLocaleString()} hrs
-                  </span>
-                )}
+                {contribution.amount === undefined &&
+                  contribution.hours !== undefined && (
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      {contribution.hours.toLocaleString()} hrs
+                    </span>
+                  )}
               </div>
             </div>
           ))}

@@ -73,6 +73,18 @@ const ConsentUnderstandingList: React.FC = () => (
   </ol>
 );
 
+/**
+ * Renders a consent checkbox with a title, description, and optional note.
+ *
+ * @param id - The id for the checkbox input.
+ * @param checked - Whether the checkbox is checked.
+ * @param onChange - Handler called when the checkbox value changes.
+ * @param title - The title displayed next to the checkbox.
+ * @param description - The description displayed below the title.
+ * @param note - Optional note displayed below the description.
+ * @param className - Additional CSS class names for styling.
+ * @returns JSX.Element representing the consent checkbox.
+ */
 const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
   id,
   checked,
@@ -107,6 +119,13 @@ interface ConsentFormProps {
   onDecline: () => void;
 }
 
+/**
+ * Displays a consent form with multiple consent options and handles user validation.
+ *
+ * @param onAccept - Callback invoked when the user accepts the consents.
+ * @param onDecline - Callback invoked when the user declines the consents.
+ * @returns JSX.Element representing the consent form.
+ */
 export const ConsentForm: React.FC<ConsentFormProps> = ({
   onAccept,
   onDecline,

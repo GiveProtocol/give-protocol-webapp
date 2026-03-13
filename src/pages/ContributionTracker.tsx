@@ -24,6 +24,11 @@ import {
 type TimeRange = "all" | "year" | "month" | "week";
 type Region = "all" | "na" | "eu" | "asia" | "africa" | "sa" | "oceania";
 
+/**
+ * Tracks and displays contribution leaderboards for donations and volunteer activities.
+ *
+ * @returns JSX Element rendering the ContributionTracker UI.
+ */
 export const ContributionTracker: React.FC = () => {
   const location = useLocation();
   const [timeRange, setTimeRange] = useState<TimeRange>("all");

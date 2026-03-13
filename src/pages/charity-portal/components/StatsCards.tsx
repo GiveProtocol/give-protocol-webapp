@@ -16,6 +16,14 @@ interface StatsCardsProps {
   onVolunteersClick: () => void;
 }
 
+/**
+ * StatsCards component displays a set of statistic cards for the charity portal.
+ *
+ * @param stats - The charity statistics including total donations, volunteer hours, skills endorsed, and active volunteers.
+ * @param onTransactionsClick - Callback invoked when the donations card is clicked.
+ * @param onVolunteersClick - Callback invoked when the volunteers card is clicked.
+ * @returns A React element representing the stats cards UI.
+ */
 export const StatsCards: React.FC<StatsCardsProps> = ({
   stats,
   onTransactionsClick,

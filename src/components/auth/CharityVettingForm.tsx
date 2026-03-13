@@ -12,6 +12,12 @@ import {
 } from "@/utils/validation";
 import { AlertCircle } from "lucide-react";
 
+/**
+ * CharityVettingForm component renders a form for vetting charitable organizations.
+ * It captures organization details, address, contact information, and handles validation and submission.
+ *
+ * @returns React.FC component representing the charity vetting form.
+ */
 export const CharityVettingForm: React.FC = () => {
   const { register, loading } = useAuth();
   const { countries } = useCountries();

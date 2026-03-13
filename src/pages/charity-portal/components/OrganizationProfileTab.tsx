@@ -10,6 +10,13 @@ interface OrganizationProfileTabProps {
   profileId: string;
 }
 
+/**
+ * Renders the organization profile tab and handles fetching and saving profile data.
+ *
+ * @param props - Component props.
+ * @param props.profileId - The ID of the organization profile to fetch.
+ * @returns JSX element for the organization profile tab.
+ */
 export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   profileId,
 }) => {
@@ -21,6 +28,11 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    /**
+     * Fetches the organization profile data from Supabase using the given profile ID.
+     *
+     * @returns Promise<void> resolves when profile data is fetched and state is updated.
+     */
     const fetchProfile = async () => {
       try {
         const { data, error: fetchError } = await supabase
@@ -36,10 +48,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       } catch (err) {
         Logger.error("Error fetching organization profile", { error: err });
         setError(
-          t(
-            "organization.loadError",
-            "Failed to load organization profile",
-          ),
+          t("organization.loadError", "Failed to load organization profile"),
         );
       } finally {
         setLoading(false);
@@ -92,10 +101,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       } catch (err) {
         Logger.error("Error saving organization profile", { error: err });
         setError(
-          t(
-            "organization.saveError",
-            "Failed to save organization profile",
-          ),
+          t("organization.saveError", "Failed to save organization profile"),
         );
       } finally {
         setSaving(false);
@@ -132,7 +138,10 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-emerald-600" aria-hidden="true" />
+            <Building2
+              className="h-5 w-5 text-emerald-600"
+              aria-hidden="true"
+            />
             {t("organization.profile", "Organization Profile")}
           </h2>
           <p className="text-sm text-gray-500 mt-1">
@@ -154,9 +163,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
           </div>
         )}
         {success && (
-          <output
-            className="mb-4 p-3 bg-green-50 text-green-600 rounded-md block"
-          >
+          <output className="mb-4 p-3 bg-green-50 text-green-600 rounded-md block">
             {t(
               "organization.saveSuccess",
               "Organization profile saved successfully",
