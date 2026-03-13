@@ -61,7 +61,9 @@ export function useIrsOrganizationSearch({
       setAllOrganizations([]);
       setHasMore(false);
       setLoading(false);
-      return;
+      return () => {
+        // No cleanup needed when search is inactive
+      };
     }
 
     setLoading(true);

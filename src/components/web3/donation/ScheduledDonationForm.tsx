@@ -60,7 +60,7 @@ const MINIMUM_DONATION_USD = 10;
  */
 function validateFormInputs(
   amount: number,
-  balance: number | undefined,
+  balance: number | null,
   tokenSymbol: string,
 ): string | null {
   if (!validateAmount(amount)) {
@@ -69,7 +69,7 @@ function validateFormInputs(
   if (amount <= 0) {
     return "Please enter an amount greater than 0";
   }
-  if (balance !== undefined && amount > balance) {
+  if (balance !== null && amount > balance) {
     return `Insufficient balance. You have ${balance.toFixed(6)} ${tokenSymbol} but need ${amount.toFixed(6)} ${tokenSymbol}.`;
   }
   return null;
@@ -644,7 +644,7 @@ export function ScheduledDonationForm({
       <TokenSelector
         selectedToken={selectedToken}
         onSelectToken={handleTokenSelect}
-        walletBalance={balance}
+        walletBalance={balance ?? undefined}
         isLoadingBalance={isLoadingBalance}
         availableTokens={availableTokens}
       />
@@ -658,7 +658,7 @@ export function ScheduledDonationForm({
         token={selectedToken}
         value={amount}
         onChange={handleAmountChange}
-        maxBalance={balance}
+        maxBalance={balance ?? undefined}
       />
 
       <div className="space-y-2">
@@ -741,7 +741,7 @@ export function ScheduledDonationForm({
           loading ||
           !amount ||
           isLoadingBalance ||
-          (balance !== undefined && amount > balance)
+          (balance !== null && amount > balance)
         }
         fullWidth
         size="lg"

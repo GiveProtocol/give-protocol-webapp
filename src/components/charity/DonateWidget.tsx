@@ -1,0 +1,202 @@
+import React, { useState, useCallback, useMemo } from 'react';
+import { Heart, AlertTriangle } from 'lucide-react';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import { useWeb3 } from '@/contexts/Web3Context';
+import { DonationModal } from '@/components/web3/donation/DonationModal';
+
+type PaymentTab = 'crypto' | 'fiat';
+
+interface DonateWidgetProps {
+  ein: string;
+  charityName: string;
+  walletAddress: string | null | undefined;
+  charityId: string;
+  mode: 'sidebar' | 'modal';
+  onClose?: () => void;
+}
+
+const PRESETS = [25, 50, 100, 250];
+
+/**
+ * Donation widget with crypto/fiat toggle. Appears in the sidebar or as a modal.
+ * @param props - Component props
+ * @returns The rendered donate widget
+ */
+export const DonateWidget: React.FC<DonateWidgetProps> = ({
+  ein: _ein,
+  charityName,
+  walletAddress,
+  charityId,
+  mode,
+  onClose,
+}) => {
+  const [tab, setTab] = useState<PaymentTab>('crypto');
+  const [amount, setAmount] = useState(0);
+  const [customAmount, setCustomAmount] = useState('');
+  const [showDonationModal, setShowDonationModal] = useState(false);
+  const { isConnected, connect } = useWeb3();
+
+  const handleTabChange = useCallback(
+    (newTab: PaymentTab) => () => {
+      setTab(newTab);
+    },
+    [],
+  );
+
+  const handlePresetClick = useCallback(
+    (preset: number) => () => {
+      setAmount(preset);
+      setCustomAmount('');
+    },
+    [],
+  );
+
+  const handleCustomFocus = useCallback(() => {
+    setAmount(0);
+  }, []);
+
+  const handleCustomChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setCustomAmount(val);
+    const parsed = Number.parseFloat(val);
+    setAmount(Number.isNaN(parsed) ? 0 : parsed);
+  }, []);
+
+  const handleDonate = useCallback(() => {
+    if (tab === 'crypto' && !isConnected) {
+      connect();
+      return;
+    }
+    setShowDonationModal(true);
+  }, [tab, isConnected, connect]);
+
+  const handleCloseDonationModal = useCallback(() => {
+    setShowDonationModal(false);
+    onClose?.();
+  }, [onClose]);
+
+  const resolvedAddress = walletAddress ?? '';
+  const hasWallet = Boolean(walletAddress);
+
+  const presetGridClass = mode === 'sidebar' ? 'grid-cols-2' : 'grid-cols-4';
+
+  const content = useMemo(() => (
+    <div className="space-y-4">
+      {/* Crypto / Fiat toggle */}
+      <div className="flex rounded-lg bg-gray-100 p-0.5">
+        <button
+          type="button"
+          onClick={handleTabChange('crypto')}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+            tab === 'crypto'
+              ? 'bg-emerald-600 text-white shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Crypto
+        </button>
+        <button
+          type="button"
+          onClick={handleTabChange('fiat')}
+          className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+            tab === 'fiat'
+              ? 'bg-emerald-600 text-white shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
+          }`}
+        >
+          Fiat (USD)
+        </button>
+      </div>
+
+      {/* Amount presets */}
+      <div className={`grid ${presetGridClass} gap-2`}>
+        {PRESETS.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            onClick={handlePresetClick(preset)}
+            className={`py-2 rounded-lg text-sm font-medium transition-all border ${
+              amount === preset && !customAmount
+                ? 'bg-emerald-600 text-white border-emerald-600'
+                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
+            }`}
+          >
+            ${preset}
+          </button>
+        ))}
+      </div>
+
+      {/* Custom input */}
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+        <input
+          type="number"
+          value={customAmount}
+          onChange={handleCustomChange}
+          onFocus={handleCustomFocus}
+          placeholder="Custom amount"
+          min="1"
+          className="w-full pl-7 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+        />
+      </div>
+
+      {/* Wallet warning for crypto */}
+      {tab === 'crypto' && !hasWallet && (
+        <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+          <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+          <p className="text-xs text-amber-700">
+            This charity hasn&apos;t set up a wallet yet — your donation will be held by
+            Give Protocol Foundation until claimed.
+          </p>
+        </div>
+      )}
+
+      {/* Donate button */}
+      <Button
+        fullWidth
+        onClick={handleDonate}
+        disabled={amount <= 0}
+        icon={<Heart className="h-4 w-4" />}
+      >
+        {tab === 'crypto' && !isConnected
+          ? 'Connect wallet'
+          : tab === 'fiat'
+            ? 'Donate with card'
+            : `Donate $${amount > 0 ? amount : ''}`}
+      </Button>
+
+      {/* Fee disclosure */}
+      <p className="text-xs text-gray-400 text-center">
+        {tab === 'crypto'
+          ? '0% platform fee on direct donations. Network gas fees apply.'
+          : 'Powered by Helcim · Secure checkout'}
+      </p>
+    </div>
+  ), [tab, amount, customAmount, presetGridClass, isConnected, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);
+
+  return (
+    <>
+      {mode === 'sidebar' ? (
+        <Card hover={false} className="p-5">
+          <h3 className="text-sm font-semibold text-gray-900 mb-3">
+            Support {charityName}
+          </h3>
+          {content}
+        </Card>
+      ) : (
+        content
+      )}
+
+      {showDonationModal && (
+        <DonationModal
+          charityName={charityName}
+          charityAddress={resolvedAddress}
+          charityId={charityId}
+          frequency="once"
+          onClose={handleCloseDonationModal}
+        />
+      )}
+    </>
+  );
+};

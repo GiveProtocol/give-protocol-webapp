@@ -24,6 +24,7 @@ const ClimateActionNow = lazy(
 const CharityProfilePage = lazy(
   () => import("@/pages/CharityProfilePage"),
 );
+const ClaimCharity = lazy(() => import("@/pages/ClaimCharity"));
 const EnvironmentPortfolioDetail = lazy(
   () => import("@/pages/portfolio/EnvironmentPortfolioDetail"),
 );
@@ -243,6 +244,16 @@ export function AppRoutes() {
             <RouteTransition>
               <Suspense fallback={<LoadingFallback />}>
                 <CharityProfilePage />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
+        <Route
+          path="/claim/:ein"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <ClaimCharity />
               </Suspense>
             </RouteTransition>
           }

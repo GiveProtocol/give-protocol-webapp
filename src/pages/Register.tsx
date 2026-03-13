@@ -25,6 +25,8 @@ function getCharityHeading(step: CharityStep): string {
       return 'Claim Your Organization';
     case 'manual-form':
       return 'Register Charity Organization';
+    default:
+      return 'Register Charity Organization';
   }
 }
 
@@ -123,6 +125,8 @@ export const Register: React.FC = () => {
         );
       case 'manual-form':
         return <CharityVettingForm />;
+      default:
+        return null;
     }
   };
 

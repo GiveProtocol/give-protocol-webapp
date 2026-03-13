@@ -10,7 +10,7 @@ const ERC20_ABI = [
 ];
 
 interface UseTokenBalanceResult {
-  balance: number | undefined;
+  balance: number | null;
   isLoading: boolean;
   error: Error | null;
   refetch: () => Promise<void>;
@@ -25,13 +25,13 @@ export function useTokenBalance(
   token: TokenConfig | null,
 ): UseTokenBalanceResult {
   const { provider, address, isConnected } = useWeb3();
-  const [balance, setBalance] = useState<number>();
+  const [balance, setBalance] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchBalance = useCallback(async () => {
     if (!provider || !address || !token || !isConnected) {
-      setBalance(undefined);
+      setBalance(null);
       return;
     }
 
@@ -78,7 +78,7 @@ export function useTokenBalance(
       setError(
         err instanceof Error ? err : new Error("Failed to fetch balance"),
       );
-      setBalance(undefined);
+      setBalance(null);
     } finally {
       setIsLoading(false);
     }

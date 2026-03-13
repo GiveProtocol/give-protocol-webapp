@@ -96,7 +96,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
       }
 
       // Validate balance
-      if (balance !== undefined && amount > balance) {
+      if (balance !== null && amount > balance) {
         setError(
           `Insufficient balance. You only have ${balance.toFixed(6)} ${selectedToken.symbol} available.`,
         );
@@ -173,7 +173,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
       <TokenSelector
         selectedToken={selectedToken}
         onSelectToken={handleTokenSelect}
-        walletBalance={balance}
+        walletBalance={balance ?? undefined}
         isLoadingBalance={isLoadingBalance}
         availableTokens={availableTokens}
       />
@@ -187,7 +187,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
         token={selectedToken}
         value={amount}
         onChange={handleAmountChange}
-        maxBalance={balance}
+        maxBalance={balance ?? undefined}
       />
 
       <Button
@@ -197,7 +197,7 @@ export function DonationForm({ charityAddress, onSuccess }: DonationFormProps) {
           approving ||
           amount <= 0 ||
           isLoadingBalance ||
-          (balance !== undefined && amount > balance)
+          (balance !== null && amount > balance)
         }
         fullWidth
         size="lg"
