@@ -2,6 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 
+/**
+ * ActionButtons component renders call-to-action buttons for the home page.
+ *
+ * @returns {JSX.Element} A container with a 'Start Donating' button linking to the browse page.
+ */
 export const ActionButtons: React.FC = () => {
   const { t } = useTranslation();
 

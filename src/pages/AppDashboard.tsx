@@ -7,6 +7,11 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 const BLOB_DELAY: React.CSSProperties = { animationDelay: '1s' };
 
+/**
+ * AppDashboard is the main dashboard component that renders the home page layout including background animations and main sections.
+ *
+ * @returns {JSX.Element} The rendered dashboard component.
+ */
 const AppDashboard: React.FC = () => {
   return (
     <div className="relative min-h-[calc(100vh-60px)] overflow-hidden">

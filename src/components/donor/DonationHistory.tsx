@@ -10,6 +10,12 @@ interface DonationHistoryProps {
   donations: Transaction[];
 }
 
+/**
+ * Returns the CSS classes for a donation status.
+ *
+ * @param status The status of the donation ('completed', 'pending', or others).
+ * @returns A string of CSS classes representing the status styles.
+ */
 const getStatusStyles = (status: string): string => {
   if (status === "completed") {
     return "bg-green-100 text-green-800";
@@ -20,12 +26,23 @@ const getStatusStyles = (status: string): string => {
   return "bg-red-100 text-red-800";
 };
 
+/**
+ * Displays a list of donations with filtering and export options.
+ *
+ * @param donations List of donation transactions to display.
+ * @returns A React component displaying the donation history.
+ */
 export const DonationHistory: React.FC<DonationHistoryProps> = ({
   donations,
 }) => {
   const [showExportModal, setShowExportModal] = useState(false);
   const [timeFilter, setTimeFilter] = useState("all");
 
+  /**
+   * Handles change of the time filter selection.
+   *
+   * @param e The change event from the time filter select element.
+   */
   const handleTimeFilterChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setTimeFilter(e.target.value);
@@ -33,10 +50,20 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
     [],
   );
 
+  /**
+   * Opens the export modal.
+   *
+   * @returns void
+   */
   const handleShowExportModal = useCallback(() => {
     setShowExportModal(true);
   }, []);
 
+  /**
+   * Closes the export modal.
+   *
+   * @returns void
+   */
   const handleCloseExportModal = useCallback(() => {
     setShowExportModal(false);
   }, []);

@@ -106,6 +106,11 @@ interface Opportunity {
   created_at: string;
 }
 
+/**
+ * OpportunityManagement component that displays and manages volunteer opportunities for a charity.
+ * It fetches the list of opportunities, handles loading and error states, and provides a form for creating new opportunities.
+ * @returns A React functional component for managing opportunities.
+ */
 export const OpportunityManagement: React.FC = () => {
   const { profile } = useProfile();
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
@@ -114,8 +119,17 @@ export const OpportunityManagement: React.FC = () => {
   const [showForm, setShowForm] = useState(false);
   const { t } = useTranslation();
 
+  /**
+   * Show the opportunity creation form.
+   * @returns void
+   */
   const handleShowForm = useCallback(() => setShowForm(true), []);
 
+  /**
+   * Fetch volunteer opportunities from Supabase for the current charity profile.
+   * Updates loading and error states and sets opportunities state.
+   * @returns Promise<void>
+   */
   const fetchOpportunities = useCallback(async () => {
     try {
       setLoading(true);

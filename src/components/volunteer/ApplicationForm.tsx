@@ -74,6 +74,20 @@ interface ApplicationFormContentProps {
   };
 }
 
+/**
+ * Renders the volunteer application form content component.
+ *
+ * @param formData - The current form data values.
+ * @param validationErrors - Validation errors for form fields.
+ * @param loading - Indicates if the form is in a loading state.
+ * @param inputClasses - CSS classes for input elements.
+ * @param textareaClasses - CSS classes for textarea elements.
+ * @param selectClasses - CSS classes for select elements.
+ * @param onSubmit - Callback invoked on form submission.
+ * @param onClose - Callback to close the form.
+ * @param handlers - Handlers for form field changes.
+ * @returns The rendered form component.
+ */
 const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
   formData,
   validationErrors,
@@ -258,7 +272,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
             className={inputClasses}
           />
         </div>
-      ))}
+      }))}
     </div>
 
     {/* Work Samples */}
@@ -283,6 +297,14 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
   </form>
 );
 
+/**
+ * ApplicationForm component allows users to apply for a volunteer opportunity by filling out a form.
+ * @param opportunityId - The ID of the opportunity for which the application is being submitted.
+ * @param opportunityTitle - The title of the opportunity.
+ * @param onClose - Callback function to close the form/modal.
+ * @param onSuccess - Callback function to be called upon successful application submission.
+ * @returns A React functional component rendering the application form.
+ */
 export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   opportunityId,
   opportunityTitle,
@@ -318,6 +340,12 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     workSamples: "",
   });
 
+  /**
+   * Validates a field value based on its name.
+   * @param name - The name of the field to validate.
+   * @param value - The value of the field to validate.
+   * @returns A validation error message if invalid, otherwise an empty string.
+   */
   const validateField = (
     name: string,
     value: string | number | boolean,

@@ -7,6 +7,13 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
+/**
+ * LoadingSpinner component displays a spinning SVG to indicate a loading state.
+ * @param size - the size of the spinner ('sm', 'md', or 'lg').
+ * @param color - the color theme of the spinner ('primary', 'secondary', or 'white').
+ * @param className - additional CSS classes to apply to the spinner's container.
+ * @returns JSX.Element representing the loading spinner.
+ */
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
   color = 'primary',

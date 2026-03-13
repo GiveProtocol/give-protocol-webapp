@@ -12,6 +12,19 @@ interface LeaderboardRowProps {
   walletAddress?: string;
 }
 
+/**
+ * LeaderboardRow displays a leaderboard entry with ranking, user name,
+ * value, and change metrics.
+ *
+ * @param {number} rank - The user's rank position.
+ * @param {string} name - The user's display name.
+ * @param {number} value - The metric value to display (e.g., donations or hours).
+ * @param {number} change - The change in metric value since the last period.
+ * @param {boolean} [isCurrentUser] - Whether this row represents the current user.
+ * @param {'donations'|'hours'} [metric] - The type of metric displayed.
+ * @param {string} [walletAddress] - The user's wallet address for display.
+ * @returns {JSX.Element} The rendered leaderboard row component.
+ */
 export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   rank,
   name,
@@ -21,6 +34,11 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   metric = 'donations',
   walletAddress
 }) => {
+  /**
+   * Returns a trophy icon for the top three ranks with appropriate colors.
+   *
+   * @returns {JSX.Element | null} The trophy icon component or null if rank is greater than 3.
+   */
   const getRankIcon = () => {
     if (rank <= 3) {
       const colors = {
@@ -34,11 +52,11 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   };
 
   return (
-    <div className={`
+    <div className={``
       flex items-center justify-between p-4 rounded-lg
       ${isCurrentUser ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50'}
       ${rank <= 3 ? 'border-l-4 border-l-yellow-500' : ''}
-    `}>
+    ``}>
       <div className="flex items-center space-x-4">
         <div className="w-8 text-center">
           {getRankIcon() || <span className="text-gray-600">{rank}</span>}

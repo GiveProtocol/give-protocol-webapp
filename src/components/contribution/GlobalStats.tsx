@@ -4,6 +4,12 @@ import { Card } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/money";
 import { useGlobalContributionStats } from "@/hooks/useContributionStats";
 
+/**
+ * GlobalStats component displays global contribution statistics including total contributions,
+ * active contributors, and time-based metrics. It shows a loading skeleton while data is being fetched.
+ *
+ * @returns JSX.Element representing the global stats dashboard or a loading skeleton.
+ */
 export const GlobalStats: React.FC = () => {
   const { data: stats, isLoading } = useGlobalContributionStats();
 

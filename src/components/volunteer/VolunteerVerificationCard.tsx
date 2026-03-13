@@ -21,9 +21,23 @@ interface VolunteerVerificationCardProps {
   };
 }
 
+/**
+ * VolunteerVerificationCard component displays verification details for a volunteer opportunity.
+ *
+ * @param {Object} props - Component props.
+ * @param {VolunteerVerificationCardProps['verification']} props.verification - The verification details to display.
+ * @returns {JSX.Element} JSX element representing the verification card.
+ */
 export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps> = ({ 
   verification 
 }) => {
+  /**
+   * Constructs the URL to a blockchain explorer for a given transaction ID and network.
+   *
+   * @param {string} txId - The transaction ID to link to.
+   * @param {string} [network='moonbase'] - The blockchain network name.
+   * @returns {string} The full URL to the transaction on the explorer.
+   */
   const getExplorerUrl = (txId: string, network = 'moonbase') => {
     const explorers = {
       moonbase: 'https://moonbase.moonscan.io/tx/',

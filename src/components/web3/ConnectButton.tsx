@@ -36,6 +36,16 @@ interface AccountDropdownProps {
   onManageAlias: () => void;
 }
 
+/**
+ * Renders the dropdown menu for a connected account, providing options to copy address, view in explorer, disconnect or manage alias.
+ *
+ * @param account The connected account details.
+ * @param wallet The unified wallet provider or null if unavailable.
+ * @param alias The alias assigned to the wallet or null.
+ * @param onDisconnect Callback function to handle wallet disconnection.
+ * @param onManageAlias Callback function to manage the wallet alias.
+ * @returns JSX.Element The rendered dropdown menu component.
+ */
 const AccountDropdown: React.FC<AccountDropdownProps> = ({
   account,
   wallet,
@@ -191,6 +201,10 @@ export function ConnectButton() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    /**
+     * Handles clicks outside of the account menu to close it.
+     * @param event The MouseEvent triggered by a click.
+     */
     const handleClickOutside = (event: MouseEvent) => {
       if (showAccountMenu) {
         const target = event.target as HTMLElement;

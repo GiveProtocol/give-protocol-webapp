@@ -3,6 +3,13 @@ import { Users, Target, Heart, Shield, Globe, TrendingUp } from 'lucide-react';
 import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
+/**
+ * About component renders the static about page for Give Protocol,
+ * including mission and vision sections that highlight the project's
+ * goals and future outlook.
+ *
+ * @returns JSX.Element representing the about page layout.
+ */
 export const About: React.FC = () => {
   return (
     <StaticPageLayout

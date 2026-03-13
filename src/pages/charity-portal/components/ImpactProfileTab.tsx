@@ -16,6 +16,13 @@ interface ImpactProfileTabProps {
   profileId: string;
 }
 
+/**
+ * ImpactProfileTab component renders and manages the impact profile data for a charity profile.
+ *
+ * @param {ImpactProfileTabProps} props - The component props.
+ * @param {string} props.profileId - The ID of the charity profile to fetch and display.
+ * @returns {JSX.Element} The rendered impact profile tab component.
+ */
 export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
   profileId,
 }) => {
@@ -27,6 +34,11 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    /**
+     * Fetches the impact profile data for the given profileId from Supabase and updates component state.
+     *
+     * @returns {Promise<void>} Promise that resolves when the data has been fetched and state updated.
+     */
     const fetchData = async () => {
       try {
         const { data: row, error: fetchError } = await supabase

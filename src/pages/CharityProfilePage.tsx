@@ -45,6 +45,11 @@ function UnclaimedBanner({ nominationsCount }: { nominationsCount: number }) {
   );
 }
 
+/**
+ * ClaimedPendingBanner component that displays a banner indicating pending claim verification.
+ *
+ * @returns {JSX.Element} A banner showing that claim verification is in progress.
+ */
 function ClaimedPendingBanner() {
   return (
     <div className="rounded-lg bg-blue-50 border border-blue-200 p-4 flex items-start gap-3">
@@ -56,6 +61,13 @@ function ClaimedPendingBanner() {
   );
 }
 
+/**
+ * Renders the header section for a charity profile page.
+ *
+ * @param {{profile: CharityProfile}} props - The props containing charity profile data.
+ * @param {CharityProfile} props.profile - The charity profile to display.
+ * @returns {JSX.Element} The rendered profile header component.
+ */
 function ProfileHeader({ profile }: { profile: CharityProfile }) {
   return (
     <div className="flex flex-col gap-2">
@@ -81,6 +93,13 @@ function ProfileHeader({ profile }: { profile: CharityProfile }) {
   );
 }
 
+/**
+ * Displays IRS-related information for a charity in a styled card.
+ *
+ * @param {Object} props - The component props.
+ * @param {CharityProfile} props.profile - The charity's IRS profile data.
+ * @returns {JSX.Element} A card component showing IRS data fields.
+ */
 function IrsDataCard({ profile }: { profile: CharityProfile }) {
   const rows: Array<{ label: string; value: string | number | null }> = [
     { label: 'NTEE Code', value: profile.ntee_code },
@@ -104,6 +123,12 @@ function IrsDataCard({ profile }: { profile: CharityProfile }) {
   );
 }
 
+/**
+ * Renders the content for a locked tab.
+ *
+ * @param {string} message - The message to display under the lock icon.
+ * @returns {JSX.Element} The rendered card component with a lock icon and provided message.
+ */
 function LockedTabContent({ message }: { message: string }) {
   return (
     <Card hover={false} className="p-8 text-center">
@@ -113,6 +138,13 @@ function LockedTabContent({ message }: { message: string }) {
   );
 }
 
+/**
+ * Renders a placeholder in the sidebar with an icon and a message.
+ *
+ * @param {React.ReactNode} icon - The icon to display in the placeholder.
+ * @param {string} message - The message to display in the placeholder.
+ * @returns {JSX.Element} The sidebar placeholder component.
+ */
 function SidebarPlaceholder({ icon, message }: { icon: React.ReactNode; message: string }) {
   return (
     <Card hover={false} className="p-5 text-center">
@@ -122,6 +154,12 @@ function SidebarPlaceholder({ icon, message }: { icon: React.ReactNode; message:
   );
 }
 
+/**
+ * Returns messages for the financials and volunteers tabs based on the profile's status.
+ *
+ * @param {CharityProfileStatus} status - The current status of the charity profile.
+ * @returns {{ financials: string; volunteers: string }} An object containing tab messages for each section.
+ */
 function getTabMessages(status: CharityProfileStatus) {
   if (status === 'unclaimed') {
     return {

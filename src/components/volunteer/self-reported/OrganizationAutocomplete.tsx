@@ -41,6 +41,11 @@ export const OrganizationAutocomplete: React.FC<
 
   // Handle click outside to close dropdown
   useEffect(() => {
+    /**
+     * Handles clicks outside of the wrapper element.
+     *
+     * @param event - The mouse event triggered by clicking outside.
+     */
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&

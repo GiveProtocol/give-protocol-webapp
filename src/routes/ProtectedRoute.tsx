@@ -20,6 +20,15 @@ interface ProtectedRouteProps {
   promptWallet?: boolean;
 }
 
+/**
+ * ProtectedRoute component to guard routes based on user authentication, roles, and wallet connection.
+ * @param children - The React nodes to render if access is granted.
+ * @param requiredRoles - Array of user roles required to access the route.
+ * @param requireWallet - If true, blocks access until the wallet is connected (full-page prompt).
+ * @param allowWalletOnly - If true, allows access with just a connected wallet (no user auth needed).
+ * @param promptWallet - If true, shows a wallet connection modal/banner after login (non-blocking).
+ * @returns A React element representing the protected route, or redirects/spinners based on state.
+ */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRoles = [],

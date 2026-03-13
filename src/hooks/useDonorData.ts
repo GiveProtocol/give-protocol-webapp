@@ -16,6 +16,15 @@ interface DonorData {
   }>;
 }
 
+/**
+ * Retrieves donation data for a given donor profile from Supabase, formats the donations,
+ * and calculates summary statistics including total donated amount, impact growth,
+ * and number of unique charities supported.
+ *
+ * @param {string} profileId - The ID of the donor profile for which to fetch donation data.
+ * @returns {Promise<DonorData>} A promise that resolves to an object containing the donor data,
+ * including totalDonated, impactGrowth, charitiesSupported, and an array of formatted donations.
+ */
 async function fetchDonorData(profileId: string): Promise<DonorData> {
   const { data: donations, error: donationsError } = await supabase
     .from('donations')
@@ -54,6 +63,13 @@ async function fetchDonorData(profileId: string): Promise<DonorData> {
   };
 }
 
+/**
+ * Custom React hook to fetch and manage donor data using React Query.
+ *
+ * @returns {{ data: DonorData | null; loading: boolean; error: string | null }}
+ *   An object containing the donor data (or null if not loaded),
+ *   a loading state flag, and an error message string if an error occurred.
+ */
 export const useDonorData = () => {
   const { profile } = useProfile();
 

@@ -33,6 +33,15 @@ interface MenuButtonProps {
   title: string;
 }
 
+/**
+ * Renders a button in the editor toolbar with an icon.
+ *
+ * @param onClick - Callback invoked when the button is clicked.
+ * @param active - Whether the button is in an active state.
+ * @param icon - Icon component to display inside the button.
+ * @param title - Tooltip title for the button.
+ * @returns The menu button element.
+ */
 const MenuButton: React.FC<MenuButtonProps> = ({
   onClick,
   active,
@@ -50,6 +59,17 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   </Button>
 );
 
+/**
+ * A rich text editor component powered by Tiptap.
+ *
+ * @param id - Optional identifier for the editor element.
+ * @param content - Initial HTML content for the editor.
+ * @param onChange - Callback invoked when the editor content changes, receiving the updated HTML.
+ * @param className - Optional additional CSS class names.
+ * @param placeholder - Placeholder text displayed when the editor is empty.
+ * @param variant - Editor variant, either "default" or "enhanced".
+ * @returns The editor component.
+ */
 export const Editor: React.FC<EditorProps> = ({
   id,
   content: _content,

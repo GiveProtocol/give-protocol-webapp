@@ -3,19 +3,26 @@ import { useCharityRegistration } from "@/hooks/web3/useCharityRegistration";
 import { Button } from "@/components/ui/Button";
 import { useWeb3 } from "@/contexts/Web3Context";
 
-/**
- * Admin form component for registering charities in the donation contract
- * @component RegisterCharityForm
- * @description Allows contract owner to register charity addresses so they can receive donations
- */
 const TEST_CHARITY_ADDRESS = "0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75";
 
+/**
+ * Admin form component for registering charities in the donation contract
+ *
+ * Allows contract owner to register charity addresses so they can receive donations
+ *
+ * @returns React.ReactElement The register charity form component
+ */
 export const RegisterCharityForm: React.FC = () => {
   const [charityAddress, setCharityAddress] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const { registerCharity, loading, error } = useCharityRegistration();
   const { isConnected, connect } = useWeb3();
 
+  /**
+   * Handles change in the charity address input field.
+   *
+   * @param e React.ChangeEvent<HTMLInputElement> The input change event containing the new value
+   */
   const handleCharityAddressChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setCharityAddress(e.target.value);
@@ -23,10 +30,18 @@ export const RegisterCharityForm: React.FC = () => {
     []
   );
 
+  /**
+   * Sets the charity address to a predefined test address.
+   */
   const handleUseTestAddress = useCallback(() => {
     setCharityAddress(TEST_CHARITY_ADDRESS);
   }, []);
 
+  /**
+   * Handles form submission for registering a charity address.
+   *
+   * @param e React.FormEvent The form event triggering the submission
+   */
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();

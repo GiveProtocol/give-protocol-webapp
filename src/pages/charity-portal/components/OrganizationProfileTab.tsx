@@ -10,6 +10,13 @@ interface OrganizationProfileTabProps {
   profileId: string;
 }
 
+/**
+ * Renders the organization profile tab and handles fetching and saving profile data.
+ *
+ * @param props - Component props.
+ * @param props.profileId - The ID of the organization profile to fetch.
+ * @returns JSX element for the organization profile tab.
+ */
 export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   profileId,
 }) => {
@@ -21,6 +28,11 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    /**
+     * Fetches the organization profile data from Supabase using the given profile ID.
+     *
+     * @returns Promise<void> resolves when profile data is fetched and state is updated.
+     */
     const fetchProfile = async () => {
       try {
         const { data, error: fetchError } = await supabase

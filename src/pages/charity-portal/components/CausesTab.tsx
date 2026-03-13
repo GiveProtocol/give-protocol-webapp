@@ -24,6 +24,12 @@ interface CausesTabProps {
   causes: CharityCause[];
 }
 
+/**
+ * CausesTab component for displaying charity causes and their status.
+ *
+ * @param causes - An array of CharityCause objects to display in the tab.
+ * @returns A React element representing the causes tab UI.
+ */
 export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
   const { t } = useTranslation();
   const activeCount = causes.filter((c) => c.status === "active").length;

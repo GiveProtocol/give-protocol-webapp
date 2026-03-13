@@ -30,6 +30,13 @@ interface OpportunitiesTabProps {
   opportunities: CharityOpportunity[];
 }
 
+/**
+ * OpportunitiesTab component.
+ * Renders a tab displaying volunteer opportunities for a charity.
+ *
+ * @param opportunities - Array of charity opportunities to display.
+ * @returns JSX.Element - The rendered OpportunitiesTab component.
+ */
 export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
   opportunities,
 }) => {

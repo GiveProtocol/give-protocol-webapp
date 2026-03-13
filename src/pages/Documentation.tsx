@@ -2,6 +2,11 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DOCS_CONFIG } from '@/config/docs';
 
+/**
+ * Documentation component redirects to the documentation site and provides fallback navigation if the redirect fails.
+ *
+ * @returns JSX.Element The component rendering a redirecting message.
+ */
 export const Documentation: React.FC = () => {
   const navigate = useNavigate();
   

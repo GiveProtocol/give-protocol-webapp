@@ -20,77 +20,89 @@ import {
   NETWORK_TOKENS,
 } from "./utils";
 
-/**
- * Wallet avatar component with gradient background
- */
-interface WalletAvatarInternalProps {
-  address: string;
-  size?: number;
-}
+  interface WalletAvatarInternalProps {
+    address: string;
+    size?: number;
+  }
 
-const WalletAvatar: React.FC<WalletAvatarInternalProps> = ({
-  address,
-  size = 40,
-}) => {
-  const gradient = getAddressGradient(address);
+  /**
+   * Wallet avatar component with gradient background.
+   *
+   * @param address - The blockchain wallet address to generate the avatar for.
+   * @param [size=40] - The size (width and height) of the avatar in pixels.
+   * @returns A React element displaying the wallet avatar with a gradient background.
+   */
+  const WalletAvatar: React.FC<WalletAvatarInternalProps> = ({
+    address,
+    size = 40,
+  }) => {
+    const gradient = getAddressGradient(address);
 
-  return (
-    <div
-      className="rounded-full flex-shrink-0"
-      style={{
-        width: size,
-        height: size,
-        background: gradient,
-      }}
-      aria-hidden="true"
-    />
+    return (
+      <div
+        className="rounded-full flex-shrink-0"
+        style={{
+          width: size,
+          height: size,
+          background: gradient,
+        }}
+        aria-hidden="true"
+      />
+    );
+  };
+
+  /**
+   * Section divider component
+   */
+  const Divider: React.FC = () => (
+    <hr className="h-px bg-gray-200 dark:bg-gray-700 my-2 border-0" />
   );
-};
 
-/**
- * Section divider component
- */
-const Divider: React.FC = () => (
-  <hr className="h-px bg-gray-200 dark:bg-gray-700 my-2 border-0" />
-);
+  interface MenuItemProps {
+    icon: React.ReactNode;
+    label: string;
+    onClick: () => void;
+    variant?: "default" | "danger";
+    disabled?: boolean;
+  }
 
-/**
- * Dropdown menu item button
- */
-interface MenuItemProps {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  variant?: "default" | "danger";
-  disabled?: boolean;
-}
+  /**
+   * Renders a dropdown menu item button.
+   *
+   * @param icon - The icon element to display inside the menu item.
+   * @param label - The text label of the menu item.
+   * @param onClick - Callback function invoked when the menu item is clicked.
+   * @param [variant="default"] - The style variant of the menu item, either "default" or "danger".
+   * @param [disabled=false] - Whether the menu item is disabled.
+   * @returns A React element representing a menu item button.
+   */
+  const MenuItem: React.FC<MenuItemProps> = ({
+    icon,
+    label,
+    onClick,
+    variant = "default",
+    disabled = false,
+  }) => {
+    const baseClasses =
+      "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors";
+    const variantClasses =
+      variant === "danger"
+        ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+        : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
+    const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
 
-const MenuItem: React.FC<MenuItemProps> = ({
-  icon,
-  label,
-  onClick,
-  variant = "default",
-  disabled = false,
-}) => {
-  const baseClasses =
-    "w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors";
-  const variantClasses =
-    variant === "danger"
-      ? "text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-      : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700";
-  const disabledClasses = disabled ? "opacity-50 cursor-not-allowed" : "";
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`${baseClasses} ${variantClasses} ${disabledClasses}`}
-    >
-      {icon}
-      <span>{label}</span>
-    </button>
-  );
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        className={`${baseClasses} ${variantClasses} ${disabledClasses}`}
+      >
+        {icon}
+        <span>{label}</span>
+      </button>
+    );
+  }
 };
 
 /**
@@ -119,6 +131,12 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
 
   // Calculate position based on anchor element
   useEffect(() => {
+    /**
+     * Updates the position of the dropdown relative to the anchor element.
+     * Calculates the anchor's bounding rectangle and sets the top and right position.
+     *
+     * @returns {void}
+     */
     const updatePosition = () => {
       if (anchorRef?.current) {
         const rect = anchorRef.current.getBoundingClientRect();

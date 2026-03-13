@@ -81,29 +81,53 @@ export const Register: React.FC = () => {
     setSelectedOrg(null);
   }, []);
 
+  /**
+   * Sets the user type to 'charity'.
+   * @returns {void}
+   */
   const handleCharityClick = useCallback(() => {
     setUserType('charity');
   }, []);
 
+  /**
+   * Handles selection of a charity organization.
+   * @param {IrsOrganization} org - The selected organization.
+   * @returns {void}
+   */
   const handleOrganizationSelect = useCallback((org: IrsOrganization) => {
     setSelectedOrg(org);
     setCharityStep('claim-form');
   }, []);
 
+  /**
+   * Advances to the manual charity form step, skipping the search.
+   * @returns {void}
+   */
   const handleSkipSearch = useCallback(() => {
     setCharityStep('manual-form');
   }, []);
 
+  /**
+   * Returns to the charity organization search step.
+   * @returns {void}
+   */
   const handleBackToSearch = useCallback(() => {
     setSelectedOrg(null);
     setCharityStep('search');
   }, []);
 
+  /**
+   * Toggles the link wallet option on or off.
+   * @returns {void}
+   */
   const handleLinkWalletToggle = useCallback(() => {
     setLinkWallet((prev) => !prev);
   }, []);
 
-
+  /**
+   * Renders the appropriate charity content based on the current step.
+   * @returns {JSX.Element|null} The content to render for the current charity step.
+   */
   const renderCharityContent = () => {
     switch (charityStep) {
       case 'search':

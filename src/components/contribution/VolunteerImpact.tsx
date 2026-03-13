@@ -16,6 +16,11 @@ interface Achievement {
   date: string;
 }
 
+/**
+ * Fetches volunteer statistics from the API.
+ *
+ * @returns {Promise<VolunteerStats>} Promise resolving to volunteer statistics including total hours, skills endorsed, organizations helped, and recent achievements.
+ */
 const fetchVolunteerStats = (): Promise<VolunteerStats> => {
   // Simulated API call — returns Promise to match queryFn signature
   return Promise.resolve({
@@ -39,6 +44,11 @@ const fetchVolunteerStats = (): Promise<VolunteerStats> => {
   });
 };
 
+/**
+ * VolunteerImpact component that displays volunteer statistics including total hours, skills endorsed, and organizations helped.
+ *
+ * @returns {JSX.Element} React component rendering volunteer stats.
+ */
 export const VolunteerImpact: React.FC = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['volunteerStats'],

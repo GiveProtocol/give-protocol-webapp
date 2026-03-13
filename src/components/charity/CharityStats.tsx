@@ -4,6 +4,14 @@ import { StatCard } from './stats/StatCard';
 import { CharityStats as CharityStatsType } from '@/types/charity';
 import { useTranslation } from '@/hooks/useTranslation';
 
+/**
+ * CharityStats component renders key financial statistics for a charity.
+ *
+ * @param {number|string} totalReceived - Total amount received by the charity.
+ * @param {number|string} equityPoolValue - Current value of the charity's equity pool.
+ * @param {number|string} availableBalance - Currently available balance for the charity.
+ * @returns {JSX.Element} A grid of statistic cards displaying charity stats.
+ */
 export const CharityStats: React.FC<CharityStatsType> = ({
   totalReceived,
   equityPoolValue,

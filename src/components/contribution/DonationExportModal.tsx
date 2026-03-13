@@ -13,6 +13,13 @@ interface DonationExportModalProps {
   onClose: () => void;
 }
 
+/**
+ * Modal component for exporting donation transactions to a CSV file.
+ *
+ * @param donations Array of donation transactions to export.
+ * @param onClose Callback invoked when the modal is closed.
+ * @returns JSX.Element The donation export modal component.
+ */
 export const DonationExportModal: React.FC<DonationExportModalProps> = ({
   donations,
   onClose,
@@ -31,6 +38,11 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
     },
   });
 
+  /**
+   * Exports donations to a CSV file based on the selected filename and options.
+   *
+   * @returns void
+   */
   const handleExport = useCallback(() => {
     // Filter donations based on date range if provided
     let filteredDonations = [...donations];

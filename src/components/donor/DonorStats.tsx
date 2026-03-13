@@ -9,6 +9,14 @@ interface DonorStatsProps {
   charitiesSupported: number;
 }
 
+/**
+ * DonorStats component displays the donor's total donations, impact growth, and number of charities supported.
+ *
+ * @param totalDonated - Total amount donated by the donor.
+ * @param impactGrowth - The increase in impact value.
+ * @param charitiesSupported - Count of charities supported by the donor.
+ * @returns A React element rendering donor statistics.
+ */
 export const DonorStats: React.FC<DonorStatsProps> = ({
   totalDonated,
   impactGrowth,

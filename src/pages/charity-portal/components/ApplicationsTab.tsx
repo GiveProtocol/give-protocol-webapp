@@ -16,6 +16,12 @@ interface ApplicationsTabProps {
   pendingApplications: VolunteerApplication[];
 }
 
+/**
+ * Displays a list of pending volunteer applications.
+ *
+ * @param pendingApplications - The pending volunteer applications to be displayed.
+ * @returns A JSX element representing the applications tab.
+ */
 export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({
   pendingApplications,
 }) => {

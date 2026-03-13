@@ -10,6 +10,15 @@ interface ProfileFormProps {
   error?: string;
 }
 
+/**
+ * ProfileForm component renders a form for editing charity profile details and handles submission.
+ *
+ * @param {Partial<CharityDetails>} profile - Initial profile data.
+ * @param {(data: CharityDetails) => Promise<void>} onSubmit - Callback invoked with profile data on submit.
+ * @param {boolean} loading - Indicates if form submission is in progress.
+ * @param {string} [error] - Error message to display.
+ * @returns {JSX.Element} The ProfileForm component.
+ */
 const ProfileForm: React.FC<ProfileFormProps> = ({
   profile,
   onSubmit,
@@ -23,6 +32,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     image_url: profile.image_url || "",
   });
 
+  /**
+   * Handle changes to the name input field.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - Change event for the name input.
+   */
   const handleNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       setFormData((prev) => ({ ...prev, name: e.target.value }));
@@ -30,6 +44,11 @@ const ProfileForm: React.FC<ProfileFormProps> = ({
     [],
   );
 
+  /**
+   * Handle changes to the description textarea field.
+   *
+   * @param {React.ChangeEvent<HTMLTextAreaElement>} e - Change event for the description textarea.
+   */
   const handleDescriptionChange = useCallback(
     (e: React.ChangeEvent<HTMLTextAreaElement>) => {
       setFormData((prev) => ({ ...prev, description: e.target.value }));

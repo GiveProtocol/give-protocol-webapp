@@ -12,6 +12,15 @@ interface ApplicationAcceptanceProps {
   onAccepted?: (_hash: string) => void;
 }
 
+/**
+ * Component for accepting or rejecting a volunteer application.
+ *
+ * @param applicationId - The unique ID of the application to process.
+ * @param applicantName - The name of the applicant.
+ * @param opportunityTitle - The title of the volunteering opportunity.
+ * @param onAccepted - Callback invoked with the acceptance hash when an application is accepted.
+ * @returns A React component rendering acceptance controls and status.
+ */
 export const ApplicationAcceptance: React.FC<ApplicationAcceptanceProps> = ({
   applicationId,
   applicantName,
@@ -23,6 +32,11 @@ export const ApplicationAcceptance: React.FC<ApplicationAcceptanceProps> = ({
   const [isAccepted, setIsAccepted] = useState(false);
   const { t } = useTranslation();
 
+  /**
+   * Handles the acceptance of the application by calling acceptApplication.
+   *
+   * @returns A promise that resolves when the acceptance process completes.
+   */
   const handleAccept = useCallback(async () => {
     try {
       const hash = await acceptApplication(applicationId);
@@ -36,6 +50,9 @@ export const ApplicationAcceptance: React.FC<ApplicationAcceptanceProps> = ({
     }
   }, [acceptApplication, applicationId, onAccepted]);
 
+  /**
+   * Handles the rejection of the application.
+   */
   const handleReject = useCallback(() => {
     // Rejection logic placeholder
     // Full implementation pending rejection workflow

@@ -159,7 +159,9 @@ const ErrorAlert: React.FC<{ message: string }> = ({ message }) => (
 );
 
 /**
- * Success header component for donation confirmation
+/**
+ * SuccessHeader component for donation confirmation.
+ * @returns JSX.Element rendering a success header for recurring donation.
  */
 const SuccessHeader: React.FC = () => (
   <div className="flex items-center gap-3 p-5 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-2 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400 rounded-xl shadow-sm animate-fadeIn">
@@ -184,6 +186,13 @@ interface TransactionRecapRowProps {
   variant?: "default" | "highlight";
 }
 
+/**
+ * TransactionRecapRow component to display a label and value in a styled row.
+ * @param {string} label - The label text.
+ * @param {string} value - The value text.
+ * @param {"default" | "highlight"} [variant="default"] - The styling variant for the row.
+ * @returns JSX.Element rendering a transaction recap row with provided label and value.
+ */
 const TransactionRecapRow: React.FC<TransactionRecapRowProps> = ({
   label,
   value,
@@ -210,6 +219,7 @@ const TransactionRecapRow: React.FC<TransactionRecapRowProps> = ({
       <span className={valueClasses}>{value}</span>
     </div>
   );
+}
 };
 
 interface ImportantNoticeProps {
