@@ -1,7 +1,7 @@
-import React from 'react';
-import { PiggyBank, TrendingUp, Heart } from 'lucide-react';
-import { CurrencyDisplay } from '@/components/CurrencyDisplay';
-import { useTranslation } from '@/hooks/useTranslation';
+import React from "react";
+import { PiggyBank, TrendingUp, Heart } from "lucide-react";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
+import { useTranslation } from "@/hooks/useTranslation";
 
 interface DonorStatsProps {
   totalDonated: number;
@@ -20,7 +20,7 @@ interface DonorStatsProps {
 export const DonorStats: React.FC<DonorStatsProps> = ({
   totalDonated,
   impactGrowth,
-  charitiesSupported
+  charitiesSupported,
 }) => {
   const { t } = useTranslation();
 
@@ -29,7 +29,9 @@ export const DonorStats: React.FC<DonorStatsProps> = ({
       <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
         <PiggyBank className="h-6 w-6 text-emerald-600 p-3 rounded-full bg-emerald-100" />
         <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">{t('dashboard.totalDonations')}</p>
+          <p className="text-sm font-medium text-gray-600">
+            {t("dashboard.totalDonations")}
+          </p>
           <p className="text-2xl font-semibold text-gray-900">
             <CurrencyDisplay amount={totalDonated} />
           </p>
@@ -39,7 +41,9 @@ export const DonorStats: React.FC<DonorStatsProps> = ({
       <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
         <TrendingUp className="h-6 w-6 text-green-600 p-3 rounded-full bg-green-100" />
         <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">{t('dashboard.impactGrowth', 'Impact Growth')}</p>
+          <p className="text-sm font-medium text-gray-600">
+            {t("dashboard.impactGrowth", "Impact Growth")}
+          </p>
           <p className="text-2xl font-semibold text-gray-900">
             <CurrencyDisplay amount={impactGrowth} />
           </p>
@@ -49,7 +53,9 @@ export const DonorStats: React.FC<DonorStatsProps> = ({
       <div className="bg-white p-6 rounded-lg shadow-md flex items-center">
         <Heart className="h-6 w-6 text-emerald-600 p-3 rounded-full bg-emerald-100" />
         <div className="ml-4">
-          <p className="text-sm font-medium text-gray-600">{t('dashboard.charitiesSupported', 'Charities Supported')}</p>
+          <p className="text-sm font-medium text-gray-600">
+            {t("dashboard.charitiesSupported", "Charities Supported")}
+          </p>
           <p className="text-2xl font-semibold text-gray-900">
             {charitiesSupported}
           </p>

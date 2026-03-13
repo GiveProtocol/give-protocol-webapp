@@ -1,9 +1,9 @@
-import React from 'react';
-import { cn } from '@/utils/cn';
+import React from "react";
+import { cn } from "@/utils/cn";
 
 interface LoadingSpinnerProps {
-  size?: 'sm' | 'md' | 'lg';
-  color?: 'primary' | 'secondary' | 'white';
+  size?: "sm" | "md" | "lg";
+  color?: "primary" | "secondary" | "white";
   className?: string;
 }
 
@@ -15,29 +15,29 @@ interface LoadingSpinnerProps {
  * @returns JSX.Element representing the loading spinner.
  */
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-  size = 'md',
-  color = 'primary',
-  className
+  size = "md",
+  color = "primary",
+  className,
 }) => {
   const sizeClasses = {
-    sm: 'h-4 w-4',
-    md: 'h-6 w-6',
-    lg: 'h-8 w-8'
+    sm: "h-4 w-4",
+    md: "h-6 w-6",
+    lg: "h-8 w-8",
   };
 
   const colorClasses = {
-    primary: 'text-emerald-600',
-    secondary: 'text-gray-600',
-    white: 'text-gray-900'
+    primary: "text-emerald-600",
+    secondary: "text-gray-600",
+    white: "text-gray-900",
   };
 
   return (
     <svg
       className={cn(
-        'animate-spin',
+        "animate-spin",
         sizeClasses[size],
         colorClasses[color],
-        className
+        className,
       )}
       xmlns="http://www.w3.org/2000/svg"
       fill="none"

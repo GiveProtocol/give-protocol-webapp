@@ -1,6 +1,6 @@
-import React from 'react';
-import { AlertTriangle, Clock, CheckCircle } from 'lucide-react';
-import type { CharityProfileStatus } from '@/types/charityProfile';
+import React from "react";
+import { AlertTriangle, Clock, CheckCircle } from "lucide-react";
+import type { CharityProfileStatus } from "@/types/charityProfile";
 
 interface StatusBadgeProps {
   status: CharityProfileStatus;
@@ -14,31 +14,31 @@ interface StatusBadgeProps {
  */
 function getStatusConfig(status: CharityProfileStatus) {
   switch (status) {
-    case 'unclaimed':
+    case "unclaimed":
       return {
-        bg: 'bg-amber-100',
-        text: 'text-amber-700',
-        icon: <AlertTriangle className="h-3.5 w-3.5" />,       
-        label: 'Unclaimed',
+        bg: "bg-amber-100",
+        text: "text-amber-700",
+        icon: <AlertTriangle className="h-3.5 w-3.5" />,
+        label: "Unclaimed",
       };
-    case 'claimed-pending':
+    case "claimed-pending":
       return {
-        bg: 'bg-blue-100',
-        text: 'text-blue-700',
+        bg: "bg-blue-100",
+        text: "text-blue-700",
         icon: <Clock className="h-3.5 w-3.5" />,
-        label: 'Pending Verification',
+        label: "Pending Verification",
       };
-    case 'verified':
+    case "verified":
       return {
-        bg: 'bg-emerald-100',
-        text: 'text-emerald-700',
-        icon: <CheckCircle className="h-3.5 w-3.5" />,       
-        label: 'Verified',
+        bg: "bg-emerald-100",
+        text: "text-emerald-700",
+        icon: <CheckCircle className="h-3.5 w-3.5" />,
+        label: "Verified",
       };
     default:
       return {
-        bg: 'bg-gray-100',
-        text: 'text-gray-600',
+        bg: "bg-gray-100",
+        text: "text-gray-600",
         icon: null,
         label: status,
       };

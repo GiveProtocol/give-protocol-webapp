@@ -1,7 +1,7 @@
-import React from 'react';
-import { Users, Target, Heart, Shield, Globe, TrendingUp } from 'lucide-react';
-import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import React from "react";
+import { Users, Target, Heart, Shield, Globe, TrendingUp } from "lucide-react";
+import { StaticPageLayout } from "@/components/layout/StaticPageLayout";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
 /**
  * About component renders the static about page for Give Protocol,
@@ -22,20 +22,26 @@ export const About: React.FC = () => {
           <ScrollReveal direction="left">
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
               <Target className="h-8 w-8 text-emerald-600 mb-3" />
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Mission</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Our Mission
+              </h2>
               <p className="text-gray-600 leading-relaxed">
-                To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
-                efficiency, and lasting impact for both donors and charitable organizations.
+                To revolutionize charitable giving by leveraging blockchain
+                technology, ensuring transparency, efficiency, and lasting
+                impact for both donors and charitable organizations.
               </p>
             </div>
           </ScrollReveal>
           <ScrollReveal direction="right" delay={100}>
             <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
               <Globe className="h-8 w-8 text-emerald-600 mb-3" />
-              <h2 className="text-2xl font-semibold text-gray-900 mb-6">Our Vision</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-6">
+                Our Vision
+              </h2>
               <p className="text-gray-600 leading-relaxed">
-                A world where every charitable donation creates maximum impact through transparent,
-                efficient, and sustainable giving mechanisms.
+                A world where every charitable donation creates maximum impact
+                through transparent, efficient, and sustainable giving
+                mechanisms.
               </p>
             </div>
           </ScrollReveal>
@@ -44,125 +50,159 @@ export const About: React.FC = () => {
         {/* What We Do */}
         <ScrollReveal direction="up">
           <section>
-            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+              What We Do
+            </h2>
             <div className="grid md:grid-cols-3 gap-8">
-            <div className="text-center">
-              <Heart className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Direct Donations</h3>
-              <p className="text-gray-600">
-                Enable cryptocurrency donations directly to verified charitable organizations with complete transparency.
-              </p>
+              <div className="text-center">
+                <Heart className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  Direct Donations
+                </h3>
+                <p className="text-gray-600">
+                  Enable cryptocurrency donations directly to verified
+                  charitable organizations with complete transparency.
+                </p>
+              </div>
+              <div className="text-center">
+                <Users className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  Volunteer Connection
+                </h3>
+                <p className="text-gray-600">
+                  Connect volunteers with meaningful opportunities and track
+                  verified volunteer hours on the blockchain.
+                </p>
+              </div>
+              <div className="text-center">
+                <TrendingUp className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+                <h3 className="text-xl font-semibold text-gray-900 mb-4">
+                  Portfolio Funds
+                </h3>
+                <p className="text-gray-600">
+                  Support multiple organizations in the same sector through
+                  diversified giving portfolios.
+                </p>
+              </div>
             </div>
-            <div className="text-center">
-              <Users className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Volunteer Connection</h3>
-              <p className="text-gray-600">
-                Connect volunteers with meaningful opportunities and track verified volunteer hours on the blockchain.
-              </p>
-            </div>
-            <div className="text-center">
-              <TrendingUp className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-              <h3 className="text-xl font-semibold text-gray-900 mb-4">Portfolio Funds</h3>
-              <p className="text-gray-600">
-                Support multiple organizations in the same sector through diversified giving portfolios.
-              </p>
-            </div>
-          </div>
           </section>
         </ScrollReveal>
 
         {/* Our Values */}
         <ScrollReveal direction="up">
-        <section className="bg-gray-50 rounded-lg p-8 grid md:grid-cols-2 gap-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">Our Values</h2>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <Shield className="h-6 w-6 text-emerald-600 mr-3" />
-              Transparency
-            </h3>
-            <p className="text-gray-600">
-              Every donation and volunteer hour is recorded on the blockchain, providing unprecedented 
-              transparency in charitable giving.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <Target className="h-6 w-6 text-emerald-600 mr-3" />
-              Impact
-            </h3>
-            <p className="text-gray-600">
-              We focus on measurable outcomes and ensure that every contribution creates meaningful, 
-              lasting change in communities worldwide.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <Users className="h-6 w-6 text-emerald-600 mr-3" />
-              Community
-            </h3>
-            <p className="text-gray-600">
-              Building a global community of donors, volunteers, and organizations working together 
-              for positive social change.
-            </p>
-          </div>
-          <div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <TrendingUp className="h-6 w-6 text-emerald-600 mr-3" />
-              Innovation
-            </h3>
-            <p className="text-gray-600">
-              Leveraging cutting-edge blockchain technology to solve traditional challenges 
-              in charitable giving and volunteer coordination.
-            </p>
-          </div>
-        </section>
+          <section className="bg-gray-50 rounded-lg p-8 grid md:grid-cols-2 gap-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">
+              Our Values
+            </h2>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <Shield className="h-6 w-6 text-emerald-600 mr-3" />
+                Transparency
+              </h3>
+              <p className="text-gray-600">
+                Every donation and volunteer hour is recorded on the blockchain,
+                providing unprecedented transparency in charitable giving.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <Target className="h-6 w-6 text-emerald-600 mr-3" />
+                Impact
+              </h3>
+              <p className="text-gray-600">
+                We focus on measurable outcomes and ensure that every
+                contribution creates meaningful, lasting change in communities
+                worldwide.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <Users className="h-6 w-6 text-emerald-600 mr-3" />
+                Community
+              </h3>
+              <p className="text-gray-600">
+                Building a global community of donors, volunteers, and
+                organizations working together for positive social change.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <TrendingUp className="h-6 w-6 text-emerald-600 mr-3" />
+                Innovation
+              </h3>
+              <p className="text-gray-600">
+                Leveraging cutting-edge blockchain technology to solve
+                traditional challenges in charitable giving and volunteer
+                coordination.
+              </p>
+            </div>
+          </section>
         </ScrollReveal>
 
         {/* The Technology */}
         <ScrollReveal direction="up">
-        <section>
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Built on Blockchain</h2>
-          <div className="max-w-3xl mx-auto text-center">
-            <p className="text-lg text-gray-600 mb-8">
-              Give Protocol is built on the Moonbeam Network, providing the security and transparency 
-              of blockchain technology while maintaining accessibility for users and organizations.
-            </p>
-            <div className="grid md:grid-cols-3 gap-6 text-sm">
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h4 className="font-semibold text-gray-900 mb-2">Smart Contracts</h4>
-                <p className="text-gray-600">Automated, transparent execution of donations and volunteer agreements</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h4 className="font-semibold text-gray-900 mb-2">Immutable Records</h4>
-                <p className="text-gray-600">Permanent, tamper-proof record of all charitable activities</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-                <h4 className="font-semibold text-gray-900 mb-2">Decentralized Governance</h4>
-                <p className="text-gray-600">Community-driven decision making for platform development</p>
+          <section>
+            <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">
+              Built on Blockchain
+            </h2>
+            <div className="max-w-3xl mx-auto text-center">
+              <p className="text-lg text-gray-600 mb-8">
+                Give Protocol is built on the Moonbeam Network, providing the
+                security and transparency of blockchain technology while
+                maintaining accessibility for users and organizations.
+              </p>
+              <div className="grid md:grid-cols-3 gap-6 text-sm">
+                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Smart Contracts
+                  </h4>
+                  <p className="text-gray-600">
+                    Automated, transparent execution of donations and volunteer
+                    agreements
+                  </p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Immutable Records
+                  </h4>
+                  <p className="text-gray-600">
+                    Permanent, tamper-proof record of all charitable activities
+                  </p>
+                </div>
+                <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+                  <h4 className="font-semibold text-gray-900 mb-2">
+                    Decentralized Governance
+                  </h4>
+                  <p className="text-gray-600">
+                    Community-driven decision making for platform development
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
         </ScrollReveal>
 
         {/* Join Us */}
         <ScrollReveal direction="scale">
-        <section className="text-center bg-emerald-50 rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Join the Future of Giving</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Whether you&apos;re a donor looking to make an impact, a volunteer ready to contribute your time, 
-            or an organization seeking support, Give Protocol provides the tools you need to create 
-            meaningful change.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-sm hover:shadow-lg">
-              Start Giving
-            </button>
-            <button className="border-2 border-emerald-500 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
-              Find Opportunities
-            </button>
-          </div>
-        </section>
+          <section className="text-center bg-emerald-50 rounded-lg p-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Join the Future of Giving
+            </h2>
+            <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+              Whether you&apos;re a donor looking to make an impact, a volunteer
+              ready to contribute your time, or an organization seeking support,
+              Give Protocol provides the tools you need to create meaningful
+              change.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-sm hover:shadow-lg">
+                Start Giving
+              </button>
+              <button className="border-2 border-emerald-500 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
+                Find Opportunities
+              </button>
+            </div>
+          </section>
         </ScrollReveal>
       </div>
     </StaticPageLayout>

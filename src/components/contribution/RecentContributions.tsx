@@ -240,11 +240,12 @@ export const RecentContributions: React.FC = () => {
                     {formatCurrency(contribution.amount)}
                   </span>
                 )}
-                {contribution.amount === undefined && contribution.hours !== undefined && (
-                  <span className="font-semibold text-gray-900 dark:text-gray-100">
-                    {contribution.hours.toLocaleString()} hrs
-                  </span>
-                )}
+                {contribution.amount === undefined &&
+                  contribution.hours !== undefined && (
+                    <span className="font-semibold text-gray-900 dark:text-gray-100">
+                      {contribution.hours.toLocaleString()} hrs
+                    </span>
+                  )}
               </div>
             </div>
           ))}

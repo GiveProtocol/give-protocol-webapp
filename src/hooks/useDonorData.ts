@@ -1,7 +1,7 @@
-import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/lib/supabase';
-import { useProfile } from '@/hooks/useProfile';
-import { Logger } from '@/utils/logger';
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { useProfile } from "@/hooks/useProfile";
+import { Logger } from "@/utils/logger";
 
 interface DonorData {
   totalDonated: number;
@@ -27,8 +27,9 @@ interface DonorData {
  */
 async function fetchDonorData(profileId: string): Promise<DonorData> {
   const { data: donations, error: donationsError } = await supabase
-    .from('donations')
-    .select(`
+    .from("donations")
+    .select(
+      `
       id,
       amount,
       created_at,
@@ -37,23 +38,25 @@ async function fetchDonorData(profileId: string): Promise<DonorData> {
           name
         )
       )
-    `)
-    .eq('donor_id', profileId)
-    .order('created_at', { ascending: false });
+    `,
+    )
+    .eq("donor_id", profileId)
+    .order("created_at", { ascending: false });
 
   if (donationsError) throw donationsError;
 
-  const formattedDonations = donations?.map(d => ({
-    id: d.id,
-    date: d.created_at,
-    charity: d.charity?.charity_details?.name || 'Unknown Charity',
-    amount: d.amount,
-    impactGrowth: d.amount * 0.12,
-  })) || [];
+  const formattedDonations =
+    donations?.map((d) => ({
+      id: d.id,
+      date: d.created_at,
+      charity: d.charity?.charity_details?.name || "Unknown Charity",
+      amount: d.amount,
+      impactGrowth: d.amount * 0.12,
+    })) || [];
 
   const totalDonated = formattedDonations.reduce((sum, d) => sum + d.amount, 0);
   const impactGrowth = totalDonated * 0.12;
-  const uniqueCharities = new Set(formattedDonations.map(d => d.charity));
+  const uniqueCharities = new Set(formattedDonations.map((d) => d.charity));
 
   return {
     totalDonated,
@@ -73,11 +76,15 @@ async function fetchDonorData(profileId: string): Promise<DonorData> {
 export const useDonorData = () => {
   const { profile } = useProfile();
 
-  const { data = null, isLoading: loading, error: queryError } = useQuery<DonorData>({
-    queryKey: ['donorData', profile?.id],
+  const {
+    data = null,
+    isLoading: loading,
+    error: queryError,
+  } = useQuery<DonorData>({
+    queryKey: ["donorData", profile?.id],
     queryFn: () => {
       if (!profile?.id) {
-        return Promise.reject(new Error('No profile'));
+        return Promise.reject(new Error("No profile"));
       }
       return fetchDonorData(profile.id);
     },
@@ -85,9 +92,13 @@ export const useDonorData = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Error fetching donor data') : null;
+  const error = queryError
+    ? queryError instanceof Error
+      ? queryError.message
+      : "Error fetching donor data"
+    : null;
   if (queryError) {
-    Logger.error('Error fetching donor data', { error: queryError });
+    Logger.error("Error fetching donor data", { error: queryError });
   }
 
   return { data, loading, error };
