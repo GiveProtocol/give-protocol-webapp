@@ -6,7 +6,7 @@ import {
   useSearchParams,
   useNavigate,
 } from "react-router-dom";
-import { Building2, Users, Loader2 } from "lucide-react";
+import { Building2, Wallet, Plus } from "lucide-react";
 import { DonorLogin } from "../components/auth/DonorLogin";
 import { CharityLogin } from "../components/auth/CharityLogin";
 import { ForgotPassword } from "../components/auth/ForgotPassword";
@@ -22,9 +22,6 @@ type View =
   | "charity"
   | "forgotPassword"
   | "forgotUsername";
-
-/** Duration in ms for the loading simulation on account-type buttons */
-const LOADING_SIMULATION_MS = 2000;
 
 interface LoginHelpersProps {
   onForgotUsername: () => void;
@@ -75,7 +72,7 @@ const Login: React.FC = () => {
     typeParam === "charity" ? "charity" : "select",
   );
   const { user, userType } = useAuth();
-  const { connect: _connect, isConnecting: _isConnecting, address: _address } = useWeb3();
+  const { connect, isConnecting, address: _address } = useWeb3();
   const _navigate = useNavigate();
   const location = useLocation();
 
@@ -86,16 +83,12 @@ const Login: React.FC = () => {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  // Independent loading states for account type selection buttons
-  const [loadingDonor, setLoadingDonor] = useState(false);
-  const [loadingCharity, setLoadingCharity] = useState(false);
-
   // Get the intended destination from location state, or default to dashboard
   const from =
     location.state?.from?.pathname ||
     (userType === "charity" ? "/charity-portal" : "/give-dashboard");
 
-  // Memoized handlers for forgot username/password
+  // Memoized handlers
   const handleForgotUsername = useCallback(() => {
     setView("forgotUsername");
   }, []);
@@ -105,24 +98,20 @@ const Login: React.FC = () => {
   }, []);
 
   const handleDonorView = useCallback(() => {
-    setLoadingDonor(true);
-    setTimeout(() => {
-      setLoadingDonor(false);
-      setView("donor");
-    }, LOADING_SIMULATION_MS);
+    setView("donor");
   }, []);
 
   const handleCharityView = useCallback(() => {
-    setLoadingCharity(true);
-    setTimeout(() => {
-      setLoadingCharity(false);
-      setView("charity");
-    }, LOADING_SIMULATION_MS);
+    setView("charity");
   }, []);
 
   const handleSelectView = useCallback(() => {
     setView("select");
   }, []);
+
+  const handleWalletConnect = useCallback(() => {
+    connect();
+  }, [connect]);
 
   // Set view based on URL parameter on mount and when it changes
   useEffect(() => {
@@ -132,84 +121,68 @@ const Login: React.FC = () => {
   }, [typeParam]);
 
   // Redirect only if user is fully authenticated
-  // (Don't redirect on wallet-only connection - user needs to complete auth)
   if (user) {
     return <Navigate to={from} replace />;
   }
 
   const visibleClass = visible ? "visible" : "";
-  const isLoading = loadingDonor || loadingCharity;
 
   /** Renders the appropriate login view based on the current view state. */
   const renderView = () => {
     switch (view) {
       case "select":
         return (
-          <fieldset className="space-y-6 border-none p-0 m-0" aria-labelledby="account-type-heading">
-            <h1
-              id="account-type-heading"
-              className="text-xl sm:text-2xl font-semibold text-center text-gray-900"
+          <div className="space-y-6">
+            {/* Primary CTA — email/password login */}
+            <Button
+              onClick={handleDonorView}
+              fullWidth
+              size="lg"
+              className="font-semibold"
             >
-              Choose Account Type
-            </h1>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Button
-                onClick={handleDonorView}
-                variant="secondary"
-                disabled={isLoading}
-                aria-busy={loadingDonor}
-                className="p-6 h-auto min-h-[48px] flex flex-col items-center space-y-2 hover:-translate-y-1 hover:shadow-lg active:-translate-y-0.5 transition-all duration-200"
-              >
-                {loadingDonor ? (
-                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" aria-hidden="true" />
-                ) : (
-                  <Users className="h-8 w-8" aria-hidden="true" />
-                )}
-                <span className="text-lg font-medium">
-                  {loadingDonor ? "Loading\u2026" : "Donor Login"}
-                </span>
-                {!loadingDonor && (
-                  <span className="text-base text-gray-600">
-                    For donors and volunteers
-                  </span>
-                )}
-              </Button>
+              Continue as Donor
+            </Button>
 
-              <Button
-                onClick={handleCharityView}
-                variant="secondary"
-                disabled={isLoading}
-                aria-busy={loadingCharity}
-                className="p-6 h-auto min-h-[48px] flex flex-col items-center space-y-2 hover:-translate-y-1 hover:shadow-lg active:-translate-y-0.5 transition-all duration-200"
-              >
-                {loadingCharity ? (
-                  <Loader2 className="h-8 w-8 animate-spin text-emerald-600" aria-hidden="true" />
-                ) : (
-                  <Building2 className="h-8 w-8" aria-hidden="true" />
-                )}
-                <span className="text-lg font-medium">
-                  {loadingCharity ? "Loading\u2026" : "Charity Login"}
-                </span>
-                {!loadingCharity && (
-                  <span className="text-base text-gray-600">
-                    For registered charities
-                  </span>
-                )}
-              </Button>
-            </div>
+            {/* Secondary CTA — wallet connect */}
+            <Button
+              onClick={handleWalletConnect}
+              variant="secondary"
+              fullWidth
+              size="lg"
+              icon={<Wallet className="h-5 w-5" />}
+              disabled={isConnecting}
+              className="font-semibold"
+            >
+              {isConnecting ? "Connecting\u2026" : "Connect Wallet & Sign In"}
+            </Button>
 
-            <div className="text-center space-y-2 mt-6">
-              <p className="text-base text-gray-700">
-                Don&apos;t have an account?
+            {/* Sign up prompt */}
+            <div className="text-center space-y-1 pt-2">
+              <p className="text-sm text-gray-500">
+                New to Give Protocol?
               </p>
               <Link
                 to="/register"
-                className="inline-block text-base text-emerald-700 hover:text-emerald-800 font-medium hover:underline decoration-emerald-500 decoration-2 underline-offset-4 transition-all duration-200 py-3 px-4 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                className="inline-block text-sm text-emerald-700 hover:text-emerald-800 font-semibold hover:underline decoration-emerald-500 decoration-2 underline-offset-4 transition-all duration-200 py-1 px-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
               >
-                Create new account
+                New Donor Sign Up
               </Link>
             </div>
-          </fieldset>
+
+            {/* Nonprofit footer section */}
+            <div className="border-t border-gray-100 pt-5 mt-2">
+              <button
+                type="button"
+                onClick={handleCharityView}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors duration-200 group"
+              >
+                <Building2 className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+                <span className="text-sm font-medium text-gray-600 group-hover:text-gray-800">
+                  I manage a Nonprofit Profile
+                </span>
+              </button>
+            </div>
+          </div>
         );
       case "donor":
         return (
@@ -217,15 +190,15 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
-                aria-label="Go back to account type selection"
+                className="text-sm text-gray-500 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[44px] transition-colors duration-200"
+                aria-label="Go back to sign in options"
               >
-                &larr; Back to selection
+                &larr; Back
               </button>
-              <h1 className="mt-4 text-xl sm:text-2xl font-semibold text-center text-gray-900">
-                Donor Login
-              </h1>
-              <p className="text-center text-base text-gray-700 mt-1">
+              <h2 className="mt-3 text-xl font-semibold text-center text-gray-900">
+                Donor Sign In
+              </h2>
+              <p className="text-center text-sm text-gray-500 mt-1">
                 Sign in to access your giving dashboard
               </p>
             </div>
@@ -243,20 +216,48 @@ const Login: React.FC = () => {
             <div className="mb-6">
               <button
                 onClick={handleSelectView}
-                className="text-base text-gray-700 hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[48px] transition-colors duration-200"
-                aria-label="Go back to account type selection"
+                className="text-sm text-gray-500 hover:text-gray-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 rounded-md px-2 py-2 min-h-[44px] transition-colors duration-200"
+                aria-label="Go back to sign in options"
               >
-                &larr; Back to selection
+                &larr; Back
               </button>
-              <h1 className="mt-4 text-xl sm:text-2xl font-semibold text-center text-gray-900">
-                Charity Portal Login
-              </h1>
-              <p className="text-center text-base text-gray-700 mt-1">
-                Manage your charity profile and donations
+              <h2 className="mt-3 text-xl font-semibold text-center text-gray-900">
+                Nonprofit Portal
+              </h2>
+              <p className="text-center text-sm text-gray-500 mt-1">
+                Manage your organization profile and donations
               </p>
             </div>
             <CharityLogin />
             <LoginHelpers onForgotUsername={handleForgotUsername} onForgotPassword={handleForgotPassword} />
+
+            {/* Nonprofit Onboarding Tray */}
+            <div className="mt-8 rounded-xl bg-emerald-50/60 border border-emerald-100 px-5 py-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="flex-1 h-px bg-emerald-200" />
+                <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+                  New to Give Protocol?
+                </span>
+                <div className="flex-1 h-px bg-emerald-200" />
+              </div>
+
+              <Link
+                to="/register?type=charity"
+                className="flex items-center gap-3 rounded-xl bg-white border border-emerald-200 p-4 hover:border-emerald-400 hover:shadow-md transition-all duration-200 group"
+              >
+                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 group-hover:bg-emerald-200 transition-colors flex-shrink-0">
+                  <Plus className="h-5 w-5 text-emerald-700" />
+                </div>
+                <div>
+                  <span className="text-sm font-bold text-gray-900 block">
+                    Create a Nonprofit Account
+                  </span>
+                  <span className="text-xs text-emerald-700">
+                    Register your organization on Give Protocol
+                  </span>
+                </div>
+              </Link>
+            </div>
           </>
         );
       default:
@@ -266,7 +267,7 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center bg-gray-50 py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
-      {/* Skip-to-content link for screen readers and keyboard navigation */}
+      {/* Skip-to-content link for screen readers */}
       <a
         href="#login-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-white focus:px-4 focus:py-2 focus:rounded-md focus:shadow-lg focus:text-emerald-700 focus:ring-2 focus:ring-emerald-500"
@@ -274,22 +275,33 @@ const Login: React.FC = () => {
         Skip to login content
       </a>
 
+      {/* Page heading */}
+      <h1
+        className={`frame-reveal ${visibleClass} text-3xl sm:text-4xl font-bold text-gray-900 text-center mb-8 tracking-tight`}
+        style={{ "--reveal-delay": "0.03s" } as React.CSSProperties}
+      >
+        Welcome to Give Protocol
+      </h1>
+
       <section
         id="login-content"
         aria-label="Login"
         className="max-w-md w-full bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-100"
       >
-        {/* Logo — first to appear */}
+        {/* Logo + card header */}
         <div
-          className={`frame-reveal ${visibleClass} flex justify-center mb-8`}
+          className={`frame-reveal ${visibleClass} flex flex-col items-center mb-6`}
           style={{ "--reveal-delay": "0.05s" } as React.CSSProperties}
         >
-          <Link to="/" className="flex items-center" aria-label="Go to homepage">
+          <Link to="/" className="flex items-center mb-4" aria-label="Go to homepage">
             <Logo className="h-12 w-12" />
           </Link>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Sign In or Connect
+          </h2>
         </div>
 
-        {/* View content — staggered after logo */}
+        {/* View content */}
         <div
           className={`frame-reveal ${visibleClass}`}
           style={{ "--reveal-delay": "0.1s" } as React.CSSProperties}

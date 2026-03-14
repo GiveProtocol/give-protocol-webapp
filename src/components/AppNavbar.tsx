@@ -23,9 +23,10 @@ const DesktopNavLinks: React.FC<{
   isLimitedNavPage: boolean;
   isActive: (_path: string) => string;
   userType: string | null;
+  isAuthenticated: boolean;
   handleDashboardClick: () => void;
   t: (_key: string) => string;
-}> = ({ isLimitedNavPage, isActive, userType, handleDashboardClick, t }) => {
+}> = ({ isLimitedNavPage, isActive, userType, isAuthenticated, handleDashboardClick, t }) => {
   if (isLimitedNavPage) {
     return (
       <>
@@ -71,27 +72,31 @@ const DesktopNavLinks: React.FC<{
       >
         {t("nav.opportunities")}
       </Link>
-      <Link
-        to="/contributions"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/contributions")}`}
-      >
-        {t("nav.contributions")}
-      </Link>
-      <button
-        onClick={handleDashboardClick}
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${
-          isActive("/give-dashboard") || isActive("/charity-portal")
-        }`}
-      >
-        {t("nav.dashboard")}
-      </button>
-      {userType === "donor" && (
-        <Link
-          to="/scheduled-donations"
-          className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/scheduled-donations")}`}
-        >
-          Monthly Donations
-        </Link>
+      {isAuthenticated && (
+        <>
+          <Link
+            to="/contributions"
+            className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/contributions")}`}
+          >
+            {t("nav.contributions")}
+          </Link>
+          <button
+            onClick={handleDashboardClick}
+            className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${
+              isActive("/give-dashboard") || isActive("/charity-portal")
+            }`}
+          >
+            {t("nav.dashboard")}
+          </button>
+          {userType === "donor" && (
+            <Link
+              to="/scheduled-donations"
+              className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/scheduled-donations")}`}
+            >
+              Monthly Donations
+            </Link>
+          )}
+        </>
       )}
     </>
   );
@@ -102,6 +107,7 @@ const MobileNavLinks: React.FC<{
   isLimitedNavPage: boolean;
   isActive: (_path: string) => string;
   userType: string | null;
+  isAuthenticated: boolean;
   handleDashboardClick: () => void;
   handleLinkClick: () => void;
   t: (_key: string) => string;
@@ -109,6 +115,7 @@ const MobileNavLinks: React.FC<{
   isLimitedNavPage,
   isActive,
   userType,
+  isAuthenticated,
   handleDashboardClick,
   handleLinkClick,
   t,
@@ -169,30 +176,34 @@ const MobileNavLinks: React.FC<{
       >
         {t("nav.opportunities")}
       </Link>
-      <Link
-        to="/contributions"
-        className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/contributions")}`}
-        onClick={handleLinkClick}
-      >
-        {t("nav.contributions")}
-      </Link>
-      <button
-        onClick={handleDashboardAndClose}
-        className={`block w-full text-left px-3 py-3 rounded-md text-[0.82rem] font-medium ${
-          isActive("/give-dashboard") || isActive("/charity-portal")
-        }`}
-      >
-        {t("nav.dashboard")}
-      </button>
-      {userType === "donor" && (
-        <Link
-          to="/scheduled-donations"
-          className={`flex items-center px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/scheduled-donations")}`}
-          onClick={handleLinkClick}
-        >
-          <Calendar className="h-4 w-4 mr-1" />
-          <span>Monthly Donations</span>
-        </Link>
+      {isAuthenticated && (
+        <>
+          <Link
+            to="/contributions"
+            className={`block px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/contributions")}`}
+            onClick={handleLinkClick}
+          >
+            {t("nav.contributions")}
+          </Link>
+          <button
+            onClick={handleDashboardAndClose}
+            className={`block w-full text-left px-3 py-3 rounded-md text-[0.82rem] font-medium ${
+              isActive("/give-dashboard") || isActive("/charity-portal")
+            }`}
+          >
+            {t("nav.dashboard")}
+          </button>
+          {userType === "donor" && (
+            <Link
+              to="/scheduled-donations"
+              className={`flex items-center px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/scheduled-donations")}`}
+              onClick={handleLinkClick}
+            >
+              <Calendar className="h-4 w-4 mr-1" />
+              <span>Monthly Donations</span>
+            </Link>
+          )}
+        </>
       )}
     </>
   );
@@ -250,6 +261,7 @@ const NavActions: React.FC<{
   isMenuOpen: boolean;
   toggleMenu: () => void;
   menuButtonRef: React.RefObject<HTMLButtonElement>;
+  isAuthenticated: boolean;
   isConnected: boolean;
   address: string | null;
   network: NetworkType;
@@ -259,6 +271,7 @@ const NavActions: React.FC<{
   isMenuOpen,
   toggleMenu,
   menuButtonRef,
+  isAuthenticated,
   isConnected,
   address,
   network,
@@ -275,7 +288,6 @@ const NavActions: React.FC<{
   }, []);
 
   const handleSwitchAccount = useCallback(() => {
-    // For now, just disconnect and let user reconnect
     onDisconnect();
   }, [onDisconnect]);
 
@@ -299,6 +311,13 @@ const NavActions: React.FC<{
               onNetworkChange={onNetworkChange}
             />
           </>
+        ) : !isAuthenticated ? (
+          <Link
+            to="/login"
+            className="hidden sm:inline-flex items-center px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors duration-200"
+          >
+            Sign In
+          </Link>
         ) : (
           <ConnectButton />
         )}
@@ -470,6 +489,7 @@ export const AppNavbar: React.FC = () => {
               isLimitedNavPage={isLimitedNavPage}
               isActive={isActive}
               userType={userType}
+              isAuthenticated={Boolean(user)}
               handleDashboardClick={handleDashboardClick}
               t={t}
             />
@@ -479,6 +499,7 @@ export const AppNavbar: React.FC = () => {
           isMenuOpen={isMenuOpen}
           toggleMenu={toggleMenu}
           menuButtonRef={menuButtonRef}
+          isAuthenticated={Boolean(user)}
           isConnected={isConnected}
           address={address}
           network={network}
@@ -493,6 +514,7 @@ export const AppNavbar: React.FC = () => {
           isLimitedNavPage={isLimitedNavPage}
           isActive={isActive}
           userType={userType}
+          isAuthenticated={Boolean(user)}
           handleDashboardClick={handleDashboardClick}
           handleLinkClick={handleLinkClick}
           t={t}
