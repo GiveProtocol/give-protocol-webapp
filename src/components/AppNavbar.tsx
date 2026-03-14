@@ -295,7 +295,7 @@ const NavActions: React.FC<{
     <div className="flex items-center space-x-2">
       <SettingsMenu />
       <ClientOnly>
-        {isConnected && address ? (
+        {isConnected && address && (
           <>
             <NetworkSelector
               currentNetwork={network}
@@ -311,16 +311,16 @@ const NavActions: React.FC<{
               onNetworkChange={onNetworkChange}
             />
           </>
-        ) : !isAuthenticated ? (
+        )}
+        {!isConnected && !isAuthenticated && (
           <Link
             to="/login"
             className="hidden sm:inline-flex items-center px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors duration-200"
           >
             Sign In
           </Link>
-        ) : (
-          <ConnectButton />
         )}
+        {!isConnected && isAuthenticated && <ConnectButton />}
       </ClientOnly>
       <MobileMenuButton
         isMenuOpen={isMenuOpen}

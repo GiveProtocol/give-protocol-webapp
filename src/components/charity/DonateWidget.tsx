@@ -159,11 +159,12 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
         disabled={amount <= 0}
         icon={<Heart className="h-4 w-4" />}
       >
-        {tab === 'crypto' && !isConnected
-          ? 'Connect wallet'
-          : tab === 'fiat'
-            ? 'Donate with card'
-            : `Donate $${amount > 0 ? amount : ''}`}
+        {(() => {
+          if (tab === 'crypto' && !isConnected) return 'Connect wallet';
+          if (tab === 'fiat') return 'Donate with card';
+          const displayAmount = amount > 0 ? amount : '';
+          return `Donate $${displayAmount}`;
+        })()}
       </Button>
 
       {/* Fee disclosure */}

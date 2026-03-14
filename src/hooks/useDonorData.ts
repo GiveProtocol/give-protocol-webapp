@@ -54,6 +54,7 @@ async function fetchDonorData(profileId: string): Promise<DonorData> {
   };
 }
 
+/** Fetches and returns aggregated donor statistics and donation history. */
 export const useDonorData = () => {
   const { profile } = useProfile();
 
@@ -69,7 +70,10 @@ export const useDonorData = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  const error = queryError ? (queryError instanceof Error ? queryError.message : 'Error fetching donor data') : null;
+  let error: string | null = null;
+  if (queryError) {
+    error = queryError instanceof Error ? queryError.message : 'Error fetching donor data';
+  }
   if (queryError) {
     Logger.error('Error fetching donor data', { error: queryError });
   }

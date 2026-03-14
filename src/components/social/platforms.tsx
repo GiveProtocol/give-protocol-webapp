@@ -40,7 +40,10 @@ export const SOCIAL_PLATFORMS: SocialPlatform[] = [
     id: "whatsapp",
     label: "Share on WhatsApp",
     icon: FaWhatsapp,
-    getShareUrl: (url, msg) => `https://api.whatsapp.com/send?text=${encodeURIComponent(`${msg} ${url}`)}`,
+    getShareUrl: (url, msg) => {
+      const text = encodeURIComponent(`${msg} ${url}`);
+      return `https://api.whatsapp.com/send?text=${text}`;
+    },
   },
   {
     id: "telegram",

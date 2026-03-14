@@ -15,7 +15,7 @@ interface PhotosCardProps {
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 /**
  * Two-slot photo gallery card for the charity profile.
@@ -39,7 +39,7 @@ export const PhotosCard: React.FC<PhotosCardProps> = ({
 
   const handleUpload = useCallback(
     async (file: File, slot: 1 | 2) => {
-      if (!ALLOWED_TYPES.includes(file.type)) {
+      if (!ALLOWED_TYPES.has(file.type)) {
         showToast('error', 'Invalid file type', 'Please upload a JPEG, PNG, or WebP image.');
         return;
       }
