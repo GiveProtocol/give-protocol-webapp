@@ -57,6 +57,16 @@ describe("csvHelpers", () => {
 
       expect(lines[1]).toBe('"42","99.99"');
     });
+
+    it("should JSON.stringify object values", () => {
+      const data = [{ name: "John", meta: { role: "admin" } }];
+
+      const result = convertToCSV(data);
+      const lines = result.split("\n");
+
+      // JSON.stringify produces {"role":"admin"}, then quotes are doubled for CSV
+      expect(lines[1]).toBe('"John","{""role"":""admin""}"');
+    });
   });
 
   describe("downloadCSV", () => {
