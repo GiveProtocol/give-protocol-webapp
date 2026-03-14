@@ -16,6 +16,7 @@ interface DonorData {
   }>;
 }
 
+/** Fetches donation records for a donor and computes aggregate statistics. */
 async function fetchDonorData(profileId: string): Promise<DonorData> {
   const { data: donations, error: donationsError } = await supabase
     .from('donations')

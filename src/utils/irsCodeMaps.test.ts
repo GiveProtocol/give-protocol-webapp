@@ -8,7 +8,7 @@ describe('irsCodeMaps', () => {
     });
 
     it('should return "—" for undefined code', () => {
-      expect(lookupIrsCode('deductibility', undefined)).toBe('—');
+      expect(lookupIrsCode('deductibility')).toBe('—');
     });
 
     it('should return "—" for empty string code', () => {
@@ -66,7 +66,7 @@ describe('irsCodeMaps', () => {
     });
 
     it('should return "—" for undefined', () => {
-      expect(formatRulingYear(undefined)).toBe('—');
+      expect(formatRulingYear()).toBe('—');
     });
 
     it('should return "—" for empty string', () => {
@@ -92,7 +92,7 @@ describe('irsCodeMaps', () => {
     });
 
     it('should return "—" for undefined', () => {
-      expect(formatActivityCodes(undefined)).toBe('—');
+      expect(formatActivityCodes()).toBe('—');
     });
 
     it('should return "—" for empty string', () => {

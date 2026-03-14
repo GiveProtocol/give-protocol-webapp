@@ -8,7 +8,7 @@ describe('nteeMap', () => {
     });
 
     it('should return "Unknown" for undefined', () => {
-      expect(getNteeCategory(undefined)).toBe('Unknown');
+      expect(getNteeCategory()).toBe('Unknown');
     });
 
     it('should return "Unknown" for empty string', () => {

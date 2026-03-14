@@ -375,6 +375,17 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
   );
 };
 
+/** Info banner describing the scheduled donation flow. */
+const ScheduleInfoBanner: React.FC<{ charityName: string }> = ({ charityName }) => (
+  <div className="bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800">
+    <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+      Schedule recurring donations to{" "}
+      <span className="font-semibold text-emerald-900 dark:text-emerald-300">{charityName}</span>.
+      The total amount will be divided into equal monthly payments.
+    </p>
+  </div>
+);
+
 interface ScheduledDonationFormProps {
   charityAddress: string;
   charityName: string;
@@ -631,13 +642,7 @@ export function ScheduledDonationForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && <ErrorAlert message={error} />}
 
-      <div className="bg-gradient-to-br from-emerald-50 to-blue-50 dark:from-emerald-900/20 dark:to-blue-900/20 p-4 rounded-xl border border-emerald-100 dark:border-emerald-800">
-        <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-          Schedule recurring donations to{" "}
-          <span className="font-semibold text-emerald-900 dark:text-emerald-300">{charityName}</span>.
-          The total amount will be divided into equal monthly payments.
-        </p>
-      </div>
+      <ScheduleInfoBanner charityName={charityName} />
 
       <TokenSelector
         selectedToken={selectedToken}

@@ -54,6 +54,149 @@ const WALLET_NOTICE_STYLE: React.CSSProperties = {
   WebkitBackdropFilter: 'blur(12px)',
 };
 
+/** Protocol status banner with pulse indicator on the dark left panel. */
+const ProtocolStatusBanner: React.FC = () => (
+  <div
+    className="relative flex items-center gap-4 overflow-hidden"
+    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, padding: '1rem 1.25rem', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
+  >
+    <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(52,211,153,0.06) 0%, transparent 70%)' }} />
+    <div className="relative shrink-0" style={{ width: 10, height: 10 }}>
+      <div
+        className="rounded-full relative z-10"
+        style={{ width: 10, height: 10, background: 'var(--emerald-400)', boxShadow: '0 0 8px var(--emerald-400)' }}
+      />
+      <span
+        className="absolute rounded-full animate-ripple"
+        style={{ inset: -5, border: '1.5px solid var(--emerald-400)' }}
+      />
+      <span
+        className="absolute rounded-full animate-ripple"
+        style={{ inset: -5, border: '1.5px solid var(--emerald-400)', animationDelay: '0.8s' }}
+      />
+    </div>
+    <div className="shrink-0" style={{ width: 1, height: 32, background: 'rgba(52,211,153,0.2)' }} />
+    <div className="relative z-10">
+      <p style={{ fontSize: '0.67rem', fontWeight: 600, color: 'var(--emerald-400)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>
+        Protocol Status &middot; Genesis Phase
+      </p>
+      <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>
+        Building the <strong className="text-white font-semibold">foundation of transparent giving</strong>
+      </p>
+    </div>
+  </div>
+);
+
+/** Wallet notice shown when a wallet is connected on the registration left panel. */
+const RegisterWalletNotice: React.FC<{ truncatedAddress: string }> = ({ truncatedAddress }) => (
+  <div
+    className="flex items-start gap-3 animate-fadeUp"
+    style={{ ...WALLET_NOTICE_STYLE, padding: '1rem 1.25rem', marginTop: '2.5rem', animationDelay: '0.3s' }}
+  >
+    <div
+      className="shrink-0 flex items-center justify-center"
+      style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(52,211,153,0.15)', fontSize: '0.9rem' }}
+    >
+      <LinkIcon className="h-4 w-4" style={{ color: 'var(--emerald-400)' }} />
+    </div>
+    <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
+      <strong style={{ display: 'block', color: 'var(--emerald-300)', fontWeight: 600, fontSize: '0.82rem', marginBottom: '0.15rem' }}>
+        Wallet detected: {truncatedAddress}
+      </strong>
+      Create an account to link this wallet and access your donation history,
+      CEF portfolio, and SBT credentials across sessions.
+      <a
+        href="/about"
+        className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
+        style={{ display: 'block', color: 'var(--emerald-400)', fontSize: '0.78rem', fontWeight: 500, marginTop: '0.4rem' }}
+      >
+        Why do I need an account? &rarr;
+      </a>
+    </div>
+  </div>
+);
+
+/** Dark left panel content for the registration page with branding and protocol status. */
+const RegisterLeftPanel: React.FC<{
+  isConnected: boolean;
+  address: string | null;
+  truncatedAddress: string;
+}> = ({ isConnected, address, truncatedAddress }) => (
+  <div
+    className="hidden lg:flex relative flex-col justify-center overflow-hidden"
+    style={{ backgroundColor: '#064e3b', padding: '3.5rem' }}
+  >
+    <div className="absolute inset-0 pointer-events-none" style={ATMOSPHERE_STYLE} />
+    <div className="absolute inset-0 pointer-events-none" style={GRID_STYLE} />
+    <div
+      className="absolute rounded-full animate-orbDrift pointer-events-none"
+      style={{
+        width: 200, height: 200, top: -60, right: -40,
+        background: 'var(--emerald-400)', filter: 'blur(60px)', opacity: 0.25,
+      }}
+    />
+    <div
+      className="absolute rounded-full animate-orbDrift pointer-events-none"
+      style={{
+        width: 160, height: 160, bottom: 80, left: -30,
+        background: 'var(--emerald-600)', filter: 'blur(60px)', opacity: 0.25,
+        animationDelay: '-3s',
+      }}
+    />
+
+    <div className="relative z-10">
+      <h2
+        className="font-serif text-white animate-fadeUp"
+        style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', lineHeight: 1.12, letterSpacing: '-0.02em', marginBottom: '1.25rem' }}
+      >
+        Smart giving,<br /><span style={{ color: 'var(--emerald-300)' }} className="italic">transparent</span> impact.
+      </h2>
+      <p
+        className="animate-fadeUp"
+        style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, maxWidth: 320, fontWeight: 300, animationDelay: '0.2s' }}
+      >
+        Blockchain-powered charitable giving with full transparency,
+        accountability, and real-time impact tracking.
+      </p>
+
+      {isConnected && address && (
+        <RegisterWalletNotice truncatedAddress={truncatedAddress} />
+      )}
+
+      <div className="space-y-4 animate-fadeUp" style={{ marginTop: '2.5rem', animationDelay: '0.8s' }}>
+        <ProtocolStatusBanner />
+
+        <div>
+          <div className="flex items-center gap-2" style={{ marginBottom: '0.6rem' }}>
+            <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500, whiteSpace: 'nowrap' }}>
+              Runs on
+            </span>
+            <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+          </div>
+          <div className="flex flex-wrap" style={{ gap: '0.4rem' }}>
+            {['Moonbeam', 'Base', 'Optimism', 'Open Source', '501(c)(3)'].map((tag) => (
+              <span
+                key={tag}
+                style={{
+                  color: 'rgba(255,255,255,0.45)',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 6,
+                  padding: '0.25rem 0.6rem',
+                  fontSize: '0.68rem',
+                  fontWeight: 500,
+                }}
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 /**
  * Account registration page for donors and charities
  * @returns Register page element
@@ -133,144 +276,11 @@ export const Register: React.FC = () => {
 
   return (
     <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
-      {/* ── Left Panel — dark panel pattern ── */}
-      <div
-        className="hidden lg:flex relative flex-col justify-center overflow-hidden"
-        style={{ backgroundColor: '#064e3b', padding: '3.5rem' }}
-      >
-        {/* Layer 1: radial gradient atmosphere */}
-        <div className="absolute inset-0 pointer-events-none" style={ATMOSPHERE_STYLE} />
-        {/* Layer 2: 48px emerald-tinted grid */}
-        <div className="absolute inset-0 pointer-events-none" style={GRID_STYLE} />
-        {/* Layer 3: floating blur orbs */}
-        <div
-          className="absolute rounded-full animate-orbDrift pointer-events-none"
-          style={{
-            width: 200, height: 200, top: -60, right: -40,
-            background: 'var(--emerald-400)', filter: 'blur(60px)', opacity: 0.25,
-          }}
-        />
-        <div
-          className="absolute rounded-full animate-orbDrift pointer-events-none"
-          style={{
-            width: 160, height: 160, bottom: 80, left: -30,
-            background: 'var(--emerald-600)', filter: 'blur(60px)', opacity: 0.25,
-            animationDelay: '-3s',
-          }}
-        />
-
-        {/* All content in a single centered flow */}
-        <div className="relative z-10">
-          <h2
-            className="font-serif text-white animate-fadeUp"
-            style={{ fontSize: 'clamp(2rem, 3.5vw, 2.75rem)', lineHeight: 1.12, letterSpacing: '-0.02em', marginBottom: '1.25rem' }}
-          >
-            Smart giving,<br /><span style={{ color: 'var(--emerald-300)' }} className="italic">transparent</span> impact.
-          </h2>
-          <p
-            className="animate-fadeUp"
-            style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.55)', lineHeight: 1.6, maxWidth: 320, fontWeight: 300, animationDelay: '0.2s' }}
-          >
-            Blockchain-powered charitable giving with full transparency,
-            accountability, and real-time impact tracking.
-          </p>
-
-          {/* Wallet notice */}
-          {isConnected && address && (
-            <div
-              className="flex items-start gap-3 animate-fadeUp"
-              style={{ ...WALLET_NOTICE_STYLE, padding: '1rem 1.25rem', marginTop: '2.5rem', animationDelay: '0.3s' }}
-            >
-              <div
-                className="shrink-0 flex items-center justify-center"
-                style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(52,211,153,0.15)', fontSize: '0.9rem' }}
-              >
-                <LinkIcon className="h-4 w-4" style={{ color: 'var(--emerald-400)' }} />
-              </div>
-              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.7)', lineHeight: 1.5 }}>
-                <strong style={{ display: 'block', color: 'var(--emerald-300)', fontWeight: 600, fontSize: '0.82rem', marginBottom: '0.15rem' }}>
-                  Wallet detected: {truncatedAddress}
-                </strong>
-                Create an account to link this wallet and access your donation history,
-                CEF portfolio, and SBT credentials across sessions.
-                <a
-                  href="/about"
-                  className="inline-flex items-center gap-1 hover:opacity-80 transition-opacity"
-                  style={{ display: 'block', color: 'var(--emerald-400)', fontSize: '0.78rem', fontWeight: 500, marginTop: '0.4rem' }}
-                >
-                  Why do I need an account? &rarr;
-                </a>
-              </div>
-            </div>
-          )}
-
-          {/* Protocol Status banner + Runs On tags */}
-          <div className="space-y-4 animate-fadeUp" style={{ marginTop: '2.5rem', animationDelay: '0.8s' }}>
-            {/* Protocol Status banner — full-width glass card */}
-            <div
-              className="relative flex items-center gap-4 overflow-hidden"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(52,211,153,0.2)', borderRadius: 12, padding: '1rem 1.25rem', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
-            >
-              {/* Left-edge gradient wash */}
-              <div className="absolute inset-0 pointer-events-none" style={{ background: 'linear-gradient(90deg, rgba(52,211,153,0.06) 0%, transparent 70%)' }} />
-              {/* Pulse indicator with ripple rings */}
-              <div className="relative shrink-0" style={{ width: 10, height: 10 }}>
-                <div
-                  className="rounded-full relative z-10"
-                  style={{ width: 10, height: 10, background: 'var(--emerald-400)', boxShadow: '0 0 8px var(--emerald-400)' }}
-                />
-                <span
-                  className="absolute rounded-full animate-ripple"
-                  style={{ inset: -5, border: '1.5px solid var(--emerald-400)' }}
-                />
-                <span
-                  className="absolute rounded-full animate-ripple"
-                  style={{ inset: -5, border: '1.5px solid var(--emerald-400)', animationDelay: '0.8s' }}
-                />
-              </div>
-              {/* Divider */}
-              <div className="shrink-0" style={{ width: 1, height: 32, background: 'rgba(52,211,153,0.2)' }} />
-              {/* Text block */}
-              <div className="relative z-10">
-                <p style={{ fontSize: '0.67rem', fontWeight: 600, color: 'var(--emerald-400)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '0.2rem' }}>
-                  Protocol Status &middot; Genesis Phase
-                </p>
-                <p style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.75)', lineHeight: 1.4 }}>
-                  Building the <strong className="text-white font-semibold">foundation of transparent giving</strong>
-                </p>
-              </div>
-            </div>
-
-            {/* Trust row */}
-            <div>
-              <div className="flex items-center gap-2" style={{ marginBottom: '0.6rem' }}>
-                <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                  Runs on
-                </span>
-                <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
-              </div>
-              <div className="flex flex-wrap" style={{ gap: '0.4rem' }}>
-                {['Moonbeam', 'Base', 'Optimism', 'Open Source', '501(c)(3)'].map((tag) => (
-                  <span
-                    key={tag}
-                    style={{
-                      color: 'rgba(255,255,255,0.45)',
-                      background: 'rgba(255,255,255,0.05)',
-                      border: '1px solid rgba(255,255,255,0.08)',
-                      borderRadius: 6,
-                      padding: '0.25rem 0.6rem',
-                      fontSize: '0.68rem',
-                      fontWeight: 500,
-                    }}
-                  >
-                    {tag}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <RegisterLeftPanel
+        isConnected={isConnected}
+        address={address}
+        truncatedAddress={truncatedAddress}
+      />
 
       {/* ── Right Panel ── */}
       <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>

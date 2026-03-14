@@ -221,6 +221,56 @@ function deriveDisplayData(
 /* ------------------------------------------------------------------ */
 /* Header card                                                         */
 /* ------------------------------------------------------------------ */
+/** Org name, metadata lines, and category tags for the header card. */
+function HeaderInfo({
+  orgName,
+  ein,
+  location,
+  rulingYear,
+  nteeCategory,
+  profile,
+  irsRecord,
+}: {
+  orgName: string;
+  ein: string;
+  location: string;
+  rulingYear: string;
+  nteeCategory: string;
+  profile: CharityProfile | null;
+  irsRecord: IrsRecord | null;
+}) {
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-3 flex-wrap">
+        <h1 className="font-serif text-2xl font-bold text-gray-900">
+          {orgName}
+        </h1>
+        {profile && <StatusPill profile={profile} />}
+      </div>
+      <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500">
+        <span>EIN {ein}</span>
+        {location && (
+          <span className="flex items-center gap-1">
+            <MapPin className="h-3.5 w-3.5" />
+            {location}
+          </span>
+        )}
+        {rulingYear !== '—' && <span>Registered {rulingYear}</span>}
+      </div>
+      <div className="flex flex-wrap gap-1.5 mt-1">
+        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+          {nteeCategory}
+        </span>
+        {irsRecord?.subsection === '03' && (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+            501(c)(3)
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /** Header card displayed flush below the hero banner with org name, status, and actions. */
 function ProfileHeaderCard({
   orgName,
@@ -248,34 +298,15 @@ function ProfileHeaderCard({
   return (
     <Card hover={false} className="rounded-t-none border-t-0 p-5 md:p-6">
       <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-        <div className="space-y-2">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="font-serif text-2xl font-bold text-gray-900">
-              {orgName}
-            </h1>
-            {profile && <StatusPill profile={profile} />}
-          </div>
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500">
-            <span>EIN {ein}</span>
-            {location && (
-              <span className="flex items-center gap-1">
-                <MapPin className="h-3.5 w-3.5" />
-                {location}
-              </span>
-            )}
-            {rulingYear !== '—' && <span>Registered {rulingYear}</span>}
-          </div>
-          <div className="flex flex-wrap gap-1.5 mt-1">
-            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-              {nteeCategory}
-            </span>
-            {irsRecord?.subsection === '03' && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                501(c)(3)
-              </span>
-            )}
-          </div>
-        </div>
+        <HeaderInfo
+          orgName={orgName}
+          ein={ein}
+          location={location}
+          rulingYear={rulingYear}
+          nteeCategory={nteeCategory}
+          profile={profile}
+          irsRecord={irsRecord}
+        />
         <div className="flex items-center gap-2 shrink-0">
           <Button onClick={onDonate} icon={<Heart className="h-4 w-4" />}>
             Donate
