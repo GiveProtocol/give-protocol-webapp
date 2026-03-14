@@ -39,6 +39,7 @@ const fetchVolunteerStats = (): Promise<VolunteerStats> => {
   });
 };
 
+/** Dashboard card displaying volunteer hours, endorsed skills, and recent achievements. */
 export const VolunteerImpact: React.FC = () => {
   const { data: stats, isLoading } = useQuery({
     queryKey: ['volunteerStats'],

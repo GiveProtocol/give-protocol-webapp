@@ -10,6 +10,7 @@ import { useWeb3 } from "@/contexts/Web3Context";
  */
 const TEST_CHARITY_ADDRESS = "0x537f232A75F59F3CAbeBf851E0810Fc95F42aa75";
 
+/** Admin form for registering charity wallet addresses in the donation contract. */
 export const RegisterCharityForm: React.FC = () => {
   const [charityAddress, setCharityAddress] = useState("");
   const [successMessage, setSuccessMessage] = useState("");

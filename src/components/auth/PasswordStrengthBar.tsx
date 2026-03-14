@@ -7,14 +7,14 @@ interface PasswordStrengthBarProps {
 /** Visual password strength indicator with 4 segments and a text label. */
 export const PasswordStrengthBar: React.FC<PasswordStrengthBarProps> = ({ password }) => {
   const { score, label } = useMemo(() => {
-    let s = 0;
-    if (password.length >= 8) s++;
-    if (/[A-Z]/.test(password)) s++;
-    if (/[0-9]/.test(password)) s++;
-    if (/[^A-Za-z0-9]/.test(password)) s++;
+    let strength = 0;
+    if (password.length >= 8) strength++;
+    if (/[A-Z]/.test(password)) strength++;
+    if (/[0-9]/.test(password)) strength++;
+    if (/[^A-Za-z0-9]/.test(password)) strength++;
 
     const labels: Record<number, string> = { 0: 'Weak', 1: 'Weak', 2: 'Fair', 3: 'Good', 4: 'Strong' };
-    return { score: s, label: labels[s] };
+    return { score: strength, label: labels[strength] };
   }, [password]);
 
   if (!password) return null;

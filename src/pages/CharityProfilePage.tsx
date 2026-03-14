@@ -171,6 +171,248 @@ function IrsPublicRecord({ irsRecord }: { irsRecord: IrsRecord }) {
 }
 
 /* ------------------------------------------------------------------ */
+/* Derived display values from profile + IRS data                      */
+/* ------------------------------------------------------------------ */
+interface ProfileDisplayData {
+  orgName: string;
+  location: string;
+  rulingYear: string;
+  isUnclaimed: boolean;
+  isClaimed: boolean;
+  nteeCategory: string;
+  walletAddress: string | null;
+  bannerImageUrl: string | null | undefined;
+  photo1Url: string | null | undefined;
+  photo2Url: string | null | undefined;
+  description: string | null | undefined;
+  missionStatement: string | null | undefined;
+  contactEmail: string | null | undefined;
+  website: string | null;
+  claimedByUserId: string | null | undefined;
+}
+
+/** Extracts display-ready values from the raw profile and IRS record. */
+function deriveDisplayData(
+  profile: CharityProfile | null,
+  irsRecord: IrsRecord | null,
+): ProfileDisplayData {
+  return {
+    orgName: profile?.name ?? irsRecord?.name ?? 'Unknown Organization',
+    location:
+      profile?.location ??
+      [irsRecord?.city, irsRecord?.state].filter(Boolean).join(', ') ??
+      '',
+    rulingYear: formatRulingYear(irsRecord?.ruling),
+    isUnclaimed: !profile || profile.status === 'unclaimed',
+    isClaimed: profile?.status === 'claimed-pending' || profile?.status === 'verified',
+    nteeCategory: getNteeCategory(irsRecord?.ntee_cd ?? profile?.ntee_code),
+    walletAddress: profile?.wallet_address ?? null,
+    bannerImageUrl: (profile as Record<string, unknown>)?.banner_image_url as string | null | undefined,
+    photo1Url: (profile as Record<string, unknown>)?.photo_1_url as string | null | undefined,
+    photo2Url: (profile as Record<string, unknown>)?.photo_2_url as string | null | undefined,
+    description: (profile as Record<string, unknown>)?.description as string | null | undefined,
+    missionStatement: (profile as Record<string, unknown>)?.mission_statement as string | null | undefined,
+    contactEmail: (profile as Record<string, unknown>)?.contact_email as string | null | undefined,
+    website: profile?.website ?? null,
+    claimedByUserId: (profile as Record<string, unknown>)?.claimed_by_user_id as string | null | undefined,
+  };
+}
+
+/* ------------------------------------------------------------------ */
+/* Header card                                                         */
+/* ------------------------------------------------------------------ */
+/** Header card displayed flush below the hero banner with org name, status, and actions. */
+function ProfileHeaderCard({
+  orgName,
+  ein,
+  location,
+  rulingYear,
+  nteeCategory,
+  profile,
+  irsRecord,
+  onDonate,
+  onShare,
+  copied,
+}: {
+  orgName: string;
+  ein: string;
+  location: string;
+  rulingYear: string;
+  nteeCategory: string;
+  profile: CharityProfile | null;
+  irsRecord: IrsRecord | null;
+  onDonate: () => void;
+  onShare: () => void;
+  copied: boolean;
+}) {
+  return (
+    <Card hover={false} className="rounded-t-none border-t-0 p-5 md:p-6">
+      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="font-serif text-2xl font-bold text-gray-900">
+              {orgName}
+            </h1>
+            {profile && <StatusPill profile={profile} />}
+          </div>
+          <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500">
+            <span>EIN {ein}</span>
+            {location && (
+              <span className="flex items-center gap-1">
+                <MapPin className="h-3.5 w-3.5" />
+                {location}
+              </span>
+            )}
+            {rulingYear !== '—' && <span>Registered {rulingYear}</span>}
+          </div>
+          <div className="flex flex-wrap gap-1.5 mt-1">
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+              {nteeCategory}
+            </span>
+            {irsRecord?.subsection === '03' && (
+              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
+                501(c)(3)
+              </span>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
+          <Button onClick={onDonate} icon={<Heart className="h-4 w-4" />}>
+            Donate
+          </Button>
+          <button
+            type="button"
+            onClick={onShare}
+            className="p-2.5 rounded-lg border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors relative"
+            aria-label="Share"
+          >
+            <Share2 className="h-4 w-4" />
+            {copied && (
+              <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-900 text-white px-2 py-0.5 rounded whitespace-nowrap">
+                Copied!
+              </span>
+            )}
+          </button>
+        </div>
+      </div>
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* About card                                                          */
+/* ------------------------------------------------------------------ */
+/** About card showing description, mission, or IRS activity codes as fallback. */
+function AboutCard({
+  description,
+  missionStatement,
+  mission,
+  activity,
+  website,
+  einDigits,
+}: {
+  description: string | null | undefined;
+  missionStatement: string | null | undefined;
+  mission: string | undefined;
+  activity: string | null | undefined;
+  website: string | null;
+  einDigits: string;
+}) {
+  return (
+    <Card hover={false} className="p-5">
+      <h3 className="text-sm font-semibold text-gray-900 mb-2">About</h3>
+      {description || missionStatement || mission ? (
+        <p className="text-sm text-gray-600 leading-relaxed">
+          {description ?? missionStatement ?? mission}
+        </p>
+      ) : (
+        <div className="text-sm text-gray-600">
+          {activity && activity !== '000000000' ? (
+            <>
+              <p>
+                This organization&apos;s activities include: activity codes{' '}
+                {formatActivityCodes(activity)}.
+              </p>
+              <p className="italic text-gray-400 mt-2">
+                This description has not been customized yet.{' '}
+                <a
+                  href={`/claim/${einDigits}`}
+                  className="text-emerald-600 hover:underline not-italic"
+                >
+                  Claim this profile
+                </a>
+              </p>
+            </>
+          ) : (
+            <p className="italic text-gray-400">
+              No description available.{' '}
+              <a
+                href={`/claim/${einDigits}`}
+                className="text-emerald-600 hover:underline not-italic"
+              >
+                Claim this profile
+              </a>{' '}
+              to add one.
+            </p>
+          )}
+          {website && (
+            <a
+              href={website}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 mt-2 text-emerald-600 hover:underline text-sm"
+            >
+              <Globe className="h-3.5 w-3.5" />
+              {website.replace(/^https?:\/\//, '')}
+            </a>
+          )}
+        </div>
+      )}
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/* Contact card                                                        */
+/* ------------------------------------------------------------------ */
+/** Contact card shown for claimed profiles with email or website links. */
+function ContactCard({
+  website,
+  contactEmail,
+}: {
+  website: string | null;
+  contactEmail: string | null | undefined;
+}) {
+  return (
+    <Card hover={false} className="p-5">
+      <h3 className="text-sm font-semibold text-gray-900 mb-3">Contact</h3>
+      <div className="space-y-2 text-sm">
+        {website && (
+          <a
+            href={website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-emerald-600 hover:underline"
+          >
+            <Globe className="h-4 w-4" />
+            {website.replace(/^https?:\/\//, '')}
+          </a>
+        )}
+        {contactEmail && (
+          <a
+            href={`mailto:${contactEmail}`}
+            className="flex items-center gap-2 text-emerald-600 hover:underline"
+          >
+            <Mail className="h-4 w-4" />
+            {contactEmail}
+          </a>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+/* ------------------------------------------------------------------ */
 /* Main component                                                      */
 /* ------------------------------------------------------------------ */
 
@@ -247,18 +489,15 @@ function CharityProfilePage() {
 
   const handlePhotoUploaded = useCallback(
     (_slot: 1 | 2, _url: string) => {
-      // Re-fetch to get updated profile
       fetchData();
     },
     [fetchData],
   );
 
-  // Loading state
   if (loading) {
     return <ProfileSkeleton />;
   }
 
-  // Not found — preserve existing fallback
   if (notFound && !irsRecord && !profile) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
@@ -275,207 +514,71 @@ function CharityProfilePage() {
     );
   }
 
-  // Derive display values from profile + IRS data
-  const orgName = profile?.name ?? irsRecord?.name ?? 'Unknown Organization';
-  const location =
-    profile?.location ??
-    [irsRecord?.city, irsRecord?.state].filter(Boolean).join(', ') ??
-    '';
-  const rulingYear = formatRulingYear(irsRecord?.ruling);
-  const isUnclaimed = !profile || profile.status === 'unclaimed';
-  const isClaimed = profile?.status === 'claimed-pending' || profile?.status === 'verified';
-  const nteeCategory = getNteeCategory(irsRecord?.ntee_cd ?? profile?.ntee_code);
-  const walletAddress = profile?.wallet_address ?? null;
-  const bannerImageUrl = (profile as Record<string, unknown>)?.banner_image_url as string | null | undefined;
-  const photo1Url = (profile as Record<string, unknown>)?.photo_1_url as string | null | undefined;
-  const photo2Url = (profile as Record<string, unknown>)?.photo_2_url as string | null | undefined;
-  const description = (profile as Record<string, unknown>)?.description as string | null | undefined;
-  const missionStatement = (profile as Record<string, unknown>)?.mission_statement as string | null | undefined;
-  const contactEmail = (profile as Record<string, unknown>)?.contact_email as string | null | undefined;
-  const website = profile?.website ?? null;
-  const claimedByUserId = (profile as Record<string, unknown>)?.claimed_by_user_id as string | null | undefined;
+  const display = deriveDisplayData(profile, irsRecord);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-5">
-      {/* Unclaimed banner */}
-      {isUnclaimed && <UnclaimedProfileBanner ein={einDigits} />}
+      {display.isUnclaimed && <UnclaimedProfileBanner ein={einDigits} />}
 
-      {/* Hero banner + header card (flush connection) */}
       <div>
-        <CharityHeroBanner bannerImageUrl={bannerImageUrl} orgName={orgName} />
-
-        {/* Header card — flush below banner */}
-        <Card hover={false} className="rounded-t-none border-t-0 p-5 md:p-6">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-3 flex-wrap">
-                <h1 className="font-serif text-2xl font-bold text-gray-900">
-                  {orgName}
-                </h1>
-                {profile && <StatusPill profile={profile} />}
-              </div>
-              <div className="flex flex-wrap gap-x-3 gap-y-1 text-sm text-gray-500">
-                <span>EIN {ein}</span>
-                {location && (
-                  <span className="flex items-center gap-1">
-                    <MapPin className="h-3.5 w-3.5" />
-                    {location}
-                  </span>
-                )}
-                {rulingYear !== '—' && <span>Registered {rulingYear}</span>}
-              </div>
-              <div className="flex flex-wrap gap-1.5 mt-1">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  {nteeCategory}
-                </span>
-                {irsRecord?.subsection === '03' && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
-                    501(c)(3)
-                  </span>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 shrink-0">
-              <Button onClick={handleOpenDonate} icon={<Heart className="h-4 w-4" />}>
-                Donate
-              </Button>
-              <button
-                type="button"
-                onClick={handleShare}
-                className="p-2.5 rounded-lg border border-gray-200 text-gray-500 hover:text-gray-700 hover:border-gray-300 transition-colors relative"
-                aria-label="Share"
-              >
-                <Share2 className="h-4 w-4" />
-                {copied && (
-                  <span className="absolute -bottom-7 left-1/2 -translate-x-1/2 text-xs bg-gray-900 text-white px-2 py-0.5 rounded whitespace-nowrap">
-                    Copied!
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
-        </Card>
+        <CharityHeroBanner bannerImageUrl={display.bannerImageUrl} orgName={display.orgName} />
+        <ProfileHeaderCard
+          orgName={display.orgName}
+          ein={ein}
+          location={display.location}
+          rulingYear={display.rulingYear}
+          nteeCategory={display.nteeCategory}
+          profile={profile}
+          irsRecord={irsRecord}
+          onDonate={handleOpenDonate}
+          onShare={handleShare}
+          copied={copied}
+        />
       </div>
 
-      {/* Two-column layout */}
       <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-5">
-        {/* Left column — main content */}
         <div className="space-y-4">
-          {/* About card */}
-          <Card hover={false} className="p-5">
-            <h3 className="text-sm font-semibold text-gray-900 mb-2">About</h3>
-            {description || missionStatement || profile?.mission ? (
-              <p className="text-sm text-gray-600 leading-relaxed">
-                {description ?? missionStatement ?? profile?.mission}
-              </p>
-            ) : (
-              <div className="text-sm text-gray-600">
-                {irsRecord?.activity && irsRecord.activity !== '000000000' ? (
-                  <>
-                    <p>
-                      This organization&apos;s activities include: activity codes{' '}
-                      {formatActivityCodes(irsRecord.activity)}.
-                    </p>
-                    <p className="italic text-gray-400 mt-2">
-                      This description has not been customized yet.{' '}
-                      <a
-                        href={`/claim/${einDigits}`}
-                        className="text-emerald-600 hover:underline not-italic"
-                      >
-                        Claim this profile
-                      </a>
-                    </p>
-                  </>
-                ) : (
-                  <p className="italic text-gray-400">
-                    No description available.{' '}
-                    <a
-                      href={`/claim/${einDigits}`}
-                      className="text-emerald-600 hover:underline not-italic"
-                    >
-                      Claim this profile
-                    </a>{' '}
-                    to add one.
-                  </p>
-                )}
-                {website && (
-                  <a
-                    href={website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 mt-2 text-emerald-600 hover:underline text-sm"
-                  >
-                    <Globe className="h-3.5 w-3.5" />
-                    {website.replace(/^https?:\/\//, '')}
-                  </a>
-                )}
-              </div>
-            )}
-          </Card>
+          <AboutCard
+            description={display.description}
+            missionStatement={display.missionStatement}
+            mission={profile?.mission}
+            activity={irsRecord?.activity}
+            website={display.website}
+            einDigits={einDigits}
+          />
 
-          {/* Photos card */}
           <PhotosCard
             ein={einDigits}
-            photo1Url={photo1Url}
-            photo2Url={photo2Url}
-            claimedByUserId={claimedByUserId}
+            photo1Url={display.photo1Url}
+            photo2Url={display.photo2Url}
+            claimedByUserId={display.claimedByUserId}
             onPhotoUploaded={handlePhotoUploaded}
           />
 
-          {/* IRS public record (collapsible) */}
           {irsRecord && <IrsPublicRecord irsRecord={irsRecord} />}
         </div>
 
-        {/* Right column — sidebar */}
         <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          {/* Donate widget */}
           <DonateWidget
             ein={einDigits}
-            charityName={orgName}
-            walletAddress={walletAddress}
+            charityName={display.orgName}
+            walletAddress={display.walletAddress}
             charityId={profile?.id ?? einDigits}
             mode="sidebar"
           />
 
-          {/* Organization details */}
           {irsRecord && <OrgDetailsCard irsRecord={irsRecord} />}
 
-          {/* Contact card */}
-          {isClaimed && (contactEmail || website) && (
-            <Card hover={false} className="p-5">
-              <h3 className="text-sm font-semibold text-gray-900 mb-3">Contact</h3>
-              <div className="space-y-2 text-sm">
-                {website && (
-                  <a
-                    href={website}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-emerald-600 hover:underline"
-                  >
-                    <Globe className="h-4 w-4" />
-                    {website.replace(/^https?:\/\//, '')}
-                  </a>
-                )}
-                {contactEmail && (
-                  <a
-                    href={`mailto:${contactEmail}`}
-                    className="flex items-center gap-2 text-emerald-600 hover:underline"
-                  >
-                    <Mail className="h-4 w-4" />
-                    {contactEmail}
-                  </a>
-                )}
-              </div>
-            </Card>
+          {display.isClaimed && (display.contactEmail || display.website) && (
+            <ContactCard website={display.website} contactEmail={display.contactEmail} />
           )}
         </div>
       </div>
 
-      {/* Donation modal */}
       {showDonationModal && (
         <DonationModal
-          charityName={orgName}
-          charityAddress={walletAddress ?? ''}
+          charityName={display.orgName}
+          charityAddress={display.walletAddress ?? ''}
           charityId={profile?.id ?? einDigits}
           frequency="once"
           onClose={handleCloseDonate}

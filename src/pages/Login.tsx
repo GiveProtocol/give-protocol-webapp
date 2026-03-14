@@ -23,6 +23,36 @@ type View =
   | "forgotPassword"
   | "forgotUsername";
 
+/** Tray below the nonprofit login form linking to charity registration. */
+const NonprofitOnboardingTray: React.FC = () => (
+  <div className="mt-8 rounded-xl bg-emerald-50/60 border border-emerald-100 px-5 py-6">
+    <div className="flex items-center gap-3 mb-4">
+      <div className="flex-1 h-px bg-emerald-200" />
+      <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
+        New to Give Protocol?
+      </span>
+      <div className="flex-1 h-px bg-emerald-200" />
+    </div>
+
+    <Link
+      to="/register?type=charity"
+      className="flex items-center gap-3 rounded-xl bg-white border border-emerald-200 p-4 hover:border-emerald-400 hover:shadow-md transition-all duration-200 group"
+    >
+      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 group-hover:bg-emerald-200 transition-colors flex-shrink-0">
+        <Plus className="h-5 w-5 text-emerald-700" />
+      </div>
+      <div>
+        <span className="text-sm font-bold text-gray-900 block">
+          Create a Nonprofit Account
+        </span>
+        <span className="text-xs text-emerald-700">
+          Register your organization on Give Protocol
+        </span>
+      </div>
+    </Link>
+  </div>
+);
+
 interface LoginHelpersProps {
   onForgotUsername: () => void;
   onForgotPassword: () => void;
@@ -230,34 +260,7 @@ const Login: React.FC = () => {
             </div>
             <CharityLogin />
             <LoginHelpers onForgotUsername={handleForgotUsername} onForgotPassword={handleForgotPassword} />
-
-            {/* Nonprofit Onboarding Tray */}
-            <div className="mt-8 rounded-xl bg-emerald-50/60 border border-emerald-100 px-5 py-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="flex-1 h-px bg-emerald-200" />
-                <span className="text-sm font-semibold text-gray-700 whitespace-nowrap">
-                  New to Give Protocol?
-                </span>
-                <div className="flex-1 h-px bg-emerald-200" />
-              </div>
-
-              <Link
-                to="/register?type=charity"
-                className="flex items-center gap-3 rounded-xl bg-white border border-emerald-200 p-4 hover:border-emerald-400 hover:shadow-md transition-all duration-200 group"
-              >
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 group-hover:bg-emerald-200 transition-colors flex-shrink-0">
-                  <Plus className="h-5 w-5 text-emerald-700" />
-                </div>
-                <div>
-                  <span className="text-sm font-bold text-gray-900 block">
-                    Create a Nonprofit Account
-                  </span>
-                  <span className="text-xs text-emerald-700">
-                    Register your organization on Give Protocol
-                  </span>
-                </div>
-              </Link>
-            </div>
+            <NonprofitOnboardingTray />
           </>
         );
       default:

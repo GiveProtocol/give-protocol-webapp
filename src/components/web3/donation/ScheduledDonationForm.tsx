@@ -175,15 +175,13 @@ const SuccessHeader: React.FC = () => (
   </div>
 );
 
-/**
- * Transaction recap row component to flatten nesting
- */
 interface TransactionRecapRowProps {
   label: string;
   value: string;
   variant?: "default" | "highlight";
 }
 
+/** Single row in the transaction recap summary, with optional highlight styling. */
 const TransactionRecapRow: React.FC<TransactionRecapRowProps> = ({
   label,
   value,

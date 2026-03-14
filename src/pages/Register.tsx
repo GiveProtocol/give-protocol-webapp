@@ -106,6 +106,7 @@ export const Register: React.FC = () => {
   }, []);
 
 
+  /** Renders the charity sub-step content based on the current step state. */
   const renderCharityContent = () => {
     switch (charityStep) {
       case 'search':
