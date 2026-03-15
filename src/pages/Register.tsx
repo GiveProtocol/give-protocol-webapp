@@ -116,6 +116,81 @@ const RegisterWalletNotice: React.FC<{ truncatedAddress: string }> = ({ truncate
   </div>
 );
 
+/** "Runs on" trust tags row on the dark left panel. */
+const RunsOnTags: React.FC = () => (
+  <div>
+    <div className="flex items-center gap-2" style={{ marginBottom: '0.6rem' }}>
+      <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500, whiteSpace: 'nowrap' }}>
+        Runs on
+      </span>
+      <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
+    </div>
+    <div className="flex flex-wrap" style={{ gap: '0.4rem' }}>
+      {['Moonbeam', 'Base', 'Optimism', 'Open Source', '501(c)(3)'].map((tag) => (
+        <span
+          key={tag}
+          style={{
+            color: 'rgba(255,255,255,0.45)',
+            background: 'rgba(255,255,255,0.05)',
+            border: '1px solid rgba(255,255,255,0.08)',
+            borderRadius: 6,
+            padding: '0.25rem 0.6rem',
+            fontSize: '0.68rem',
+            fontWeight: 500,
+          }}
+        >
+          {tag}
+        </span>
+      ))}
+    </div>
+  </div>
+);
+
+/** Donor/Charity role toggle for the registration form. */
+const RoleToggle: React.FC<{
+  userType: 'donor' | 'charity';
+  onDonorClick: () => void;
+  onCharityClick: () => void;
+}> = ({ userType, onDonorClick, onCharityClick }) => (
+  <div
+    className="grid grid-cols-2 bg-white dark:bg-gray-800 rounded-[12px] p-1"
+    style={{ border: '1.5px solid var(--slate-300)', gap: 4, marginBottom: '1.75rem' }}
+    role="radiogroup"
+    aria-label="Account type"
+  >
+    <button
+      type="button"
+      role="radio"
+      aria-checked={userType === 'donor'}
+      onClick={onDonorClick}
+      className={`flex items-center justify-center gap-1.5 rounded-[9px] transition-all duration-200 ${
+        userType === 'donor'
+          ? 'bg-emerald-700 text-white shadow-[0_2px_8px_rgba(4,120,87,0.3)]'
+          : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-slate-700'
+      }`}
+      style={{ padding: '0.65rem', fontSize: '0.875rem', fontWeight: 500 }}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.4" /><path d="M2 11.5c0-2.485 2.239-4.5 5-4.5s5 2.015 5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
+      Donor
+    </button>
+    <button
+      type="button"
+      role="radio"
+      aria-checked={userType === 'charity'}
+      onClick={onCharityClick}
+      className={`flex items-center justify-center gap-1.5 rounded-[9px] transition-all duration-200 ${
+        userType === 'charity'
+          ? 'bg-emerald-700 text-white shadow-[0_2px_8px_rgba(4,120,87,0.3)]'
+          : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-slate-700'
+      }`}
+      style={{ padding: '0.65rem', fontSize: '0.875rem', fontWeight: 500 }}
+    >
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" /><path d="M5 5.5h4M5 8h2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
+      Charity
+    </button>
+  </div>
+);
+
 /** Dark left panel content for the registration page with branding and protocol status. */
 const RegisterLeftPanel: React.FC<{
   isConnected: boolean;
@@ -165,33 +240,7 @@ const RegisterLeftPanel: React.FC<{
 
       <div className="space-y-4 animate-fadeUp" style={{ marginTop: '2.5rem', animationDelay: '0.8s' }}>
         <ProtocolStatusBanner />
-
-        <div>
-          <div className="flex items-center gap-2" style={{ marginBottom: '0.6rem' }}>
-            <span style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 500, whiteSpace: 'nowrap' }}>
-              Runs on
-            </span>
-            <div className="flex-1" style={{ height: 1, background: 'rgba(255,255,255,0.07)' }} />
-          </div>
-          <div className="flex flex-wrap" style={{ gap: '0.4rem' }}>
-            {['Moonbeam', 'Base', 'Optimism', 'Open Source', '501(c)(3)'].map((tag) => (
-              <span
-                key={tag}
-                style={{
-                  color: 'rgba(255,255,255,0.45)',
-                  background: 'rgba(255,255,255,0.05)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 6,
-                  padding: '0.25rem 0.6rem',
-                  fontSize: '0.68rem',
-                  fontWeight: 500,
-                }}
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
+        <RunsOnTags />
       </div>
     </div>
   </div>
@@ -308,44 +357,11 @@ export const Register: React.FC = () => {
             </p>
           </div>
 
-          {/* Role toggle */}
-          <div
-            className="grid grid-cols-2 bg-white dark:bg-gray-800 rounded-[12px] p-1"
-            style={{ border: '1.5px solid var(--slate-300)', gap: 4, marginBottom: '1.75rem' }}
-            role="radiogroup"
-            aria-label="Account type"
-          >
-            <button
-              type="button"
-              role="radio"
-              aria-checked={userType === 'donor'}
-              onClick={handleDonorClick}
-              className={`flex items-center justify-center gap-1.5 rounded-[9px] transition-all duration-200 ${
-                userType === 'donor'
-                  ? 'bg-emerald-700 text-white shadow-[0_2px_8px_rgba(4,120,87,0.3)]'
-                  : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-slate-700'
-              }`}
-              style={{ padding: '0.65rem', fontSize: '0.875rem', fontWeight: 500 }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><circle cx="7" cy="4.5" r="2.5" stroke="currentColor" strokeWidth="1.4" /><path d="M2 11.5c0-2.485 2.239-4.5 5-4.5s5 2.015 5 4.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
-              Donor
-            </button>
-            <button
-              type="button"
-              role="radio"
-              aria-checked={userType === 'charity'}
-              onClick={handleCharityClick}
-              className={`flex items-center justify-center gap-1.5 rounded-[9px] transition-all duration-200 ${
-                userType === 'charity'
-                  ? 'bg-emerald-700 text-white shadow-[0_2px_8px_rgba(4,120,87,0.3)]'
-                  : 'text-slate-500 dark:text-gray-400 hover:bg-slate-100 dark:hover:bg-gray-700 hover:text-slate-700'
-              }`}
-              style={{ padding: '0.65rem', fontSize: '0.875rem', fontWeight: 500 }}
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><rect x="1.5" y="2.5" width="11" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.4" /><path d="M5 5.5h4M5 8h2.5" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" /></svg>
-              Charity
-            </button>
-          </div>
+          <RoleToggle
+            userType={userType}
+            onDonorClick={handleDonorClick}
+            onCharityClick={handleCharityClick}
+          />
 
           {/* Context notices */}
           {userType === 'donor' && isConnected && (

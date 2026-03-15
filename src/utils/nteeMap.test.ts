@@ -54,7 +54,7 @@ describe('nteeMap', () => {
     });
 
     it('should return "—" for undefined', () => {
-      expect(formatNteeCode(undefined)).toBe('—');
+      expect(formatNteeCode()).toBe('—');
     });
 
     it('should return "—" for empty string', () => {

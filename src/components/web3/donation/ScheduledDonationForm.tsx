@@ -386,6 +386,52 @@ const ScheduleInfoBanner: React.FC<{ charityName: string }> = ({ charityName }) 
   </div>
 );
 
+/** Schedule preview card showing monthly payment, total payments, and date range. */
+const SchedulePreview: React.FC<{
+  amount: number;
+  numberOfMonths: number;
+  tokenSymbol: string;
+  startDate: Date;
+  endDate: Date;
+}> = ({ amount, numberOfMonths, tokenSymbol, startDate, endDate }) => (
+  <div className="bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 p-5 rounded-xl border-2 border-blue-100 dark:border-blue-800 shadow-sm">
+    <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
+      <svg
+        className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          strokeWidth={2}
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+        />
+      </svg>
+      Schedule Preview
+    </h4>
+    <div className="space-y-2.5 text-sm">
+      <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
+        <span className="text-gray-600 dark:text-gray-300">Monthly payment:</span>
+        <span className="font-bold text-emerald-900 dark:text-emerald-300">
+          {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"} {tokenSymbol}
+        </span>
+      </div>
+      <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
+        <span className="text-gray-600 dark:text-gray-300">Total payments:</span>
+        <span className="font-semibold text-gray-900 dark:text-gray-100">{numberOfMonths} months</span>
+      </div>
+      <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
+        <span className="text-gray-600 dark:text-gray-300">Schedule period:</span>
+        <span className="font-medium text-gray-700 dark:text-gray-200 text-xs">
+          {formatDate(startDate.toISOString())} to {formatDate(endDate.toISOString())}
+        </span>
+      </div>
+    </div>
+  </div>
+);
+
 interface ScheduledDonationFormProps {
   charityAddress: string;
   charityName: string;
@@ -680,52 +726,13 @@ export function ScheduledDonationForm({
         />
       </div>
 
-      <div className="bg-gradient-to-br from-blue-50 to-emerald-50 dark:from-blue-900/20 dark:to-emerald-900/20 p-5 rounded-xl border-2 border-blue-100 dark:border-blue-800 shadow-sm">
-        <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3 flex items-center">
-          <svg
-            className="w-5 h-5 mr-2 text-emerald-600 dark:text-emerald-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
-            />
-          </svg>
-          Schedule Preview
-        </h4>
-        <div className="space-y-2.5 text-sm">
-          <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
-            <span className="text-gray-600 dark:text-gray-300">
-              Monthly payment:
-            </span>
-            <span className="font-bold text-emerald-900 dark:text-emerald-300">
-              {amount ? (amount / numberOfMonths).toFixed(6) : "0.00"}{" "}
-              {selectedToken.symbol}
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
-            <span className="text-gray-600 dark:text-gray-300">
-              Total payments:
-            </span>
-            <span className="font-semibold text-gray-900 dark:text-gray-100">
-              {numberOfMonths} months
-            </span>
-          </div>
-          <div className="flex justify-between items-center p-2 bg-white dark:bg-gray-700 rounded-lg">
-            <span className="text-gray-600 dark:text-gray-300">
-              Schedule period:
-            </span>
-            <span className="font-medium text-gray-700 dark:text-gray-200 text-xs">
-              {formatDate(startDate.toISOString())} to{" "}
-              {formatDate(endDate.toISOString())}
-            </span>
-          </div>
-        </div>
-      </div>
+      <SchedulePreview
+        amount={amount}
+        numberOfMonths={numberOfMonths}
+        tokenSymbol={selectedToken.symbol}
+        startDate={startDate}
+        endDate={endDate}
+      />
 
       {/* Minimum Donation Info */}
       {amount > 0 && tokenPrices[selectedToken.coingeckoId] !== undefined && (
