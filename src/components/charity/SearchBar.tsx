@@ -37,6 +37,7 @@ interface SearchBarProps {
   className?: string;
 }
 
+/** Charity search bar with filters for country, category, status, and sort order. */
 export const SearchBar: React.FC<SearchBarProps> = ({
   countries,
   categories,
@@ -119,6 +120,7 @@ export const SearchBar: React.FC<SearchBarProps> = ({
     setShowFilters(!showFilters);
   }, [showFilters]);
 
+  /** Renders a single country option with optional flag emoji prefix. */
   const renderCountryOption = (country: Country) => {
     const flagEmoji = country.flag || '';
     return (

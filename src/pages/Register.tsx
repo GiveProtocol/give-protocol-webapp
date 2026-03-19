@@ -351,7 +351,7 @@ export const Register: React.FC = () => {
             </h1>
             <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)' }}>
               Already have an account?{' '}
-              <Link to={`/login?type=${userType}`} className="font-medium text-emerald-700 hover:underline">
+              <Link to="/auth" className="font-medium text-emerald-700 hover:underline">
                 Sign in
               </Link>
             </p>

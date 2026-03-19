@@ -285,7 +285,7 @@ function ContributionsTableHeader({
 export const GiveDashboard: React.FC = () => {
   const [_view, _setView] = useState<View>("select"); // Prefixed as unused
   const { user, userType } = useAuth();
-  const { isConnected, connect } = useWeb3();
+  const { isConnected } = useWeb3();
   const navigate = useNavigate();
   const location = useLocation();
   const [selectedYear, setSelectedYear] = useState<string>("all");
@@ -320,11 +320,6 @@ export const GiveDashboard: React.FC = () => {
       setShowWalletSettings(true);
     }
   }, [location.state]);
-
-  // Wrapper to prevent click event from being passed to connect
-  const handleConnectWallet = useCallback(() => {
-    connect();
-  }, [connect]);
 
   /**
    * Determines if a navigation path is currently active and returns appropriate CSS classes
@@ -460,7 +455,7 @@ export const GiveDashboard: React.FC = () => {
 
   // Allow access if user is authenticated OR wallet is connected
   if (!user && !isConnected) {
-    return <Navigate to="/login?type=donor" />;
+    return <Navigate to="/auth" />;
   }
 
   // Redirect charity users to charity portal
@@ -480,23 +475,6 @@ export const GiveDashboard: React.FC = () => {
             Please use the admin panel to manage the platform.
           </p>
           <Button onClick={handleAdminRedirect}>Go to Admin Panel</Button>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isConnected) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white p-8 rounded-lg shadow-md text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">
-            Connect Your Wallet
-          </h2>
-          <p className="text-gray-600 mb-6">
-            To view your dashboard and make donations, please connect your
-            wallet.
-          </p>
-          <Button onClick={handleConnectWallet}>Connect Wallet</Button>
         </div>
       </div>
     );

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "@/hooks/useTranslation";
 
+/** Call-to-action buttons linking to the charity browser for starting donations. */
 export const ActionButtons: React.FC = () => {
   const { t } = useTranslation();
 

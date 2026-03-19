@@ -8,6 +8,10 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 // Eagerly load critical routes
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import Auth from "@/pages/Auth";
+
+// Lazy load unified auth routes
+const AuthSignup = lazy(() => import("@/pages/AuthSignup"));
 
 // Lazy load other routes
 const Home = lazy(() => import("@/pages/Home"));
@@ -56,6 +60,7 @@ const ScheduledDonationsPage = lazy(
   () => import("@/pages/donor/ScheduledDonationsPage"),
 );
 const Documentation = lazy(() => import("@/pages/Documentation"));
+const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"));
 
 // Admin routes
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
@@ -353,6 +358,20 @@ export function AppRoutes() {
           }
         />
 
+        {/* Settings */}
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <DashboardSettings />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+
         {/* Other Routes */}
         <Route
           path="/privacy"
@@ -490,8 +509,23 @@ export function AppRoutes() {
             </RouteTransition>
           }
         />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        {/* Unified auth routes */}
+        <Route path="/auth" element={<Auth />} />
+        <Route
+          path="/auth/signup"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <AuthSignup />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
+        <Route path="/auth/charity" element={<Register />} />
+
+        {/* Legacy auth redirects */}
+        <Route path="/login" element={<Navigate to="/auth" replace />} />
+        <Route path="/register" element={<Navigate to="/auth/signup" replace />} />
         <Route
           path="*"
           element={

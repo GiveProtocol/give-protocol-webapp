@@ -12,7 +12,7 @@ import { ClientOnly } from "./ClientOnly";
 import { SettingsMenu } from "./SettingsMenu";
 import { WalletButton, NetworkSelector } from "./Wallet";
 import type { NetworkType, WalletProviderType } from "./Wallet";
-import { Menu, X, Calendar } from "lucide-react";
+import { Menu, X, Calendar, LogOut } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -267,6 +267,7 @@ const NavActions: React.FC<{
   network: NetworkType;
   onNetworkChange: (_network: NetworkType) => void;
   onDisconnect: () => void;
+  onSignOut: () => void;
 }> = ({
   isMenuOpen,
   toggleMenu,
@@ -277,6 +278,7 @@ const NavActions: React.FC<{
   network,
   onNetworkChange,
   onDisconnect,
+  onSignOut,
 }) => {
   // Determine wallet provider from window.ethereum
   const getWalletProvider = useCallback((): WalletProviderType => {
@@ -314,13 +316,25 @@ const NavActions: React.FC<{
         )}
         {!isConnected && !isAuthenticated && (
           <Link
-            to="/login"
+            to="/auth"
             className="hidden sm:inline-flex items-center px-4 py-1.5 rounded-lg text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors duration-200"
           >
             Sign In
           </Link>
         )}
-        {!isConnected && isAuthenticated && <ConnectButton />}
+        {!isConnected && isAuthenticated && (
+          <>
+            <ConnectButton />
+            <button
+              onClick={onSignOut}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-white/75 hover:text-white hover:bg-white/10 transition-colors duration-200"
+              aria-label="Sign out"
+            >
+              <LogOut className="h-4 w-4" />
+              <span className="hidden md:inline">Sign Out</span>
+            </button>
+          </>
+        )}
       </ClientOnly>
       <MobileMenuButton
         isMenuOpen={isMenuOpen}
@@ -403,7 +417,7 @@ export const AppNavbar: React.FC = () => {
           console.warn("Logout failed during disconnect:", logoutError);
         }
         // Redirect to login page
-        window.location.href = `${window.location.origin}/login`;
+        window.location.href = `${window.location.origin}/auth`;
       } else {
         // If not logged in, just refresh to clear state
         window.location.reload();
@@ -414,6 +428,15 @@ export const AppNavbar: React.FC = () => {
       window.location.reload();
     }
   }, [disconnect, logout, user]);
+
+  const handleSignOut = useCallback(async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.warn("Logout failed:", err);
+    }
+    window.location.href = `${window.location.origin}/auth`;
+  }, [logout]);
 
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(
@@ -505,6 +528,7 @@ export const AppNavbar: React.FC = () => {
           network={network}
           onNetworkChange={handleNetworkChange}
           onDisconnect={handleDisconnect}
+          onSignOut={handleSignOut}
         />
       </div>
 
@@ -519,6 +543,15 @@ export const AppNavbar: React.FC = () => {
           handleLinkClick={handleLinkClick}
           t={t}
         />
+        {Boolean(user) && !isConnected && (
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-2 w-full px-3 py-3 rounded-md text-[0.82rem] font-medium text-[rgba(255,255,255,0.75)] hover:text-emerald-300"
+          >
+            <LogOut className="h-4 w-4" />
+            Sign Out
+          </button>
+        )}
       </MobileMenu>
     </nav>
   );

@@ -265,7 +265,7 @@ const VolunteerOpportunities: React.FC = () => {
           "error",
           "Please sign in to apply for volunteer opportunities",
         );
-        navigate("/login");
+        navigate("/auth");
         return;
       }
       setSelectedOpportunity(opportunity);

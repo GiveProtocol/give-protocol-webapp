@@ -119,6 +119,7 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
 
   // Calculate position based on anchor element
   useEffect(() => {
+    /** Recalculates dropdown position based on the anchor element's bounding rect. */
     const updatePosition = () => {
       if (anchorRef?.current) {
         const rect = anchorRef.current.getBoundingClientRect();

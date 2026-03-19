@@ -172,7 +172,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
         }
 
         showToast('success', 'Account Created', 'Please check your email to verify your account.');
-        navigate('/login');
+        navigate('/auth');
       } catch (err) {
         const message = err instanceof Error ? err.message : 'Failed to create account';
         setError(message);

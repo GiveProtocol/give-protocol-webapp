@@ -7,6 +7,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
 const BLOB_DELAY: React.CSSProperties = { animationDelay: '1s' };
 
+/** Landing page dashboard with hero, protocol stats, feature cards, and action buttons. */
 const AppDashboard: React.FC = () => {
   return (
     <div className="relative min-h-[calc(100vh-60px)] overflow-hidden">

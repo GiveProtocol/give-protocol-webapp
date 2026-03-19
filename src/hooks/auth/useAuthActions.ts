@@ -119,7 +119,7 @@ export function useAuthActions() {
         "Registration successful",
         "Please check your email to verify your account",
       );
-      navigate("/login");
+      navigate("/auth");
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Failed to register";

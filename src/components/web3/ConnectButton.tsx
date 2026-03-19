@@ -36,6 +36,7 @@ interface AccountDropdownProps {
   onManageAlias: () => void;
 }
 
+/** Dropdown menu showing connected account details, address copy, explorer link, alias management, and disconnect. */
 const AccountDropdown: React.FC<AccountDropdownProps> = ({
   account,
   wallet,
@@ -191,6 +192,7 @@ export function ConnectButton() {
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    /** Closes the account dropdown when clicking outside its container. */
     const handleClickOutside = (event: MouseEvent) => {
       if (showAccountMenu) {
         const target = event.target as HTMLElement;
@@ -256,13 +258,13 @@ export function ConnectButton() {
       if (user) {
         try {
           await logout();
-          window.location.href = `${window.location.origin}/login`;
+          window.location.href = `${window.location.origin}/auth`;
         } catch (logoutError) {
           Logger.warn(
             "Logout failed during wallet disconnect, redirecting anyway",
             { error: logoutError }
           );
-          window.location.href = `${window.location.origin}/login`;
+          window.location.href = `${window.location.origin}/auth`;
         }
       } else {
         Logger.info("Wallet disconnected while not logged in, refreshing page");

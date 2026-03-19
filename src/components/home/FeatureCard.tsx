@@ -7,6 +7,7 @@ interface FeatureCardProps {
   description: string;
 }
 
+/** Card displaying a single platform feature with icon, title, and description. */
 export const FeatureCard: React.FC<FeatureCardProps> = ({ Icon, title, description }) => {
   return (
     <div className="group bg-white/70 dark:bg-white/5 backdrop-blur-lg border border-black/5 dark:border-white/40 p-6 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 hover:border-emerald-300/30 dark:hover:border-emerald-500/30 transition-all hover:scale-[1.02]">

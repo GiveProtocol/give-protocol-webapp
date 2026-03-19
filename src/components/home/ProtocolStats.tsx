@@ -1,5 +1,6 @@
 import React from 'react';
 
+/** Displays protocol-level statistics such as networks served and charitable sectors. */
 export const ProtocolStats: React.FC = () => {
   return (
     <div className="grid grid-cols-2 gap-8 max-w-2xl mx-auto mt-12 mb-16">

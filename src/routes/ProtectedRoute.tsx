@@ -54,7 +54,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
       path: location.pathname,
       timestamp: new Date().toISOString()
     });
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   // Check role requirements (skip if wallet-only access without user)

@@ -3,6 +3,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 
 const GRADIENT_KEYWORD = 'generosity.';
 
+/** Hero section with gradient-highlighted tagline and subtitle text. */
 export const Hero: React.FC = () => {
   const { t } = useTranslation();
   const tagline = t('app.tagline');
