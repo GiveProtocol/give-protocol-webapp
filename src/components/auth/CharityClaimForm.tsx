@@ -202,26 +202,24 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           </div>
         )}
 
-        <div className="space-y-3 bg-gray-50 p-4 rounded-lg">
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide">
+        <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-1">
+          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
             Organization Details (from IRS)
           </h3>
-          <div className="space-y-1 text-sm">
+          <p>
+            <span className="font-medium text-gray-700">Name:</span>{' '}
+            {organization.name}
+          </p>
+          <p>
+            <span className="font-medium text-gray-700">EIN:</span>{' '}
+            {organization.ein}
+          </p>
+          {irsLocation && (
             <p>
-              <span className="font-medium text-gray-700">Name:</span>{' '}
-              <span className="text-gray-900">{organization.name}</span>
+              <span className="font-medium text-gray-700">Location:</span>{' '}
+              {irsLocation}
             </p>
-            <p>
-              <span className="font-medium text-gray-700">EIN:</span>{' '}
-              <span className="text-gray-900">{organization.ein}</span>
-            </p>
-            {irsLocation && (
-              <p>
-                <span className="font-medium text-gray-700">Location:</span>{' '}
-                <span className="text-gray-900">{irsLocation}</span>
-              </p>
-            )}
-          </div>
+          )}
         </div>
 
         <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>

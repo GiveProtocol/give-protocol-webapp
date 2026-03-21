@@ -246,11 +246,76 @@ const RegisterLeftPanel: React.FC<{
   </div>
 );
 
-/**
- * Account registration page for donors and charities
- * @returns Register page element
- */
-export const Register: React.FC = () => {
+/** Wallet link toggle notice for connected donor wallets. */
+const WalletLinkToggle: React.FC<{
+  truncatedAddress: string;
+  linkWallet: boolean;
+  onToggle: () => void;
+}> = ({ truncatedAddress, linkWallet, onToggle }) => (
+  <button
+    type="button"
+    onClick={onToggle}
+    className="w-full flex items-center justify-between cursor-pointer transition-all duration-200 hover:border-emerald-300"
+    style={{ background: 'var(--emerald-50)', border: '1.5px solid var(--emerald-100)', borderRadius: 10, padding: '0.75rem 1rem', marginBottom: '1.25rem' }}
+    role="switch"
+    aria-checked={linkWallet}
+  >
+    <div className="flex items-center gap-2.5">
+      <LinkIcon className="h-4 w-4 text-emerald-600 shrink-0 p-1 box-content" style={{ borderRadius: 8, background: 'var(--emerald-100)' }} />
+      <div className="text-left" style={{ fontSize: '0.82rem', color: 'var(--slate-700)', lineHeight: 1.35 }}>
+        <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--emerald-800)', fontWeight: 600 }}>
+          Link wallet {truncatedAddress}
+        </strong>
+        Auto-link your connected wallet to this account
+      </div>
+    </div>
+    <div
+      className="shrink-0 relative"
+      style={{ width: 36, height: 20, background: linkWallet ? 'var(--emerald-600)' : '#d1d5db', borderRadius: 10 }}
+    >
+      <span
+        className="absolute bg-white rounded-full shadow-sm transition-all duration-200"
+        style={{ width: 14, height: 14, top: 3, right: linkWallet ? 3 : 'auto', left: linkWallet ? 'auto' : 3 }}
+      />
+    </div>
+  </button>
+);
+
+/** Notice shown when no wallet is connected during donor registration. */
+const WalletDisconnectedNotice: React.FC = () => (
+  <div
+    className="flex items-center gap-2.5"
+    style={{ background: 'var(--slate-50)', border: '1.5px solid var(--slate-300)', borderRadius: 10, padding: '0.75rem 1rem', marginBottom: '1.25rem' }}
+  >
+    <LinkIcon className="h-4 w-4 text-slate-400 shrink-0 p-1 box-content" style={{ borderRadius: 8, background: 'var(--slate-100)' }} />
+    <p style={{ fontSize: '0.82rem', color: 'var(--slate-500)' }}>
+      You can connect a wallet from your dashboard after signup.
+    </p>
+  </div>
+);
+
+/** Notice about charity wallet setup during charity registration. */
+const CharityWalletNotice: React.FC = () => (
+  <div
+    className="rounded-[10px] p-4 mb-6 dark:bg-transparent dark:border-[#F59E0B] flex items-start gap-3"
+    style={{ background: 'rgba(254,243,199,0.6)', border: '1.5px solid rgba(234,179,8,0.35)' }}
+  >
+    <LinkIcon className="h-4 w-4 shrink-0 p-1 box-content" style={{ color: '#92400e', borderRadius: 8, background: 'rgba(234,179,8,0.12)' }} />
+    <div>
+      <p className="dark:text-[#F59E0B]" style={{ fontWeight: 600, fontSize: '0.9rem', color: '#92400e' }}>
+        Organization wallet setup
+      </p>
+      <p className="text-slate-600 dark:text-[#D1D5DB] mt-1" style={{ fontSize: '0.8rem', lineHeight: 1.5 }}>
+        Charity digital asset wallets are configured after account creation
+        by an authorized admin using your organization&apos;s dedicated wallet —
+        kept separate from any personal wallets.
+      </p>
+    </div>
+  </div>
+);
+
+/** Right panel content for the registration page with role toggle and forms. */
+const RegisterRightPanel: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeParam = searchParams.get('type');
   const [userType, setUserType] = useState<'donor' | 'charity'>(typeParam === 'charity' ? 'charity' : 'donor');
@@ -297,7 +362,6 @@ export const Register: React.FC = () => {
     setLinkWallet((prev) => !prev);
   }, []);
 
-
   /** Renders the charity sub-step content based on the current step state. */
   const renderCharityContent = () => {
     switch (charityStep) {
@@ -324,138 +388,81 @@ export const Register: React.FC = () => {
   };
 
   return (
+    <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
+      <div className="w-full animate-fadeUp" style={{ maxWidth: 440, animationDelay: '0.1s' }}>
+        {/* Mobile-only logo */}
+        <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
+          <Logo className="h-10 w-10" />
+          <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
+        </Link>
+
+        <h1
+          className="font-serif text-slate-900 dark:text-white"
+          style={{ fontSize: '2rem', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.4rem' }}
+        >
+          Create your account
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', marginBottom: '2rem' }}>
+          Already have an account?{' '}
+          <Link to="/auth" className="font-medium text-emerald-700 hover:underline">
+            Sign in
+          </Link>
+        </p>
+
+        <RoleToggle
+          userType={userType}
+          onDonorClick={handleDonorClick}
+          onCharityClick={handleCharityClick}
+        />
+
+        {/* Context notices */}
+        {userType === 'donor' && isConnected && (
+          <WalletLinkToggle
+            truncatedAddress={truncatedAddress}
+            linkWallet={linkWallet}
+            onToggle={handleLinkWalletToggle}
+          />
+        )}
+        {userType === 'donor' && !isConnected && <WalletDisconnectedNotice />}
+        {userType === 'charity' && <CharityWalletNotice />}
+
+        {/* Form content */}
+        {userType !== 'donor' && (
+          <h2 className="font-serif text-xl font-semibold mb-6 text-gray-900 dark:text-white">
+            {getCharityHeading(charityStep)}
+          </h2>
+        )}
+        {userType === 'donor' ? <DonorRegistration /> : renderCharityContent()}
+
+        {/* Terms / trust signal */}
+        <p className="text-center" style={{ marginTop: '1.25rem', fontSize: '0.72rem', color: 'var(--slate-400)', lineHeight: 1.5 }}>
+          <ShieldCheck aria-hidden="true" className="inline h-3 w-3 mr-1 align-text-bottom" />
+          256-bit SSL encrypted. By creating an account you agree to our{' '}
+          <Link to="/legal" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Terms</Link>
+          {' '}and{' '}
+          <Link to="/privacy" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Privacy Policy</Link>.
+        </p>
+      </div>
+    </div>
+  );
+};
+
+/**
+ * Account registration page for donors and charities
+ * @returns Register page element
+ */
+export const Register: React.FC = () => {
+  const { address, isConnected } = useWeb3();
+  const truncatedAddress = address ? formatAddress(address, 'short') : '';
+
+  return (
     <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
       <RegisterLeftPanel
         isConnected={isConnected}
         address={address}
         truncatedAddress={truncatedAddress}
       />
-
-      {/* ── Right Panel ── */}
-      <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
-        <div className="w-full animate-fadeUp" style={{ maxWidth: 440, animationDelay: '0.1s' }}>
-          {/* Mobile-only logo */}
-          <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
-            <Logo className="h-10 w-10" />
-            <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
-          </Link>
-
-          <div style={{ marginBottom: '2rem' }}>
-            <h1
-              className="font-serif text-slate-900 dark:text-white"
-              style={{ fontSize: '2rem', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.4rem' }}
-            >
-              Create your account
-            </h1>
-            <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)' }}>
-              Already have an account?{' '}
-              <Link to="/auth" className="font-medium text-emerald-700 hover:underline">
-                Sign in
-              </Link>
-            </p>
-          </div>
-
-          <RoleToggle
-            userType={userType}
-            onDonorClick={handleDonorClick}
-            onCharityClick={handleCharityClick}
-          />
-
-          {/* Context notices */}
-          {userType === 'donor' && isConnected && (
-            <button
-              type="button"
-              onClick={handleLinkWalletToggle}
-              className="w-full flex items-center justify-between cursor-pointer transition-all duration-200 hover:border-emerald-300"
-              style={{ background: 'var(--emerald-50)', border: '1.5px solid var(--emerald-100)', borderRadius: 10, padding: '0.75rem 1rem', marginBottom: '1.25rem' }}
-              role="switch"
-              aria-checked={linkWallet}
-            >
-              <div className="flex items-center gap-2.5">
-                <div
-                  className="shrink-0 flex items-center justify-center"
-                  style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--emerald-100)' }}
-                >
-                  <LinkIcon className="h-4 w-4 text-emerald-600" />
-                </div>
-                <div className="text-left" style={{ fontSize: '0.82rem', color: 'var(--slate-700)', lineHeight: 1.35 }}>
-                  <strong style={{ display: 'block', fontSize: '0.85rem', color: 'var(--emerald-800)', fontWeight: 600 }}>
-                    Link wallet {truncatedAddress}
-                  </strong>
-                  Auto-link your connected wallet to this account
-                </div>
-              </div>
-              <div
-                className="shrink-0 relative"
-                style={{ width: 36, height: 20, background: linkWallet ? 'var(--emerald-600)' : '#d1d5db', borderRadius: 10 }}
-              >
-                <span
-                  className="absolute bg-white rounded-full shadow-sm transition-all duration-200"
-                  style={{ width: 14, height: 14, top: 3, right: linkWallet ? 3 : 'auto', left: linkWallet ? 'auto' : 3 }}
-                />
-              </div>
-            </button>
-          )}
-          {userType === 'donor' && !isConnected && (
-            <div
-              className="flex items-center gap-2.5"
-              style={{ background: 'var(--slate-50)', border: '1.5px solid var(--slate-300)', borderRadius: 10, padding: '0.75rem 1rem', marginBottom: '1.25rem' }}
-            >
-              <div
-                className="shrink-0 flex items-center justify-center"
-                style={{ width: 32, height: 32, borderRadius: 8, background: 'var(--slate-100)' }}
-              >
-                <LinkIcon className="h-4 w-4 text-slate-400" />
-              </div>
-              <p style={{ fontSize: '0.82rem', color: 'var(--slate-500)' }}>
-                You can connect a wallet from your dashboard after signup.
-              </p>
-            </div>
-          )}
-          {userType === 'charity' && (
-            <div
-              className="rounded-[10px] p-4 mb-6 dark:bg-transparent dark:border-[#F59E0B]"
-              style={{ background: 'rgba(254,243,199,0.6)', border: '1.5px solid rgba(234,179,8,0.35)' }}
-            >
-              <div className="flex items-start gap-3">
-                <div
-                  className="shrink-0 flex items-center justify-center"
-                  style={{ width: 32, height: 32, borderRadius: 8, background: 'rgba(234,179,8,0.12)' }}
-                >
-                  <LinkIcon className="h-4 w-4" style={{ color: '#92400e' }} />
-                </div>
-                <div>
-                  <p className="dark:text-[#F59E0B]" style={{ fontWeight: 600, fontSize: '0.9rem', color: '#92400e' }}>
-                    Organization wallet setup
-                  </p>
-                  <p className="text-slate-600 dark:text-[#D1D5DB] mt-1" style={{ fontSize: '0.8rem', lineHeight: 1.5 }}>
-                    Charity digital asset wallets are configured after account creation
-                    by an authorized admin using your organization&apos;s dedicated wallet —
-                    kept separate from any personal wallets.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Form content */}
-          {userType !== 'donor' && (
-            <h2 className="font-serif text-xl font-semibold mb-6 text-gray-900 dark:text-white">
-              {getCharityHeading(charityStep)}
-            </h2>
-          )}
-          {userType === 'donor' ? <DonorRegistration /> : renderCharityContent()}
-
-          {/* Terms / trust signal */}
-          <p className="text-center" style={{ marginTop: '1.25rem', fontSize: '0.72rem', color: 'var(--slate-400)', lineHeight: 1.5 }}>
-            <ShieldCheck aria-hidden="true" className="inline h-3 w-3 mr-1 align-text-bottom" />
-            256-bit SSL encrypted. By creating an account you agree to our{' '}
-            <Link to="/legal" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Terms</Link>
-            {' '}and{' '}
-            <Link to="/privacy" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Privacy Policy</Link>.
-          </p>
-        </div>
-      </div>
+      <RegisterRightPanel />
     </div>
   );
 };

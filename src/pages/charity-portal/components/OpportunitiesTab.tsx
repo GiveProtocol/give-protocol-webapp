@@ -40,15 +40,10 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
   if (opportunities.length === 0) {
     return (
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              {t("volunteer.opportunities", "Volunteer Opportunities")}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              0 of {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
-            </p>
-          </div>
+        <div className="flex justify-between items-center mb-1">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t("volunteer.opportunities", "Volunteer Opportunities")}
+          </h2>
           <Link to="/charity-portal/create-opportunity">
             <Button className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
@@ -56,11 +51,12 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
             </Button>
           </Link>
         </div>
+        <p className="text-sm text-gray-500 mb-4">
+          0 of {MAX_OPPORTUNITIES_PER_CHARITY} active opportunities
+        </p>
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
           <div className="py-16 text-center">
-            <div className="mx-auto w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
-              <Briefcase className="h-8 w-8 text-emerald-400" />
-            </div>
+            <Briefcase className="h-8 w-8 text-emerald-400 mx-auto mb-4 p-4 box-content rounded-full bg-emerald-100" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {t("volunteer.noOpportunitiesTitle", "No opportunities yet")}
             </h3>
@@ -84,16 +80,10 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t("volunteer.opportunities", "Volunteer Opportunities")}
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            {activeCount} of {MAX_OPPORTUNITIES_PER_CHARITY} active
-            opportunities
-          </p>
-        </div>
+      <div className="flex justify-between items-center mb-1">
+        <h2 className="text-xl font-semibold text-gray-900">
+          {t("volunteer.opportunities", "Volunteer Opportunities")}
+        </h2>
         <Link to="/charity-portal/create-opportunity">
           <Button
             className="flex items-center gap-2"
@@ -104,6 +94,10 @@ export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
           </Button>
         </Link>
       </div>
+      <p className="text-sm text-gray-500 mb-4">
+        {activeCount} of {MAX_OPPORTUNITIES_PER_CHARITY} active
+        opportunities
+      </p>
 
       <div className="space-y-4">
         {opportunities.map((opportunity) => (

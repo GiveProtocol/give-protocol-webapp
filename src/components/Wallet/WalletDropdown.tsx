@@ -171,20 +171,18 @@ export const WalletDropdown: React.FC<WalletDropdownProps> = ({
       aria-label="Wallet menu"
     >
       {/* Account Info Section */}
-      <div className="p-4 bg-gradient-to-r from-emerald-50 to-emerald-50 dark:from-emerald-900/20 dark:to-emerald-900/20">
-        <div className="flex items-center gap-3">
-          <WalletAvatar address={address} size={48} />
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
-              {providerName}
-            </p>
-            <p
-              className="text-sm font-mono text-gray-900 dark:text-gray-100 truncate"
-              title={address}
-            >
-              {formatAddress(address, "medium")}
-            </p>
-          </div>
+      <div className="p-4 bg-gradient-to-r from-emerald-50 to-emerald-50 dark:from-emerald-900/20 dark:to-emerald-900/20 flex items-center gap-3">
+        <WalletAvatar address={address} size={48} />
+        <div className="flex-1 min-w-0">
+          <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">
+            {providerName}
+          </p>
+          <p
+            className="text-sm font-mono text-gray-900 dark:text-gray-100 truncate"
+            title={address}
+          >
+            {formatAddress(address, "medium")}
+          </p>
         </div>
       </div>
 

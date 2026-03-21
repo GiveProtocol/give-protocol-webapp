@@ -65,44 +65,42 @@ const AccountDropdown: React.FC<AccountDropdownProps> = ({
   return (
     <div className="absolute right-0 mt-2 w-80 rounded-xl shadow-lg bg-white ring-1 ring-gray-200 divide-y divide-gray-100 z-50">
       {/* Header */}
-      <div className="p-4">
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm text-gray-500">
-            Connected via {wallet?.name || "Wallet"}
+      <div className="flex items-center justify-between px-4 pt-4 pb-1">
+        <span className="text-sm text-gray-500">
+          Connected via {wallet?.name || "Wallet"}
+        </span>
+        <ChainTypeBadge chainType={account.chainType} size="sm" />
+      </div>
+      <div className="flex items-center justify-between px-4 pb-4">
+        <div className="flex flex-col">
+          {alias && (
+            <span className="text-sm font-medium text-gray-900">{alias}</span>
+          )}
+          <span className="font-mono text-sm text-gray-600">
+            {shortenAddress(account.address)}
           </span>
-          <ChainTypeBadge chainType={account.chainType} size="sm" />
         </div>
-        <div className="flex items-center justify-between">
-          <div className="flex flex-col">
-            {alias && (
-              <span className="text-sm font-medium text-gray-900">{alias}</span>
+        <div className="flex items-center space-x-2">
+          <button
+            onClick={handleCopyAddress}
+            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+            aria-label="Copy address"
+          >
+            {copied ? (
+              <Check className="h-4 w-4 text-green-500" />
+            ) : (
+              <Copy className="h-4 w-4" />
             )}
-            <span className="font-mono text-sm text-gray-600">
-              {shortenAddress(account.address)}
-            </span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={handleCopyAddress}
-              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-              aria-label="Copy address"
-            >
-              {copied ? (
-                <Check className="h-4 w-4 text-green-500" />
-              ) : (
-                <Copy className="h-4 w-4" />
-              )}
-            </button>
-            <a
-              href={getExplorerUrl()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
-              aria-label="View in explorer"
-            >
-              <ExternalLink className="h-4 w-4" />
-            </a>
-          </div>
+          </button>
+          <a
+            href={getExplorerUrl()}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded transition-colors"
+            aria-label="View in explorer"
+          >
+            <ExternalLink className="h-4 w-4" />
+          </a>
         </div>
       </div>
 

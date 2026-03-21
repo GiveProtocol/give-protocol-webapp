@@ -3,6 +3,7 @@ import { Link, Navigate } from 'react-router-dom';
 import { ShieldCheck, Building2, Wallet, Mail, Lock, User } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/Button';
+import { FormInput } from '@/components/ui/FormInput';
 import { PasswordStrengthBar } from '@/components/auth/PasswordStrengthBar';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 import { validateEmail, validatePassword } from '@/utils/validation';
@@ -114,8 +115,8 @@ const SignupLeftPanel: React.FC = () => (
   </div>
 );
 
-/** Unified sign-up page with email and wallet registration. */
-const AuthSignup: React.FC = () => {
+/** Right panel content with sign-up form and wallet registration. */
+const SignupRightPanel: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -212,174 +213,185 @@ const AuthSignup: React.FC = () => {
   const animClass = visible ? 'animate-fadeUp' : 'opacity-0';
 
   return (
-    <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
-      <SignupLeftPanel />
+    <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
+      <div className={`w-full ${animClass}`} style={{ maxWidth: 440, animationDelay: '0.1s' }}>
+        {/* Mobile-only logo */}
+        <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
+          <Logo className="h-10 w-10" />
+          <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
+        </Link>
 
-      {/* Right Panel */}
-      <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
-        <div className={`w-full ${animClass}`} style={{ maxWidth: 440, animationDelay: '0.1s' }}>
-          {/* Mobile-only logo */}
-          <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
-            <Logo className="h-10 w-10" />
-            <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
-          </Link>
+        {/* Heading */}
+        <h1
+          className="font-serif text-slate-900 dark:text-white"
+          style={{ fontSize: '2rem', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.4rem' }}
+        >
+          Create your account
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', marginBottom: '2rem' }}>
+          Start your transparent giving journey
+        </p>
 
-          {/* Heading */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h1
-              className="font-serif text-slate-900 dark:text-white"
-              style={{ fontSize: '2rem', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.4rem' }}
-            >
-              Create your account
-            </h1>
-            <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)' }}>
-              Start your transparent giving journey
-            </p>
-          </div>
-
-          {/* Success message */}
-          {successMessage && (
-            <div
-              className="flex items-center gap-2 p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm"
-              role="status"
-            >
-              {successMessage}
-            </div>
-          )}
-
-          {/* Error alert */}
-          {formError && (
-            <div
-              className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
-              role="alert"
-            >
-              {formError}
-            </div>
-          )}
-
-          {/* Registration form */}
-          <form onSubmit={handleEmailSignUp} className="space-y-4">
-            <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="text"
-                value={displayName}
-                onChange={handleDisplayNameChange}
-                placeholder="Display name (optional)"
-                autoComplete="name"
-                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-              />
-            </div>
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="email"
-                value={email}
-                onChange={handleEmailChange}
-                placeholder="Email"
-                required
-                autoComplete="email"
-                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-              />
-            </div>
-            <div>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={handlePasswordChange}
-                  placeholder="Password"
-                  required
-                  autoComplete="new-password"
-                  className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-                />
-              </div>
-              <div className="mt-1">
-                <PasswordStrengthBar password={password} />
-              </div>
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={handleConfirmPasswordChange}
-                placeholder="Confirm password"
-                required
-                autoComplete="new-password"
-                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-              />
-            </div>
-            <Button
-              type="submit"
-              fullWidth
-              size="lg"
-              disabled={loading}
-              className="font-semibold"
-            >
-              {loading ? 'Creating account\u2026' : 'Create Account'}
-            </Button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-            <span className="text-xs text-gray-400 font-medium">or</span>
-            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-          </div>
-
-          {/* Wallet sign up */}
-          <Button
-            onClick={handleWalletSignUp}
-            variant="secondary"
-            fullWidth
-            size="lg"
-            icon={<Wallet className="h-4 w-4" />}
-            disabled={loading}
-            className="font-semibold"
+        {/* Success message */}
+        {successMessage && (
+          <div
+            className="flex items-center gap-2 p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm"
+            role="status"
           >
-            Sign Up with Wallet
-          </Button>
-
-          {/* Sign in prompt */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              Already have an account?{' '}
-              <Link
-                to="/auth"
-                className="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline decoration-emerald-500 decoration-2 underline-offset-4"
-              >
-                Sign in &rarr;
-              </Link>
-            </p>
+            {successMessage}
           </div>
+        )}
 
-          {/* Nonprofit button */}
-          <div className="border-t border-gray-100 dark:border-gray-800 pt-5 mt-5">
-            <Link
-              to="/auth/charity"
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-200 group"
-            >
-              <Building2 className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">
-                I manage a Nonprofit Profile
-              </span>
-            </Link>
+        {/* Error alert */}
+        {formError && (
+          <div
+            className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+            role="alert"
+          >
+            {formError}
           </div>
+        )}
 
-          {/* Trust signal */}
-          <p className="text-center" style={{ marginTop: '1.25rem', fontSize: '0.72rem', color: 'var(--slate-400)', lineHeight: 1.5 }}>
-            <ShieldCheck aria-hidden="true" className="inline h-3 w-3 mr-1 align-text-bottom" />
-            256-bit SSL encrypted. By creating an account you agree to our{' '}
-            <Link to="/legal" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Terms</Link>
-            {' '}and{' '}
-            <Link to="/privacy" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Privacy Policy</Link>.
-          </p>
+        {/* Registration form */}
+        <SignupFormFields
+          displayName={displayName}
+          email={email}
+          password={password}
+          confirmPassword={confirmPassword}
+          loading={loading}
+          onDisplayNameChange={handleDisplayNameChange}
+          onEmailChange={handleEmailChange}
+          onPasswordChange={handlePasswordChange}
+          onConfirmPasswordChange={handleConfirmPasswordChange}
+          onSubmit={handleEmailSignUp}
+        />
+
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+          <span className="text-xs text-gray-400 font-medium">or</span>
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
         </div>
+
+        {/* Wallet sign up */}
+        <Button
+          onClick={handleWalletSignUp}
+          variant="secondary"
+          fullWidth
+          size="lg"
+          icon={<Wallet className="h-4 w-4" />}
+          disabled={loading}
+          className="font-semibold"
+        >
+          Sign Up with Wallet
+        </Button>
+
+        {/* Sign in prompt */}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          Already have an account?{' '}
+          <Link
+            to="/auth"
+            className="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline decoration-emerald-500 decoration-2 underline-offset-4"
+          >
+            Sign in &rarr;
+          </Link>
+        </p>
+
+        {/* Nonprofit button */}
+        <Link
+          to="/auth/charity"
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-200 group border-t border-gray-100 dark:border-gray-800 mt-5"
+        >
+          <Building2 className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">
+            I manage a Nonprofit Profile
+          </span>
+        </Link>
+
+        {/* Trust signal */}
+        <p className="text-center" style={{ marginTop: '1.25rem', fontSize: '0.72rem', color: 'var(--slate-400)', lineHeight: 1.5 }}>
+          <ShieldCheck aria-hidden="true" className="inline h-3 w-3 mr-1 align-text-bottom" />
+          256-bit SSL encrypted. By creating an account you agree to our{' '}
+          <Link to="/legal" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Terms</Link>
+          {' '}and{' '}
+          <Link to="/privacy" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Privacy Policy</Link>.
+        </p>
       </div>
     </div>
   );
 };
+
+/** Sign-up form fields extracted to reduce JSX nesting depth. */
+const SignupFormFields: React.FC<{
+  displayName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  loading: boolean;
+  onDisplayNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onConfirmPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}> = ({
+  displayName, email, password, confirmPassword, loading,
+  onDisplayNameChange, onEmailChange, onPasswordChange, onConfirmPasswordChange, onSubmit,
+}) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <FormInput
+      icon={<User className="h-4 w-4" />}
+      type="text"
+      value={displayName}
+      onChange={onDisplayNameChange}
+      placeholder="Display name (optional)"
+      autoComplete="name"
+    />
+    <FormInput
+      icon={<Mail className="h-4 w-4" />}
+      type="email"
+      value={email}
+      onChange={onEmailChange}
+      placeholder="Email"
+      required
+      autoComplete="email"
+    />
+    <FormInput
+      icon={<Lock className="h-4 w-4" />}
+      type="password"
+      value={password}
+      onChange={onPasswordChange}
+      placeholder="Password"
+      required
+      autoComplete="new-password"
+    />
+    <PasswordStrengthBar password={password} />
+    <FormInput
+      icon={<Lock className="h-4 w-4" />}
+      type="password"
+      value={confirmPassword}
+      onChange={onConfirmPasswordChange}
+      placeholder="Confirm password"
+      required
+      autoComplete="new-password"
+    />
+    <Button
+      type="submit"
+      fullWidth
+      size="lg"
+      disabled={loading}
+      className="font-semibold"
+    >
+      {loading ? 'Creating account\u2026' : 'Create Account'}
+    </Button>
+  </form>
+);
+
+/** Unified sign-up page with email and wallet registration. */
+const AuthSignup: React.FC = () => (
+  <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
+    <SignupLeftPanel />
+    <SignupRightPanel />
+  </div>
+);
 
 export default AuthSignup;

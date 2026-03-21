@@ -3,6 +3,7 @@ import { Link, Navigate, useLocation } from 'react-router-dom';
 import { ShieldCheck, Building2, Wallet, Mail, Lock } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/Button';
+import { FormInput } from '@/components/ui/FormInput';
 import { ForgotPassword } from '@/components/auth/ForgotPassword';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 import { Logger } from '@/utils/logger';
@@ -115,8 +116,48 @@ const AuthLeftPanel: React.FC = () => (
   </div>
 );
 
-/** Unified sign-in page with email and wallet authentication. */
-const Auth: React.FC = () => {
+/** Sign-in form fields extracted to reduce JSX nesting depth. */
+const SignInFormFields: React.FC<{
+  email: string;
+  password: string;
+  loading: boolean;
+  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}> = ({ email, password, loading, onEmailChange, onPasswordChange, onSubmit }) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <FormInput
+      icon={<Mail className="h-4 w-4" />}
+      type="email"
+      value={email}
+      onChange={onEmailChange}
+      placeholder="Email"
+      required
+      autoComplete="email"
+    />
+    <FormInput
+      icon={<Lock className="h-4 w-4" />}
+      type="password"
+      value={password}
+      onChange={onPasswordChange}
+      placeholder="Password"
+      required
+      autoComplete="current-password"
+    />
+    <Button
+      type="submit"
+      fullWidth
+      size="lg"
+      disabled={loading}
+      className="font-semibold"
+    >
+      {loading ? 'Signing in\u2026' : 'Sign In'}
+    </Button>
+  </form>
+);
+
+/** Right panel content with sign-in form and wallet authentication. */
+const AuthRightPanel: React.FC = () => {
   const [view, setView] = useState<View>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -192,12 +233,9 @@ const Auth: React.FC = () => {
 
   if (view === 'forgotPassword') {
     return (
-      <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
-        <AuthLeftPanel />
-        <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
-          <div className="w-full" style={{ maxWidth: 440 }}>
-            <ForgotPassword onBack={handleBackToSignIn} />
-          </div>
+      <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
+        <div className="w-full" style={{ maxWidth: 440 }}>
+          <ForgotPassword onBack={handleBackToSignIn} />
         </div>
       </div>
     );
@@ -206,147 +244,115 @@ const Auth: React.FC = () => {
   const animClass = visible ? 'animate-fadeUp' : 'opacity-0';
 
   return (
-    <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
-      <AuthLeftPanel />
+    <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
+      <div className={`w-full ${animClass}`} style={{ maxWidth: 440, animationDelay: '0.1s' }}>
+        {/* Mobile-only logo */}
+        <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
+          <Logo className="h-10 w-10" />
+          <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
+        </Link>
 
-      {/* Right Panel */}
-      <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
-        <div className={`w-full ${animClass}`} style={{ maxWidth: 440, animationDelay: '0.1s' }}>
-          {/* Mobile-only logo */}
-          <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
-            <Logo className="h-10 w-10" />
-            <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
-          </Link>
+        {/* Heading */}
+        <h1
+          className="font-serif text-slate-900 dark:text-white"
+          style={{ fontSize: '2rem', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.4rem' }}
+        >
+          Welcome back
+        </h1>
+        <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)', marginBottom: '2rem' }}>
+          Sign in to your Give Protocol account
+        </p>
 
-          {/* Heading */}
-          <div style={{ marginBottom: '2rem' }}>
-            <h1
-              className="font-serif text-slate-900 dark:text-white"
-              style={{ fontSize: '2rem', letterSpacing: '-0.02em', lineHeight: 1.1, marginBottom: '0.4rem' }}
-            >
-              Welcome back
-            </h1>
-            <p style={{ fontSize: '0.875rem', color: 'var(--slate-500)' }}>
-              Sign in to your Give Protocol account
-            </p>
-          </div>
-
-          {/* Error alert */}
-          {formError && (
-            <div
-              className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
-              role="alert"
-            >
-              {formError}
-            </div>
-          )}
-
-          {/* Email/Password form */}
-          <form onSubmit={handleEmailSignIn} className="space-y-4">
-            <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="email"
-                value={email}
-                onChange={handleEmailChange}
-                placeholder="Email"
-                required
-                autoComplete="email"
-                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-              />
-            </div>
-            <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <input
-                type="password"
-                value={password}
-                onChange={handlePasswordChange}
-                placeholder="Password"
-                required
-                autoComplete="current-password"
-                className="w-full pl-10 pr-3 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 bg-white dark:bg-gray-800 dark:border-gray-700 dark:text-white"
-              />
-            </div>
-            <Button
-              type="submit"
-              fullWidth
-              size="lg"
-              disabled={loading}
-              className="font-semibold"
-            >
-              {loading ? 'Signing in\u2026' : 'Sign In'}
-            </Button>
-          </form>
-
-          {/* Divider */}
-          <div className="flex items-center gap-3 my-5">
-            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-            <span className="text-xs text-gray-400 font-medium">or</span>
-            <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
-          </div>
-
-          {/* Wallet sign in */}
-          <Button
-            onClick={handleWalletSignIn}
-            variant="secondary"
-            fullWidth
-            size="lg"
-            icon={<Wallet className="h-4 w-4" />}
-            disabled={loading}
-            className="font-semibold"
+        {/* Error alert */}
+        {formError && (
+          <div
+            className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
+            role="alert"
           >
-            Connect Wallet
-          </Button>
-
-          {/* Sign up prompt */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-500">
-              New to Give Protocol?{' '}
-              <Link
-                to="/auth/signup"
-                className="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline decoration-emerald-500 decoration-2 underline-offset-4"
-              >
-                Create an account &rarr;
-              </Link>
-            </p>
+            {formError}
           </div>
+        )}
 
-          {/* Nonprofit button */}
-          <div className="border-t border-gray-100 dark:border-gray-800 pt-5 mt-5">
-            <Link
-              to="/auth/charity"
-              className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-200 group"
-            >
-              <Building2 className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
-              <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">
-                I manage a Nonprofit Profile
-              </span>
-            </Link>
-          </div>
+        {/* Email/Password form */}
+        <SignInFormFields
+          email={email}
+          password={password}
+          loading={loading}
+          onEmailChange={handleEmailChange}
+          onPasswordChange={handlePasswordChange}
+          onSubmit={handleEmailSignIn}
+        />
 
-          {/* Forgot password */}
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={handleShowForgotPassword}
-              className="text-sm text-gray-400 hover:text-gray-600 transition-colors"
-            >
-              Forgot password? &rarr;
-            </button>
-          </div>
-
-          {/* Trust signal */}
-          <p className="text-center" style={{ marginTop: '1.25rem', fontSize: '0.72rem', color: 'var(--slate-400)', lineHeight: 1.5 }}>
-            <ShieldCheck aria-hidden="true" className="inline h-3 w-3 mr-1 align-text-bottom" />
-            256-bit SSL encrypted &middot;{' '}
-            <Link to="/legal" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Terms</Link>
-            {' '}&middot;{' '}
-            <Link to="/privacy" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Privacy</Link>
-          </p>
+        {/* Divider */}
+        <div className="flex items-center gap-3 my-5">
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+          <span className="text-xs text-gray-400 font-medium">or</span>
+          <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
         </div>
+
+        {/* Wallet sign in */}
+        <Button
+          onClick={handleWalletSignIn}
+          variant="secondary"
+          fullWidth
+          size="lg"
+          icon={<Wallet className="h-4 w-4" />}
+          disabled={loading}
+          className="font-semibold"
+        >
+          Connect Wallet
+        </Button>
+
+        {/* Sign up prompt */}
+        <p className="mt-6 text-center text-sm text-gray-500">
+          New to Give Protocol?{' '}
+          <Link
+            to="/auth/signup"
+            className="font-semibold text-emerald-700 hover:text-emerald-800 hover:underline decoration-emerald-500 decoration-2 underline-offset-4"
+          >
+            Create an account &rarr;
+          </Link>
+        </p>
+
+        {/* Nonprofit button */}
+        <Link
+          to="/auth/charity"
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 border border-gray-200 dark:border-gray-700 transition-colors duration-200 group border-t border-gray-100 dark:border-gray-800 mt-5"
+        >
+          <Building2 className="h-4 w-4 text-gray-400 group-hover:text-gray-600" />
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-300 group-hover:text-gray-800 dark:group-hover:text-white">
+            I manage a Nonprofit Profile
+          </span>
+        </Link>
+
+        {/* Forgot password */}
+        <button
+          type="button"
+          onClick={handleShowForgotPassword}
+          className="mt-4 w-full text-center text-sm text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          Forgot password? &rarr;
+        </button>
+
+        {/* Trust signal */}
+        <p className="text-center" style={{ marginTop: '1.25rem', fontSize: '0.72rem', color: 'var(--slate-400)', lineHeight: 1.5 }}>
+          <ShieldCheck aria-hidden="true" className="inline h-3 w-3 mr-1 align-text-bottom" />
+          256-bit SSL encrypted &middot;{' '}
+          <Link to="/legal" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Terms</Link>
+          {' '}&middot;{' '}
+          <Link to="/privacy" className="underline" style={{ color: 'var(--slate-500)', textUnderlineOffset: 2 }}>Privacy</Link>
+        </p>
       </div>
     </div>
   );
 };
+
+/** Unified sign-in page with email and wallet authentication. */
+const Auth: React.FC = () => (
+  <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
+    <AuthLeftPanel />
+    <AuthRightPanel />
+  </div>
+);
 
 export default Auth;

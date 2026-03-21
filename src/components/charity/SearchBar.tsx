@@ -174,68 +174,64 @@ export const SearchBar: React.FC<SearchBarProps> = ({
       )}
 
       {showFilters && (
-        <div className="p-4 bg-white rounded-lg shadow-lg border border-gray-200 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <label htmlFor="country-filter" className="block">
-              <span className="text-sm font-medium text-gray-700 mb-1 block">Country</span>
-              <select
-                id="country-filter"
-                value={filters.country}
-                onChange={handleCountrySelectChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-              >
-                <option value="">All Countries</option>
-                {countries.map(renderCountryOption)}
-              </select>
-            </label>
+        <div className="p-4 bg-white rounded-lg shadow-lg border border-gray-200 grid grid-cols-2 gap-4">
+          <label htmlFor="country-filter" className="block">
+            <span className="text-sm font-medium text-gray-700 mb-1 block">Country</span>
+            <select
+              id="country-filter"
+              value={filters.country}
+              onChange={handleCountrySelectChange}
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            >
+              <option value="">All Countries</option>
+              {countries.map(renderCountryOption)}
+            </select>
+          </label>
 
-            <label htmlFor="category-filter" className="block">
-              <span className="text-sm font-medium text-gray-700 mb-1 block">Category</span>
-              <select
-                id="category-filter"
-                value={filters.category}
-                onChange={handleCategorySelectChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-              >
-                <option value="">All Categories</option>
-                {categories.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </label>
-          </div>
+          <label htmlFor="category-filter" className="block">
+            <span className="text-sm font-medium text-gray-700 mb-1 block">Category</span>
+            <select
+              id="category-filter"
+              value={filters.category}
+              onChange={handleCategorySelectChange}
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            >
+              <option value="">All Categories</option>
+              {categories.map((category) => (
+                <option key={category.id} value={category.id}>
+                  {category.name}
+                </option>
+              ))}
+            </select>
+          </label>
 
-          <div className="grid grid-cols-2 gap-4">
-            <label htmlFor="status-filter" className="block">
-              <span className="text-sm font-medium text-gray-700 mb-1 block">Status</span>
-              <select
-                id="status-filter"
-                value={filters.status}
-                onChange={handleStatusChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-              >
-                <option value="all">All</option>
-                <option value="active">Active</option>
-                <option value="completed">Completed</option>
-              </select>
-            </label>
+          <label htmlFor="status-filter" className="block">
+            <span className="text-sm font-medium text-gray-700 mb-1 block">Status</span>
+            <select
+              id="status-filter"
+              value={filters.status}
+              onChange={handleStatusChange}
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            >
+              <option value="all">All</option>
+              <option value="active">Active</option>
+              <option value="completed">Completed</option>
+            </select>
+          </label>
 
-            <label htmlFor="sort-filter" className="block">
-              <span className="text-sm font-medium text-gray-700 mb-1 block">Sort By</span>
-              <select
-                id="sort-filter"
-                value={filters.sortBy}
-                onChange={handleSortByChange}
-                className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-              >
-                <option value="popularity">Popularity</option>
-                <option value="date">Date</option>
-                <option value="name">Name</option>
-              </select>
-            </label>
-          </div>
+          <label htmlFor="sort-filter" className="block">
+            <span className="text-sm font-medium text-gray-700 mb-1 block">Sort By</span>
+            <select
+              id="sort-filter"
+              value={filters.sortBy}
+              onChange={handleSortByChange}
+              className="w-full rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+            >
+              <option value="popularity">Popularity</option>
+              <option value="date">Date</option>
+              <option value="name">Name</option>
+            </select>
+          </label>
         </div>
       )}
     </div>

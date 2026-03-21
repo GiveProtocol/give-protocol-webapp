@@ -32,15 +32,10 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
   if (causes.length === 0) {
     return (
       <div className="mb-8">
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">
-              {t("cause.causes", "Causes")}
-            </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              0 of {MAX_CAUSES_PER_CHARITY} active causes
-            </p>
-          </div>
+        <div className="flex justify-between items-center mb-1">
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t("cause.causes", "Causes")}
+          </h2>
           <Link to="/charity-portal/create-cause">
             <Button className="flex items-center gap-2">
               <Plus className="h-4 w-4" />
@@ -48,11 +43,12 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
             </Button>
           </Link>
         </div>
+        <p className="text-sm text-gray-500 mb-4">
+          0 of {MAX_CAUSES_PER_CHARITY} active causes
+        </p>
         <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
           <div className="py-16 text-center">
-            <div className="mx-auto w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mb-4">
-              <Heart className="h-8 w-8 text-pink-400" />
-            </div>
+            <Heart className="h-8 w-8 text-pink-400 mx-auto mb-4 p-4 box-content rounded-full bg-pink-100" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {t("cause.noCausesTitle", "No causes yet")}
             </h3>
@@ -76,15 +72,10 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t("cause.causes", "Causes")}
-          </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            {activeCount} of {MAX_CAUSES_PER_CHARITY} active causes
-          </p>
-        </div>
+      <div className="flex justify-between items-center mb-1">
+        <h2 className="text-xl font-semibold text-gray-900">
+          {t("cause.causes", "Causes")}
+        </h2>
         <Link to="/charity-portal/create-cause">
           <Button
             className="flex items-center gap-2"
@@ -95,6 +86,9 @@ export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
           </Button>
         </Link>
       </div>
+      <p className="text-sm text-gray-500 mb-4">
+        {activeCount} of {MAX_CAUSES_PER_CHARITY} active causes
+      </p>
 
       <div className="space-y-4">
         {causes.map((cause) => (
