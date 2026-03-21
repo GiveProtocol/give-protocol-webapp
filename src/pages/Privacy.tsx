@@ -8,7 +8,6 @@ export const Privacy: React.FC = () => {
       title="GiveProtocol Privacy Policy"
       effectiveDate="Effective Date: March 11, 2025"
     >
-      <div className="space-y-8">
         <section>
           <h2>1. Introduction</h2>
           <p>GiveProtocol (&quot;we,&quot; &quot;our,&quot; or &quot;us&quot;) is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our blockchain-based philanthropic platform and related services (collectively, the &quot;Service&quot;).</p>
@@ -188,7 +187,6 @@ export const Privacy: React.FC = () => {
             <strong>Email:</strong> privacy@giveprotocol.io
           </p>
         </section>
-      </div>
     </StaticPageLayout>
   );
 };

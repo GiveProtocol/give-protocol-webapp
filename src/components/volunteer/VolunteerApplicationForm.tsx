@@ -142,6 +142,96 @@ const CommitmentOption: React.FC<CommitmentOptionProps> = ({
   </label>
 );
 
+interface FormFieldProps {
+  id: string;
+  label: string;
+  required?: boolean;
+  type?: string;
+  value: string;
+  onChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  className: string;
+  placeholder?: string;
+  error?: string;
+}
+
+/** Labeled input field with validation error display. */
+const FormField: React.FC<FormFieldProps> = ({ id, label, required, type = "text", value, onChange, className, placeholder, error }) => (
+  <div>
+    <label
+      htmlFor={id}
+      className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
+    >
+      {label} {required && <span className="text-red-500 text-base">*</span>}
+    </label>
+    <input
+      id={id}
+      type={type}
+      value={value}
+      onChange={onChange}
+      className={className}
+      placeholder={placeholder}
+      required={required}
+    />
+    {error && (
+      <p className="text-sm text-red-600 mt-1">
+        {error}
+      </p>
+    )}
+  </div>
+);
+
+/** Consent explanation listing the data processing terms volunteers agree to. */
+const ConsentExplanation: React.FC = () => (
+  <div className="mb-4">
+    <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+      I understand that:
+    </p>
+    <ol className="list-decimal pl-6 space-y-2 text-gray-700 dark:text-gray-300 text-sm">
+      <li>
+        My personal information will be processed for the purposes
+        of evaluating my volunteer application, managing volunteer
+        assignments, and related activities.
+      </li>
+      <li>
+        GIVE PROTOCOL may collect various categories of my personal
+        information, including identity information, contact
+        details, background information, availability, references,
+        and where relevant and permitted by law, certain special
+        categories of data.
+      </li>
+      <li>
+        My personal information may be shared with authorized
+        personnel within the charity organization offering the
+        volunteer opportunity, service providers, and third parties
+        as outlined in the Privacy Notice.
+      </li>
+      <li>
+        My personal information may be transferred internationally
+        with appropriate safeguards in place.
+      </li>
+      <li>
+        I have certain rights regarding my personal information,
+        which vary depending on my location, including the rights to
+        access, rectify, delete, restrict processing, data
+        portability, and object to processing.
+      </li>
+      <li>
+        I can withdraw my consent at any time by contacting{" "}
+        <a
+          href="mailto:legal@giveprotocol.io"
+          className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
+        >
+          legal@giveprotocol.io <Mail className="w-3 h-3" />
+        </a>
+        {", "}though this will not affect the lawfulness of
+        processing based on my consent before withdrawal.
+        Withdrawing consent may impact the organization&apos;s
+        ability to consider my volunteer application.
+      </li>
+    </ol>
+  </div>
+);
+
 interface VolunteerApplicationFormProps {
   opportunityId: string;
   opportunityTitle: string;
@@ -510,106 +600,51 @@ export const VolunteerApplicationForm: React.FC<
           <section className="mb-8">
             <SectionHeader number={1} title="Personal Information" />
             <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
-              <div>
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  First Name <span className="text-red-500 text-base">*</span>
-                </label>
-                <input
-                  id="firstName"
-                  type="text"
-                  value={formData.firstName}
-                  onChange={handleFieldChange("firstName")}
-                  className={inputClasses}
-                  required
-                />
-                {validationErrors.firstName && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {validationErrors.firstName}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  Last Name <span className="text-red-500 text-base">*</span>
-                </label>
-                <input
-                  id="lastName"
-                  type="text"
-                  value={formData.lastName}
-                  onChange={handleFieldChange("lastName")}
-                  className={inputClasses}
-                  required
-                />
-                {validationErrors.lastName && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {validationErrors.lastName}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  Email Address{" "}
-                  <span className="text-red-500 text-base">*</span>
-                </label>
-                <input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleFieldChange("email")}
-                  className={inputClasses}
-                  required
-                />
-                {validationErrors.email && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {validationErrors.email}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="phoneNumber"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  Phone Number
-                </label>
-                <input
-                  id="phoneNumber"
-                  type="tel"
-                  value={formData.phoneNumber}
-                  onChange={handleFieldChange("phoneNumber")}
-                  className={inputClasses}
-                />
-                {validationErrors.phoneNumber && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {validationErrors.phoneNumber}
-                  </p>
-                )}
-              </div>
-              <div>
-                <label
-                  htmlFor="location"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  Location/City
-                </label>
-                <input
-                  id="location"
-                  type="text"
-                  value={formData.location}
-                  onChange={handleFieldChange("location")}
-                  className={inputClasses}
-                  placeholder="e.g., San Francisco, CA"
-                />
-              </div>
+              <FormField
+                id="firstName"
+                label="First Name"
+                required
+                value={formData.firstName}
+                onChange={handleFieldChange("firstName")}
+                className={inputClasses}
+                error={validationErrors.firstName}
+              />
+              <FormField
+                id="lastName"
+                label="Last Name"
+                required
+                value={formData.lastName}
+                onChange={handleFieldChange("lastName")}
+                className={inputClasses}
+                error={validationErrors.lastName}
+              />
+              <FormField
+                id="email"
+                label="Email Address"
+                required
+                type="email"
+                value={formData.email}
+                onChange={handleFieldChange("email")}
+                className={inputClasses}
+                error={validationErrors.email}
+              />
+              <FormField
+                id="phoneNumber"
+                label="Phone Number"
+                type="tel"
+                value={formData.phoneNumber}
+                onChange={handleFieldChange("phoneNumber")}
+                className={inputClasses}
+                error={validationErrors.phoneNumber}
+              />
+              <FormField
+                id="location"
+                label="Location/City"
+                value={formData.location}
+                onChange={handleFieldChange("location")}
+                className={inputClasses}
+                placeholder="e.g., San Francisco, CA"
+              />
               <div>
                 <label
                   htmlFor="timezone"
@@ -804,54 +839,7 @@ export const VolunteerApplicationForm: React.FC<
                 </p>
               </div>
 
-              <div className="mb-4">
-                <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                  I understand that:
-                </p>
-                <ol className="list-decimal pl-6 space-y-2 text-gray-700 dark:text-gray-300 text-sm">
-                  <li>
-                    My personal information will be processed for the purposes
-                    of evaluating my volunteer application, managing volunteer
-                    assignments, and related activities.
-                  </li>
-                  <li>
-                    GIVE PROTOCOL may collect various categories of my personal
-                    information, including identity information, contact
-                    details, background information, availability, references,
-                    and where relevant and permitted by law, certain special
-                    categories of data.
-                  </li>
-                  <li>
-                    My personal information may be shared with authorized
-                    personnel within the charity organization offering the
-                    volunteer opportunity, service providers, and third parties
-                    as outlined in the Privacy Notice.
-                  </li>
-                  <li>
-                    My personal information may be transferred internationally
-                    with appropriate safeguards in place.
-                  </li>
-                  <li>
-                    I have certain rights regarding my personal information,
-                    which vary depending on my location, including the rights to
-                    access, rectify, delete, restrict processing, data
-                    portability, and object to processing.
-                  </li>
-                  <li>
-                    I can withdraw my consent at any time by contacting{" "}
-                    <a
-                      href="mailto:legal@giveprotocol.io"
-                      className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
-                    >
-                      legal@giveprotocol.io <Mail className="w-3 h-3" />
-                    </a>
-                    {", "}though this will not affect the lawfulness of
-                    processing based on my consent before withdrawal.
-                    Withdrawing consent may impact the organization&apos;s
-                    ability to consider my volunteer application.
-                  </li>
-                </ol>
-              </div>
+              <ConsentExplanation />
 
               <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
                 <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">

@@ -25,6 +25,32 @@ const CAUSE_CATEGORIES = [
   "Other",
 ] as const;
 
+interface FormSelectProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}
+
+/** Labeled select field for cause form. */
+const FormSelect: React.FC<FormSelectProps> = ({ label, name, value, onChange, children }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+    </label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="block w-full border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base transition-all duration-200 bg-[#fafbfc] focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white focus:outline-none"
+      required
+    >
+      {children}
+    </select>
+  </div>
+);
+
 interface CauseFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -346,27 +372,21 @@ export const CauseForm: React.FC<CauseFormProps> = ({
             error={validationErrors["targetAmount"]}
           />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("cause.category", "Category")}
-            </label>
-            <select
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="block w-full border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base transition-all duration-200 bg-[#fafbfc] focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white focus:outline-none"
-              required
-            >
-              {CAUSE_CATEGORIES.map((category) => (
-                <option key={category} value={category}>
-                  {t(
-                    `cause.category.${category.toLowerCase().replaceAll(" & ", "_")}`,
-                    category,
-                  )}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FormSelect
+            label={t("cause.category", "Category")}
+            name="category"
+            value={formData.category}
+            onChange={handleChange}
+          >
+            {CAUSE_CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {t(
+                  `cause.category.${category.toLowerCase().replaceAll(" & ", "_")}`,
+                  category,
+                )}
+              </option>
+            ))}
+          </FormSelect>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

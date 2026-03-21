@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { Button } from "@/components/ui/Button";
 import { Logger } from "@/utils/logger";
 import { captureCustomEvent } from "@/lib/sentry";
@@ -8,6 +8,81 @@ interface TestResult {
   id: string;
   message: string;
 }
+
+interface SentryTestActionsProps {
+  onJsError: () => void;
+  onLogInfo: () => void;
+  onLogWarning: () => void;
+  onLogError: () => void;
+  onCustomEvent: () => void;
+  onAsyncError: () => void;
+  onNetworkError: () => void;
+  onRefError: () => void;
+}
+
+/** Action buttons for triggering various Sentry test scenarios. */
+const SentryTestActions: React.FC<SentryTestActionsProps> = ({
+  onJsError,
+  onLogInfo,
+  onLogWarning,
+  onLogError,
+  onCustomEvent,
+  onAsyncError,
+  onNetworkError,
+  onRefError,
+}) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+    <Button onClick={onJsError} className="bg-red-500 hover:bg-red-600 text-white">
+      Test JavaScript Error
+    </Button>
+    <Button onClick={onLogInfo} className="bg-blue-500 hover:bg-blue-600 text-white">
+      Test Logger Info
+    </Button>
+    <Button onClick={onLogWarning} className="bg-yellow-500 hover:bg-yellow-600 text-white">
+      Test Logger Warning
+    </Button>
+    <Button onClick={onLogError} className="bg-orange-500 hover:bg-orange-600 text-white">
+      Test Logger Error
+    </Button>
+    <Button onClick={onCustomEvent} className="bg-purple-500 hover:bg-purple-600 text-white">
+      Test Custom Event
+    </Button>
+    <Button onClick={onAsyncError} className="bg-pink-500 hover:bg-pink-600 text-white">
+      Test Async Error
+    </Button>
+    <Button onClick={onNetworkError} className="bg-indigo-500 hover:bg-indigo-600 text-white">
+      Test Network Error
+    </Button>
+    <Button onClick={onRefError} className="bg-gray-500 hover:bg-gray-600 text-white">
+      Test Reference Error
+    </Button>
+  </div>
+);
+
+interface SentryTestResultsProps {
+  results: TestResult[];
+  onClear: () => void;
+}
+
+/** Display panel for test execution results with clear functionality. */
+const SentryTestResults: React.FC<SentryTestResultsProps> = ({ results, onClear }) => (
+  <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+    <div className="flex justify-between items-center mb-2">
+      <h3 className="font-semibold">Test Results</h3>
+      <Button onClick={onClear} className="text-sm">Clear</Button>
+    </div>
+    <div className="space-y-1 max-h-60 overflow-y-auto">
+      {results.map((result) => (
+        <p key={result.id} className="text-sm text-gray-700 font-mono">
+          {result.message}
+        </p>
+      ))}
+      {results.length === 0 && (
+        <p className="text-sm text-gray-400">No test results yet</p>
+      )}
+    </div>
+  </div>
+);
 
 /**
  * Development testing component for Sentry error monitoring integration.
@@ -117,83 +192,40 @@ export default function SentryTest() {
   }, [addResult]);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">
-          Sentry Integration Test Page
-        </h1>
+    <div className="min-h-screen bg-gray-50 p-6 max-w-4xl mx-auto">
+      <h1 className="text-3xl font-bold mb-6">
+        Sentry Integration Test Page
+      </h1>
 
-        <p className="bg-yellow-50 border border-yellow-200 p-4 mb-6 rounded-lg text-sm text-yellow-800">
-          <strong>Note:</strong> Sentry is only active in production by default.
-          To test in development, temporarily modify{" "}
-          <code>src/lib/sentry.ts</code> line 6: change{" "}
-          <code>if (!import.meta.env.PROD)</code> to <code>if (false)</code>
-        </p>
+      <p className="bg-yellow-50 border border-yellow-200 p-4 mb-6 rounded-lg text-sm text-yellow-800">
+        <strong>Note:</strong> Sentry is only active in production by default.
+        To test in development, temporarily modify{" "}
+        <code>src/lib/sentry.ts</code> line 6: change{" "}
+        <code>if (!import.meta.env.PROD)</code> to <code>if (false)</code>
+      </p>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4">Test Actions</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <Button onClick={testJavaScriptError} variant="danger">
-              Throw JavaScript Error
-            </Button>
-            <Button onClick={testLoggerInfo} variant="secondary">
-              Test Logger Info
-            </Button>
-            <Button onClick={testLoggerWarning} variant="secondary">
-              Test Logger Warning
-            </Button>
-            <Button onClick={testLoggerError} variant="danger">
-              Test Logger Error
-            </Button>
-            <Button onClick={testCustomEvent} variant="primary">
-              Send Custom Event
-            </Button>
-            <Button onClick={testAsyncError} variant="danger">
-              Trigger Async Error
-            </Button>
-            <Button onClick={testNetworkError} variant="secondary">
-              Trigger Network Error
-            </Button>
-            <Button onClick={testReferenceError} variant="danger">
-              Trigger Reference Error
-            </Button>
-          </div>
-        </div>
+      <SentryTestActions
+        onJsError={testJavaScriptError}
+        onLogInfo={testLoggerInfo}
+        onLogWarning={testLoggerWarning}
+        onLogError={testLoggerError}
+        onCustomEvent={testCustomEvent}
+        onAsyncError={testAsyncError}
+        onNetworkError={testNetworkError}
+        onRefError={testReferenceError}
+      />
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold">Test Results</h2>
-            <Button onClick={clearResults} size="sm" variant="secondary">
-              Clear Results
-            </Button>
-          </div>
-          <div className="bg-gray-50 rounded p-4 min-h-[200px]">
-            {testResults.length === 0 ? (
-              <p className="text-gray-500">
-                No test results yet. Click a button above to test.
-              </p>
-            ) : (
-              <ul className="space-y-2">
-                {testResults.map((result) => (
-                  <li key={result.id} className="text-sm font-mono">
-                    {result.message}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </div>
+      <SentryTestResults results={testResults} onClear={clearResults} />
 
-        <div className="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
-          <h3 className="font-semibold mb-2">How to Verify in Sentry:</h3>
-          <ol className="list-decimal list-inside space-y-1 text-sm">
-            <li>Go to your Sentry dashboard at sentry.io</li>
-            <li>Navigate to Issues to see captured errors</li>
-            <li>Check the Events tab for custom events and logs</li>
-            <li>Look for user context (if logged in)</li>
-            <li>Verify error details, stack traces, and metadata</li>
-          </ol>
-        </div>
+      <div className="mt-6 bg-blue-50 border border-blue-200 p-4 rounded-lg">
+        <h3 className="font-semibold mb-2">How to Verify in Sentry:</h3>
+        <ol className="list-decimal list-inside space-y-1 text-sm">
+          <li>Go to your Sentry dashboard at sentry.io</li>
+          <li>Navigate to Issues to see captured errors</li>
+          <li>Check the Events tab for custom events and logs</li>
+          <li>Look for user context (if logged in)</li>
+          <li>Verify error details, stack traces, and metadata</li>
+        </ol>
       </div>
     </div>
   );

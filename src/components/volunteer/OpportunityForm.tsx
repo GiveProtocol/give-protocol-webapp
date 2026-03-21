@@ -16,6 +16,32 @@ import { useTranslation } from "@/hooks/useTranslation";
 import { Logger } from "@/utils/logger";
 import { AlertCircle, AlertTriangle } from "lucide-react";
 
+interface FormSelectProps {
+  label: string;
+  name: string;
+  value: string;
+  onChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  children: React.ReactNode;
+}
+
+/** Labeled select field for opportunity form. */
+const FormSelect: React.FC<FormSelectProps> = ({ label, name, value, onChange, children }) => (
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {label}
+    </label>
+    <select
+      name={name}
+      value={value}
+      onChange={onChange}
+      className="block w-full border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base transition-all duration-200 bg-[#fafbfc] focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white focus:outline-none"
+      required
+    >
+      {children}
+    </select>
+  </div>
+);
+
 interface OpportunityFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -352,51 +378,39 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("volunteer.commitment", "Commitment")}
-            </label>
-            <select
-              name="commitment"
-              value={formData.commitment}
-              onChange={handleChange}
-              className="block w-full border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base transition-all duration-200 bg-[#fafbfc] focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white focus:outline-none"
-              required
-            >
-              <option value={CommitmentType.ONE_TIME}>
-                {t("volunteer.commitment.oneTime", "One-time")}
-              </option>
-              <option value={CommitmentType.SHORT_TERM}>
-                {t("volunteer.commitment.shortTerm", "Short-term")}
-              </option>
-              <option value={CommitmentType.LONG_TERM}>
-                {t("volunteer.commitment.longTerm", "Long-term")}
-              </option>
-            </select>
-          </div>
+          <FormSelect
+            label={t("volunteer.commitment", "Commitment")}
+            name="commitment"
+            value={formData.commitment}
+            onChange={handleChange}
+          >
+            <option value={CommitmentType.ONE_TIME}>
+              {t("volunteer.commitment.oneTime", "One-time")}
+            </option>
+            <option value={CommitmentType.SHORT_TERM}>
+              {t("volunteer.commitment.shortTerm", "Short-term")}
+            </option>
+            <option value={CommitmentType.LONG_TERM}>
+              {t("volunteer.commitment.longTerm", "Long-term")}
+            </option>
+          </FormSelect>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("volunteer.type", "Type")}
-            </label>
-            <select
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="block w-full border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base transition-all duration-200 bg-[#fafbfc] focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white focus:outline-none"
-              required
-            >
-              <option value={OpportunityType.REMOTE}>
-                {t("volunteer.type.remote", "Remote")}
-              </option>
-              <option value={OpportunityType.ONSITE}>
-                {t("volunteer.type.onsite", "Onsite")}
-              </option>
-              <option value={OpportunityType.HYBRID}>
-                {t("volunteer.type.hybrid", "Hybrid")}
-              </option>
-            </select>
-          </div>
+          <FormSelect
+            label={t("volunteer.type", "Type")}
+            name="type"
+            value={formData.type}
+            onChange={handleChange}
+          >
+            <option value={OpportunityType.REMOTE}>
+              {t("volunteer.type.remote", "Remote")}
+            </option>
+            <option value={OpportunityType.ONSITE}>
+              {t("volunteer.type.onsite", "Onsite")}
+            </option>
+            <option value={OpportunityType.HYBRID}>
+              {t("volunteer.type.hybrid", "Hybrid")}
+            </option>
+          </FormSelect>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -411,24 +425,18 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
             error={validationErrors["location"]}
           />
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              {t("volunteer.workLanguage", "Work Language")}
-            </label>
-            <select
-              name="workLanguage"
-              value={formData.workLanguage}
-              onChange={handleChange}
-              className="block w-full border-[1.5px] border-[#e1e4e8] rounded-lg px-4 py-3 text-base transition-all duration-200 bg-[#fafbfc] focus:border-[#0366d6] focus:shadow-[0_0_0_3px_rgba(3,102,214,0.1)] focus:bg-white focus:outline-none"
-              required
-            >
-              {Object.values(WorkLanguage).map((language) => (
-                <option key={language} value={language}>
-                  {t(`language.${language}`, formatLanguageName(language))}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FormSelect
+            label={t("volunteer.workLanguage", "Work Language")}
+            name="workLanguage"
+            value={formData.workLanguage}
+            onChange={handleChange}
+          >
+            {Object.values(WorkLanguage).map((language) => (
+              <option key={language} value={language}>
+                {t(`language.${language}`, formatLanguageName(language))}
+              </option>
+            ))}
+          </FormSelect>
         </div>
 
         <div className="flex justify-end space-x-3">

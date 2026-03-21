@@ -12,6 +12,41 @@ import {
 } from "@/utils/validation";
 import { AlertCircle } from "lucide-react";
 
+interface CountrySelectProps {
+  value: string;
+  onChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  countries: { code: string; name: string }[];
+  error?: string;
+}
+
+/** Country dropdown selector with validation error display. */
+const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange, countries, error }) => (
+  <label className="block">
+    <span className="text-sm font-medium text-gray-700 mb-1 block">
+      Country
+    </span>
+    <select
+      name="country"
+      value={value}
+      onChange={onChange}
+      className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-emerald-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100"
+      required
+    >
+      <option value="">Select Country</option>
+      {countries.map((country) => (
+        <option key={country.code} value={country.code}>
+          {country.name}
+        </option>
+      ))}
+    </select>
+    {error && (
+      <p className="mt-1 text-sm text-red-600">
+        {error}
+      </p>
+    )}
+  </label>
+);
+
 export const CharityVettingForm: React.FC = () => {
   const { register, loading } = useAuth();
   const { countries } = useCountries();
@@ -268,30 +303,12 @@ export const CharityVettingForm: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <label className="block">
-          <span className="text-sm font-medium text-gray-700 mb-1 block">
-            Country
-          </span>
-          <select
-            name="country"
-            value={formData.country}
-            onChange={handleChange}
-            className="block w-full border border-slate-200 dark:border-gray-600 shadow-none bg-white dark:bg-gray-700 rounded-lg px-4 py-2.5 focus:border-emerald-600 focus:ring-0 focus:outline-none text-gray-900 dark:text-gray-100"
-            required
-          >
-            <option value="">Select Country</option>
-            {countries.map((country) => (
-              <option key={country.code} value={country.code}>
-                {country.name}
-              </option>
-            ))}
-          </select>
-          {validationErrors["country"] && (
-            <p className="mt-1 text-sm text-red-600">
-              {validationErrors["country"]}
-            </p>
-          )}
-        </label>
+        <CountrySelect
+          value={formData.country}
+          onChange={handleChange}
+          countries={countries}
+          error={validationErrors["country"]}
+        />
         <Input
           label="Postal Code"
           name="postalCode"

@@ -7,9 +7,8 @@ export const Legal: React.FC = () => {
     <StaticPageLayout
       title="GIVE PROTOCOL - TERMS AND CONDITIONS"
     >
-      <div className="space-y-8">
         <section>
-          <h2><strong>1. INTRODUCTION AND BINDING AGREEMENT</strong></h2>
+          <h2>1. INTRODUCTION AND BINDING AGREEMENT</h2>
           
           <p>Welcome to the Give Protocol decentralized application (&quot;dApp&quot;). These Terms and Conditions (&quot;Terms&quot;) constitute a legally binding agreement between you (&quot;User,&quot; &quot;you,&quot; or &quot;your&quot;) and Give Protocol Foundation (&quot;Give Protocol,&quot; &quot;Company,&quot; &quot;we,&quot; &quot;us,&quot; or &quot;our&quot;) governing your access to and use of the Give Protocol dApp, including all related services, features, content, and functionality (collectively, the &quot;Platform&quot; or &quot;Services&quot;).</p>
           
@@ -25,7 +24,7 @@ export const Legal: React.FC = () => {
         </section>
         
         <section>
-          <h2><strong>2. CHANGES TO TERMS</strong></h2>
+          <h2>2. CHANGES TO TERMS</h2>
           
           <p>We reserve the right to modify these Terms at any time by posting the revised Terms on the Platform. We will place a notice on our site, send you an email, and/or notify you by some other means when we make changes.</p>
           
@@ -35,7 +34,7 @@ export const Legal: React.FC = () => {
         </section>
         
         <section>
-          <h2><strong>3. PLATFORM OVERVIEW</strong></h2>
+          <h2>3. PLATFORM OVERVIEW</h2>
           
           <p>Give Protocol is a decentralized application built on blockchain technology that facilitates:</p>
           
@@ -51,9 +50,9 @@ export const Legal: React.FC = () => {
         </section>
         
         <section>
-          <h2><strong>4. ELIGIBILITY AND ACCOUNT REQUIREMENTS</strong></h2>
+          <h2>4. ELIGIBILITY AND ACCOUNT REQUIREMENTS</h2>
           
-          <h3><strong>4.1 Eligibility Requirements</strong></h3>
+          <h3>4.1 Eligibility Requirements</h3>
           
           <p>To use the Services, you must:</p>
           
@@ -65,7 +64,7 @@ export const Legal: React.FC = () => {
             <li>- Maintain the security of your wallet and private keys</li>
           </ul>
           
-          <h3><strong>4.2 Wallet Requirements</strong></h3>
+          <h3>4.2 Wallet Requirements</h3>
           
           <p>To use the Platform, you must connect a compatible cryptocurrency wallet. You are solely responsible for:</p>
           
@@ -75,31 +74,31 @@ export const Legal: React.FC = () => {
             <li>- Ensuring your wallet complies with applicable laws and regulations</li>
           </ul>
           
-          <h3><strong>4.3 Account Information</strong></h3>
+          <h3>4.3 Account Information</h3>
           
           <p>You promise to provide us with accurate, complete, and updated information about yourself. You may not select as your User ID a name that you don&apos;t have the right to use, or another person&apos;s name with the intent to impersonate that person. You may not transfer your account to anyone else without our prior written permission.</p>
           
           <p>If you&apos;re agreeing to these Terms on behalf of an organization or entity, you represent and warrant that you are authorized to agree to these Terms on that organization&apos;s or entity&apos;s behalf and bind them to these Terms.</p>
           
-          <h3><strong>4.4 Children&apos;s Privacy</strong></h3>
+          <h3>4.4 Children&apos;s Privacy</h3>
           
           <p>We do not knowingly collect or solicit personally identifiable information from children under 18 years of age. If you are a child under 18 years of age, please do not attempt to register for or otherwise use the Services or send us any personal information. If we learn we have collected personal information from a child under 18 years of age, we will delete that information as quickly as possible. If you believe that a child under 18 years of age may have provided us personal information, please contact us at privacy@giveprotocol.io.</p>
         </section>
         
         <section>
-          <h2><strong>5. CRYPTOCURRENCY DONATIONS</strong></h2>
+          <h2>5. CRYPTOCURRENCY DONATIONS</h2>
           
-          <h3><strong>5.1 Transaction Execution</strong></h3>
+          <h3>5.1 Transaction Execution</h3>
           
           <p>All cryptocurrency donations are executed through smart contracts deployed on blockchain networks. Once initiated, transactions cannot be reversed or refunded except as required by applicable law.</p>
           
-          <h3><strong>5.2 Role of Give Protocol</strong></h3>
+          <h3>5.2 Role of Give Protocol</h3>
           
           <p>Give Protocol Foundation, as a not-for-profit charitable organization, connects charitable organizations with those looking to donate cryptocurrency and other assets. When we use the word &quot;you&quot; in these Terms, it refers to any user, regardless of whether you are a donor or using the Services on behalf of a charitable organization, while if we use one of those specific terms, it only applies to that category of user.</p>
           
           <p>Where applicable take steps to confirm each potential charitable organization is a registered nonprofit organization. However, each donor must make its own determinations that an organization available through our Service is suitable for such donor. Give Protocol is only responsible for connecting organizations and donors, and is not responsible for the use of any donations.</p>
           
-          <h3><strong>5.3 Transaction Fees</strong></h3>
+          <h3>5.3 Transaction Fees</h3>
           
           <p>You are responsible for all transaction fees associated with donations, including:</p>
           
@@ -119,7 +118,6 @@ export const Legal: React.FC = () => {
           </p>
           <p className="mt-8 text-gray-500 italic">Effective: March 15, 2025</p>
         </section>
-      </div>
     </StaticPageLayout>
   );
 };
