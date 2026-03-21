@@ -16,6 +16,7 @@ interface ImpactProfileTabProps {
   profileId: string;
 }
 
+/** Tab panel for editing the charity's mission statement, impact stats, and highlights. */
 export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
   profileId,
 }) => {
@@ -27,6 +28,7 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    /** Loads impact profile data (mission, stats, highlights) from Supabase. */
     const fetchData = async () => {
       try {
         const { data: row, error: fetchError } = await supabase

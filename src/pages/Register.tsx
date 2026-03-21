@@ -335,12 +335,10 @@ export const Register: React.FC = () => {
       <div className="flex items-center justify-center bg-slate-50 dark:bg-[#050A09]" style={{ padding: '3rem 2rem' }}>
         <div className="w-full animate-fadeUp" style={{ maxWidth: 440, animationDelay: '0.1s' }}>
           {/* Mobile-only logo */}
-          <div className="lg:hidden mb-8">
-            <Link to="/" className="inline-flex items-center gap-3" aria-label="Go to homepage">
-              <Logo className="h-10 w-10" />
-              <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
-            </Link>
-          </div>
+          <Link to="/" className="lg:hidden mb-8 inline-flex items-center gap-3" aria-label="Go to homepage">
+            <Logo className="h-10 w-10" />
+            <span className="text-gray-900 dark:text-white text-lg font-semibold tracking-tight">Give Protocol</span>
+          </Link>
 
           <div style={{ marginBottom: '2rem' }}>
             <h1

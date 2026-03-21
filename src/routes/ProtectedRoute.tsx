@@ -20,6 +20,11 @@ interface ProtectedRouteProps {
   promptWallet?: boolean;
 }
 
+/**
+ * Route guard that checks authentication, role, and wallet requirements.
+ * @param props - Protection configuration and child routes
+ * @returns The protected content or a redirect/prompt
+ */
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children,
   requiredRoles = [],

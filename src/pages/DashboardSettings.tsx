@@ -21,29 +21,27 @@ const DashboardSettings: React.FC = () => {
       </div>
 
       {/* Account info */}
-      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 mb-6">
+      <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 mb-6 text-sm">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Account</h3>
-        <div className="space-y-2 text-sm">
-          {email && (
-            <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Email</span>
-              <span className="text-gray-900 dark:text-white">{email}</span>
-            </div>
-          )}
-          {user?.displayName && (
-            <div className="flex justify-between">
-              <span className="text-gray-500 dark:text-gray-400">Display name</span>
-              <span className="text-gray-900 dark:text-white">{user.displayName}</span>
-            </div>
-          )}
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Auth method</span>
-            <span className="text-gray-900 dark:text-white capitalize">{authMethod ?? 'email'}</span>
+        {email && (
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-500 dark:text-gray-400">Email</span>
+            <span className="text-gray-900 dark:text-white">{email}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-gray-500 dark:text-gray-400">Role</span>
-            <span className="text-gray-900 dark:text-white capitalize">{user?.role ?? 'donor'}</span>
+        )}
+        {user?.displayName && (
+          <div className="flex justify-between mb-2">
+            <span className="text-gray-500 dark:text-gray-400">Display name</span>
+            <span className="text-gray-900 dark:text-white">{user.displayName}</span>
           </div>
+        )}
+        <div className="flex justify-between mb-2">
+          <span className="text-gray-500 dark:text-gray-400">Auth method</span>
+          <span className="text-gray-900 dark:text-white capitalize">{authMethod ?? 'email'}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="text-gray-500 dark:text-gray-400">Role</span>
+          <span className="text-gray-900 dark:text-white capitalize">{user?.role ?? 'donor'}</span>
         </div>
       </div>
 

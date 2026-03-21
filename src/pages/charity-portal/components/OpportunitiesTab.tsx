@@ -30,6 +30,7 @@ interface OpportunitiesTabProps {
   opportunities: CharityOpportunity[];
 }
 
+/** Tab panel listing the charity's volunteer opportunities with create/edit actions. */
 export const OpportunitiesTab: React.FC<OpportunitiesTabProps> = ({
   opportunities,
 }) => {

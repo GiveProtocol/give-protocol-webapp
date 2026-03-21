@@ -16,6 +16,7 @@ interface StatsCardsProps {
   onVolunteersClick: () => void;
 }
 
+/** Grid of summary stat cards for donations, volunteers, hours, and endorsements. */
 export const StatsCards: React.FC<StatsCardsProps> = ({
   stats,
   onTransactionsClick,

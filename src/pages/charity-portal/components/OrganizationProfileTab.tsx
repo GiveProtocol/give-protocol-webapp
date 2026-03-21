@@ -10,6 +10,7 @@ interface OrganizationProfileTabProps {
   profileId: string;
 }
 
+/** Tab panel for viewing and editing the organization's public profile. */
 export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   profileId,
 }) => {
@@ -21,6 +22,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   const [success, setSuccess] = useState(false);
 
   useEffect(() => {
+    /** Loads the organization profile metadata from Supabase. */
     const fetchProfile = async () => {
       try {
         const { data, error: fetchError } = await supabase

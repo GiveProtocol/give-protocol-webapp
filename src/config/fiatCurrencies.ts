@@ -1,13 +1,13 @@
 /**
  * Fiat currency configuration with payment processor routing.
- * USD routes to Helcim; all other currencies route to Stripe.
+ * USD routes to Helcim; all other currencies route to PayPal.
  */
 
 export interface FiatCurrencyConfig {
   code: string;
   name: string;
   symbol: string;
-  processor: "helcim" | "stripe";
+  processor: "helcim" | "paypal";
   presets: number[];
   enabled: boolean;
 }
@@ -25,7 +25,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "EUR",
     name: "Euro",
     symbol: "€",
-    processor: "stripe",
+    processor: "paypal",
     presets: [25, 50, 100, 250],
     enabled: true,
   },
@@ -33,7 +33,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "GBP",
     name: "British Pound",
     symbol: "£",
-    processor: "stripe",
+    processor: "paypal",
     presets: [20, 50, 100, 200],
     enabled: true,
   },
@@ -41,7 +41,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "CAD",
     name: "Canadian Dollar",
     symbol: "C$",
-    processor: "stripe",
+    processor: "paypal",
     presets: [25, 50, 100, 250],
     enabled: true,
   },
@@ -49,7 +49,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "AUD",
     name: "Australian Dollar",
     symbol: "A$",
-    processor: "stripe",
+    processor: "paypal",
     presets: [25, 50, 100, 250],
     enabled: true,
   },
@@ -57,7 +57,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "JPY",
     name: "Japanese Yen",
     symbol: "¥",
-    processor: "stripe",
+    processor: "paypal",
     presets: [3000, 5000, 10000, 30000],
     enabled: true,
   },
@@ -65,7 +65,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "CHF",
     name: "Swiss Franc",
     symbol: "CHF",
-    processor: "stripe",
+    processor: "paypal",
     presets: [25, 50, 100, 250],
     enabled: true,
   },
@@ -73,7 +73,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "INR",
     name: "Indian Rupee",
     symbol: "₹",
-    processor: "stripe",
+    processor: "paypal",
     presets: [500, 1000, 2500, 5000],
     enabled: true,
   },
@@ -81,7 +81,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "KRW",
     name: "Korean Won",
     symbol: "₩",
-    processor: "stripe",
+    processor: "paypal",
     presets: [10000, 30000, 50000, 100000],
     enabled: true,
   },
@@ -89,7 +89,7 @@ export const FIAT_CURRENCIES: FiatCurrencyConfig[] = [
     code: "NGN",
     name: "Nigerian Naira",
     symbol: "₦",
-    processor: "stripe",
+    processor: "paypal",
     presets: [5000, 10000, 25000, 50000],
     enabled: true,
   },

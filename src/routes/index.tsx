@@ -6,7 +6,6 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 // Eagerly load critical routes
-import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import Auth from "@/pages/Auth";
 

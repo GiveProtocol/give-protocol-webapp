@@ -54,6 +54,7 @@ export function useAuthActions() {
   const { showToast } = useToast();
   const navigate = useNavigate();
 
+  /** Signs in a user with email and password, then navigates to the appropriate portal. */
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
@@ -82,6 +83,7 @@ export function useAuthActions() {
     }
   };
 
+  /** Registers a new user, creates their profile, and navigates to sign-in. */
   const register = async (
     email: string,
     password: string,
@@ -130,6 +132,7 @@ export function useAuthActions() {
     }
   };
 
+  /** Sends a verification OTP email to the given address. */
   const sendVerificationEmail = async (email: string) => {
     try {
       setLoading(true);
@@ -144,6 +147,7 @@ export function useAuthActions() {
     }
   };
 
+  /** Sends a password-reset email to the given address. */
   const resetPassword = async (email: string) => {
     try {
       setLoading(true);

@@ -66,22 +66,24 @@ export function useUnifiedAuth(): UnifiedAuthState {
   useEffect(() => {
     if (!auth.user) {
       setIdentity(null);
-      return;
+      return undefined;
     }
 
+    const currentUser = auth.user;
     let cancelled = false;
 
+    /** Loads the user_identities record from Supabase for the current user. */
     const fetchIdentity = async () => {
       const { data, error: fetchError } = await supabase
         .from('user_identities')
         .select('*')
-        .eq('user_id', auth.user!.id)
+        .eq('user_id', currentUser.id)
         .single();
 
       if (!cancelled) {
         if (fetchError) {
           // Identity record may not exist yet for existing users
-          Logger.info('No user_identities record found', { userId: auth.user!.id });
+          Logger.info('No user_identities record found', { userId: currentUser.id });
         } else {
           setIdentity(data as UserIdentity);
         }

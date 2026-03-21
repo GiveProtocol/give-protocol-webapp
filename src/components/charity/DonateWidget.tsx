@@ -171,7 +171,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
       <p className="text-xs text-gray-400 text-center">
         {tab === 'crypto'
           ? '0% platform fee on direct donations. Network gas fees apply.'
-          : 'Powered by Helcim · Secure checkout'}
+          : 'Secure checkout · Helcim (USD) / PayPal (International)'}
       </p>
     </div>
   ), [tab, amount, customAmount, presetGridClass, isConnected, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);

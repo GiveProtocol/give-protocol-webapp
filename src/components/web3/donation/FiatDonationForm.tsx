@@ -3,7 +3,7 @@ import { Loader2, CheckCircle2, AlertCircle, Mail, User, RefreshCw, CreditCard, 
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
 import { useFiatDonation } from '@/hooks/web3/useFiatDonation';
-import { useStripePayment } from '@/hooks/web3/useStripePayment';
+import { usePayPalPayment } from '@/hooks/web3/usePayPalPayment';
 import { PremiumInput } from './PremiumInput';
 import { FeeOffsetCheckbox } from './FeeOffsetCheckbox';
 import { calculateFeeOffset } from './types/donation';
@@ -23,7 +23,7 @@ interface FiatDonationFormProps {
   coverFees: boolean;
   /** Callback when cover fees changes */
   onCoverFeesChange: (_cover: boolean) => void;
-  /** Callback on successful payment (Helcim only — Stripe redirects) */
+  /** Callback on successful payment */
   onSuccess: (_result: HelcimPaymentResult) => void;
   /** Callback on error */
   onError: (_error: Error) => void;
@@ -135,10 +135,10 @@ const DEFAULT_CURRENCY: FiatCurrencyConfig = getFiatCurrencyByCode('USD') ?? {
 };
 
 /**
- * Card payment form supporting Helcim (USD) and Stripe (non-USD) processors.
+ * Card payment form supporting Helcim (USD) and PayPal (non-USD) processors.
  * @component FiatDonationForm
  * @description For Helcim (USD): opens a secure Helcim-hosted iframe for card entry.
- * For Stripe (non-USD): redirects to Stripe Checkout hosted page.
+ * For PayPal (non-USD): opens a PayPal popup for secure international payment.
  * @param {FiatDonationFormProps} props - Component props
  * @returns {React.ReactElement} Fiat donation form
  */
@@ -156,7 +156,7 @@ export function FiatDonationForm({
   currency = DEFAULT_CURRENCY,
 }: FiatDonationFormProps): React.ReactElement {
   const isMonthly = frequency === 'monthly';
-  const isStripe = currency.processor === 'stripe';
+  const isPayPal = currency.processor === 'paypal';
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -180,12 +180,12 @@ export function FiatDonationForm({
     retryCount,
   } = useFiatDonation();
 
-  // Stripe hook (non-USD currencies)
+  // PayPal hook (non-USD currencies)
   const {
-    processStripePayment,
-    loading: stripeLoading,
-    error: stripeError,
-  } = useStripePayment();
+    processPayPalPayment,
+    loading: paypalLoading,
+    error: paypalError,
+  } = usePayPalPayment();
 
   // Calculate final amount
   const { total: finalAmount } = calculateFeeOffset(coverFees ? amount : 0);
@@ -283,28 +283,35 @@ export function FiatDonationForm({
     ]
   );
 
-  /** Handle Stripe (non-USD) submit — redirects to Stripe Checkout */
-  const handleStripeSubmit = useCallback(
+  /** Handle PayPal (non-USD) submit — opens PayPal popup */
+  const handlePayPalSubmit = useCallback(
     async () => {
-      await processStripePayment({
+      const result = await processPayPalPayment({
         amount: chargeAmount,
         currency: currency.code,
         charityId,
         donationType: isMonthly ? 'subscription' : 'one-time',
         donorEmail: email.trim(),
         donorName: name.trim(),
-        feeCovered: coverFees,
+        donorId: donorId,
+      });
+
+      onSuccess({
+        transactionId: result.transactionId,
+        approvalCode: '',
+        amountCents: Math.round(result.amount * 100),
       });
     },
     [
-      processStripePayment,
+      processPayPalPayment,
       chargeAmount,
       currency.code,
       charityId,
       isMonthly,
       email,
       name,
-      coverFees,
+      donorId,
+      onSuccess,
     ]
   );
 
@@ -320,8 +327,8 @@ export function FiatDonationForm({
       setFormError('');
 
       try {
-        if (isStripe) {
-          await handleStripeSubmit();
+        if (isPayPal) {
+          await handlePayPalSubmit();
         } else {
           await handleHelcimSubmit();
         }
@@ -336,19 +343,19 @@ export function FiatDonationForm({
         setIsSubmitting(false);
       }
     },
-    [validateForm, isStripe, handleStripeSubmit, handleHelcimSubmit, onError]
+    [validateForm, isPayPal, handlePayPalSubmit, handleHelcimSubmit, onError]
   );
 
-  const loading = isStripe ? stripeLoading : helcimLoading;
-  const paymentError = isStripe ? stripeError : helcimError;
+  const loading = isPayPal ? paypalLoading : helcimLoading;
+  const paymentError = isPayPal ? paypalError : helcimError;
   const displayError = formError || paymentError;
   const isBusy = loading || isSubmitting;
-  const isReady = isStripe || scriptReady;
+  const isReady = isPayPal || scriptReady;
 
   /** Returns the submit button label based on loading state and donation frequency */
   const getButtonText = (): string => {
     if (isBusy) {
-      if (isStripe) return 'Redirecting to Stripe...';
+      if (isPayPal) return 'Processing with PayPal...';
       return isMonthly ? 'Setting up subscription...' : 'Processing...';
     }
     if (isMonthly) {
@@ -359,7 +366,7 @@ export function FiatDonationForm({
 
   /** Returns the appropriate icon for the submit button based on payment provider and frequency. */
   const getSubmitIcon = (): React.ReactElement => {
-    if (isStripe) return <ExternalLink className="w-5 h-5" />;
+    if (isPayPal) return <ExternalLink className="w-5 h-5" />;
     if (isMonthly) return <RefreshCw className="w-5 h-5" />;
     return <CreditCard className="w-5 h-5" />;
   };
@@ -439,7 +446,7 @@ export function FiatDonationForm({
       />
 
       {/* Helcim script loading status (USD only) */}
-      {!isStripe && !scriptReady && (
+      {!isPayPal && !scriptReady && (
         <div className={cn(
           'p-4 rounded-xl',
           'bg-gray-50 dark:bg-slate-800/70',
@@ -462,8 +469,8 @@ export function FiatDonationForm({
         <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
           <Shield className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" aria-hidden="true" />
           <p className="text-xs text-blue-700 dark:text-blue-300 font-medium">
-            {isStripe
-              ? 'You will be redirected to Stripe for secure card payment.'
+            {isPayPal
+              ? 'A secure PayPal window will open for international payment.'
               : 'A secure payment window will open for card details.'}
           </p>
         </div>

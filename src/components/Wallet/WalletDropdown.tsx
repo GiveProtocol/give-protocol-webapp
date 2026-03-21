@@ -28,6 +28,7 @@ interface WalletAvatarInternalProps {
   size?: number;
 }
 
+/** Renders a circular avatar with a deterministic gradient derived from the wallet address. */
 const WalletAvatar: React.FC<WalletAvatarInternalProps> = ({
   address,
   size = 40,
@@ -65,6 +66,7 @@ interface MenuItemProps {
   disabled?: boolean;
 }
 
+/** Dropdown menu item button with icon, label, and optional danger variant. */
 const MenuItem: React.FC<MenuItemProps> = ({
   icon,
   label,

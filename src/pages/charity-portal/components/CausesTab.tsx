@@ -24,6 +24,7 @@ interface CausesTabProps {
   causes: CharityCause[];
 }
 
+/** Tab panel listing the charity's fundraising causes with progress and management actions. */
 export const CausesTab: React.FC<CausesTabProps> = ({ causes }) => {
   const { t } = useTranslation();
   const activeCount = causes.filter((c) => c.status === "active").length;
