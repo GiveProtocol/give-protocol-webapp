@@ -24,6 +24,7 @@ import {
 type TimeRange = "all" | "year" | "month" | "week";
 type Region = "all" | "na" | "eu" | "asia" | "africa" | "sa" | "oceania";
 
+/** Public contribution tracker page with filterable donation and volunteer data. */
 export const ContributionTracker: React.FC = () => {
   const location = useLocation();
   const [timeRange, setTimeRange] = useState<TimeRange>("all");

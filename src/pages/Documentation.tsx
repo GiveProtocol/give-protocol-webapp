@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DOCS_CONFIG } from '@/config/docs';
 
+/** Documentation page that redirects to the external docs site. */
 export const Documentation: React.FC = () => {
   const navigate = useNavigate();
   

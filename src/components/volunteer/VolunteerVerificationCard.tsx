@@ -21,9 +21,11 @@ interface VolunteerVerificationCardProps {
   };
 }
 
+/** Card displaying volunteer verification details with blockchain transaction links. */
 export const VolunteerVerificationCard: React.FC<VolunteerVerificationCardProps> = ({ 
   verification 
 }) => {
+  /** Returns the block explorer URL for a given transaction ID and network. */
   const getExplorerUrl = (txId: string, network = 'moonbase') => {
     const explorers = {
       moonbase: 'https://moonbase.moonscan.io/tx/',

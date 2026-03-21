@@ -41,6 +41,7 @@ export const OrganizationAutocomplete: React.FC<
 
   // Handle click outside to close dropdown
   useEffect(() => {
+    /** Closes the dropdown when clicking outside the autocomplete wrapper. */
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&

@@ -16,6 +16,7 @@ interface ApplicationsTabProps {
   pendingApplications: VolunteerApplication[];
 }
 
+/** Tab panel listing pending volunteer applications with approve/reject actions. */
 export const ApplicationsTab: React.FC<ApplicationsTabProps> = ({
   pendingApplications,
 }) => {

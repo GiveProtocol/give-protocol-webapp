@@ -3,6 +3,7 @@ import { Users, Target, Heart, Shield, Globe, TrendingUp } from 'lucide-react';
 import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
+/** About page describing the Give Protocol mission, team, and values. */
 export const About: React.FC = () => {
   return (
     <StaticPageLayout

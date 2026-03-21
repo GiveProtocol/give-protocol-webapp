@@ -2,6 +2,7 @@ import React from "react";
 import { Shield, Users, Vote, Scale, Clock, AlertTriangle } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
 
+/** Governance overview page describing the Give Protocol DAO structure and voting mechanics. */
 export const Governance: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
