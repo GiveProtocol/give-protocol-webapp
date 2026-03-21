@@ -58,6 +58,7 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({ withdrawals }) => (
     </table>
 );
 
+/** Displays a table of charity withdrawal records with date, amount, and status. */
 export const WithdrawalHistory: React.FC = () => {
   const { withdrawals, loading, error } = useWithdrawals();
 

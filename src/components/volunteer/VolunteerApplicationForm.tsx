@@ -20,6 +20,7 @@ interface SectionHeaderProps {
   title: string;
 }
 
+/** Numbered section header with gradient badge for form sections. */
 const SectionHeader: React.FC<SectionHeaderProps> = ({ number, title }) => (
   <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-6 flex items-center">
     <span className="w-7 h-7 bg-gradient-to-r from-emerald-600 to-teal-600 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3 shadow-md">
@@ -39,6 +40,7 @@ interface ConsentCheckboxProps {
   note?: string;
 }
 
+/** Checkbox item with title, description, and optional note for consent forms. */
 const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
   id,
   checked,
@@ -81,6 +83,7 @@ interface SkillTagProps {
   onRemove: (_e: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
+/** Removable pill tag displaying a selected skill. */
 const SkillTag: React.FC<SkillTagProps> = ({ skill, onRemove }) => (
   <span className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-4 py-2 rounded-full mr-2 mb-2 animate-fadeIn">
     <span className="text-sm">{skill}</span>
@@ -105,6 +108,7 @@ interface CommitmentOptionProps {
   description: string;
 }
 
+/** Radio option card for selecting a volunteer commitment level. */
 const CommitmentOption: React.FC<CommitmentOptionProps> = ({
   id,
   value,
@@ -288,6 +292,7 @@ const initialFormData: FormData = {
   privacyNotice: false,
 };
 
+/** Modal form for submitting volunteer applications to charity opportunities. */
 export const VolunteerApplicationForm: React.FC<
   VolunteerApplicationFormProps
 > = ({

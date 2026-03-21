@@ -2,6 +2,7 @@ import React from 'react';
 import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
 import { ImportantNotice } from '@/components/ui/ImportantNotice';
 
+/** Terms and conditions page for the Give Protocol platform. */
 export const Legal: React.FC = () => {
   return (
     <StaticPageLayout

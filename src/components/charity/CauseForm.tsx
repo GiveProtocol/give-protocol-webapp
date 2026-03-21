@@ -56,6 +56,7 @@ interface CauseFormProps {
   onCancel?: () => void;
 }
 
+/** Form for creating new charitable causes with validation and limit checking. */
 export const CauseForm: React.FC<CauseFormProps> = ({
   onSuccess,
   onCancel,
@@ -87,6 +88,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({
 
   // Check how many active causes the charity already has
   useEffect(() => {
+    /** Checks the charity's active cause count against the maximum allowed. */
     const checkCauseLimit = async () => {
       if (!profile?.id) {
         setCheckingLimit(false);
@@ -261,6 +263,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({
     [formData, profile?.id, onSuccess, navigate, validateField],
   );
 
+  /** Returns the appropriate submit button label based on form state. */
   const getSubmitButtonText = (): string => {
     if (loading) {
       return t("common.creating", "Creating...");

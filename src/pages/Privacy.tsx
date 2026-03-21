@@ -2,6 +2,7 @@ import React from 'react';
 import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
 import { ImportantNotice } from '@/components/ui/ImportantNotice';
 
+/** Privacy policy page displaying GiveProtocol's data handling practices. */
 export const Privacy: React.FC = () => {
   return (
     <StaticPageLayout 

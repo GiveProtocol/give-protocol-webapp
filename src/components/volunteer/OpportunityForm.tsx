@@ -47,6 +47,7 @@ interface OpportunityFormProps {
   onCancel?: () => void;
 }
 
+/** Form for creating new volunteer opportunities with validation and limit checking. */
 export const OpportunityForm: React.FC<OpportunityFormProps> = ({
   onSuccess,
   onCancel,
@@ -78,6 +79,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
 
   // Check how many active opportunities the charity already has
   useEffect(() => {
+    /** Checks the charity's active opportunity count against the maximum allowed. */
     const checkOpportunityLimit = async () => {
       if (!profile?.id) {
         setCheckingLimit(false);
@@ -267,6 +269,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
     [formData, profile?.id, onSuccess, navigate, validateField],
   );
 
+  /** Converts a snake_case language code to Title Case display name. */
   const formatLanguageName = (language: string): string => {
     return language
       .split("_")
@@ -274,6 +277,7 @@ export const OpportunityForm: React.FC<OpportunityFormProps> = ({
       .join(" ");
   };
 
+  /** Returns the appropriate submit button label based on form state. */
   const getSubmitButtonText = (): string => {
     if (loading) {
       return t("common.creating", "Creating...");
