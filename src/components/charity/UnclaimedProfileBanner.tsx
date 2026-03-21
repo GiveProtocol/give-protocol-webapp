@@ -10,6 +10,44 @@ interface UnclaimedProfileBannerProps {
   ein: string;
 }
 
+/** Inner content of the unclaimed profile banner with claim and removal actions. */
+const BannerContent: React.FC<{
+  onDismiss: () => void;
+  onClaim: () => void;
+  onOpenRemoval: () => void;
+}> = ({ onDismiss, onClaim, onOpenRemoval }) => (
+  <div className="relative rounded-lg bg-emerald-50 border border-emerald-300 p-4 md:p-5">
+    <button
+      type="button"
+      onClick={onDismiss}
+      className="absolute top-3 right-3 text-emerald-400 hover:text-emerald-600 transition-colors"
+      aria-label="Dismiss"
+    >
+      <X className="h-4 w-4" />
+    </button>
+    <div className="flex items-start gap-3 pr-6">
+      <Building2 aria-hidden="true" className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+      <div>
+        <p className="font-semibold text-emerald-900 text-sm">
+          Are you affiliated with this organization?
+        </p>
+        <p className="mt-1 text-sm text-emerald-700">
+          Claim this profile to manage it, add your mission and photos, and start
+          receiving donations — or request removal if it&apos;s listed in error.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-2 mt-3">
+          <Button size="sm" onClick={onClaim}>
+            Claim this profile
+          </Button>
+          <Button variant="ghost" size="sm" onClick={onOpenRemoval}>
+            Request removal
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
 /**
  * Dismissible banner shown at the top of unclaimed charity profiles.
  * Offers "Claim this profile" and "Request removal" actions.
@@ -66,36 +104,11 @@ export const UnclaimedProfileBanner: React.FC<UnclaimedProfileBannerProps> = ({ 
 
   return (
     <>
-      <div className="relative rounded-lg bg-emerald-50 border border-emerald-300 p-4 md:p-5">
-        <button
-          type="button"
-          onClick={handleDismiss}
-          className="absolute top-3 right-3 text-emerald-400 hover:text-emerald-600 transition-colors"
-          aria-label="Dismiss"
-        >
-          <X className="h-4 w-4" />
-        </button>
-        <div className="flex items-start gap-3 pr-6">
-          <Building2 aria-hidden="true" className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-semibold text-emerald-900 text-sm">
-              Are you affiliated with this organization?
-            </p>
-            <p className="mt-1 text-sm text-emerald-700">
-              Claim this profile to manage it, add your mission and photos, and start
-              receiving donations — or request removal if it&apos;s listed in error.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-2 mt-3">
-              <Button size="sm" onClick={handleClaim}>
-                Claim this profile
-              </Button>
-              <Button variant="ghost" size="sm" onClick={handleOpenRemoval}>
-                Request removal
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <BannerContent
+        onDismiss={handleDismiss}
+        onClaim={handleClaim}
+        onOpenRemoval={handleOpenRemoval}
+      />
 
       <Modal
         isOpen={showRemovalModal}

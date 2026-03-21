@@ -190,7 +190,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
           )}
 
           {/* Unified Wallet List */}
-          <div className="px-3 py-4 max-h-96 overflow-y-auto" role="menu">
+          <div className="px-3 py-4 max-h-96 overflow-y-auto space-y-1" role="menu">
             {filteredWallets.length === 0 ? (
               <p className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
                 No wallets available for {selectedChainType.toUpperCase()} chains.
@@ -199,18 +199,16 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                 </span>
               </p>
             ) : (
-              <div className="space-y-1">
-                {filteredWallets.map((wallet) => (
-                  <WalletOption
-                    key={wallet.name}
-                    wallet={wallet}
-                    selectedChainType={selectedChainType}
-                    isConnecting={isConnecting}
-                    connectingWallet={connectingWallet}
-                    onSelect={handleSelectWallet}
-                  />
-                ))}
-              </div>
+              filteredWallets.map((wallet) => (
+                <WalletOption
+                  key={wallet.name}
+                  wallet={wallet}
+                  selectedChainType={selectedChainType}
+                  isConnecting={isConnecting}
+                  connectingWallet={connectingWallet}
+                  onSelect={handleSelectWallet}
+                />
+              ))
             )}
           </div>
 

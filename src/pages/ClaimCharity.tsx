@@ -21,6 +21,35 @@ const ROLE_OPTIONS = [
   'Other',
 ];
 
+/** Step indicator showing progress through the claim flow. */
+const StepIndicator: React.FC = () => (
+  <div className="flex items-center gap-2">
+    {STEPS.map((step, i) => (
+      <React.Fragment key={step}>
+        <div
+          className={`flex items-center gap-1.5 text-xs font-medium ${
+            i === 0 ? 'text-emerald-700' : 'text-gray-400'
+          }`}
+        >
+          <span
+            className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold ${
+              i === 0
+                ? 'bg-emerald-600 text-white'
+                : 'bg-gray-100 text-gray-400'
+            }`}
+          >
+            {i + 1}
+          </span>
+          <span className="hidden sm:inline">{step}</span>
+        </div>
+        {i < STEPS.length - 1 && (
+          <div className="flex-1 h-px bg-gray-200" />
+        )}
+      </React.Fragment>
+    ))}
+  </div>
+);
+
 /**
  * Stub page for the charity claim flow at /claim/:ein.
  * Displays the org info and a step indicator. Full flow is not implemented yet.
@@ -75,43 +104,17 @@ function ClaimCharity() {
   return (
     <div className="max-w-xl mx-auto px-4 py-12 space-y-6">
       {/* Header */}
-      <div>
-        <h1 className="font-serif text-2xl font-bold text-gray-900">
-          Claim Organization
-        </h1>
-        {profile && (
-          <p className="mt-1 text-sm text-gray-500">
-            {profile.name} · EIN {ein}
-          </p>
-        )}
-      </div>
+      <h1 className="font-serif text-2xl font-bold text-gray-900">
+        Claim Organization
+      </h1>
+      {profile && (
+        <p className="-mt-4 text-sm text-gray-500">
+          {profile.name} · EIN {ein}
+        </p>
+      )}
 
       {/* Step indicator */}
-      <div className="flex items-center gap-2">
-        {STEPS.map((step, i) => (
-          <React.Fragment key={step}>
-            <div
-              className={`flex items-center gap-1.5 text-xs font-medium ${
-                i === 0 ? 'text-emerald-700' : 'text-gray-400'
-              }`}
-            >
-              <span
-                className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold ${
-                  i === 0
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-gray-100 text-gray-400'
-                }`}
-              >
-                {i + 1}
-              </span>
-              <span className="hidden sm:inline">{step}</span>
-            </div>
-            {i < STEPS.length - 1 && (
-              <div className="flex-1 h-px bg-gray-200" />
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+      <StepIndicator />
 
       {/* Step 1 form */}
       <Card hover={false} className="p-6 space-y-4">

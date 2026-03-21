@@ -102,6 +102,125 @@ const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
   </label>
 );
 
+/** Dialog body containing consent checkboxes, acknowledgments, and action buttons. */
+const ConsentDialog: React.FC<{
+  essentialProcessing: boolean;
+  onEssentialProcessingChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  internationalTransfers: boolean;
+  onInternationalTransfersChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  ageConfirmation: boolean;
+  onAgeConfirmationChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  privacyNotice: boolean;
+  onPrivacyNoticeChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  validationError: string | null;
+  isSubmitDisabled: boolean;
+  onAccept: () => void;
+  onDecline: () => void;
+}> = ({
+  essentialProcessing, onEssentialProcessingChange,
+  internationalTransfers, onInternationalTransfersChange,
+  ageConfirmation, onAgeConfirmationChange,
+  privacyNotice, onPrivacyNoticeChange,
+  validationError, isSubmitDisabled, onAccept, onDecline,
+}) => (
+  <dialog
+    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0"
+    open
+    aria-modal="true"
+    aria-labelledby="consent-modal-title"
+  >
+    <ConsentModalHeader />
+    <article className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
+      <h2 className="text-xl font-semibold text-gray-900 mb-4">
+        Volunteer Application Consent
+      </h2>
+      <p className="mb-6 text-gray-700 leading-relaxed">
+        By completing and submitting this form, I consent to GIVE PROTOCOL
+        collecting, processing, and storing my personal information as
+        described in the Volunteer Application Privacy Notice, which I have
+        read and understood.
+      </p>
+      <p className="font-semibold text-gray-900 mb-3">I understand that:</p>
+      <ConsentUnderstandingList />
+
+      <div className="border-t border-gray-200 pt-6 mb-6">
+        <p className="font-semibold text-gray-900 mb-4">SPECIFIC CONSENTS</p>
+        <p className="text-gray-600 text-sm mb-6">
+          Please review and indicate your consent to each of the following:
+        </p>
+      </div>
+
+      <div className="bg-gray-50 rounded-xl p-6 mb-4 border-l-4 border-emerald-600 space-y-6">
+        <ConsentCheckbox
+          id="essential-processing"
+          checked={essentialProcessing}
+          onChange={onEssentialProcessingChange}
+          title="Essential Processing (Required):"
+          description="I consent to GIVE PROTOCOL collecting and processing my personal information for the purpose of evaluating my volunteer application and, if successful, managing my volunteer engagement."
+          note="Note: This consent is necessary to process your volunteer application. If you do not provide this consent, we will not be able to consider your application."
+          className="hover:bg-white"
+        />
+        <ConsentCheckbox
+          id="international-transfers"
+          checked={internationalTransfers}
+          onChange={onInternationalTransfersChange}
+          title="International Transfers (if applicable):"
+          description="I consent to GIVE PROTOCOL transferring my personal information to countries outside my country of residence, including countries that may not provide the same level of data protection, with appropriate safeguards in place as described in the Privacy Notice."
+          className="hover:bg-white"
+        />
+      </div>
+
+      <section className="border-t border-gray-200 pt-6">
+        <p className="font-semibold text-gray-900 mb-4">ACKNOWLEDGMENT</p>
+        <ConsentCheckbox
+          id="age-confirmation"
+          checked={ageConfirmation}
+          onChange={onAgeConfirmationChange}
+          title="Age Confirmation:"
+          description="I confirm that I am at least 16 years of age."
+          note="(If you are under 16 years of age, parental or guardian consent is required)"
+          className="mb-4 hover:bg-gray-50"
+        />
+        <ConsentCheckbox
+          id="privacy-notice"
+          checked={privacyNotice}
+          onChange={onPrivacyNoticeChange}
+          title="Privacy Notice:"
+          description="I confirm that I have read and understood the Privacy Notice."
+          className="hover:bg-gray-50"
+        />
+      </section>
+
+      {validationError && (
+        <div className="mb-6 p-4 bg-red-50 rounded-lg flex items-start">
+          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
+          <p className="text-red-700">{validationError}</p>
+        </div>
+      )}
+
+      <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+        <Button variant="secondary" onClick={onDecline} className="px-8 py-3">
+          Do Not Accept
+        </Button>
+        <Button
+          onClick={onAccept}
+          disabled={isSubmitDisabled}
+          className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-emerald-600 hover:from-emerald-700 hover:to-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          Accept and Continue
+        </Button>
+      </div>
+
+      <p className="mt-6 text-center text-sm text-gray-500">
+        By submitting this application, you acknowledge that you have read
+        and understood Give Protocol&apos;s privacy policy and volunteer
+        guidelines. Your data will be processed in accordance with
+        applicable data protection regulations.
+      </p>
+    </article>
+  </dialog>
+);
+
 interface ConsentFormProps {
   onAccept: () => void;
   onDecline: () => void;
@@ -210,111 +329,20 @@ export const ConsentForm: React.FC<ConsentFormProps> = ({
         aria-label="Close modal"
         type="button"
       />
-      <dialog
-        className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0"
-        open
-        aria-modal="true"
-        aria-labelledby="consent-modal-title"
-      >
-        <ConsentModalHeader />
-        <article className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
-          <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Volunteer Application Consent
-          </h2>
-
-          <p className="mb-6 text-gray-700 leading-relaxed">
-            By completing and submitting this form, I consent to GIVE PROTOCOL
-            collecting, processing, and storing my personal information as
-            described in the Volunteer Application Privacy Notice, which I have
-            read and understood.
-          </p>
-
-          <p className="font-semibold text-gray-900 mb-3">I understand that:</p>
-          <ConsentUnderstandingList />
-
-          <div className="border-t border-gray-200 pt-6 mb-6">
-            <p className="font-semibold text-gray-900 mb-4">
-              SPECIFIC CONSENTS
-            </p>
-            <p className="text-gray-600 text-sm mb-6">
-              Please review and indicate your consent to each of the following:
-            </p>
-          </div>
-
-          <div className="bg-gray-50 rounded-xl p-6 mb-4 border-l-4 border-emerald-600 space-y-6">
-            <ConsentCheckbox
-              id="essential-processing"
-              checked={essentialProcessing}
-              onChange={handleEssentialProcessingChange}
-              title="Essential Processing (Required):"
-              description="I consent to GIVE PROTOCOL collecting and processing my personal information for the purpose of evaluating my volunteer application and, if successful, managing my volunteer engagement."
-              note="Note: This consent is necessary to process your volunteer application. If you do not provide this consent, we will not be able to consider your application."
-              className="hover:bg-white"
-            />
-            <ConsentCheckbox
-              id="international-transfers"
-              checked={internationalTransfers}
-              onChange={handleInternationalTransfersChange}
-              title="International Transfers (if applicable):"
-              description="I consent to GIVE PROTOCOL transferring my personal information to countries outside my country of residence, including countries that may not provide the same level of data protection, with appropriate safeguards in place as described in the Privacy Notice."
-              className="hover:bg-white"
-            />
-          </div>
-
-          <section className="border-t border-gray-200 pt-6">
-            <p className="font-semibold text-gray-900 mb-4">ACKNOWLEDGMENT</p>
-
-            <ConsentCheckbox
-              id="age-confirmation"
-              checked={ageConfirmation}
-              onChange={handleAgeConfirmationChange}
-              title="Age Confirmation:"
-              description="I confirm that I am at least 16 years of age."
-              note="(If you are under 16 years of age, parental or guardian consent is required)"
-              className="mb-4 hover:bg-gray-50"
-            />
-            <ConsentCheckbox
-              id="privacy-notice"
-              checked={privacyNotice}
-              onChange={handlePrivacyNoticeChange}
-              title="Privacy Notice:"
-              description="I confirm that I have read and understood the Privacy Notice."
-              className="hover:bg-gray-50"
-            />
-          </section>
-
-          {validationError && (
-            <div className="mb-6 p-4 bg-red-50 rounded-lg flex items-start">
-              <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
-              <p className="text-red-700">{validationError}</p>
-            </div>
-          )}
-
-          <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
-            <Button
-              variant="secondary"
-              onClick={onDecline}
-              className="px-8 py-3"
-            >
-              Do Not Accept
-            </Button>
-            <Button
-              onClick={handleAccept}
-              disabled={isSubmitDisabled}
-              className="px-8 py-3 bg-gradient-to-r from-emerald-600 to-emerald-600 hover:from-emerald-700 hover:to-emerald-700 disabled:opacity-60 disabled:cursor-not-allowed"
-            >
-              Accept and Continue
-            </Button>
-          </div>
-
-          <p className="mt-6 text-center text-sm text-gray-500">
-            By submitting this application, you acknowledge that you have read
-            and understood Give Protocol&apos;s privacy policy and volunteer
-            guidelines. Your data will be processed in accordance with
-            applicable data protection regulations.
-          </p>
-        </article>
-      </dialog>
+      <ConsentDialog
+        essentialProcessing={essentialProcessing}
+        onEssentialProcessingChange={handleEssentialProcessingChange}
+        internationalTransfers={internationalTransfers}
+        onInternationalTransfersChange={handleInternationalTransfersChange}
+        ageConfirmation={ageConfirmation}
+        onAgeConfirmationChange={handleAgeConfirmationChange}
+        privacyNotice={privacyNotice}
+        onPrivacyNoticeChange={handlePrivacyNoticeChange}
+        validationError={validationError}
+        isSubmitDisabled={isSubmitDisabled}
+        onAccept={handleAccept}
+        onDecline={onDecline}
+      />
     </>
   );
 };
