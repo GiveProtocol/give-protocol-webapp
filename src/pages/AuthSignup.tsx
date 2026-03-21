@@ -115,6 +115,71 @@ const SignupLeftPanel: React.FC = () => (
   </div>
 );
 
+/** Sign-up form fields extracted to reduce JSX nesting depth. */
+const SignupFormFields: React.FC<{
+  displayName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  loading: boolean;
+  onDisplayNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onConfirmPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+}> = ({
+  displayName, email, password, confirmPassword, loading,
+  onDisplayNameChange, onEmailChange, onPasswordChange, onConfirmPasswordChange, onSubmit,
+}) => (
+  <form onSubmit={onSubmit} className="space-y-4">
+    <FormInput
+      icon={<User className="h-4 w-4" />}
+      type="text"
+      value={displayName}
+      onChange={onDisplayNameChange}
+      placeholder="Display name (optional)"
+      autoComplete="name"
+    />
+    <FormInput
+      icon={<Mail className="h-4 w-4" />}
+      type="email"
+      value={email}
+      onChange={onEmailChange}
+      placeholder="Email"
+      required
+      autoComplete="email"
+    />
+    <FormInput
+      icon={<Lock className="h-4 w-4" />}
+      type="password"
+      value={password}
+      onChange={onPasswordChange}
+      placeholder="Password"
+      required
+      autoComplete="new-password"
+    />
+    <PasswordStrengthBar password={password} />
+    <FormInput
+      icon={<Lock className="h-4 w-4" />}
+      type="password"
+      value={confirmPassword}
+      onChange={onConfirmPasswordChange}
+      placeholder="Confirm password"
+      required
+      autoComplete="new-password"
+    />
+    <Button
+      type="submit"
+      fullWidth
+      size="lg"
+      disabled={loading}
+      className="font-semibold"
+    >
+      {loading ? 'Creating account\u2026' : 'Create Account'}
+    </Button>
+  </form>
+);
+
 /** Right panel content with sign-up form and wallet registration. */
 const SignupRightPanel: React.FC = () => {
   const [displayName, setDisplayName] = useState('');
@@ -320,71 +385,6 @@ const SignupRightPanel: React.FC = () => {
     </div>
   );
 };
-
-/** Sign-up form fields extracted to reduce JSX nesting depth. */
-const SignupFormFields: React.FC<{
-  displayName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  loading: boolean;
-  onDisplayNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onConfirmPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: React.FormEvent) => void;
-}> = ({
-  displayName, email, password, confirmPassword, loading,
-  onDisplayNameChange, onEmailChange, onPasswordChange, onConfirmPasswordChange, onSubmit,
-}) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <FormInput
-      icon={<User className="h-4 w-4" />}
-      type="text"
-      value={displayName}
-      onChange={onDisplayNameChange}
-      placeholder="Display name (optional)"
-      autoComplete="name"
-    />
-    <FormInput
-      icon={<Mail className="h-4 w-4" />}
-      type="email"
-      value={email}
-      onChange={onEmailChange}
-      placeholder="Email"
-      required
-      autoComplete="email"
-    />
-    <FormInput
-      icon={<Lock className="h-4 w-4" />}
-      type="password"
-      value={password}
-      onChange={onPasswordChange}
-      placeholder="Password"
-      required
-      autoComplete="new-password"
-    />
-    <PasswordStrengthBar password={password} />
-    <FormInput
-      icon={<Lock className="h-4 w-4" />}
-      type="password"
-      value={confirmPassword}
-      onChange={onConfirmPasswordChange}
-      placeholder="Confirm password"
-      required
-      autoComplete="new-password"
-    />
-    <Button
-      type="submit"
-      fullWidth
-      size="lg"
-      disabled={loading}
-      className="font-semibold"
-    >
-      {loading ? 'Creating account\u2026' : 'Create Account'}
-    </Button>
-  </form>
-);
 
 /** Unified sign-up page with email and wallet registration. */
 const AuthSignup: React.FC = () => (

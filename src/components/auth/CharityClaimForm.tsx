@@ -20,6 +20,29 @@ interface CharityClaimFormProps {
   onBack: () => void;
 }
 
+/** Read-only IRS organization details panel. */
+const IrsDetailsPanel: React.FC<{ organization: IrsOrganization; irsLocation: string }> = ({ organization, irsLocation }) => (
+  <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-1">
+    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
+      Organization Details (from IRS)
+    </h3>
+    <p>
+      <span className="font-medium text-gray-700">Name:</span>{' '}
+      {organization.name}
+    </p>
+    <p>
+      <span className="font-medium text-gray-700">EIN:</span>{' '}
+      {organization.ein}
+    </p>
+    {irsLocation && (
+      <p>
+        <span className="font-medium text-gray-700">Location:</span>{' '}
+        {irsLocation}
+      </p>
+    )}
+  </div>
+);
+
 /**
  * Claim registration form for a charity found via IRS search.
  * Displays read-only IRS data and collects contact/password fields.
@@ -184,7 +207,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
   );
 
   return (
-    <div>
+    <>
       <button
         type="button"
         onClick={onBack}
@@ -202,25 +225,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           </div>
         )}
 
-        <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-1">
-          <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
-            Organization Details (from IRS)
-          </h3>
-          <p>
-            <span className="font-medium text-gray-700">Name:</span>{' '}
-            {organization.name}
-          </p>
-          <p>
-            <span className="font-medium text-gray-700">EIN:</span>{' '}
-            {organization.ein}
-          </p>
-          {irsLocation && (
-            <p>
-              <span className="font-medium text-gray-700">Location:</span>{' '}
-              {irsLocation}
-            </p>
-          )}
-        </div>
+        <IrsDetailsPanel organization={organization} irsLocation={irsLocation} />
 
         <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
         <Input
@@ -286,6 +291,6 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           {submitting ? 'Creating Account...' : 'Claim Organization'}
         </Button>
       </form>
-    </div>
+    </>
   );
 };
