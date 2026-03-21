@@ -7,6 +7,7 @@ interface LoadingSpinnerProps {
   className?: string;
 }
 
+/** Animated spinner with configurable size and color variants. */
 export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
   size = 'md',
   color = 'primary',

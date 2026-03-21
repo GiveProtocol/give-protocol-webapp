@@ -73,6 +73,7 @@ const ConsentUnderstandingList: React.FC = () => (
   </ol>
 );
 
+/** Reusable consent checkbox with title, description, and optional note. */
 const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
   id,
   checked,
@@ -226,6 +227,7 @@ interface ConsentFormProps {
   onDecline: () => void;
 }
 
+/** Volunteer application consent form with required checkboxes and GDPR acknowledgments. */
 export const ConsentForm: React.FC<ConsentFormProps> = ({
   onAccept,
   onDecline,

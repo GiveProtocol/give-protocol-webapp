@@ -16,6 +16,7 @@ interface VolunteerHoursVerificationProps {
   onVerified?: (_hash: string) => void;
 }
 
+/** On-chain verification panel for confirming and recording volunteer hours. */
 export const VolunteerHoursVerification: React.FC<
   VolunteerHoursVerificationProps
 > = ({

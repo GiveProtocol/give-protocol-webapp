@@ -74,6 +74,7 @@ interface ApplicationFormContentProps {
   };
 }
 
+/** Form layout with personal info, availability, skills, references, and work samples fields. */
 const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
   formData,
   validationErrors,
@@ -283,6 +284,7 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
   </form>
 );
 
+/** Multi-step volunteer application form with validation and Supabase submission. */
 export const ApplicationForm: React.FC<ApplicationFormProps> = ({
   opportunityId,
   opportunityTitle,
@@ -318,6 +320,7 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
     workSamples: "",
   });
 
+  /** Validates a single form field and returns an error message or empty string. */
   const validateField = (
     name: string,
     value: string | number | boolean,

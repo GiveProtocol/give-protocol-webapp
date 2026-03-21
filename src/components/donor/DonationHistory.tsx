@@ -10,6 +10,7 @@ interface DonationHistoryProps {
   donations: Transaction[];
 }
 
+/** Returns Tailwind classes for a donation status badge (completed, pending, or failed). */
 const getStatusStyles = (status: string): string => {
   if (status === "completed") {
     return "bg-green-100 text-green-800";
@@ -20,6 +21,7 @@ const getStatusStyles = (status: string): string => {
   return "bg-red-100 text-red-800";
 };
 
+/** Filterable donation history table with time range selector and CSV/PDF export. */
 export const DonationHistory: React.FC<DonationHistoryProps> = ({
   donations,
 }) => {

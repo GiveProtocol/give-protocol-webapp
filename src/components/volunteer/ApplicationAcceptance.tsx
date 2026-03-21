@@ -12,6 +12,7 @@ interface ApplicationAcceptanceProps {
   onAccepted?: (_hash: string) => void;
 }
 
+/** Panel for charity admins to accept a volunteer application and record it on-chain. */
 export const ApplicationAcceptance: React.FC<ApplicationAcceptanceProps> = ({
   applicationId,
   applicantName,

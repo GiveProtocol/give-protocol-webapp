@@ -35,6 +35,7 @@ const getRankColor = (rank: number): string => {
   }
 };
 
+/** Ranked volunteer leaderboard with hours/endorsements tabs and search filtering. */
 export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
   timeRange: _timeRange,
   region: _region,
@@ -74,6 +75,7 @@ export const VolunteerLeaderboard: React.FC<VolunteerLeaderboardProps> = ({
   useEffect(() => {
     if (leaders.length === 0) return;
 
+    /** Resolves wallet aliases for each leader and updates display names. */
     const updateAliases = async () => {
       const updatedLeaders = await Promise.all(
         leaders.map(async (leader) => {

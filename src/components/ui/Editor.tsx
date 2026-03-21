@@ -33,6 +33,7 @@ interface MenuButtonProps {
   title: string;
 }
 
+/** Toolbar button for the rich text editor with active state styling. */
 const MenuButton: React.FC<MenuButtonProps> = ({
   onClick,
   active,
@@ -50,6 +51,7 @@ const MenuButton: React.FC<MenuButtonProps> = ({
   </Button>
 );
 
+/** TipTap-based rich text editor with formatting toolbar and link insertion. */
 export const Editor: React.FC<EditorProps> = ({
   id,
   content: _content,

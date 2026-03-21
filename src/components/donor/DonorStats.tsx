@@ -9,6 +9,7 @@ interface DonorStatsProps {
   charitiesSupported: number;
 }
 
+/** Summary cards showing total donated, impact growth, and charities supported. */
 export const DonorStats: React.FC<DonorStatsProps> = ({
   totalDonated,
   impactGrowth,
