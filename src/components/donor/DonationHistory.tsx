@@ -21,6 +21,76 @@ const getStatusStyles = (status: string): string => {
   return "bg-red-100 text-red-800";
 };
 
+/** Table displaying donation records with date, charity, amounts, tx hash, and status. */
+const DonationTable: React.FC<{ donations: Transaction[] }> = ({ donations }) => (
+  <table className="min-w-full divide-y divide-gray-200">
+    <thead>
+      <tr>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Date
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Charity
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Amount
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Fiat Value
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Transaction ID
+        </th>
+        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+          Status
+        </th>
+      </tr>
+    </thead>
+    <tbody className="divide-y divide-gray-200">
+      {donations.map((donation) => (
+        <tr key={donation.id}>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {formatDate(donation.timestamp, true)}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {donation.metadata?.organization || "Unknown"}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {donation.amount} {donation.cryptoType || "GLMR"}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+            {donation.fiatValue
+              ? formatCurrency(donation.fiatValue)
+              : "N/A"}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            {donation.hash ? (
+              <a
+                href={`https://moonscan.io/tx/${donation.hash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-emerald-600 hover:text-emerald-900 truncate block max-w-xs"
+              >
+                {donation.hash.substring(0, 10)}...
+              </a>
+            ) : (
+              "N/A"
+            )}
+          </td>
+          <td className="px-6 py-4 whitespace-nowrap">
+            <span
+              className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusStyles(donation.status)}`}
+            >
+              {donation.status.charAt(0).toUpperCase() +
+                donation.status.slice(1)}
+            </span>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+);
+
 /** Filterable donation history table with time range selector and CSV/PDF export. */
 export const DonationHistory: React.FC<DonationHistoryProps> = ({
   donations,
@@ -98,72 +168,7 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
         </nav>
       </header>
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead>
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Charity
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Amount
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Fiat Value
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Transaction ID
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {filteredDonations.map((donation) => (
-              <tr key={donation.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatDate(donation.timestamp, true)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {donation.metadata?.organization || "Unknown"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {donation.amount} {donation.cryptoType || "GLMR"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {donation.fiatValue
-                    ? formatCurrency(donation.fiatValue)
-                    : "N/A"}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {donation.hash ? (
-                    <a
-                      href={`https://moonscan.io/tx/${donation.hash}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-600 hover:text-emerald-900 truncate block max-w-xs"
-                    >
-                      {donation.hash.substring(0, 10)}...
-                    </a>
-                  ) : (
-                    "N/A"
-                  )}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusStyles(donation.status)}`}
-                  >
-                    {donation.status.charAt(0).toUpperCase() +
-                      donation.status.slice(1)}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <DonationTable donations={filteredDonations} />
       </div>
 
       {/* Export Modal */}

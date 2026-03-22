@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import { Search, Download } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/Tabs";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { DonationLeaderboard } from "@/components/contribution/DonationLeaderboard";
 import { VolunteerLeaderboard } from "@/components/contribution/VolunteerLeaderboard";
 import { GlobalStats } from "@/components/contribution/GlobalStats";
@@ -58,16 +57,14 @@ const ContributionFilters: React.FC<{
         <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
       </div>
       <TimeRangeFilter value={timeRange} onChange={onTimeRangeChange} />
-      <div className="flex items-center space-x-2">
-        <Button variant="secondary" onClick={onExportCsv} className="flex items-center">
-          <Download className="h-4 w-4 mr-2" />
-          Export CSV
-        </Button>
-        <Button variant="secondary" onClick={onExportPdf} className="flex items-center">
-          <Download className="h-4 w-4 mr-2" />
-          Export PDF
-        </Button>
-      </div>
+      <Button variant="secondary" onClick={onExportCsv} className="flex items-center">
+        <Download className="h-4 w-4 mr-2" />
+        Export CSV
+      </Button>
+      <Button variant="secondary" onClick={onExportPdf} className="flex items-center">
+        <Download className="h-4 w-4 mr-2" />
+        Export PDF
+      </Button>
     </div>
     <div className="mt-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
       <div className="flex items-center space-x-4">
@@ -408,29 +405,25 @@ export const ContributionTracker: React.FC = () => {
         </TabsList>
 
         <TabsContent value="donations">
-          <Card className="p-6">
-            <div ref={donationLeaderboardRef}>
-              <DonationLeaderboard
-                timeRange={timeRange}
-                region={region}
-                searchTerm={searchTerm}
-              />
-            </div>
-          </Card>
+          <div ref={donationLeaderboardRef} className="bg-white rounded-lg shadow-md p-6">
+            <DonationLeaderboard
+              timeRange={timeRange}
+              region={region}
+              searchTerm={searchTerm}
+            />
+          </div>
         </TabsContent>
 
         <TabsContent value="volunteer">
-          <Card className="p-6">
-            <div ref={volunteerLeaderboardRef}>
-              <VolunteerLeaderboard
-                timeRange={timeRange}
-                region={region}
-                searchTerm={searchTerm}
-                highlightSkill={location.state?.skill}
-                section={location.state?.section}
-              />
-            </div>
-          </Card>
+          <div ref={volunteerLeaderboardRef} className="bg-white rounded-lg shadow-md p-6">
+            <VolunteerLeaderboard
+              timeRange={timeRange}
+              region={region}
+              searchTerm={searchTerm}
+              highlightSkill={location.state?.skill}
+              section={location.state?.section}
+            />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

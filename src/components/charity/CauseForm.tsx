@@ -275,13 +275,13 @@ export const CauseForm: React.FC<CauseFormProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-xl font-semibold text-gray-900 mb-6">
+    <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
+      <h2 className="text-xl font-semibold text-gray-900">
         {t("cause.createCause", "Create Cause")}
       </h2>
 
       {hasReachedLimit && (
-        <div className="mb-4 p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-md flex items-start">
+        <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-md flex items-start">
           <AlertTriangle className="h-5 w-5 text-amber-500 mt-0.5 mr-2 flex-shrink-0" />
           <p>
             <span className="font-medium block">
@@ -298,7 +298,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({
       )}
 
       {!hasReachedLimit && !checkingLimit && (
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm">
+        <div className="p-3 bg-blue-50 border border-blue-200 text-blue-700 rounded-md text-sm">
           {t(
             "cause.causeCount",
             `You have ${activeCauseCount} of ${MAX_CAUSES_PER_CHARITY} active causes.`,
@@ -307,13 +307,12 @@ export const CauseForm: React.FC<CauseFormProps> = ({
       )}
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md flex items-start">
+        <div className="p-3 bg-red-50 text-red-600 rounded-md flex items-start">
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-6">
         <Input
           label={t("cause.name", "Cause Name")}
           name="name"
@@ -479,8 +478,7 @@ export const CauseForm: React.FC<CauseFormProps> = ({
             {getSubmitButtonText()}
           </Button>
         </div>
-      </form>
-    </div>
+    </form>
   );
 };
 

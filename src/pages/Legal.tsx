@@ -16,11 +16,11 @@ export const Legal: React.FC = () => {
           <p>By accessing or using the Services in any way, you acknowledge that you have read, understood, and agree to be bound by all of these Terms. If you don&apos;t agree to these Terms, you must not access or use the Services. Your use of the Services in any way means that you agree to all of these Terms, and these Terms will remain in effect while you use the Services.</p>
           
           <ImportantNotice variant="warning">
-            <p><strong>PLEASE READ THESE TERMS CAREFULLY.</strong> They cover important information about Services provided to you and any charges we bill you. These Terms include information about future changes to these Terms, limitations of liability, a class action waiver, and resolution of disputes by arbitration instead of in court.</p>
+            <p className="font-bold">PLEASE READ THESE TERMS CAREFULLY. They cover important information about Services provided to you and any charges we bill you. These Terms include information about future changes to these Terms, limitations of liability, a class action waiver, and resolution of disputes by arbitration instead of in court.</p>
           </ImportantNotice>
           
           <ImportantNotice variant="warning">
-            <p><strong>ARBITRATION NOTICE AND CLASS ACTION WAIVER: EXCEPT FOR CERTAIN TYPES OF DISPUTES DESCRIBED IN THE ARBITRATION SECTION BELOW, YOU AGREE THAT DISPUTES BETWEEN YOU AND US WILL BE RESOLVED BY BINDING, INDIVIDUAL ARBITRATION AND YOU WAIVE YOUR RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION.</strong></p>
+            <p className="font-bold">ARBITRATION NOTICE AND CLASS ACTION WAIVER: EXCEPT FOR CERTAIN TYPES OF DISPUTES DESCRIBED IN THE ARBITRATION SECTION BELOW, YOU AGREE THAT DISPUTES BETWEEN YOU AND US WILL BE RESOLVED BY BINDING, INDIVIDUAL ARBITRATION AND YOU WAIVE YOUR RIGHT TO PARTICIPATE IN A CLASS ACTION LAWSUIT OR CLASS-WIDE ARBITRATION.</p>
           </ImportantNotice>
         </section>
         
@@ -46,7 +46,7 @@ export const Legal: React.FC = () => {
           </ul>
           
           <ImportantNotice variant="warning">
-            <p><strong>IMPORTANT NOTICE:</strong> Give Protocol Foundation is a not-for-profit charitable organization that has developed this platform to facilitate charitable giving, charitable equity, and volunteering. Give Protocol does not offer financial or other advice, and is not a bank or financial institution. We do not provide financial services or financial market infrastructure. We serve as a technological bridge connecting donors, volunteers, and charitable organizations.</p>
+            <p className="font-bold">IMPORTANT NOTICE: Give Protocol Foundation is a not-for-profit charitable organization that has developed this platform to facilitate charitable giving, charitable equity, and volunteering. Give Protocol does not offer financial or other advice, and is not a bank or financial institution. We do not provide financial services or financial market infrastructure. We serve as a technological bridge connecting donors, volunteers, and charitable organizations.</p>
           </ImportantNotice>
         </section>
         

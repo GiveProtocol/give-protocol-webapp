@@ -184,6 +184,117 @@ const FormField: React.FC<FormFieldProps> = ({ id, label, required, type = "text
   </div>
 );
 
+interface FormSelectFieldProps {
+  id: string;
+  label: string;
+  required?: boolean;
+  value: string;
+  onChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  className: string;
+  children: React.ReactNode;
+  error?: string;
+  colSpan?: boolean;
+}
+
+/** Labeled select field with validation error display. */
+const FormSelectField: React.FC<FormSelectFieldProps> = ({ id, label, required, value, onChange, className, children, error, colSpan }) => (
+  <div className={colSpan ? "md:col-span-2" : undefined}>
+    <label
+      htmlFor={id}
+      className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
+    >
+      {label} {required && <span className="text-red-500 text-base">*</span>}
+    </label>
+    <select
+      id={id}
+      value={value}
+      onChange={onChange}
+      className={className}
+      required={required}
+    >
+      {children}
+    </select>
+    {error && (
+      <p className="text-sm text-red-600 mt-1">
+        {error}
+      </p>
+    )}
+  </div>
+);
+
+interface ConsentPanelProps {
+  formData: FormData;
+  onCheckboxChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+/** Consent panel with explanation, specific consents, and acknowledgment checkboxes. */
+const ConsentPanel: React.FC<ConsentPanelProps> = ({ formData, onCheckboxChange }) => (
+  <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border-l-4 border-emerald-600">
+    <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
+      Volunteer Application Consent
+    </h3>
+
+    <div className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+      <p>
+        By completing and submitting this form, I consent to GIVE
+        PROTOCOL collecting, processing, and storing my personal
+        information as described in the Volunteer Application Privacy
+        Notice, which I have read and understood.
+      </p>
+    </div>
+
+    <ConsentExplanation />
+
+    <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
+      <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+        SPECIFIC CONSENTS
+      </p>
+      <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
+        Please review and indicate your consent to each of the
+        following:
+      </p>
+      <div className="space-y-3">
+        <ConsentCheckbox
+          id="essential-processing"
+          checked={formData.essentialProcessing}
+          onChange={onCheckboxChange("essentialProcessing")}
+          title="Essential Processing (Required):"
+          description="I consent to GIVE PROTOCOL collecting and processing my personal information for the purpose of evaluating my volunteer application and, if successful, managing my volunteer engagement."
+          note="Note: This consent is necessary to process your volunteer application. If you do not provide this consent, we will not be able to consider your application."
+        />
+        <ConsentCheckbox
+          id="international-transfers"
+          checked={formData.internationalTransfers}
+          onChange={onCheckboxChange("internationalTransfers")}
+          title="International Transfers (if applicable):"
+          description="I consent to GIVE PROTOCOL transferring my personal information to countries outside my country of residence, including countries that may not provide the same level of data protection, with appropriate safeguards in place as described in the Privacy Notice."
+        />
+      </div>
+    </div>
+
+    <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
+      <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+        ACKNOWLEDGMENT
+      </p>
+      <ConsentCheckbox
+        id="age-confirmation"
+        checked={formData.ageConfirmation}
+        onChange={onCheckboxChange("ageConfirmation")}
+        title="Age Confirmation:"
+        description="I confirm that I am at least 16 years of age."
+        note="(If you are under 16 years of age, parental or guardian consent is required)"
+      />
+      <ConsentCheckbox
+        id="privacy-notice"
+        checked={formData.privacyNotice}
+        onChange={onCheckboxChange("privacyNotice")}
+        title="Privacy Notice:"
+        description="I confirm that I have read and understood the Privacy Notice."
+      />
+    </div>
+  </div>
+);
+
 /** Consent explanation listing the data processing terms volunteers agree to. */
 const ConsentExplanation: React.FC = () => (
   <div className="mb-4">
@@ -650,80 +761,63 @@ export const VolunteerApplicationForm: React.FC<
                 className={inputClasses}
                 placeholder="e.g., San Francisco, CA"
               />
-              <div>
-                <label
-                  htmlFor="timezone"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  Time Zone
-                </label>
-                <select
-                  id="timezone"
-                  value={formData.timezone}
-                  onChange={handleFieldChange("timezone")}
-                  className={selectClasses}
-                >
-                  <option value="">Select Time Zone</option>
-                  <option value="UTC-12">UTC-12 (Baker Island)</option>
-                  <option value="UTC-11">UTC-11 (Hawaii-Aleutian)</option>
-                  <option value="UTC-10">UTC-10 (Hawaii)</option>
-                  <option value="UTC-9">UTC-9 (Alaska)</option>
-                  <option value="UTC-8">UTC-8 (Pacific Time)</option>
-                  <option value="UTC-7">UTC-7 (Mountain Time)</option>
-                  <option value="UTC-6">UTC-6 (Central Time)</option>
-                  <option value="UTC-5">UTC-5 (Eastern Time)</option>
-                  <option value="UTC-4">UTC-4 (Atlantic Time)</option>
-                  <option value="UTC-3">UTC-3 (Argentina, Brazil)</option>
-                  <option value="UTC-2">UTC-2 (South Georgia)</option>
-                  <option value="UTC-1">UTC-1 (Azores)</option>
-                  <option value="UTC+0">UTC+0 (GMT/London)</option>
-                  <option value="UTC+1">UTC+1 (Central Europe)</option>
-                  <option value="UTC+2">UTC+2 (Eastern Europe)</option>
-                  <option value="UTC+3">UTC+3 (Moscow, East Africa)</option>
-                  <option value="UTC+4">UTC+4 (Gulf States)</option>
-                  <option value="UTC+5">UTC+5 (Pakistan)</option>
-                  <option value="UTC+5.5">UTC+5:30 (India)</option>
-                  <option value="UTC+6">UTC+6 (Bangladesh)</option>
-                  <option value="UTC+7">UTC+7 (Southeast Asia)</option>
-                  <option value="UTC+8">UTC+8 (China, Singapore)</option>
-                  <option value="UTC+9">UTC+9 (Japan, Korea)</option>
-                  <option value="UTC+9.5">UTC+9:30 (Central Australia)</option>
-                  <option value="UTC+10">UTC+10 (Eastern Australia)</option>
-                  <option value="UTC+11">UTC+11 (Solomon Islands)</option>
-                  <option value="UTC+12">UTC+12 (New Zealand)</option>
-                  <option value="UTC+13">UTC+13 (Tonga)</option>
-                  <option value="UTC+14">UTC+14 (Line Islands)</option>
-                </select>
-              </div>
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="ageRange"
-                  className="block text-sm font-medium text-gray-800 dark:text-gray-200 mb-2"
-                >
-                  Age Range <span className="text-red-500 text-base">*</span>
-                </label>
-                <select
-                  id="ageRange"
-                  value={formData.ageRange}
-                  onChange={handleFieldChange("ageRange")}
-                  className={selectClasses}
-                  required
-                >
-                  <option value="">Select Age Range</option>
-                  <option value="under-18">Under 18</option>
-                  <option value="18-24">18-24</option>
-                  <option value="25-34">25-34</option>
-                  <option value="35-44">35-44</option>
-                  <option value="45-54">45-54</option>
-                  <option value="55-64">55-64</option>
-                  <option value="65+">65+</option>
-                </select>
-                {validationErrors.ageRange && (
-                  <p className="text-sm text-red-600 mt-1">
-                    {validationErrors.ageRange}
-                  </p>
-                )}
-              </div>
+              <FormSelectField
+                id="timezone"
+                label="Time Zone"
+                value={formData.timezone}
+                onChange={handleFieldChange("timezone")}
+                className={selectClasses}
+              >
+                <option value="">Select Time Zone</option>
+                <option value="UTC-12">UTC-12 (Baker Island)</option>
+                <option value="UTC-11">UTC-11 (Hawaii-Aleutian)</option>
+                <option value="UTC-10">UTC-10 (Hawaii)</option>
+                <option value="UTC-9">UTC-9 (Alaska)</option>
+                <option value="UTC-8">UTC-8 (Pacific Time)</option>
+                <option value="UTC-7">UTC-7 (Mountain Time)</option>
+                <option value="UTC-6">UTC-6 (Central Time)</option>
+                <option value="UTC-5">UTC-5 (Eastern Time)</option>
+                <option value="UTC-4">UTC-4 (Atlantic Time)</option>
+                <option value="UTC-3">UTC-3 (Argentina, Brazil)</option>
+                <option value="UTC-2">UTC-2 (South Georgia)</option>
+                <option value="UTC-1">UTC-1 (Azores)</option>
+                <option value="UTC+0">UTC+0 (GMT/London)</option>
+                <option value="UTC+1">UTC+1 (Central Europe)</option>
+                <option value="UTC+2">UTC+2 (Eastern Europe)</option>
+                <option value="UTC+3">UTC+3 (Moscow, East Africa)</option>
+                <option value="UTC+4">UTC+4 (Gulf States)</option>
+                <option value="UTC+5">UTC+5 (Pakistan)</option>
+                <option value="UTC+5.5">UTC+5:30 (India)</option>
+                <option value="UTC+6">UTC+6 (Bangladesh)</option>
+                <option value="UTC+7">UTC+7 (Southeast Asia)</option>
+                <option value="UTC+8">UTC+8 (China, Singapore)</option>
+                <option value="UTC+9">UTC+9 (Japan, Korea)</option>
+                <option value="UTC+9.5">UTC+9:30 (Central Australia)</option>
+                <option value="UTC+10">UTC+10 (Eastern Australia)</option>
+                <option value="UTC+11">UTC+11 (Solomon Islands)</option>
+                <option value="UTC+12">UTC+12 (New Zealand)</option>
+                <option value="UTC+13">UTC+13 (Tonga)</option>
+                <option value="UTC+14">UTC+14 (Line Islands)</option>
+              </FormSelectField>
+              <FormSelectField
+                id="ageRange"
+                label="Age Range"
+                required
+                value={formData.ageRange}
+                onChange={handleFieldChange("ageRange")}
+                className={selectClasses}
+                error={validationErrors.ageRange}
+                colSpan
+              >
+                <option value="">Select Age Range</option>
+                <option value="under-18">Under 18</option>
+                <option value="18-24">18-24</option>
+                <option value="25-34">25-34</option>
+                <option value="35-44">35-44</option>
+                <option value="45-54">45-54</option>
+                <option value="55-64">55-64</option>
+                <option value="65+">65+</option>
+              </FormSelectField>
             </div>
           </section>
 
@@ -830,72 +924,7 @@ export const VolunteerApplicationForm: React.FC<
           <section className="mb-8 mt-8">
             <SectionHeader number={3} title="Consent & Agreement" />
 
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border-l-4 border-emerald-600">
-              <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
-                Volunteer Application Consent
-              </h3>
-
-              <div className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-                <p>
-                  By completing and submitting this form, I consent to GIVE
-                  PROTOCOL collecting, processing, and storing my personal
-                  information as described in the Volunteer Application Privacy
-                  Notice, which I have read and understood.
-                </p>
-              </div>
-
-              <ConsentExplanation />
-
-              <div className="border-t border-gray-200 dark:border-gray-600 pt-4">
-                <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                  SPECIFIC CONSENTS
-                </p>
-                <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-                  Please review and indicate your consent to each of the
-                  following:
-                </p>
-
-                <div className="space-y-3">
-                  <ConsentCheckbox
-                    id="essential-processing"
-                    checked={formData.essentialProcessing}
-                    onChange={handleCheckboxChange("essentialProcessing")}
-                    title="Essential Processing (Required):"
-                    description="I consent to GIVE PROTOCOL collecting and processing my personal information for the purpose of evaluating my volunteer application and, if successful, managing my volunteer engagement."
-                    note="Note: This consent is necessary to process your volunteer application. If you do not provide this consent, we will not be able to consider your application."
-                  />
-                  <ConsentCheckbox
-                    id="international-transfers"
-                    checked={formData.internationalTransfers}
-                    onChange={handleCheckboxChange("internationalTransfers")}
-                    title="International Transfers (if applicable):"
-                    description="I consent to GIVE PROTOCOL transferring my personal information to countries outside my country of residence, including countries that may not provide the same level of data protection, with appropriate safeguards in place as described in the Privacy Notice."
-                  />
-                </div>
-              </div>
-
-              <div className="border-t border-gray-200 dark:border-gray-600 pt-4 mt-4">
-                <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-                  ACKNOWLEDGMENT
-                </p>
-
-                <ConsentCheckbox
-                  id="age-confirmation"
-                  checked={formData.ageConfirmation}
-                  onChange={handleCheckboxChange("ageConfirmation")}
-                  title="Age Confirmation:"
-                  description="I confirm that I am at least 16 years of age."
-                  note="(If you are under 16 years of age, parental or guardian consent is required)"
-                />
-                <ConsentCheckbox
-                  id="privacy-notice"
-                  checked={formData.privacyNotice}
-                  onChange={handleCheckboxChange("privacyNotice")}
-                  title="Privacy Notice:"
-                  description="I confirm that I have read and understood the Privacy Notice."
-                />
-              </div>
-            </div>
+            <ConsentPanel formData={formData} onCheckboxChange={handleCheckboxChange} />
 
             {validationErrors.consent && (
               <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-start">

@@ -15,7 +15,7 @@ export const Privacy: React.FC = () => {
           <p>We value your privacy and recognize the sensitivity of personal data. While blockchain technology enables transparency in donations and volunteer contributions, we&apos;ve designed our platform to balance transparency with appropriate privacy protections.</p>
           
           <ImportantNotice variant="warning">
-            <p><strong>IF YOU DO NOT AGREE WITH ANY PART OF THIS PRIVACY POLICY OR OUR TERMS OF USE, THEN PLEASE DO NOT USE ANY OF THE SERVICES.</strong></p>
+            <p className="font-bold">IF YOU DO NOT AGREE WITH ANY PART OF THIS PRIVACY POLICY OR OUR TERMS OF USE, THEN PLEASE DO NOT USE ANY OF THE SERVICES.</p>
           </ImportantNotice>
           
           <p>If you provide personal data to us, you consent to the collection, use, and disclosure of such personal data in accordance with this Privacy Policy. If you provide the personal data of another individual (such as organization representatives or volunteer references), it means that you have informed them of the purposes for which we require their personal data and they have consented to the collection, use, and disclosure of their personal data in accordance with this Privacy Policy.</p>
@@ -73,7 +73,7 @@ export const Privacy: React.FC = () => {
 
           <h3>2.4 Information We Will Never Collect</h3>
           <ImportantNotice variant="warning">
-            <p><strong>We will never ask you to share your private keys or wallet seed. Never trust anyone or any site that asks you to enter your private keys or wallet seed.</strong></p>
+            <p className="font-bold">We will never ask you to share your private keys or wallet seed. Never trust anyone or any site that asks you to enter your private keys or wallet seed.</p>
           </ImportantNotice>
           <p>We do not collect any special categories of personal data about you (this includes details about your race or ethnicity, religious or philosophical beliefs, sex life, sexual orientation, political opinions, trade union membership, information about your health and genetic and biometric data). Nor do we collect any information about criminal convictions and offenses, except where required for charitable organization verification purposes and permitted by law.</p>
 

@@ -91,6 +91,24 @@ const TimeframesSection: React.FC = () => (
   </div>
 );
 
+/** Important notice banner for governance participants. */
+const GovernanceNotice: React.FC = () => (
+  <div className="bg-emerald-50 p-8 rounded-lg flex items-start">
+    <AlertTriangle className="h-6 w-6 text-emerald-600 mt-1 mr-3 flex-shrink-0" />
+    <div>
+      <h3 className="text-lg font-semibold text-emerald-900 mb-2">
+        Important Notice
+      </h3>
+      <p className="text-emerald-700">
+        All governance participants are required to review and understand
+        the complete governance documentation before participating in
+        proposals or voting. This ensures informed decision-making and
+        maintains the integrity of our governance process.
+      </p>
+    </div>
+  </div>
+);
+
 /** Governance overview page describing the Give Protocol DAO structure and voting mechanics. */
 export const Governance: React.FC = () => {
   return (
@@ -148,20 +166,7 @@ export const Governance: React.FC = () => {
         </ScrollReveal>
 
         <ScrollReveal direction="scale" delay={400}>
-        <div className="bg-emerald-50 p-8 rounded-lg flex items-start">
-          <AlertTriangle className="h-6 w-6 text-emerald-600 mt-1 mr-3 flex-shrink-0" />
-          <div>
-            <h3 className="text-lg font-semibold text-emerald-900 mb-2">
-              Important Notice
-            </h3>
-            <p className="text-emerald-700">
-              All governance participants are required to review and understand
-              the complete governance documentation before participating in
-              proposals or voting. This ensures informed decision-making and
-              maintains the integrity of our governance process.
-            </p>
-          </div>
-        </div>
+        <GovernanceNotice />
         </ScrollReveal>
       </div>
     </div>

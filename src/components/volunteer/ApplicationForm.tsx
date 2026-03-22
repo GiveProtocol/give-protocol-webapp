@@ -74,6 +74,75 @@ interface ApplicationFormContentProps {
   };
 }
 
+/** Availability section with day/time checkboxes and commitment level select. */
+const AvailabilitySection: React.FC<{
+  formData: ApplicationFormContentProps["formData"];
+  validationErrors: Record<string, string>;
+  selectClasses: string;
+  handlers: ApplicationFormContentProps["handlers"];
+}> = ({ formData, validationErrors, selectClasses, handlers }) => (
+  <div className="space-y-4">
+    <h3 className="text-lg font-medium text-gray-900">Availability</h3>
+    <p className="block text-sm font-medium text-gray-700 mb-1">
+      Preferred Days
+    </p>
+    <div className="grid grid-cols-2 gap-2">
+      {[
+        "Monday", "Tuesday", "Wednesday", "Thursday",
+        "Friday", "Saturday", "Sunday",
+      ].map((day) => (
+        <label key={day} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={formData.availability.days.includes(day)}
+            onChange={handlers.handleDaysChange(day)}
+            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2"
+          />
+          {day}
+        </label>
+      ))}
+    </div>
+    {validationErrors["availability.days"] && (
+      <p className="text-sm text-red-600 mb-1">
+        {validationErrors["availability.days"]}
+      </p>
+    )}
+    <p className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+      Preferred Times
+    </p>
+    <div className="grid grid-cols-2 gap-2">
+      {["Morning", "Afternoon", "Evening"].map((time) => (
+        <label key={time} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={formData.availability.times.includes(time)}
+            onChange={handlers.handleTimesChange(time)}
+            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2"
+          />
+          {time}
+        </label>
+      ))}
+    </div>
+    {validationErrors["availability.times"] && (
+      <p className="text-sm text-red-600 mb-1">
+        {validationErrors["availability.times"]}
+      </p>
+    )}
+    <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
+      Commitment Level{" "}
+      <select
+        value={formData.commitmentType}
+        onChange={handlers.handleCommitmentChange}
+        className={`${selectClasses} mt-1`}
+      >
+        <option value="one-time">One-time</option>
+        <option value="short-term">Short-term</option>
+        <option value="long-term">Long-term</option>
+      </select>
+    </label>
+  </div>
+);
+
 /** Form layout with personal info, availability, skills, references, and work samples fields. */
 const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
   formData,
@@ -128,71 +197,12 @@ const ApplicationFormContent: React.FC<ApplicationFormContentProps> = ({
     </div>
 
     {/* Availability */}
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium text-gray-900">Availability</h3>
-      <p className="block text-sm font-medium text-gray-700 mb-1">
-        Preferred Days
-      </p>
-      <div className="grid grid-cols-2 gap-2">
-        {[
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday",
-          "Sunday",
-        ].map((day) => (
-          <label key={day} className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={formData.availability.days.includes(day)}
-              onChange={handlers.handleDaysChange(day)}
-              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2"
-            />
-            {day}
-          </label>
-        ))}
-      </div>
-      {validationErrors["availability.days"] && (
-        <p className="text-sm text-red-600 mb-1">
-          {validationErrors["availability.days"]}
-        </p>
-      )}
-      <p className="block text-sm font-medium text-gray-700 mb-1 mt-4">
-        Preferred Times
-      </p>
-      <div className="grid grid-cols-2 gap-2">
-        {["Morning", "Afternoon", "Evening"].map((time) => (
-          <label key={time} className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={formData.availability.times.includes(time)}
-              onChange={handlers.handleTimesChange(time)}
-              className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500 mr-2"
-            />
-            {time}
-          </label>
-        ))}
-      </div>
-      {validationErrors["availability.times"] && (
-        <p className="text-sm text-red-600 mb-1">
-          {validationErrors["availability.times"]}
-        </p>
-      )}
-      <label className="block text-sm font-medium text-gray-700 mb-1 mt-4">
-        Commitment Level{" "}
-        <select
-          value={formData.commitmentType}
-          onChange={handlers.handleCommitmentChange}
-          className={`${selectClasses} mt-1`}
-        >
-          <option value="one-time">One-time</option>
-          <option value="short-term">Short-term</option>
-          <option value="long-term">Long-term</option>
-        </select>
-      </label>
-    </div>
+    <AvailabilitySection
+      formData={formData}
+      validationErrors={validationErrors}
+      selectClasses={selectClasses}
+      handlers={handlers}
+    />
 
     {/* Skills & Experience */}
     <div className="space-y-4">
