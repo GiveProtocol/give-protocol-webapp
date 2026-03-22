@@ -4,6 +4,11 @@ import { Card } from "@/components/ui/Card";
 import { formatCurrency } from "@/utils/money";
 import { useGlobalContributionStats } from "@/hooks/useContributionStats";
 
+/**
+ * GlobalStats component fetches and displays global contribution statistics.
+ *
+ * @returns {JSX.Element} The rendered global statistics component.
+ */
 export const GlobalStats: React.FC = () => {
   const { data: stats, isLoading } = useGlobalContributionStats();
 

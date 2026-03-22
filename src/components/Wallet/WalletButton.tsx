@@ -6,14 +6,18 @@ import { WalletDropdown } from "./WalletDropdown";
 import { formatAddress, getAddressGradient, copyToClipboard } from "./utils";
 import { useWalletBalance } from "@/hooks/useWalletBalance";
 
-/**
- * Wallet avatar component with gradient background based on address
- */
 interface WalletAvatarProps {
   address: string;
   size?: number;
 }
 
+/**
+ * Renders a wallet avatar with a gradient background derived from the address.
+ *
+ * @param address - The wallet address string.
+ * @param size - The pixel size of the avatar (width & height). Defaults to 32.
+ * @returns A JSX element representing the wallet avatar.
+ */
 const WalletAvatar: React.FC<WalletAvatarProps> = ({ address, size = 32 }) => {
   const gradient = getAddressGradient(address);
 
@@ -30,13 +34,16 @@ const WalletAvatar: React.FC<WalletAvatarProps> = ({ address, size = 32 }) => {
   );
 };
 
-/**
- * Connection status indicator - pulsing green dot when connected
- */
 interface ConnectionStatusProps {
   isConnected: boolean;
 }
 
+/**
+ * Renders a pulsing green dot indicator when connected.
+ *
+ * @param isConnected - Indicates if the connection is active.
+ * @returns A JSX element when connected, otherwise null.
+ */
 const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
   if (!isConnected) return null;
 
@@ -50,13 +57,16 @@ const ConnectionStatus: React.FC<ConnectionStatusProps> = ({ isConnected }) => {
   );
 };
 
-/**
- * Pending transaction badge
- */
 interface TxBadgeProps {
   count: number;
 }
 
+/**
+ * Renders a badge displaying the number of pending transactions.
+ *
+ * @param count - The number of pending transactions.
+ * @returns A JSX element when count > 0, otherwise null.
+ */
 const TxBadge: React.FC<TxBadgeProps> = ({ count }) => {
   if (count <= 0) return null;
 
@@ -124,6 +134,12 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
   // Close dropdown when clicking outside
   // Must check both the button container and portal-rendered dropdown
   useEffect(() => {
+    /**
+     * Handles clicks outside the dropdown container and portal menu, closing the dropdown if a click occurs outside.
+     *
+     * @param event - The mouse event triggered by a click.
+     * @returns void
+     */
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
       const isInsideContainer = containerRef.current?.contains(target);
@@ -145,6 +161,12 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
 
   // Handle keyboard navigation
   useEffect(() => {
+    /**
+     * Handles key down events to close the dropdown when Escape is pressed.
+     *
+     * @param event The keyboard event triggered on key down.
+     * @returns void
+     */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" && isDropdownOpen) {
         setIsDropdownOpen(false);

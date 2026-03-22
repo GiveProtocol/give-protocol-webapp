@@ -22,6 +22,11 @@ interface VolunteerLeaderboardProps {
   section?: "hours" | "endorsements";
 }
 
+/**
+ * Returns a CSS background color class based on the volunteer's rank.
+ * @param rank The rank of the volunteer (1 for first place, 2 for second, etc.).
+ * @returns A string representing the CSS class for the background color corresponding to the rank.
+ */
 const getRankColor = (rank: number): string => {
   switch (rank) {
     case 1:

@@ -5,6 +5,13 @@ interface TimeRangeFilterProps {
   onChange: (_value: string) => void;
 }
 
+/**
+ * TimeRangeFilter component renders a dropdown for selecting a time range filter.
+ *
+ * @param {string} value - The currently selected time range.
+ * @param {(value: string) => void} onChange - Callback invoked when the selected time range changes.
+ * @returns {JSX.Element} The select element for filtering by time range.
+ */
 export const TimeRangeFilter: React.FC<TimeRangeFilterProps> = ({
   value,
   onChange,

@@ -6,6 +6,11 @@ interface CharityProfileCardProps {
   profile: CharityDetails;
 }
 
+/**
+ * Renders a charity profile card displaying the charity's image, category, name, and description.
+ * @param {CharityDetails} profile - The charity profile details, including image_url, name, category, and description.
+ * @returns {JSX.Element} The rendered charity profile card component.
+ */
 const CharityProfileCard: React.FC<CharityProfileCardProps> = ({ profile }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">

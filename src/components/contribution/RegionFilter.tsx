@@ -5,10 +5,21 @@ interface RegionFilterProps {
   onChange: (_value: string) => void;
 }
 
+/**
+ * Component for filtering items by region.
+ * @param {string} value - The currently selected region.
+ * @param {(value: string) => void} onChange - Callback invoked when the selected region changes.
+ * @returns {JSX.Element} A dropdown select element for choosing regions.
+ */
 export const RegionFilter: React.FC<RegionFilterProps> = ({
   value,
   onChange,
 }) => {
+  /**
+   * Handles the select change event and invokes the onChange callback with the selected value.
+   * @param {React.ChangeEvent<HTMLSelectElement>} e - The change event for the select element.
+   * @returns {void}
+   */
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       onChange(e.target.value);

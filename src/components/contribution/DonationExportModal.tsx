@@ -13,6 +13,12 @@ interface DonationExportModalProps {
   onClose: () => void;
 }
 
+/**
+ * DonationExportModal component renders a modal allowing users to export donation data.
+ * @param donations - Array of donation transactions to export.
+ * @param onClose - Function called when the modal is closed.
+ * @returns JSX.Element representing the export dialog.
+ */
 export const DonationExportModal: React.FC<DonationExportModalProps> = ({
   donations,
   onClose,
@@ -31,6 +37,10 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
     },
   });
 
+  /**
+   * Handles exporting the donations based on user-selected filename and options.
+   * @returns void
+   */
   const handleExport = useCallback(() => {
     // Filter donations based on date range if provided
     let filteredDonations = [...donations];

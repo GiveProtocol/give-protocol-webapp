@@ -46,6 +46,10 @@ const Web3StatusSection: React.FC<{
   </div>
 );
 
+/**
+ * Component that tests Supabase and Web3 connections and displays status.
+ * @returns JSX.Element - The rendered connection test component.
+ */
 export const ConnectionTest: React.FC = () => {
   const [supabaseStatus, setSupabaseStatus] = useState<
     "checking" | "success" | "error"
@@ -53,6 +57,10 @@ export const ConnectionTest: React.FC = () => {
   const [supabaseError, setSupabaseError] = useState<string>("");
   const { connect, isConnected, chainId, error: web3Error } = useWeb3();
 
+  /**
+   * Tests the Supabase connection by querying the profiles table count.
+   * @returns Promise<void> - Resolves when the test completes and updates status.
+   */
   const testSupabaseConnection = async () => {
     try {
       const { data: _data, error } = await supabase
@@ -72,7 +80,11 @@ export const ConnectionTest: React.FC = () => {
     testSupabaseConnection();
   }, []);
 
-  // Extract nested ternary for status color
+  /**
+   * Returns the CSS class name for a given connection status.
+   * @param status - One of "checking", "success", or "error".
+   * @returns string - CSS class corresponding to the status color.
+   */
   const getStatusColor = (status: "checking" | "success" | "error") => {
     if (status === "checking") return "bg-yellow-500";
     if (status === "success") return "bg-green-500";

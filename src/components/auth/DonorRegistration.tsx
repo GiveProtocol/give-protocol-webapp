@@ -5,6 +5,10 @@ import { Input } from "@/components/ui/Input";
 import { PasswordStrengthBar } from "@/components/auth/PasswordStrengthBar";
 import { validateEmail, validatePassword } from "@/utils/validation";
 
+/**
+ * DonorRegistration component allows users to register as donors by providing email and password.
+ * @returns JSX.Element representing the donor registration form.
+ */
 export const DonorRegistration: React.FC = () => {
   const { register, loading } = useAuth();
   const [formData, setFormData] = useState({
@@ -14,12 +18,21 @@ export const DonorRegistration: React.FC = () => {
   });
   const [error, setError] = useState("");
 
+  /**
+   * handleChange updates the form data state when input fields change.
+   * @param e - The input change event.
+   */
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setError(""); // Clear error when user types
   }, []);
 
+  /**
+   * handleSubmit validates form data and submits registration when the form is submitted.
+   * @param e - The form submission event.
+   * @returns Promise<void> indicating completion of the submit action.
+   */
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();

@@ -47,6 +47,13 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange, countrie
   </label>
 );
 
+/**
+ * CharityVettingForm component
+ *
+ * Renders the charity vetting form for organizations to submit information.
+ *
+ * @returns {JSX.Element} The charity vetting form component.
+ */
 export const CharityVettingForm: React.FC = () => {
   const { register, loading } = useAuth();
   const { countries } = useCountries();
@@ -72,6 +79,11 @@ export const CharityVettingForm: React.FC = () => {
     confirmPassword: "",
   });
 
+  /**
+   * Handles change event for input and select fields in the form.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLSelectElement>} event The change event triggered by input or select elements.
+   */
   const handleChange = useCallback(
     (
       e: React.ChangeEvent<

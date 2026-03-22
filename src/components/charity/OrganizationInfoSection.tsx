@@ -62,6 +62,12 @@ const SocialIcon: React.FC<{
   }
 };
 
+/**
+ * OrganizationInfoSection component displays detailed information about an organization, such as year founded, address, contact info, and social media links, with expandable section.
+ * @param profile - The organization profile containing data like yearFounded, address, contact, and social links.
+ * @param charityName - The display name of the charity.
+ * @returns A React element rendering the organization's information section.
+ */
 export const OrganizationInfoSection: React.FC<OrganizationInfoSectionProps> =
   ({ profile, charityName }) => {
     const [isExpanded, setIsExpanded] = useState(false);

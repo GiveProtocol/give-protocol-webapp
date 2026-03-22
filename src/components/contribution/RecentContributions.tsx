@@ -23,6 +23,16 @@ interface SourceFilterButtonProps {
   onToggle: (_source: ContributionSourceType) => void;
 }
 
+/**
+ * Renders a button for toggling a source filter.
+ *
+ * @param props - The properties for SourceFilterButtonComponent.
+ * @param props.source - The source identifier.
+ * @param props.label - The label displayed on the button.
+ * @param props.isSelected - Whether the source is currently selected.
+ * @param props.onToggle - Callback invoked when the button is clicked, receiving the source.
+ * @returns {JSX.Element} The rendered button element.
+ */
 function SourceFilterButtonComponent(props: SourceFilterButtonProps) {
   const { source, label, isSelected, onToggle } = props;
 
@@ -65,6 +75,12 @@ function getContributionIcon(type: ContributionSource) {
   }
 }
 
+/**
+ * Returns a descriptive label for a contribution source.
+ *
+ * @param type - The source type of the contribution.
+ * @returns A string label representing the contribution type.
+ */
 function getContributionLabel(type: ContributionSource): string {
   switch (type) {
     case "donation":
@@ -78,6 +94,12 @@ function getContributionLabel(type: ContributionSource): string {
   }
 }
 
+/**
+ * Returns a JSX badge element corresponding to the given contribution status.
+ *
+ * @param status - The status string ('completed', 'validated', 'pending', 'unvalidated') used to determine badge label and styling.
+ * @returns A JSX element representing the status badge, or null if the status is unrecognized.
+ */
 function getStatusBadge(status: string) {
   switch (status) {
     case "completed":
@@ -104,6 +126,11 @@ function getStatusBadge(status: string) {
   }
 }
 
+/**
+ * RecentContributions component displays recent contributions and allows filtering by source.
+ *
+ * @returns A React component rendering the recent contributions UI.
+ */
 export const RecentContributions: React.FC = () => {
   const [selectedSources, setSelectedSources] = useState<
     ContributionSourceType[]
