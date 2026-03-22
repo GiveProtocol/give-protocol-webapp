@@ -13,33 +13,30 @@ const InfoCard: React.FC<{ icon: LucideIcon; title: string; children: React.Reac
   </div>
 );
 
+/** Feature highlight card with icon, title, and description. */
+const FeatureHighlight: React.FC<{ icon: LucideIcon; title: string; children: React.ReactNode }> = ({ icon: Icon, title, children }) => (
+  <div className="text-center">
+    <Icon className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
+    <h3 className="text-xl font-semibold text-gray-900 mb-4">{title}</h3>
+    <p className="text-gray-600">{children}</p>
+  </div>
+);
+
 /** "What We Do" section with three feature highlights. */
 const WhatWeDoSection: React.FC = () => (
   <ScrollReveal direction="up">
     <section>
       <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
       <div className="grid md:grid-cols-3 gap-8">
-        <div className="text-center">
-          <Heart className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Direct Donations</h3>
-          <p className="text-gray-600">
-            Enable cryptocurrency donations directly to verified charitable organizations with complete transparency.
-          </p>
-        </div>
-        <div className="text-center">
-          <Users className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Volunteer Connection</h3>
-          <p className="text-gray-600">
-            Connect volunteers with meaningful opportunities and track verified volunteer hours on the blockchain.
-          </p>
-        </div>
-        <div className="text-center">
-          <TrendingUp className="h-10 w-10 text-emerald-600 bg-emerald-100 rounded-full p-6 w-20 h-20 mx-auto mb-6" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">Portfolio Funds</h3>
-          <p className="text-gray-600">
-            Support multiple organizations in the same sector through diversified giving portfolios.
-          </p>
-        </div>
+        <FeatureHighlight icon={Heart} title="Direct Donations">
+          Enable cryptocurrency donations directly to verified charitable organizations with complete transparency.
+        </FeatureHighlight>
+        <FeatureHighlight icon={Users} title="Volunteer Connection">
+          Connect volunteers with meaningful opportunities and track verified volunteer hours on the blockchain.
+        </FeatureHighlight>
+        <FeatureHighlight icon={TrendingUp} title="Portfolio Funds">
+          Support multiple organizations in the same sector through diversified giving portfolios.
+        </FeatureHighlight>
       </div>
     </section>
   </ScrollReveal>
@@ -94,6 +91,14 @@ const ValuesSection: React.FC = () => (
   </ScrollReveal>
 );
 
+/** Technology feature card with title and description. */
+const TechFeatureCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
+  <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
+    <h4 className="font-semibold text-gray-900 mb-2">{title}</h4>
+    <p className="text-gray-600">{children}</p>
+  </div>
+);
+
 /** "Built on Blockchain" technology section. */
 const TechnologySection: React.FC = () => (
   <ScrollReveal direction="up">
@@ -104,21 +109,36 @@ const TechnologySection: React.FC = () => (
         of blockchain technology while maintaining accessibility for users and organizations.
       </p>
       <div className="grid md:grid-cols-3 gap-6 text-sm max-w-3xl mx-auto">
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h4 className="font-semibold text-gray-900 mb-2">Smart Contracts</h4>
-          <p className="text-gray-600">Automated, transparent execution of donations and volunteer agreements</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h4 className="font-semibold text-gray-900 mb-2">Immutable Records</h4>
-          <p className="text-gray-600">Permanent, tamper-proof record of all charitable activities</p>
-        </div>
-        <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-          <h4 className="font-semibold text-gray-900 mb-2">Decentralized Governance</h4>
-          <p className="text-gray-600">Community-driven decision making for platform development</p>
-        </div>
+        <TechFeatureCard title="Smart Contracts">
+          Automated, transparent execution of donations and volunteer agreements
+        </TechFeatureCard>
+        <TechFeatureCard title="Immutable Records">
+          Permanent, tamper-proof record of all charitable activities
+        </TechFeatureCard>
+        <TechFeatureCard title="Decentralized Governance">
+          Community-driven decision making for platform development
+        </TechFeatureCard>
       </div>
     </section>
   </ScrollReveal>
+);
+
+/** Mission and vision cards section. */
+const MissionVisionSection: React.FC = () => (
+  <section className="grid md:grid-cols-2 gap-8">
+    <ScrollReveal direction="left">
+      <InfoCard icon={Target} title="Our Mission">
+        To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
+        efficiency, and lasting impact for both donors and charitable organizations.
+      </InfoCard>
+    </ScrollReveal>
+    <ScrollReveal direction="right" delay={100}>
+      <InfoCard icon={Globe} title="Our Vision">
+        A world where every charitable donation creates maximum impact through transparent,
+        efficient, and sustainable giving mechanisms.
+      </InfoCard>
+    </ScrollReveal>
+  </section>
 );
 
 /** About page describing the Give Protocol mission, team, and values. */
@@ -129,22 +149,7 @@ export const About: React.FC = () => {
       subtitle="Revolutionizing charitable giving through blockchain technology"
     >
       <div className="space-y-16">
-        {/* Mission & Vision */}
-        <section className="grid md:grid-cols-2 gap-8">
-          <ScrollReveal direction="left">
-            <InfoCard icon={Target} title="Our Mission">
-              To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
-              efficiency, and lasting impact for both donors and charitable organizations.
-            </InfoCard>
-          </ScrollReveal>
-          <ScrollReveal direction="right" delay={100}>
-            <InfoCard icon={Globe} title="Our Vision">
-              A world where every charitable donation creates maximum impact through transparent,
-              efficient, and sustainable giving mechanisms.
-            </InfoCard>
-          </ScrollReveal>
-        </section>
-
+        <MissionVisionSection />
         <WhatWeDoSection />
         <ValuesSection />
         <TechnologySection />

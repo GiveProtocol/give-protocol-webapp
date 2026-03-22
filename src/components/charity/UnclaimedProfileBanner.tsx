@@ -6,9 +6,58 @@ import { Modal } from '@/components/ui/Modal';
 import { submitRemovalRequest } from '@/services/irsDataService';
 import { useToast } from '@/hooks/useToast';
 
+/** Content of the removal request modal with reason textarea and submit/cancel buttons. */
+const RemovalModalContent: React.FC<{
+  removalReason: string;
+  onReasonChange: (_e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onClose: () => void;
+  onSubmit: () => void;
+  submitting: boolean;
+}> = ({ removalReason, onReasonChange, onClose, onSubmit, submitting }) => (
+  <div className="p-5 space-y-4">
+    <p className="text-sm text-gray-600">
+      Explain why this organization should be removed from Give Protocol.
+    </p>
+    <textarea
+      value={removalReason}
+      onChange={onReasonChange}
+      placeholder="Please describe your reason..."
+      rows={4}
+      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 resize-none"
+    />
+    <div className="flex justify-end gap-2">
+      <Button variant="secondary" size="sm" onClick={onClose}>
+        Cancel
+      </Button>
+      <Button
+        size="sm"
+        onClick={onSubmit}
+        disabled={submitting || !removalReason.trim()}
+      >
+        {submitting ? 'Submitting...' : 'Submit request'}
+      </Button>
+    </div>
+  </div>
+);
+
 interface UnclaimedProfileBannerProps {
   ein: string;
 }
+
+/** Action buttons for the unclaimed profile banner. */
+const BannerActions: React.FC<{
+  onClaim: () => void;
+  onOpenRemoval: () => void;
+}> = ({ onClaim, onOpenRemoval }) => (
+  <div className="flex flex-col sm:flex-row gap-2 mt-3">
+    <Button size="sm" onClick={onClaim}>
+      Claim this profile
+    </Button>
+    <Button variant="ghost" size="sm" onClick={onOpenRemoval}>
+      Request removal
+    </Button>
+  </div>
+);
 
 /** Inner content of the unclaimed profile banner with claim and removal actions. */
 const BannerContent: React.FC<{
@@ -35,14 +84,7 @@ const BannerContent: React.FC<{
           Claim this profile to manage it, add your mission and photos, and start
           receiving donations — or request removal if it&apos;s listed in error.
         </p>
-        <div className="flex flex-col sm:flex-row gap-2 mt-3">
-          <Button size="sm" onClick={onClaim}>
-            Claim this profile
-          </Button>
-          <Button variant="ghost" size="sm" onClick={onOpenRemoval}>
-            Request removal
-          </Button>
-        </div>
+        <BannerActions onClaim={onClaim} onOpenRemoval={onOpenRemoval} />
       </div>
     </div>
   </div>
@@ -116,30 +158,13 @@ export const UnclaimedProfileBanner: React.FC<UnclaimedProfileBannerProps> = ({ 
         title="Request Profile Removal"
         size="sm"
       >
-        <div className="p-5 space-y-4">
-          <p className="text-sm text-gray-600">
-            Explain why this organization should be removed from Give Protocol.
-          </p>
-          <textarea
-            value={removalReason}
-            onChange={handleRemovalReasonChange}
-            placeholder="Please describe your reason..."
-            rows={4}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 resize-none"
-          />
-          <div className="flex justify-end gap-2">
-            <Button variant="secondary" size="sm" onClick={handleCloseRemoval}>
-              Cancel
-            </Button>
-            <Button
-              size="sm"
-              onClick={handleSubmitRemoval}
-              disabled={submitting || !removalReason.trim()}
-            >
-              {submitting ? 'Submitting...' : 'Submit request'}
-            </Button>
-          </div>
-        </div>
+        <RemovalModalContent
+          removalReason={removalReason}
+          onReasonChange={handleRemovalReasonChange}
+          onClose={handleCloseRemoval}
+          onSubmit={handleSubmitRemoval}
+          submitting={submitting}
+        />
       </Modal>
     </>
   );

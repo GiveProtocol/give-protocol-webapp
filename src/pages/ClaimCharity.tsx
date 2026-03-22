@@ -50,6 +50,66 @@ const StepIndicator: React.FC = () => (
   </div>
 );
 
+/** Step 1 form for verifying identity during charity claim flow. */
+const VerifyIdentityStep: React.FC<{
+  role: string;
+  onRoleChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  email: string;
+  onEmailChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ role, onRoleChange, email, onEmailChange }) => (
+  <Card hover={false} className="p-6 space-y-4">
+    <h2 className="text-lg font-semibold text-gray-900">
+      Step 1: Verify Your Identity
+    </h2>
+
+    <div>
+      <label htmlFor="claim-role" className="block text-sm font-medium text-gray-700 mb-1">
+        Your role at this organization
+      </label>
+      <select
+        id="claim-role"
+        value={role}
+        onChange={onRoleChange}
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+      >
+        <option value="">Select a role...</option>
+        {ROLE_OPTIONS.map((r) => (
+          <option key={r} value={r}>{r}</option>
+        ))}
+      </select>
+    </div>
+
+    <div>
+      <label htmlFor="claim-email" className="block text-sm font-medium text-gray-700 mb-1">
+        Work email address
+      </label>
+      <input
+        id="claim-email"
+        type="email"
+        value={email}
+        onChange={onEmailChange}
+        placeholder="you@organization.org"
+        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+      />
+      <p className="mt-1 text-xs text-gray-400">
+        Your email domain will be cross-referenced with the organization&apos;s public records.
+      </p>
+    </div>
+
+    <Button
+      fullWidth
+      disabled
+      className="cursor-not-allowed"
+      title="Claim verification coming soon — check back after mainnet launch"
+    >
+      Continue
+    </Button>
+    <p className="text-xs text-center text-gray-400">
+      Claim verification coming soon — check back after mainnet launch.
+    </p>
+  </Card>
+);
+
 /**
  * Stub page for the charity claim flow at /claim/:ein.
  * Displays the org info and a step indicator. Full flow is not implemented yet.
@@ -117,57 +177,12 @@ function ClaimCharity() {
       <StepIndicator />
 
       {/* Step 1 form */}
-      <Card hover={false} className="p-6 space-y-4">
-        <h2 className="text-lg font-semibold text-gray-900">
-          Step 1: Verify Your Identity
-        </h2>
-
-        <div>
-          <label htmlFor="claim-role" className="block text-sm font-medium text-gray-700 mb-1">
-            Your role at this organization
-          </label>
-          <select
-            id="claim-role"
-            value={role}
-            onChange={handleRoleChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-          >
-            <option value="">Select a role...</option>
-            {ROLE_OPTIONS.map((r) => (
-              <option key={r} value={r}>{r}</option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="claim-email" className="block text-sm font-medium text-gray-700 mb-1">
-            Work email address
-          </label>
-          <input
-            id="claim-email"
-            type="email"
-            value={email}
-            onChange={handleEmailChange}
-            placeholder="you@organization.org"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-          />
-          <p className="mt-1 text-xs text-gray-400">
-            Your email domain will be cross-referenced with the organization&apos;s public records.
-          </p>
-        </div>
-
-        <Button
-          fullWidth
-          disabled
-          className="cursor-not-allowed"
-          title="Claim verification coming soon — check back after mainnet launch"
-        >
-          Continue
-        </Button>
-        <p className="text-xs text-center text-gray-400">
-          Claim verification coming soon — check back after mainnet launch.
-        </p>
-      </Card>
+      <VerifyIdentityStep
+        role={role}
+        onRoleChange={handleRoleChange}
+        email={email}
+        onEmailChange={handleEmailChange}
+      />
     </div>
   );
 }

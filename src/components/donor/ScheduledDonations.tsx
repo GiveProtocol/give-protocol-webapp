@@ -21,6 +21,33 @@ interface ScheduledDonation {
   active: boolean;
 }
 
+/** Body content of the cancel confirmation modal showing schedule details and refund amount. */
+function CancelModalBody({ schedule }: { schedule: ScheduledDonation }) {
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-gray-600 dark:text-gray-300">
+        Are you sure you want to cancel your monthly donation schedule to:
+      </p>
+      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
+        <p className="font-medium text-gray-900 dark:text-gray-100">
+          {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...`}
+        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {schedule.monthsRemaining} payments remaining
+        </p>
+      </div>
+      <p className="text-sm text-gray-600 dark:text-gray-300">
+        The remaining funds will be returned to your wallet:
+      </p>
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center">
+        <p className="text-lg font-semibold text-blue-700 dark:text-blue-400">
+          {(Number.parseFloat(schedule.amountPerMonth) * schedule.monthsRemaining).toFixed(2)} {schedule.tokenSymbol || 'tokens'}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /** Confirmation modal for cancelling a scheduled donation. */
 function CancelConfirmationModal({
   schedule,
@@ -44,27 +71,7 @@ function CancelConfirmationModal({
           Confirm Cancellation
         </h3>
 
-        <div className="space-y-3">
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            Are you sure you want to cancel your monthly donation schedule to:
-          </p>
-          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3">
-            <p className="font-medium text-gray-900 dark:text-gray-100">
-              {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...`}
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-              {schedule.monthsRemaining} payments remaining
-            </p>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-300">
-            The remaining funds will be returned to your wallet:
-          </p>
-          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3 text-center">
-            <p className="text-lg font-semibold text-blue-700 dark:text-blue-400">
-              {(Number.parseFloat(schedule.amountPerMonth) * schedule.monthsRemaining).toFixed(2)} {schedule.tokenSymbol || 'tokens'}
-            </p>
-          </div>
-        </div>
+        <CancelModalBody schedule={schedule} />
 
         {cancelError && (
           <div className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-md">
@@ -89,6 +96,23 @@ function CancelConfirmationModal({
   );
 }
 
+/** Charity name and calendar icon header for a schedule item. */
+function ScheduleCharityHeader({ schedule }: { schedule: ScheduledDonation }) {
+  return (
+    <div className="flex items-start gap-3">
+      <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg">
+        <Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+      </div>
+      <div className="flex-1">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
+        </h3>
+        <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">{schedule.charity}</p>
+      </div>
+    </div>
+  );
+}
+
 /** Individual schedule item row with details and cancel button. */
 function ScheduleItem({
   schedule,
@@ -104,15 +128,7 @@ function ScheduleItem({
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
         <div className="flex-1 space-y-4">
           {/* Charity Name and Icon */}
-          <div className="flex items-start gap-3">
-            <div className="p-2 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg"><Calendar className="h-5 w-5 text-emerald-600 dark:text-emerald-400" /></div>
-            <div className="flex-1">
-              <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
-                {schedule.charityName || `Charity ${schedule.charity.substring(0, 6)}...${schedule.charity.substring(38)}`}
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-mono">{schedule.charity}</p>
-            </div>
-          </div>
+          <ScheduleCharityHeader schedule={schedule} />
 
           {/* Schedule Details Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

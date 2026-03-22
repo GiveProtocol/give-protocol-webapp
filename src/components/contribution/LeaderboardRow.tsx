@@ -50,12 +50,14 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
     return null;
   };
 
+  const rowClass = [
+    'flex items-center justify-between p-4 rounded-lg',
+    isCurrentUser ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50',
+    rank <= 3 ? 'border-l-4 border-l-yellow-500' : '',
+  ].filter(Boolean).join(' ');
+
   return (
-    <div className={``
-      flex items-center justify-between p-4 rounded-lg
-      ${isCurrentUser ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50'}
-      ${rank <= 3 ? 'border-l-4 border-l-yellow-500' : ''}
-    `}>
+    <div className={rowClass}>
       <div className="flex items-center space-x-4">
         <div className="w-8 text-center">
           {getRankIcon() || <span className="text-gray-600">{rank}</span>}
@@ -67,12 +69,12 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
           )}
         </div>
       </div>
-      
+
       <div className="flex items-center space-x-4">
         <span className="font-semibold text-gray-900">
           {metric === 'donations' ? formatCurrency(value) : `${value} hours`}
         </span>
-        
+
         <div className={`flex items-center ${
           change > 0 ? 'text-green-600' : 'text-red-600'
         }`}>

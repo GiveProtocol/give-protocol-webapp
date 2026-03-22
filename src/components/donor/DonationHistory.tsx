@@ -91,6 +91,39 @@ const DonationTable: React.FC<{ donations: Transaction[] }> = ({ donations }) =>
   </table>
 );
 
+/** Header with title, time filter, and export button for donation history. */
+const DonationHistoryHeader: React.FC<{
+  timeFilter: string;
+  onTimeFilterChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onShowExportModal: () => void;
+}> = ({ timeFilter, onTimeFilterChange, onShowExportModal }) => (
+  <header className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+    <h2 className="text-xl font-semibold text-gray-900">Donation History</h2>
+    <nav className="flex items-center space-x-4">
+      <Calendar className="h-5 w-5 text-gray-400" />
+      <select
+        value={timeFilter}
+        onChange={onTimeFilterChange}
+        className="rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+        aria-label="Filter by time period"
+      >
+        <option value="all">All Time</option>
+        <option value="week">Past Week</option>
+        <option value="month">Past Month</option>
+        <option value="year">Past Year</option>
+      </select>
+      <Button
+        onClick={onShowExportModal}
+        variant="secondary"
+        className="flex items-center"
+      >
+        <Download className="h-4 w-4 mr-2" />
+        Export CSV
+      </Button>
+    </nav>
+  </header>
+);
+
 /** Filterable donation history table with time range selector and CSV/PDF export. */
 export const DonationHistory: React.FC<DonationHistoryProps> = ({
   donations,
@@ -142,31 +175,11 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
 
   return (
     <div className="bg-white rounded-lg shadow-md">
-      <header className="p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
-        <h2 className="text-xl font-semibold text-gray-900">Donation History</h2>
-        <nav className="flex items-center space-x-4">
-          <Calendar className="h-5 w-5 text-gray-400" />
-          <select
-            value={timeFilter}
-            onChange={handleTimeFilterChange}
-            className="rounded-md border-gray-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-            aria-label="Filter by time period"
-          >
-            <option value="all">All Time</option>
-            <option value="week">Past Week</option>
-            <option value="month">Past Month</option>
-            <option value="year">Past Year</option>
-          </select>
-          <Button
-            onClick={handleShowExportModal}
-            variant="secondary"
-            className="flex items-center"
-          >
-            <Download className="h-4 w-4 mr-2" />
-            Export CSV
-          </Button>
-        </nav>
-      </header>
+      <DonationHistoryHeader
+        timeFilter={timeFilter}
+        onTimeFilterChange={handleTimeFilterChange}
+        onShowExportModal={handleShowExportModal}
+      />
       <div className="overflow-x-auto">
         <DonationTable donations={filteredDonations} />
       </div>

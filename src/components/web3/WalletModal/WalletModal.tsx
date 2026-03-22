@@ -11,6 +11,112 @@ import { WalletOption } from "./WalletOption";
 import { Portal } from "@/components/ui/Portal";
 import { Logger } from "@/utils/logger";
 
+/** Dialog content for wallet modal with chain tabs, wallet list, and footer. */
+const WalletDialogContent: React.FC<{
+  selectedChainType: ChainType;
+  onChainTabClick: (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  onClose: () => void;
+  isConnecting: boolean;
+  error: string | null;
+  filteredWallets: UnifiedWalletProvider[];
+  connectingWallet: string | null;
+  onSelectWallet: (_wallet: UnifiedWalletProvider) => void;
+}> = ({ selectedChainType, onChainTabClick, onClose, isConnecting, error, filteredWallets, connectingWallet, onSelectWallet }) => (
+  <dialog
+    open
+    className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
+    aria-modal="true"
+    aria-labelledby="wallet-modal-title"
+  >
+    {/* Header */}
+    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+        Connect Wallet
+      </h3>
+      <button
+        type="button"
+        onClick={onClose}
+        disabled={isConnecting}
+        className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50 text-xl leading-none"
+        aria-label="Close modal"
+      >
+        &times;
+      </button>
+    </div>
+
+    {/* Chain Type Tabs */}
+    <div className="flex px-6 pt-4 gap-2" role="tablist" aria-label="Chain type">
+      {CHAIN_TABS.map(({ type, label, activeClass }) => (
+        <button
+          key={type}
+          role="tab"
+          aria-selected={selectedChainType === type}
+          data-chain-type={type}
+          onClick={onChainTabClick}
+          className={`
+            px-4 py-2 text-sm font-medium rounded-lg transition-colors
+            ${selectedChainType === type
+              ? activeClass
+              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }
+          `}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+
+    {/* Error Message */}
+    {error && (
+      <div className="mx-6 mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-2">
+        <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+        <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
+      </div>
+    )}
+
+    {/* Unified Wallet List */}
+    <div className="px-3 py-4 max-h-96 overflow-y-auto space-y-1" role="menu">
+      {filteredWallets.length === 0 ? (
+        <p className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+          No wallets available for {selectedChainType.toUpperCase()} chains.
+          <span className="block text-sm text-gray-400 dark:text-gray-500 mt-1">
+            Try selecting a different chain type.
+          </span>
+        </p>
+      ) : (
+        filteredWallets.map((wallet) => (
+          <WalletOption
+            key={wallet.name}
+            wallet={wallet}
+            selectedChainType={selectedChainType}
+            isConnecting={isConnecting}
+            connectingWallet={connectingWallet}
+            onSelect={onSelectWallet}
+          />
+        ))
+      )}
+    </div>
+
+    {/* Footer */}
+    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl text-center space-y-2">
+      <a
+        href="https://ethereum.org/en/wallets/find-wallet/"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
+      >
+        View other supported wallets
+      </a>
+      <p className="text-xs text-gray-400 dark:text-gray-500">
+        By connecting, you agree to the{" "}
+        <a href="/terms" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+          Terms of Service
+        </a>
+      </p>
+    </div>
+  </dialog>
+);
+
 /** Chain type tab configuration. */
 const CHAIN_TABS: { type: ChainType; label: string; activeClass: string }[] = [
   { type: "evm", label: "EVM", activeClass: "bg-blue-600 text-white" },
@@ -137,99 +243,16 @@ export const WalletModal: React.FC<WalletModalProps> = ({
           tabIndex={-1}
         />
 
-        <dialog
-          open
-          className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
-          aria-modal="true"
-          aria-labelledby="wallet-modal-title"
-        >
-          {/* Header */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-            <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
-              Connect Wallet
-            </h3>
-            <button
-              type="button"
-              onClick={onClose}
-              disabled={isConnecting}
-              className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors disabled:opacity-50 text-xl leading-none"
-              aria-label="Close modal"
-            >
-              &times;
-            </button>
-          </div>
-
-          {/* Chain Type Tabs */}
-          <div className="flex px-6 pt-4 gap-2" role="tablist" aria-label="Chain type">
-            {CHAIN_TABS.map(({ type, label, activeClass }) => (
-              <button
-                key={type}
-                role="tab"
-                aria-selected={selectedChainType === type}
-                data-chain-type={type}
-                onClick={handleChainTabClick}
-                className={`
-                  px-4 py-2 text-sm font-medium rounded-lg transition-colors
-                  ${selectedChainType === type
-                    ? activeClass
-                    : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                  }
-                `}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
-          {/* Error Message */}
-          {error && (
-            <div className="mx-6 mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-2">
-              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
-            </div>
-          )}
-
-          {/* Unified Wallet List */}
-          <div className="px-3 py-4 max-h-96 overflow-y-auto space-y-1" role="menu">
-            {filteredWallets.length === 0 ? (
-              <p className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
-                No wallets available for {selectedChainType.toUpperCase()} chains.
-                <span className="block text-sm text-gray-400 dark:text-gray-500 mt-1">
-                  Try selecting a different chain type.
-                </span>
-              </p>
-            ) : (
-              filteredWallets.map((wallet) => (
-                <WalletOption
-                  key={wallet.name}
-                  wallet={wallet}
-                  selectedChainType={selectedChainType}
-                  isConnecting={isConnecting}
-                  connectingWallet={connectingWallet}
-                  onSelect={handleSelectWallet}
-                />
-              ))
-            )}
-          </div>
-
-          {/* Footer */}
-          <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 rounded-b-xl text-center space-y-2">
-            <a
-              href="https://ethereum.org/en/wallets/find-wallet/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-xs text-emerald-600 dark:text-emerald-400 hover:underline"
-            >
-              View other supported wallets
-            </a>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
-              By connecting, you agree to the{" "}
-              <a href="/terms" className="text-emerald-600 dark:text-emerald-400 hover:underline">
-                Terms of Service
-              </a>
-            </p>
-          </div>
-        </dialog>
+        <WalletDialogContent
+          selectedChainType={selectedChainType}
+          onChainTabClick={handleChainTabClick}
+          onClose={onClose}
+          isConnecting={isConnecting}
+          error={error}
+          filteredWallets={filteredWallets}
+          connectingWallet={connectingWallet}
+          onSelectWallet={handleSelectWallet}
+        />
       </div>
     </Portal>
   );

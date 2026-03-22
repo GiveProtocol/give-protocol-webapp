@@ -53,6 +53,11 @@ function SourceToggleButtonComponent(props: SourceToggleButtonProps) {
 
 const SourceToggleButton = React.memo(SourceToggleButtonComponent);
 
+interface SourceFilterSectionProps {
+  selectedSources: ContributionSourceType[];
+  onToggle: (_source: ContributionSourceType) => void;
+}
+
 /**
  * Section component for filtering contributions by source.
  *
@@ -82,6 +87,83 @@ const SourceFilterSection: React.FC<SourceFilterSectionProps> = ({
     </div>
   </div>
 );
+
+/** Grid of select dropdowns for filtering contributions by organization, category, region, and time. */
+const FilterSelectGrid: React.FC<{
+  filters: FilterType;
+  onOrganizationChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onCategoryChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onRegionChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onTimeRangeChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+}> = ({ filters, onOrganizationChange, onCategoryChange, onRegionChange, onTimeRangeChange }) => (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <label className="block">
+      <span className="sr-only">Organization</span>
+      <select
+        value={filters.organization}
+        onChange={onOrganizationChange}
+        className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+        aria-label="Select organization"
+      >
+        <option value="">All Organizations</option>
+        <option value="org1">Organization 1</option>
+        <option value="org2">Organization 2</option>
+      </select>
+    </label>
+
+    <label className="block">
+      <span className="sr-only">Category</span>
+      <select
+        value={filters.category}
+        onChange={onCategoryChange}
+        className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+        aria-label="Select category"
+      >
+        <option value="">All Categories</option>
+        <option value="education">Education</option>
+        <option value="environment">Environment</option>
+        <option value="health">Health</option>
+      </select>
+    </label>
+
+    <label className="block">
+      <span className="sr-only">Region</span>
+      <select
+        value={filters.region}
+        onChange={onRegionChange}
+        className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+        aria-label="Select region"
+      >
+        <option value="">All Regions</option>
+        <option value="na">North America</option>
+        <option value="eu">Europe</option>
+        <option value="asia">Asia</option>
+      </select>
+    </label>
+
+    <label className="block">
+      <span className="sr-only">Time Range</span>
+      <select
+        value={filters.timeRange}
+        onChange={onTimeRangeChange}
+        className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+        aria-label="Select time range"
+      >
+        <option value="7d">Last 7 days</option>
+        <option value="30d">Last 30 days</option>
+        <option value="90d">Last 90 days</option>
+        <option value="1y">Last year</option>
+      </select>
+    </label>
+  </div>
+);
+
+interface ContributionFiltersProps {
+  filters: FilterType;
+  onChange: (_filters: FilterType) => void;
+  className?: string;
+  showSourceFilter?: boolean;
+}
 
 /**
  * Filters component for contributions, providing controls for organization, category, and source.
@@ -184,66 +266,13 @@ export const ContributionFilters: React.FC<ContributionFiltersProps> = ({
         />
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <label className="block">
-          <span className="sr-only">Organization</span>
-          <select
-            value={filters.organization}
-            onChange={handleOrganizationChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-            aria-label="Select organization"
-          >
-            <option value="">All Organizations</option>
-            <option value="org1">Organization 1</option>
-            <option value="org2">Organization 2</option>
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="sr-only">Category</span>
-          <select
-            value={filters.category}
-            onChange={handleCategoryChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-            aria-label="Select category"
-          >
-            <option value="">All Categories</option>
-            <option value="education">Education</option>
-            <option value="environment">Environment</option>
-            <option value="health">Health</option>
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="sr-only">Region</span>
-          <select
-            value={filters.region}
-            onChange={handleRegionChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-            aria-label="Select region"
-          >
-            <option value="">All Regions</option>
-            <option value="na">North America</option>
-            <option value="eu">Europe</option>
-            <option value="asia">Asia</option>
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="sr-only">Time Range</span>
-          <select
-            value={filters.timeRange}
-            onChange={handleTimeRangeChange}
-            className="block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
-            aria-label="Select time range"
-          >
-            <option value="7d">Last 7 days</option>
-            <option value="30d">Last 30 days</option>
-            <option value="90d">Last 90 days</option>
-            <option value="1y">Last year</option>
-          </select>
-        </label>
-      </div>
+      <FilterSelectGrid
+        filters={filters}
+        onOrganizationChange={handleOrganizationChange}
+        onCategoryChange={handleCategoryChange}
+        onRegionChange={handleRegionChange}
+        onTimeRangeChange={handleTimeRangeChange}
+      />
     </div>
   );
 };

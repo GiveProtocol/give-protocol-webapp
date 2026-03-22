@@ -67,18 +67,16 @@ const ContributionFilters: React.FC<{
       </Button>
     </div>
     <div className="mt-4 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-      <div className="flex items-center space-x-4">
-        <RegionFilter value={region} onChange={onRegionChange} />
-        <label className="flex items-center space-x-2 text-sm text-gray-600">
-          <input
-            type="checkbox"
-            checked={showOptOut}
-            onChange={onOptOutChange}
-            className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
-          />
-          <span>Hide my contributions from rankings</span>
-        </label>
-      </div>
+      <RegionFilter value={region} onChange={onRegionChange} />
+      <label className="flex items-center space-x-2 text-sm text-gray-600">
+        <input
+          type="checkbox"
+          checked={showOptOut}
+          onChange={onOptOutChange}
+          className="rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+        />
+        <span>Hide my contributions from rankings</span>
+      </label>
       {isConnected && alias && (
         <div className="flex items-center space-x-2">
           <span className="text-sm text-gray-600">
