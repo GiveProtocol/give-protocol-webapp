@@ -11,6 +11,41 @@ interface ValidationQueueDashboardProps {
   organizationId: string;
 }
 
+/** Header with icon, title, subtitle, queue count badge, and refresh button. */
+const QueueDashboardHeader: React.FC<{
+  queueCount: number;
+  loading: boolean;
+  onRefresh: () => void;
+}> = ({ queueCount, loading, onRefresh }) => (
+  <div className="flex items-center justify-between mb-6">
+    <div className="flex items-center gap-3">
+      <ClipboardCheck className="h-6 w-6 text-emerald-600" />
+      <div>
+        <h2 className="text-xl font-semibold text-gray-900">Validation Queue</h2>
+        <p className="text-sm text-gray-500">
+          Review and validate volunteer hour submissions
+        </p>
+      </div>
+    </div>
+    <div className="flex items-center gap-3">
+      {queueCount > 0 && (
+        <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
+          {queueCount} pending
+        </span>
+      )}
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onRefresh}
+        disabled={loading}
+        icon={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
+      >
+        Refresh
+      </Button>
+    </div>
+  </div>
+);
+
 /**
  * Main dashboard for managing validation requests
  * @param props - Component props
@@ -118,34 +153,7 @@ export const ValidationQueueDashboard: React.FC<ValidationQueueDashboardProps> =
 
   return (
     <div>
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <ClipboardCheck className="h-6 w-6 text-emerald-600" />
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Validation Queue</h2>
-            <p className="text-sm text-gray-500">
-              Review and validate volunteer hour submissions
-            </p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          {queueCount > 0 && (
-            <span className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm font-medium">
-              {queueCount} pending
-            </span>
-          )}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleRefresh}
-            disabled={loading}
-            icon={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
-          >
-            Refresh
-          </Button>
-        </div>
-      </div>
+      <QueueDashboardHeader queueCount={queueCount} loading={loading} onRefresh={handleRefresh} />
 
       {/* Queue List */}
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">

@@ -175,14 +175,12 @@ function ScheduleItem({
         <div className="flex-1 space-y-4">
           <ScheduleCharityHeader schedule={schedule} />
           <ScheduleDetailsGrid schedule={schedule} />
-          <div className="mt-3 flex items-center gap-2">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Token Contract:
-            </p>
-            <p className="text-xs text-gray-600 dark:text-gray-300 font-mono">
+          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+            Token Contract:{' '}
+            <span className="text-gray-600 dark:text-gray-300 font-mono">
               {schedule.token.substring(0, 6)}...{schedule.token.substring(38)}
-            </p>
-          </div>
+            </span>
+          </p>
         </div>
         <div className="flex items-center">
           <Button

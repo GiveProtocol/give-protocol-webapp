@@ -11,6 +11,46 @@ import { getCurrencyByCode } from "@/config/tokens";
 import { cn } from "@/utils/cn";
 import { useTranslation } from "@/hooks/useTranslation";
 
+/** Option button within a settings section, with label and optional check icon. */
+const SettingsOptionButton: React.FC<{
+  dataValue: string;
+  onClick: (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  isSelected: boolean;
+  children: React.ReactNode;
+}> = ({ dataValue, onClick, isSelected, children }) => (
+  <button
+    data-value={dataValue}
+    onClick={onClick}
+    className={cn(
+      "flex items-center justify-between px-3 py-2 text-sm rounded-md",
+      isSelected
+        ? "bg-emerald-50 text-emerald-700"
+        : "text-gray-700 hover:bg-gray-50",
+    )}
+  >
+    {children}
+    {isSelected && <Check className="h-4 w-4 text-emerald-600" />}
+  </button>
+);
+
+/** Section within the settings dropdown with icon, title, and a grid of options. */
+const SettingsSection: React.FC<{
+  icon: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
+  hasBorder?: boolean;
+}> = ({ icon, title, children, hasBorder = true }) => (
+  <div className={`py-3 px-4 ${hasBorder ? 'border-b border-gray-100' : ''}`}>
+    <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
+      {icon}
+      {title}
+    </h4>
+    <div className="grid grid-cols-2 gap-2 mt-2">
+      {children}
+    </div>
+  </div>
+);
+
 /**
  * SettingsMenu component renders a dropdown menu for user settings including language, currency, and theme options.
  * @returns JSX.Element The rendered settings menu component.
@@ -158,112 +198,41 @@ export const SettingsMenu: React.FC = () => {
           </div>
 
           {/* Theme Selection */}
-          <div className="py-3 px-4 border-b border-gray-100">
-            <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
-              {theme === "dark" ? (
-                <Moon className="h-4 w-4 text-gray-500 mr-2" />
-              ) : (
-                <Sun className="h-4 w-4 text-gray-500 mr-2" />
-              )}
-              {t("settings.theme", "Theme")}
-            </h4>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              <button
-                data-value="light"
-                onClick={handleThemeClick}
-                className={cn(
-                  "flex items-center justify-between px-3 py-2 text-sm rounded-md",
-                  theme === "light"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "text-gray-700 hover:bg-gray-50",
-                )}
-              >
-                <span className="flex items-center">
-                  <Sun className="h-4 w-4 mr-2" />
-                  {t("settings.light", "Light")}
-                </span>
-                {theme === "light" && (
-                  <Check className="h-4 w-4 text-emerald-600" />
-                )}
-              </button>
-              <button
-                data-value="dark"
-                onClick={handleThemeClick}
-                className={cn(
-                  "flex items-center justify-between px-3 py-2 text-sm rounded-md",
-                  theme === "dark"
-                    ? "bg-emerald-50 text-emerald-700"
-                    : "text-gray-700 hover:bg-gray-50",
-                )}
-              >
-                <span className="flex items-center">
-                  <Moon className="h-4 w-4 mr-2" />
-                  {t("settings.dark", "Dark")}
-                </span>
-                {theme === "dark" && (
-                  <Check className="h-4 w-4 text-emerald-600" />
-                )}
-              </button>
-            </div>
-          </div>
+          <SettingsSection
+            icon={theme === "dark" ? <Moon className="h-4 w-4 text-gray-500 mr-2" /> : <Sun className="h-4 w-4 text-gray-500 mr-2" />}
+            title={t("settings.theme", "Theme")}
+          >
+            <SettingsOptionButton dataValue="light" onClick={handleThemeClick} isSelected={theme === "light"}>
+              <span className="flex items-center">
+                <Sun className="h-4 w-4 mr-2" />
+                {t("settings.light", "Light")}
+              </span>
+            </SettingsOptionButton>
+            <SettingsOptionButton dataValue="dark" onClick={handleThemeClick} isSelected={theme === "dark"}>
+              <span className="flex items-center">
+                <Moon className="h-4 w-4 mr-2" />
+                {t("settings.dark", "Dark")}
+              </span>
+            </SettingsOptionButton>
+          </SettingsSection>
 
           {/* Language Selection */}
-          <div className="py-3 px-4 border-b border-gray-100">
-            <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
-              <Globe className="h-4 w-4 text-gray-500 mr-2" />
-              {t("settings.language")}
-            </h4>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {languageOptions.map((option) => (
-                <button
-                  key={option.value}
-                  data-value={option.value}
-                  onClick={handleLanguageClick}
-                  className={cn(
-                    "flex items-center justify-between px-3 py-2 text-sm rounded-md",
-                    language === option.value
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "text-gray-700 hover:bg-gray-50",
-                  )}
-                >
-                  <span>{option.label}</span>
-                  {language === option.value && (
-                    <Check className="h-4 w-4 text-emerald-600" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+          <SettingsSection icon={<Globe className="h-4 w-4 text-gray-500 mr-2" />} title={t("settings.language")}>
+            {languageOptions.map((option) => (
+              <SettingsOptionButton key={option.value} dataValue={option.value} onClick={handleLanguageClick} isSelected={language === option.value}>
+                <span>{option.label}</span>
+              </SettingsOptionButton>
+            ))}
+          </SettingsSection>
 
           {/* Currency Selection */}
-          <div className="py-3 px-4">
-            <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
-              <DollarSign className="h-4 w-4 text-gray-500 mr-2" />
-              {t("settings.currency")}
-            </h4>
-            <div className="grid grid-cols-2 gap-2 mt-2">
-              {currencyOptions.map((option) => (
-                <button
-                  key={option.value}
-                  data-value={option.value}
-                  onClick={handleCurrencyClick}
-                  className={cn(
-                    "flex items-center justify-between px-3 py-2 text-sm rounded-md",
-                    currency === option.value
-                      ? "bg-emerald-50 text-emerald-700"
-                      : "text-gray-700 hover:bg-gray-50",
-                  )}
-                >
-                  <span>
-                    {option.symbol} {option.value}
-                  </span>
-                  {currency === option.value && (
-                    <Check className="h-4 w-4 text-emerald-600" />
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
+          <SettingsSection icon={<DollarSign className="h-4 w-4 text-gray-500 mr-2" />} title={t("settings.currency")} hasBorder={false}>
+            {currencyOptions.map((option) => (
+              <SettingsOptionButton key={option.value} dataValue={option.value} onClick={handleCurrencyClick} isSelected={currency === option.value}>
+                <span>{option.symbol} {option.value}</span>
+              </SettingsOptionButton>
+            ))}
+          </SettingsSection>
         </div>
       )}
     </div>

@@ -77,6 +77,46 @@ const formatLanguageName = (language: WorkLanguage | string): string => {
     .join(" ");
 };
 
+/** Detail row showing icon, label, and value for an opportunity attribute. */
+const DetailRow: React.FC<{ icon: React.ReactNode; label: string; value: string }> = ({ icon, label, value }) => (
+  <div className="flex items-center text-gray-700">
+    {icon}
+    <span className="text-sm text-gray-500 w-24">{label}</span>
+    <span>{value}</span>
+  </div>
+);
+
+/** Card displaying opportunity details (commitment, location, type, language) and required skills. */
+const OpportunityDetailsCard: React.FC<{ opportunity: VolunteerOpportunityProfileData }> = ({ opportunity }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+    <h2 className="text-xl font-semibold text-gray-900">
+      Opportunity Details
+    </h2>
+    <div className="space-y-3">
+      <DetailRow icon={<Clock className="h-5 w-5 mr-3 text-emerald-500" />} label="Commitment:" value={formatCommitment(opportunity.commitment)} />
+      <DetailRow icon={<Users className="h-5 w-5 mr-3 text-emerald-500" />} label="Location:" value={opportunity.location} />
+      <DetailRow icon={<Globe className="h-5 w-5 mr-3 text-emerald-500" />} label="Type:" value={formatType(opportunity.type)} />
+      <DetailRow icon={<Globe className="h-5 w-5 mr-3 text-emerald-500" />} label="Language:" value={formatLanguageName(opportunity.workLanguage)} />
+    </div>
+    <div className="pt-4">
+      <h3 className="text-sm font-medium text-gray-900 mb-2">
+        Required Skills
+      </h3>
+      <div className="flex flex-wrap gap-2">
+        {opportunity.skills.map((skill) => (
+          <span
+            key={skill}
+            className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800"
+          >
+            <Award className="h-4 w-4 mr-1" />
+            {skill}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
 /**
  * Reusable template component for rendering volunteer opportunity detail pages.
  * Provides a consistent layout for all opportunity pages with:
@@ -134,50 +174,7 @@ export const VolunteerOpportunityTemplate: React.FC<
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Opportunity Details
-            </h2>
-            <div className="space-y-3">
-              <div className="flex items-center text-gray-700">
-                <Clock className="h-5 w-5 mr-3 text-emerald-500" />
-                <span className="text-sm text-gray-500 w-24">Commitment:</span>
-                <span>{formatCommitment(opportunity.commitment)}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Users className="h-5 w-5 mr-3 text-emerald-500" />
-                <span className="text-sm text-gray-500 w-24">Location:</span>
-                <span>{opportunity.location}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Globe className="h-5 w-5 mr-3 text-emerald-500" />
-                <span className="text-sm text-gray-500 w-24">Type:</span>
-                <span>{formatType(opportunity.type)}</span>
-              </div>
-              <div className="flex items-center text-gray-700">
-                <Globe className="h-5 w-5 mr-3 text-emerald-500" />
-                <span className="text-sm text-gray-500 w-24">Language:</span>
-                <span>{formatLanguageName(opportunity.workLanguage)}</span>
-              </div>
-            </div>
-
-            <div className="pt-4">
-              <h3 className="text-sm font-medium text-gray-900 mb-2">
-                Required Skills
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {opportunity.skills.map((skill) => (
-                  <span
-                    key={skill}
-                    className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800"
-                  >
-                    <Award className="h-4 w-4 mr-1" />
-                    {skill}
-                  </span>
-                ))}
-              </div>
-            </div>
-          </div>
+          <OpportunityDetailsCard opportunity={opportunity} />
 
           <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
             <h2 className="text-xl font-semibold text-gray-900">

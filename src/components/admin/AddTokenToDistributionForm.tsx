@@ -6,6 +6,28 @@ import { getContractAddress } from "@/config/contracts";
 import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
 import { Logger } from "@/utils/logger";
 
+/** Section showing common test token addresses with a quick-fill button. */
+const TestTokensSection: React.FC<{ onUseDevToken: () => void }> = ({ onUseDevToken }) => (
+  <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+    <h3 className="text-sm font-semibold text-blue-900 mb-2">
+      Common Test Tokens on Moonbase Alpha
+    </h3>
+    <p className="text-xs font-medium text-blue-800 mb-1">
+      DEV Token (Wrapped GLMR):
+    </p>
+    <code className="block p-2 bg-white rounded text-xs break-all border border-blue-200">
+      0x7Cb6b60Ca0e18a0BceB24Bd3C99d8894Ed199abD
+    </code>
+    <button
+      type="button"
+      onClick={onUseDevToken}
+      className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
+    >
+      Click to use (price: $0.025)
+    </button>
+  </div>
+);
+
 /**
  * Admin form component for adding tokens to the distribution contract
  * @component AddTokenToDistributionForm
@@ -223,28 +245,7 @@ export const AddTokenToDistributionForm: React.FC = () => {
         </Button>
       </form>
 
-      <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-        <h3 className="text-sm font-semibold text-blue-900 mb-2">
-          Common Test Tokens on Moonbase Alpha
-        </h3>
-        <div className="space-y-3">
-          <div>
-            <p className="text-xs font-medium text-blue-800 mb-1">
-              DEV Token (Wrapped GLMR):
-            </p>
-            <code className="block p-2 bg-white rounded text-xs break-all border border-blue-200">
-              0x7Cb6b60Ca0e18a0BceB24Bd3C99d8894Ed199abD
-            </code>
-            <button
-              type="button"
-              onClick={handleUseDevToken}
-              className="mt-1 text-xs text-blue-600 hover:text-blue-800 font-medium"
-            >
-              Click to use (price: $0.025)
-            </button>
-          </div>
-        </div>
-      </div>
+      <TestTokensSection onUseDevToken={handleUseDevToken} />
 
       <div className="mt-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
         <h3 className="text-sm font-semibold text-yellow-900 mb-2">

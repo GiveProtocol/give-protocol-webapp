@@ -514,6 +514,91 @@ const SkillInputField: React.FC<{
   </div>
 );
 
+/** Skills, commitment level, and experience section of the application form. */
+const SkillsAndInterestsSection: React.FC<{
+  formData: FormData;
+  validationErrors: Record<string, string>;
+  handleFieldChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleSkillInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSkillInputKeyDown: (_e: React.KeyboardEvent<HTMLInputElement>) => void;
+  createRemoveSkillHandler: (_index: number) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  currentSkillInput: string;
+  showSkillPlaceholder: boolean;
+  tagInputRef: React.RefObject<HTMLInputElement>;
+  textareaClasses: string;
+}> = ({ formData, validationErrors, handleFieldChange, handleSkillInputChange, handleSkillInputKeyDown, createRemoveSkillHandler, currentSkillInput, showSkillPlaceholder, tagInputRef, textareaClasses }) => (
+  <section className="mb-8 mt-8">
+    <SectionHeader number={2} title="Skills & Interests" />
+
+    <SkillInputField
+      skills={formData.skills}
+      createRemoveSkillHandler={createRemoveSkillHandler}
+      currentSkillInput={currentSkillInput}
+      handleSkillInputChange={handleSkillInputChange}
+      handleSkillInputKeyDown={handleSkillInputKeyDown}
+      showSkillPlaceholder={showSkillPlaceholder}
+      tagInputRef={tagInputRef}
+      error={validationErrors.skills}
+    />
+
+    <fieldset className="mb-4">
+      <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+        Commitment Level{" "}
+        <span className="text-red-500 text-base">*</span>
+      </legend>
+      <div className="grid md:grid-cols-3 gap-3">
+        <CommitmentOption
+          id="commitment-one-time"
+          value="one-time"
+          selectedValue={formData.commitmentType}
+          onChange={handleFieldChange("commitmentType")}
+          title="One-time"
+          description="Single project or short-duration tasks"
+        />
+        <CommitmentOption
+          id="commitment-short-term"
+          value="short-term"
+          selectedValue={formData.commitmentType}
+          onChange={handleFieldChange("commitmentType")}
+          title="Short-Term"
+          description="Few weeks to a few months"
+        />
+        <CommitmentOption
+          id="commitment-long-term"
+          value="long-term"
+          selectedValue={formData.commitmentType}
+          onChange={handleFieldChange("commitmentType")}
+          title="Long-Term"
+          description="Ongoing commitment of several months or more"
+        />
+      </div>
+    </fieldset>
+
+    <div>
+      <label
+        htmlFor="experience"
+        className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+      >
+        Tell us about your relevant experience{" "}
+        <span className="text-red-500 text-base">*</span>
+      </label>
+      <textarea
+        id="experience"
+        value={formData.experience}
+        onChange={handleFieldChange("experience")}
+        className={textareaClasses}
+        placeholder="Describe your background, skills, and what motivates you to volunteer with Give Protocol..."
+        required
+      />
+      {validationErrors.experience && (
+        <p className="text-sm text-red-600 mt-1">
+          {validationErrors.experience}
+        </p>
+      )}
+    </div>
+  </section>
+);
+
 interface ApplicationDialogProps {
   handleSubmit: (_e: React.FormEvent) => void;
   formData: FormData;
@@ -575,76 +660,18 @@ const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
       />
 
       {/* Skills & Interests Section */}
-      <section className="mb-8 mt-8">
-        <SectionHeader number={2} title="Skills & Interests" />
-
-        <SkillInputField
-          skills={formData.skills}
-          createRemoveSkillHandler={createRemoveSkillHandler}
-          currentSkillInput={currentSkillInput}
-          handleSkillInputChange={handleSkillInputChange}
-          handleSkillInputKeyDown={handleSkillInputKeyDown}
-          showSkillPlaceholder={showSkillPlaceholder}
-          tagInputRef={tagInputRef}
-          error={validationErrors.skills}
-        />
-
-        <fieldset className="mb-4">
-          <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-            Commitment Level{" "}
-            <span className="text-red-500 text-base">*</span>
-          </legend>
-          <div className="grid md:grid-cols-3 gap-3">
-            <CommitmentOption
-              id="commitment-one-time"
-              value="one-time"
-              selectedValue={formData.commitmentType}
-              onChange={handleFieldChange("commitmentType")}
-              title="One-time"
-              description="Single project or short-duration tasks"
-            />
-            <CommitmentOption
-              id="commitment-short-term"
-              value="short-term"
-              selectedValue={formData.commitmentType}
-              onChange={handleFieldChange("commitmentType")}
-              title="Short-Term"
-              description="Few weeks to a few months"
-            />
-            <CommitmentOption
-              id="commitment-long-term"
-              value="long-term"
-              selectedValue={formData.commitmentType}
-              onChange={handleFieldChange("commitmentType")}
-              title="Long-Term"
-              description="Ongoing commitment of several months or more"
-            />
-          </div>
-        </fieldset>
-
-        <div>
-          <label
-            htmlFor="experience"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
-          >
-            Tell us about your relevant experience{" "}
-            <span className="text-red-500 text-base">*</span>
-          </label>
-          <textarea
-            id="experience"
-            value={formData.experience}
-            onChange={handleFieldChange("experience")}
-            className={textareaClasses}
-            placeholder="Describe your background, skills, and what motivates you to volunteer with Give Protocol..."
-            required
-          />
-          {validationErrors.experience && (
-            <p className="text-sm text-red-600 mt-1">
-              {validationErrors.experience}
-            </p>
-          )}
-        </div>
-      </section>
+      <SkillsAndInterestsSection
+        formData={formData}
+        validationErrors={validationErrors}
+        handleFieldChange={handleFieldChange}
+        handleSkillInputChange={handleSkillInputChange}
+        handleSkillInputKeyDown={handleSkillInputKeyDown}
+        createRemoveSkillHandler={createRemoveSkillHandler}
+        currentSkillInput={currentSkillInput}
+        showSkillPlaceholder={showSkillPlaceholder}
+        tagInputRef={tagInputRef}
+        textareaClasses={textareaClasses}
+      />
 
       {/* Consent & Agreement Section */}
       <section className="mb-8 mt-8">

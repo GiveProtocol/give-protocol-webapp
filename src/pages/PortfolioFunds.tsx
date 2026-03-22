@@ -247,6 +247,44 @@ const DonationModal: React.FC<DonationModalProps> = ({
   );
 };
 
+/** Distribution info banner showing how donations are split among charities. */
+const DistributionInfo: React.FC<{ charityCount: number }> = ({ charityCount }) => (
+  <div className="bg-blue-50 p-3 rounded-lg mb-4 flex items-start">
+    <AlertCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
+    <div className="text-sm">
+      <p className="text-blue-800 font-medium">Equal Distribution</p>
+      <p className="text-blue-700">
+        Each charity receives {100 / charityCount}% of donations
+      </p>
+    </div>
+  </div>
+);
+
+/** Card displaying a single portfolio fund with description and donate button. */
+const FundCard: React.FC<{ fund: PortfolioFund; onDonate: () => void }> = ({ fund, onDonate }) => (
+  <Card className="overflow-hidden hover:shadow-lg transition-shadow p-6">
+    <div className="flex items-start justify-between mb-4">
+      <h3 className="text-xl font-semibold text-gray-900">{fund.name}</h3>
+      <span className="flex items-center text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
+        <Heart className="h-3 w-3 mr-1" />
+        Active
+      </span>
+    </div>
+    <p className="text-gray-600 mb-4 text-sm leading-relaxed">{fund.description}</p>
+    <p className="flex items-center text-sm text-gray-500 mb-3">
+      <Users className="h-4 w-4 mr-2" />
+      {fund.charities.length} Verified Charities
+    </p>
+    <DistributionInfo charityCount={fund.charities.length} />
+    <Button
+      onClick={onDonate}
+      className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
+    >
+      Donate to Fund
+    </Button>
+  </Card>
+);
+
 /** Page listing all portfolio funds with donation functionality */
 const PortfolioFunds: React.FC = () => {
   const [funds, setFunds] = useState<PortfolioFund[]>([]);
@@ -335,51 +373,7 @@ const PortfolioFunds: React.FC = () => {
         <ScrollReveal direction="up" delay={200}>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {funds.map((fund) => (
-            <Card
-              key={fund.id}
-              className="overflow-hidden hover:shadow-lg transition-shadow p-6"
-            >
-              <div className="flex items-start justify-between mb-4">
-                <h3 className="text-xl font-semibold text-gray-900">
-                  {fund.name}
-                </h3>
-                <div className="flex items-center text-sm text-green-600 bg-green-100 px-2 py-1 rounded-full">
-                  <Heart className="h-3 w-3 mr-1" />
-                  Active
-                </div>
-              </div>
-
-              <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-                {fund.description}
-              </p>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-center text-sm text-gray-500">
-                  <Users className="h-4 w-4 mr-2" />
-                  {fund.charities.length} Verified Charities
-                </div>
-              </div>
-
-              <div className="bg-blue-50 p-3 rounded-lg mb-4 flex items-start">
-                <AlertCircle className="h-4 w-4 text-blue-600 mr-2 mt-0.5 flex-shrink-0" />
-                <div className="text-sm">
-                  <p className="text-blue-800 font-medium">
-                    Equal Distribution
-                  </p>
-                  <p className="text-blue-700">
-                    Each charity receives {100 / fund.charities.length}% of
-                    donations
-                  </p>
-                </div>
-              </div>
-
-              <Button
-                onClick={createDonateHandler(fund)}
-                className="w-full bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700"
-              >
-                Donate to Fund
-              </Button>
-            </Card>
+            <FundCard key={fund.id} fund={fund} onDonate={createDonateHandler(fund)} />
           ))}
         </div>
         </ScrollReveal>

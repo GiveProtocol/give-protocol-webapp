@@ -8,6 +8,73 @@ import { exportEnhancedTransactionsToCSV } from "@/utils/enhancedExport";
 import { formatDateForInput } from "@/utils/date";
 import { useTranslation } from "@/hooks/useTranslation";
 
+/** Date range and options fields for the export form. */
+const ExportFormFields: React.FC<{
+  filename: string;
+  options: TransactionExportOptions;
+  onFilenameChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onStartDateChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEndDateChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onIncludePersonalInfoChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  t: (_key: string, _fallback?: string) => string;
+}> = ({ filename, options, onFilenameChange, onStartDateChange, onEndDateChange, onIncludePersonalInfoChange, t }) => (
+  <main className="p-6 space-y-4">
+    <label className="block text-sm font-medium text-gray-700 mb-1">
+      {t("export.filename")}
+      <Input
+        value={filename}
+        onChange={onFilenameChange}
+        placeholder="contributions_export"
+        className="mt-1"
+      />
+    </label>
+
+    <div className="block space-y-1 text-sm font-medium text-gray-700">
+      <span>{t("export.dateRange")}</span>
+      <div className="grid grid-cols-2 gap-4">
+        <Input
+          type="date"
+          value={options.dateRange?.start || ""}
+          onChange={onStartDateChange}
+          aria-label="Start date"
+        />
+        <Input
+          type="date"
+          value={options.dateRange?.end || ""}
+          onChange={onEndDateChange}
+          aria-label="End date"
+        />
+      </div>
+    </div>
+
+    <label className="flex items-center">
+      <input
+        type="checkbox"
+        id="includePersonalInfo"
+        checked={options.includePersonalInfo}
+        onChange={onIncludePersonalInfoChange}
+        className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded mr-2"
+      />
+      <span className="text-sm text-gray-900">
+        {t("export.includePersonal")}
+      </span>
+    </label>
+
+    <p className="text-sm text-gray-500">{t("export.willInclude")}</p>
+    <ul className="text-sm text-gray-500 list-disc list-inside mt-1 space-y-1">
+      <li>{t("contributions.date")}</li>
+      <li>{t("contributions.type")}</li>
+      <li>{t("contributions.details")}</li>
+      <li>{t("contributions.status")}</li>
+      {options.includePersonalInfo && (
+        <li>{t("export.walletAddresses", "Wallet addresses (sender and recipient)")}</li>
+      )}
+      <li>{t("export.volunteerDetails", "Volunteer contribution details (when applicable)")}</li>
+      <li>{t("export.verificationHashes", "Verification hashes (when applicable)")}</li>
+    </ul>
+  </main>
+);
+
 interface DonationExportModalProps {
   donations: Transaction[];
   onClose: () => void;
@@ -146,76 +213,15 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
           </button>
         </div>
 
-        <main className="p-6 space-y-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
-            {t("export.filename")}
-            <Input
-              value={filename}
-              onChange={handleFilenameChange}
-              placeholder="contributions_export"
-              className="mt-1"
-            />
-          </label>
-
-          <div className="block space-y-1 text-sm font-medium text-gray-700">
-            <span>{t("export.dateRange")}</span>
-            <div className="grid grid-cols-2 gap-4">
-              <Input
-                type="date"
-                value={options.dateRange?.start || ""}
-                onChange={handleStartDateChange}
-                aria-label="Start date"
-              />
-              <Input
-                type="date"
-                value={options.dateRange?.end || ""}
-                onChange={handleEndDateChange}
-                aria-label="End date"
-              />
-            </div>
-          </div>
-
-          <label className="flex items-center">
-            <input
-              type="checkbox"
-              id="includePersonalInfo"
-              checked={options.includePersonalInfo}
-              onChange={handleIncludePersonalInfoChange}
-              className="h-4 w-4 text-emerald-600 focus:ring-emerald-500 border-gray-300 rounded mr-2"
-            />
-            <span className="text-sm text-gray-900">
-              {t("export.includePersonal")}
-            </span>
-          </label>
-
-          <p className="text-sm text-gray-500">{t("export.willInclude")}</p>
-          <ul className="text-sm text-gray-500 list-disc list-inside mt-1 space-y-1">
-            <li>{t("contributions.date")}</li>
-            <li>{t("contributions.type")}</li>
-            <li>{t("contributions.details")}</li>
-            <li>{t("contributions.status")}</li>
-            {options.includePersonalInfo && (
-              <li>
-                {t(
-                  "export.walletAddresses",
-                  "Wallet addresses (sender and recipient)",
-                )}
-              </li>
-            )}
-            <li>
-              {t(
-                "export.volunteerDetails",
-                "Volunteer contribution details (when applicable)",
-              )}
-            </li>
-            <li>
-              {t(
-                "export.verificationHashes",
-                "Verification hashes (when applicable)",
-              )}
-            </li>
-          </ul>
-        </main>
+        <ExportFormFields
+          filename={filename}
+          options={options}
+          onFilenameChange={handleFilenameChange}
+          onStartDateChange={handleStartDateChange}
+          onEndDateChange={handleEndDateChange}
+          onIncludePersonalInfoChange={handleIncludePersonalInfoChange}
+          t={t}
+        />
 
         <div className="flex justify-end space-x-3 p-6">
           <Button variant="secondary" onClick={handleClose}>
