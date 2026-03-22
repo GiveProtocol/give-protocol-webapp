@@ -31,17 +31,24 @@ const Web3StatusSection: React.FC<{
   <div>
     <h3 className="text-lg font-semibold mb-2">Web3 Connection</h3>
     <div className="flex items-center space-x-2 mb-2">
-      <div className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`} />
+      <div
+        className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
+      />
       <span>{isConnected ? "Wallet connected" : "Wallet not connected"}</span>
     </div>
     {chainId && (
       <p className="text-sm text-gray-600 mb-2">
-        Connected to chain ID: {chainId === CHAIN_IDS.MOONBASE ? "Moonbase Alpha (1287)" : chainId}
+        Connected to chain ID:{" "}
+        {chainId === CHAIN_IDS.MOONBASE ? "Moonbase Alpha (1287)" : chainId}
       </p>
     )}
-    {web3Error && <p className="text-sm text-red-600 mb-2">{web3Error.message}</p>}
+    {web3Error && (
+      <p className="text-sm text-red-600 mb-2">{web3Error.message}</p>
+    )}
     {!isConnected && (
-      <Button onClick={onConnect} className="mt-2">Connect Wallet</Button>
+      <Button onClick={onConnect} className="mt-2">
+        Connect Wallet
+      </Button>
     )}
   </div>
 );

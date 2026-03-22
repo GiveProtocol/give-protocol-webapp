@@ -1,7 +1,7 @@
-import React from 'react';
-import { DollarSign, TrendingUp, Wallet } from 'lucide-react';
-import { StatCard } from './StatCard';
-import { CharityStats as CharityStatsType } from '@/types/charity';
+import React from "react";
+import { DollarSign, TrendingUp, Wallet } from "lucide-react";
+import { StatCard } from "./StatCard";
+import { CharityStats as CharityStatsType } from "@/types/charity";
 
 /**
  * CharityStats component displays key statistics for a charity including total received, equity pool value, and available balance.
@@ -14,7 +14,7 @@ import { CharityStats as CharityStatsType } from '@/types/charity';
 export const CharityStats: React.FC<CharityStatsType> = ({
   totalReceived,
   equityPoolValue,
-  availableBalance
+  availableBalance,
 }) => {
   return (
     <div className="grid gap-6 mb-8 md:grid-cols-3">

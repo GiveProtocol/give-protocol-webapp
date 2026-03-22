@@ -20,7 +20,12 @@ interface CountrySelectProps {
 }
 
 /** Country dropdown selector with validation error display. */
-const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange, countries, error }) => (
+const CountrySelect: React.FC<CountrySelectProps> = ({
+  value,
+  onChange,
+  countries,
+  error,
+}) => (
   <label className="block">
     <span className="text-sm font-medium text-gray-700 mb-1 block">
       Country
@@ -39,11 +44,7 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange, countrie
         </option>
       ))}
     </select>
-    {error && (
-      <p className="mt-1 text-sm text-red-600">
-        {error}
-      </p>
-    )}
+    {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
   </label>
 );
 
