@@ -224,16 +224,16 @@ export const VolunteerOpportunityTemplate: React.FC<
           <ApplyCard opportunity={opportunity} onApply={onApply} />
         </div>
 
-        {(opportunity.responsibilities?.length ?? 0) > 0 && (
-          <BulletListSection title="Responsibilities" items={opportunity.responsibilities!} dotColor="bg-emerald-500" />
+        {opportunity.responsibilities && opportunity.responsibilities.length > 0 && (
+          <BulletListSection title="Responsibilities" items={opportunity.responsibilities} dotColor="bg-emerald-500" />
         )}
 
-        {(opportunity.requirements?.length ?? 0) > 0 && (
-          <BulletListSection title="Requirements" items={opportunity.requirements!} dotColor="bg-green-500" />
+        {opportunity.requirements && opportunity.requirements.length > 0 && (
+          <BulletListSection title="Requirements" items={opportunity.requirements} dotColor="bg-green-500" />
         )}
 
-        {(opportunity.benefits?.length ?? 0) > 0 && (
-          <BulletListSection title="Benefits" items={opportunity.benefits!} dotColor="bg-yellow-500" />
+        {opportunity.benefits && opportunity.benefits.length > 0 && (
+          <BulletListSection title="Benefits" items={opportunity.benefits} dotColor="bg-yellow-500" />
         )}
       </main>
     </div>

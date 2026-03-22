@@ -205,14 +205,12 @@ const DonationModal: React.FC<DonationModalProps> = ({
       <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-lg shadow-2xl max-w-md w-[95%] z-50 p-6">
         <h2 className="text-2xl font-bold mb-4">Donate to {fund.name}</h2>
 
-        <div className="mb-4">
-          <p className="text-gray-600 text-sm mb-4">{fund.description}</p>
-          <div className="bg-blue-50 p-3 rounded-lg">
-            <p className="text-sm text-blue-800">
-              <strong>Equal Distribution:</strong> Your donation will be split
-              equally among {fund.charities.length} verified charities.
-            </p>
-          </div>
+        <p className="text-gray-600 text-sm mb-4">{fund.description}</p>
+        <div className="bg-blue-50 p-3 rounded-lg mb-4">
+          <p className="text-sm text-blue-800">
+            <strong>Equal Distribution:</strong> Your donation will be split
+            equally among {fund.charities.length} verified charities.
+          </p>
         </div>
 
         <div className="mb-4">
