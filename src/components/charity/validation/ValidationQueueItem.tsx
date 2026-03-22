@@ -50,6 +50,42 @@ const QueueItemDetails: React.FC<{ item: QueueItemType; activityTypeLabel: strin
   </div>
 );
 
+/** View, approve, and reject action buttons for a queue item. */
+const QueueItemActions: React.FC<{
+  onView: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+}> = ({ onView, onApprove, onReject }) => (
+  <div className="flex flex-col gap-2 flex-shrink-0">
+    <Button
+      variant="ghost"
+      size="sm"
+      onClick={onView}
+      icon={<Eye className="h-4 w-4" />}
+    >
+      View
+    </Button>
+    <div className="flex gap-1">
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onApprove}
+        className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+        icon={<CheckCircle className="h-4 w-4" />}
+        title="Quick approve"
+      />
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onReject}
+        className="text-red-600 hover:text-red-700 hover:bg-red-50"
+        icon={<XCircle className="h-4 w-4" />}
+        title="Reject"
+      />
+    </div>
+  </div>
+);
+
 /**
  * Individual item in the validation queue list
  * @param props - Component props
@@ -95,38 +131,8 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
           />
         </label>
 
-        <div className="flex-1 min-w-0 flex items-start justify-between gap-4">
-          <QueueItemDetails item={item} activityTypeLabel={activityTypeLabel} />
-
-          <div className="flex flex-col gap-2 flex-shrink-0">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleView}
-              icon={<Eye className="h-4 w-4" />}
-            >
-              View
-            </Button>
-            <div className="flex gap-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleApprove}
-                className="text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                icon={<CheckCircle className="h-4 w-4" />}
-                title="Quick approve"
-              />
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleReject}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                icon={<XCircle className="h-4 w-4" />}
-                title="Reject"
-              />
-            </div>
-          </div>
-        </div>
+        <QueueItemDetails item={item} activityTypeLabel={activityTypeLabel} />
+        <QueueItemActions onView={handleView} onApprove={handleApprove} onReject={handleReject} />
       </div>
     </div>
   );

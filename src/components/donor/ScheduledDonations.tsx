@@ -170,30 +170,26 @@ function ScheduleItem({
   onCancel: () => void;
 }) {
   return (
-    <div className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-      <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
-        <div className="flex-1 space-y-4">
-          <ScheduleCharityHeader schedule={schedule} />
-          <ScheduleDetailsGrid schedule={schedule} />
-          <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
-            Token Contract:{' '}
-            <span className="text-gray-600 dark:text-gray-300 font-mono">
-              {schedule.token.substring(0, 6)}...{schedule.token.substring(38)}
-            </span>
-          </p>
-        </div>
-        <div className="flex items-center">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onCancel}
-            disabled={loading}
-            className="whitespace-nowrap"
-          >
-            Cancel Schedule
-          </Button>
-        </div>
+    <div className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors flex flex-col md:flex-row md:justify-between md:items-start gap-4">
+      <div className="flex-1 space-y-4">
+        <ScheduleCharityHeader schedule={schedule} />
+        <ScheduleDetailsGrid schedule={schedule} />
+        <p className="mt-3 text-xs text-gray-500 dark:text-gray-400">
+          Token Contract:{' '}
+          <span className="text-gray-600 dark:text-gray-300 font-mono">
+            {schedule.token.substring(0, 6)}...{schedule.token.substring(38)}
+          </span>
+        </p>
       </div>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onCancel}
+        disabled={loading}
+        className="whitespace-nowrap"
+      >
+        Cancel Schedule
+      </Button>
     </div>
   );
 }

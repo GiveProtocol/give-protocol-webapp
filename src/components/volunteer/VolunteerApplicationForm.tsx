@@ -599,6 +599,45 @@ const SkillsAndInterestsSection: React.FC<{
   </section>
 );
 
+/** Consent & Agreement section with consent panel and validation error. */
+const ConsentAndAgreementSection: React.FC<{
+  formData: FormData;
+  validationErrors: Record<string, string>;
+  handleCheckboxChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
+}> = ({ formData, validationErrors, handleCheckboxChange }) => (
+  <section className="mb-8 mt-8">
+    <SectionHeader number={3} title="Consent & Agreement" />
+    <ConsentPanel formData={formData} onCheckboxChange={handleCheckboxChange} />
+    {validationErrors.consent && (
+      <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-start">
+        <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
+        <p className="text-red-700 dark:text-red-400">
+          {validationErrors.consent}
+        </p>
+      </div>
+    )}
+  </section>
+);
+
+/** Submit button and disclaimer footer for the application form. */
+const FormFooter: React.FC<{ loading: boolean }> = ({ loading }) => (
+  <div className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-8 pb-4">
+    <Button
+      type="submit"
+      disabled={loading}
+      className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-full transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
+    >
+      {loading ? "Submitting..." : "Submit Volunteer Application"}
+    </Button>
+    <p className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
+      By submitting this application, you acknowledge that you have
+      read and understood Give Protocol&apos;s privacy policy and
+      volunteer guidelines. Your data will be processed in accordance
+      with applicable data protection regulations.
+    </p>
+  </div>
+);
+
 interface ApplicationDialogProps {
   handleSubmit: (_e: React.FormEvent) => void;
   formData: FormData;
@@ -673,40 +712,12 @@ const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
         textareaClasses={textareaClasses}
       />
 
-      {/* Consent & Agreement Section */}
-      <section className="mb-8 mt-8">
-        <SectionHeader number={3} title="Consent & Agreement" />
-
-        <ConsentPanel formData={formData} onCheckboxChange={handleCheckboxChange} />
-
-        {validationErrors.consent && (
-          <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 rounded-lg flex items-start">
-            <AlertCircle className="h-5 w-5 text-red-500 dark:text-red-400 mt-0.5 mr-2 flex-shrink-0" />
-            <p className="text-red-700 dark:text-red-400">
-              {validationErrors.consent}
-            </p>
-          </div>
-        )}
-      </section>
-
-      <div className="border-t border-gray-200 dark:border-gray-700 pt-8 mt-8 pb-4">
-        <Button
-          type="submit"
-          disabled={loading}
-          className="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold rounded-full transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed shadow-lg hover:shadow-xl"
-        >
-          {loading ? "Submitting..." : "Submit Volunteer Application"}
-        </Button>
-
-        <div className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-          <p>
-            By submitting this application, you acknowledge that you have
-            read and understood Give Protocol&apos;s privacy policy and
-            volunteer guidelines. Your data will be processed in accordance
-            with applicable data protection regulations.
-          </p>
-        </div>
-      </div>
+      <ConsentAndAgreementSection
+        formData={formData}
+        validationErrors={validationErrors}
+        handleCheckboxChange={handleCheckboxChange}
+      />
+      <FormFooter loading={loading} />
     </form>
   </dialog>
 );

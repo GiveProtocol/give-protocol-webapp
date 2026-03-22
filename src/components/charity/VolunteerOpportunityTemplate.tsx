@@ -117,6 +117,52 @@ const OpportunityDetailsCard: React.FC<{ opportunity: VolunteerOpportunityProfil
   </div>
 );
 
+/** Card with apply button and opportunity summary. */
+const ApplyCard: React.FC<{ opportunity: VolunteerOpportunityProfileData; onApply?: () => void }> = ({ opportunity, onApply }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
+    <h2 className="text-xl font-semibold text-gray-900">
+      Apply for This Opportunity
+    </h2>
+    <p className="text-gray-600">
+      Join {opportunity.organization} and make a difference with your
+      skills. This {formatType(opportunity.type).toLowerCase()} position
+      requires a {formatCommitment(opportunity.commitment).toLowerCase()} commitment.
+    </p>
+    {opportunity.contactEmail && (
+      <p className="text-sm text-gray-500">
+        Questions? Contact us at{" "}
+        <a
+          href={`mailto:${opportunity.contactEmail}`}
+          className="text-emerald-600 hover:text-emerald-800"
+        >
+          {opportunity.contactEmail}
+        </a>
+      </p>
+    )}
+    <button
+      onClick={onApply}
+      className="w-full bg-emerald-600 text-white px-6 py-3 rounded-md hover:bg-emerald-700 transition-colors font-medium"
+    >
+      Apply Now
+    </button>
+  </div>
+);
+
+/** Bullet list section with heading and colored dot items. */
+const BulletListSection: React.FC<{ title: string; items: string[]; dotColor: string }> = ({ title, items, dotColor }) => (
+  <div className="bg-white p-6 rounded-lg shadow-md">
+    <h2 className="text-xl font-semibold text-gray-900 mb-4">{title}</h2>
+    <ul className="space-y-2">
+      {items.map((item) => (
+        <li key={item} className="flex items-start text-gray-700">
+          <span className={`w-2 h-2 mt-2 ${dotColor} rounded-full mr-3 flex-shrink-0`} />
+          {item}
+        </li>
+      ))}
+    </ul>
+  </div>
+);
+
 /**
  * Reusable template component for rendering volunteer opportunity detail pages.
  * Provides a consistent layout for all opportunity pages with:
@@ -175,84 +221,19 @@ export const VolunteerOpportunityTemplate: React.FC<
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <OpportunityDetailsCard opportunity={opportunity} />
-
-          <div className="bg-white p-6 rounded-lg shadow-md space-y-4">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Apply for This Opportunity
-            </h2>
-            <p className="text-gray-600">
-              Join {opportunity.organization} and make a difference with your
-              skills. This {formatType(opportunity.type).toLowerCase()} position
-              requires a{" "}
-              {formatCommitment(opportunity.commitment).toLowerCase()}{" "}
-              commitment.
-            </p>
-            {opportunity.contactEmail && (
-              <p className="text-sm text-gray-500">
-                Questions? Contact us at{" "}
-                <a
-                  href={`mailto:${opportunity.contactEmail}`}
-                  className="text-emerald-600 hover:text-emerald-800"
-                >
-                  {opportunity.contactEmail}
-                </a>
-              </p>
-            )}
-            <button
-              onClick={onApply}
-              className="w-full bg-emerald-600 text-white px-6 py-3 rounded-md hover:bg-emerald-700 transition-colors font-medium"
-            >
-              Apply Now
-            </button>
-          </div>
+          <ApplyCard opportunity={opportunity} onApply={onApply} />
         </div>
 
         {(opportunity.responsibilities?.length ?? 0) > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Responsibilities
-            </h2>
-            <ul className="space-y-2">
-              {opportunity.responsibilities?.map((item) => (
-                <li key={item} className="flex items-start text-gray-700">
-                  <span className="w-2 h-2 mt-2 bg-emerald-500 rounded-full mr-3 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <BulletListSection title="Responsibilities" items={opportunity.responsibilities!} dotColor="bg-emerald-500" />
         )}
 
         {(opportunity.requirements?.length ?? 0) > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Requirements
-            </h2>
-            <ul className="space-y-2">
-              {opportunity.requirements?.map((item) => (
-                <li key={item} className="flex items-start text-gray-700">
-                  <span className="w-2 h-2 mt-2 bg-green-500 rounded-full mr-3 flex-shrink-0" />
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
+          <BulletListSection title="Requirements" items={opportunity.requirements!} dotColor="bg-green-500" />
         )}
 
         {(opportunity.benefits?.length ?? 0) > 0 && (
-          <div className="bg-white p-6 rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              Benefits
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {opportunity.benefits?.map((item) => (
-                <p key={item} className="flex items-start text-gray-700">
-                  <span className="w-2 h-2 mt-2 bg-yellow-500 rounded-full mr-3 flex-shrink-0" />
-                  {item}
-                </p>
-              ))}
-            </div>
-          </div>
+          <BulletListSection title="Benefits" items={opportunity.benefits!} dotColor="bg-yellow-500" />
         )}
       </main>
     </div>

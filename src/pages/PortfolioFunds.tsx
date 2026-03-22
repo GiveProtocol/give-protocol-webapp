@@ -16,6 +16,87 @@ interface DonationModalProps {
   onSuccess: () => void;
 }
 
+/** Radio button selector for choosing between native and token donation types. */
+const DonationTypeSelector: React.FC<{
+  donationType: "native" | "token";
+  onSelectNative: () => void;
+  onSelectToken: () => void;
+}> = ({ donationType, onSelectNative, onSelectToken }) => (
+  <fieldset>
+    <legend className="block text-sm font-medium text-gray-700 mb-2">
+      Donation Type
+    </legend>
+    <div className="flex gap-2" role="radiogroup">
+      <label
+        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium cursor-pointer text-center ${
+          donationType === "native"
+            ? "bg-blue-600 text-gray-900"
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        }`}
+      >
+        <input
+          type="radio"
+          name="donationType"
+          value="native"
+          checked={donationType === "native"}
+          onChange={onSelectNative}
+          className="sr-only"
+        />
+        <span>DEV (Native)</span>
+      </label>
+      <label
+        className={`flex-1 py-2 px-4 rounded-md text-sm font-medium cursor-pointer text-center ${
+          donationType === "token"
+            ? "bg-blue-600 text-gray-900"
+            : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+        }`}
+      >
+        <input
+          type="radio"
+          name="donationType"
+          value="token"
+          checked={donationType === "token"}
+          onChange={onSelectToken}
+          className="sr-only"
+        />
+        <span>TEST Token</span>
+      </label>
+    </div>
+  </fieldset>
+);
+
+/** Breakdown summary showing donation amount, platform fee, and per-charity share. */
+const DonationSummary: React.FC<{
+  amount: string;
+  fee: string;
+  net: string;
+  donationType: "native" | "token";
+  platformFee: number;
+  charityCount: number;
+}> = ({ amount, fee, net, donationType, platformFee, charityCount }) => {
+  const tokenLabel = donationType === "native" ? "DEV" : "TEST";
+  return (
+    <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm">
+      <div className="flex justify-between">
+        <span>Donation Amount:</span>
+        <span>{amount} {tokenLabel}</span>
+      </div>
+      <div className="flex justify-between text-gray-600">
+        <span>Platform Fee ({platformFee / 100}%):</span>
+        <span>{fee} {tokenLabel}</span>
+      </div>
+      <div className="flex justify-between font-medium border-t pt-1">
+        <span>To Charities:</span>
+        <span>{net} {tokenLabel}</span>
+      </div>
+      <div className="text-xs text-gray-500 mt-2">
+        Each charity receives:{" "}
+        {(Number.parseFloat(net) / charityCount).toFixed(6)} {tokenLabel}
+      </div>
+    </div>
+  );
+};
+
 /** Modal for donating to a portfolio fund with native or token currency */
 const DonationModal: React.FC<DonationModalProps> = ({
   fund,
@@ -135,47 +216,11 @@ const DonationModal: React.FC<DonationModalProps> = ({
         </div>
 
         <div className="mb-4">
-          <fieldset>
-            <legend className="block text-sm font-medium text-gray-700 mb-2">
-              Donation Type
-            </legend>
-            <div className="flex gap-2" role="radiogroup">
-              <label
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium cursor-pointer text-center ${
-                  donationType === "native"
-                    ? "bg-blue-600 text-gray-900"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="donationType"
-                  value="native"
-                  checked={donationType === "native"}
-                  onChange={handleSetDonationTypeNative}
-                  className="sr-only"
-                />
-                <span>DEV (Native)</span>
-              </label>
-              <label
-                className={`flex-1 py-2 px-4 rounded-md text-sm font-medium cursor-pointer text-center ${
-                  donationType === "token"
-                    ? "bg-blue-600 text-gray-900"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="donationType"
-                  value="token"
-                  checked={donationType === "token"}
-                  onChange={handleSetDonationTypeToken}
-                  className="sr-only"
-                />
-                <span>TEST Token</span>
-              </label>
-            </div>
-          </fieldset>
+          <DonationTypeSelector
+            donationType={donationType}
+            onSelectNative={handleSetDonationTypeNative}
+            onSelectToken={handleSetDonationTypeToken}
+          />
         </div>
 
         <div className="mb-4">
@@ -198,31 +243,14 @@ const DonationModal: React.FC<DonationModalProps> = ({
         </div>
 
         {amount && (
-          <div className="mb-4 bg-gray-50 p-3 rounded-md text-sm">
-            <div className="flex justify-between">
-              <span>Donation Amount:</span>
-              <span>
-                {amount} {donationType === "native" ? "DEV" : "TEST"}
-              </span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>Platform Fee ({platformFee / 100}%):</span>
-              <span>
-                {fee} {donationType === "native" ? "DEV" : "TEST"}
-              </span>
-            </div>
-            <div className="flex justify-between font-medium border-t pt-1">
-              <span>To Charities:</span>
-              <span>
-                {net} {donationType === "native" ? "DEV" : "TEST"}
-              </span>
-            </div>
-            <div className="text-xs text-gray-500 mt-2">
-              Each charity receives:{" "}
-              {(Number.parseFloat(net) / fund.charities.length).toFixed(6)}{" "}
-              {donationType === "native" ? "DEV" : "TEST"}
-            </div>
-          </div>
+          <DonationSummary
+            amount={amount}
+            fee={fee}
+            net={net}
+            donationType={donationType}
+            platformFee={platformFee}
+            charityCount={fund.charities.length}
+          />
         )}
 
         <div className="flex gap-3">
