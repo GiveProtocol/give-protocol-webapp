@@ -175,46 +175,190 @@ async function lookupCharityName(
   return names.charityName;
 }
 
+/**
+ * Parse and validate the incoming request body
+ * @param req - The incoming HTTP request
+ * @returns The validated request body, or a Response if invalid
+ */
+async function parseRequestBody(req: Request): Promise<CaptureRequest | Response> {
+  if (req.method !== 'POST') {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Method not allowed' }),
+      { status: 405, headers: jsonHeaders },
+    );
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return new Response(
+      JSON.stringify({ success: false, error: 'Invalid JSON body' }),
+      { status: 400, headers: jsonHeaders },
+    );
+  }
+
+  if (!validateRequest(body)) {
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Invalid request. Required: orderId (string)',
+      }),
+      { status: 400, headers: jsonHeaders },
+    );
+  }
+
+  return body;
+}
+
+/**
+ * Extract payer details and first capture from PayPal response
+ * @param captureResponse - The PayPal capture response object
+ * @returns Payer email, full name, capture ID, amount, currency, and donor ID
+ * @throws If capture data is missing from the response
+ */
+function extractCaptureDetails(
+  captureResponse: Record<string, unknown>,
+  sessionCurrency: string,
+): { payerEmail: string; payerFullName: string; captureId: string; amountCents: number; currency: string; donorIdFromCustom: string | null } {
+  const payer = captureResponse.payer as Record<string, unknown> | undefined;
+  const payerEmail = (payer?.email_address as string) || '';
+  const payerName = payer?.name as Record<string, string> | undefined;
+  const payerFullName = payerName
+    ? [payerName.given_name, payerName.surname].filter(Boolean).join(' ')
+    : '';
+
+  const purchaseUnits = captureResponse.purchase_units as Array<Record<string, unknown>>;
+  const firstUnit = purchaseUnits?.[0];
+  const payments = firstUnit?.payments as Record<string, unknown> | undefined;
+  const captures = payments?.captures as Array<Record<string, unknown>> | undefined;
+  const firstCapture = captures?.[0];
+
+  if (!firstCapture) {
+    console.error('No capture data in PayPal response:', captureResponse);
+    throw new Error('PayPal capture response missing capture data');
+  }
+
+  const captureId = firstCapture.id as string;
+  const captureAmount = firstCapture.amount as Record<string, string>;
+  const amountValue = captureAmount?.value || '0';
+  const currency = (captureAmount?.currency_code || sessionCurrency).toUpperCase();
+  const amountCents = toAmountCents(amountValue, currency);
+
+  let donorIdFromCustom: string | null = null;
+  const customId = firstUnit?.custom_id as string | undefined;
+  if (customId) {
+    try {
+      const parsed = JSON.parse(customId);
+      donorIdFromCustom = parsed.donorId || null;
+    } catch {
+      console.error('Failed to parse custom_id JSON:', customId);
+    }
+  }
+
+  return { payerEmail, payerFullName, captureId, amountCents, currency, donorIdFromCustom };
+}
+
+/**
+ * Look up checkout session and validate the PayPal order
+ * @param supabase - Supabase client
+ * @param orderId - PayPal order ID
+ * @returns The checkout session, or a Response if invalid
+ */
+async function lookupCheckoutSession(
+  supabase: ReturnType<typeof createClient>,
+  orderId: string,
+): Promise<CheckoutSession | Response> {
+  const { data: session, error: sessionError } = await supabase
+    .from('checkout_sessions')
+    .select('*')
+    .eq('paypal_order_id', orderId)
+    .eq('validated', false)
+    .single();
+
+  if (sessionError || !session) {
+    console.error('No valid checkout session found for PayPal order:', orderId, sessionError);
+    return new Response(
+      JSON.stringify({
+        success: false,
+        error: 'Invalid or already processed PayPal order',
+      }),
+      { status: 403, headers: jsonHeaders },
+    );
+  }
+
+  return session as CheckoutSession;
+}
+
+/**
+ * Persist fiat donation record and trigger attestation
+ * @param supabase - Supabase client
+ * @param params - Donation parameters
+ * @returns The donation ID
+ * @throws If the donation insert fails
+ */
+async function persistDonation(
+  supabase: ReturnType<typeof createClient>,
+  params: {
+    donorIdFromCustom: string | null;
+    payerEmail: string;
+    payerFullName: string;
+    checkoutSession: CheckoutSession;
+    charityName: string | null;
+    amountCents: number;
+    currency: string;
+    captureId: string;
+    causeName: string | null;
+    fundName: string | null;
+  },
+): Promise<string> {
+  const { data: donation, error: donationError } = await supabase
+    .from('fiat_donations')
+    .insert({
+      donor_id: params.donorIdFromCustom,
+      donor_email: params.payerEmail,
+      donor_name: params.payerFullName,
+      charity_id: params.checkoutSession.charity_id,
+      charity_name: params.charityName || 'Unknown Charity',
+      amount_cents: params.amountCents,
+      currency: params.currency,
+      payment_processor: 'paypal',
+      payment_method: 'paypal',
+      transaction_id: params.captureId,
+      status: 'completed',
+      fee_covered: false,
+      cause_id: params.checkoutSession.cause_id,
+      fund_id: params.checkoutSession.fund_id,
+      cause_name: params.causeName,
+      fund_name: params.fundName,
+      disbursement_status: 'received',
+      created_at: new Date().toISOString(),
+    })
+    .select('id')
+    .single();
+
+  if (donationError) {
+    console.error('Failed to persist fiat donation:', donationError);
+    throw new Error('Payment captured but failed to record donation');
+  }
+
+  return donation.id;
+}
+
 serve(async (req: Request) => {
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
 
   try {
-    if (req.method !== 'POST') {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Method not allowed' }),
-        { status: 405, headers: jsonHeaders },
-      );
-    }
+    const bodyOrResponse = await parseRequestBody(req);
+    if (bodyOrResponse instanceof Response) return bodyOrResponse;
+    const body = bodyOrResponse;
 
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
-        { status: 400, headers: jsonHeaders },
-      );
-    }
-
-    if (!validateRequest(body)) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid request. Required: orderId (string)',
-        }),
-        { status: 400, headers: jsonHeaders },
-      );
-    }
-
-    // -----------------------------------------------------------------------
     // Step 1: Capture the PayPal order
-    // -----------------------------------------------------------------------
     const accessToken = await getPayPalAccessToken();
     const captureResponse = await capturePayPalOrder(accessToken, body.orderId);
 
-    // Verify capture status
     if (captureResponse.status !== 'COMPLETED') {
       console.error('PayPal order not completed:', captureResponse.status);
       return new Response(
@@ -226,9 +370,7 @@ serve(async (req: Request) => {
       );
     }
 
-    // -----------------------------------------------------------------------
     // Step 2: Initialize Supabase and look up checkout session
-    // -----------------------------------------------------------------------
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
 
@@ -242,29 +384,11 @@ serve(async (req: Request) => {
 
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    const { data: session, error: sessionError } = await supabase
-      .from('checkout_sessions')
-      .select('*')
-      .eq('paypal_order_id', body.orderId)
-      .eq('validated', false)
-      .single();
+    const sessionOrResponse = await lookupCheckoutSession(supabase, body.orderId);
+    if (sessionOrResponse instanceof Response) return sessionOrResponse;
+    const checkoutSession = sessionOrResponse;
 
-    if (sessionError || !session) {
-      console.error('No valid checkout session found for PayPal order:', body.orderId, sessionError);
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid or already processed PayPal order',
-        }),
-        { status: 403, headers: jsonHeaders },
-      );
-    }
-
-    const checkoutSession = session as CheckoutSession;
-
-    // -----------------------------------------------------------------------
     // Step 3: Mark session as validated
-    // -----------------------------------------------------------------------
     const { error: updateError } = await supabase
       .from('checkout_sessions')
       .update({ validated: true })
@@ -274,51 +398,12 @@ serve(async (req: Request) => {
       console.error('Failed to mark session as validated:', updateError);
     }
 
-    // -----------------------------------------------------------------------
-    // Step 4: Extract payer and capture details from response
-    // -----------------------------------------------------------------------
-    const payer = captureResponse.payer as Record<string, unknown> | undefined;
-    const payerEmail = (payer?.email_address as string) || '';
-    const payerName = payer?.name as Record<string, string> | undefined;
-    const payerFullName = payerName
-      ? [payerName.given_name, payerName.surname].filter(Boolean).join(' ')
-      : '';
+    // Step 4: Extract payer and capture details
+    const { payerEmail, payerFullName, captureId, amountCents, currency, donorIdFromCustom } =
+      extractCaptureDetails(captureResponse, checkoutSession.currency);
 
-    const purchaseUnits = captureResponse.purchase_units as Array<Record<string, unknown>>;
-    const firstUnit = purchaseUnits?.[0];
-    const payments = firstUnit?.payments as Record<string, unknown> | undefined;
-    const captures = payments?.captures as Array<Record<string, unknown>> | undefined;
-    const firstCapture = captures?.[0];
-
-    if (!firstCapture) {
-      console.error('No capture data in PayPal response:', captureResponse);
-      throw new Error('PayPal capture response missing capture data');
-    }
-
-    const captureId = firstCapture.id as string;
-    const captureAmount = firstCapture.amount as Record<string, string>;
-    const amountValue = captureAmount?.value || '0';
-    const currency = (captureAmount?.currency_code || checkoutSession.currency).toUpperCase();
-    const amountCents = toAmountCents(amountValue, currency);
-
-    // Parse donor ID from custom_id JSON (set during order creation)
-    let donorIdFromCustom: string | null = null;
-    const customId = firstUnit?.custom_id as string | undefined;
-    if (customId) {
-      try {
-        const parsed = JSON.parse(customId);
-        donorIdFromCustom = parsed.donorId || null;
-      } catch {
-        console.error('Failed to parse custom_id JSON:', customId);
-      }
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 5: Look up charity name
-    // -----------------------------------------------------------------------
+    // Step 5: Look up charity and cause/fund names
     const charityName = await lookupCharityName(supabase, checkoutSession.charity_id);
-
-    // Resolve cause/fund names from session
     const resolvedNames = await resolveNames(supabase, {
       charityId: checkoutSession.charity_id ?? undefined,
       causeId: checkoutSession.cause_id ?? undefined,
@@ -327,54 +412,31 @@ serve(async (req: Request) => {
       donationType: checkoutSession.donation_type as 'one-time' | 'subscription',
     });
 
-    // -----------------------------------------------------------------------
     // Step 6: Insert fiat donation record
-    // -----------------------------------------------------------------------
-    const { data: donation, error: donationError } = await supabase
-      .from('fiat_donations')
-      .insert({
-        donor_id: donorIdFromCustom,
-        donor_email: payerEmail,
-        donor_name: payerFullName,
-        charity_id: checkoutSession.charity_id,
-        charity_name: charityName || 'Unknown Charity',
-        amount_cents: amountCents,
-        currency,
-        payment_processor: 'paypal',
-        payment_method: 'paypal',
-        transaction_id: captureId,
-        status: 'completed',
-        fee_covered: false,
-        cause_id: checkoutSession.cause_id,
-        fund_id: checkoutSession.fund_id,
-        cause_name: resolvedNames.causeName ?? null,
-        fund_name: resolvedNames.fundName ?? null,
-        disbursement_status: 'received',
-        created_at: new Date().toISOString(),
-      })
-      .select('id')
-      .single();
+    const donationId = await persistDonation(supabase, {
+      donorIdFromCustom,
+      payerEmail,
+      payerFullName,
+      checkoutSession,
+      charityName,
+      amountCents,
+      currency,
+      captureId,
+      causeName: resolvedNames.causeName ?? null,
+      fundName: resolvedNames.fundName ?? null,
+    });
 
-    if (donationError) {
-      console.error('Failed to persist fiat donation:', donationError);
-      throw new Error('Payment captured but failed to record donation');
-    }
-
-    // -----------------------------------------------------------------------
     // Step 7: Fire-and-forget attestation (non-blocking)
-    // -----------------------------------------------------------------------
     fetch(`${supabaseUrl}/functions/v1/attest-fiat-donation`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${supabaseKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ donationId: donation.id }),
+      body: JSON.stringify({ donationId }),
     }).catch((err) => console.error('Attestation trigger failed (non-blocking):', err));
 
-    // -----------------------------------------------------------------------
     // Step 8: Return success
-    // -----------------------------------------------------------------------
     return new Response(
       JSON.stringify({
         success: true,

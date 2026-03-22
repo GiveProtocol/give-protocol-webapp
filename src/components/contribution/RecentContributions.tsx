@@ -132,26 +132,31 @@ function getStatusBadge(status: string) {
   }
 }
 
+/** Contribution details showing icon, organization name, status badge, and date. */
+const ContributionInfo: React.FC<{ contribution: { type: ContributionSource; organizationName: string; status: string; date: string } }> = ({ contribution }) => (
+  <div className="flex items-center space-x-3">
+    <div className="p-2 bg-white dark:bg-gray-600 rounded-full">
+      {getContributionIcon(contribution.type)}
+    </div>
+    <div>
+      <div className="flex items-center gap-2">
+        <p className="font-medium text-gray-900 dark:text-gray-100">
+          {contribution.organizationName}
+        </p>
+        {getStatusBadge(contribution.status)}
+      </div>
+      <p className="text-sm text-gray-500 dark:text-gray-400">
+        {getContributionLabel(contribution.type)} &bull;{" "}
+        {formatDate(contribution.date)}
+      </p>
+    </div>
+  </div>
+);
+
 /** Single contribution row with icon, organization name, status badge, and amount. */
 const ContributionRow: React.FC<{ contribution: { id: string; type: ContributionSource; organizationName: string; status: string; date: string; amount?: number; hours?: number } }> = ({ contribution }) => (
   <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-    <div className="flex items-center space-x-3">
-      <div className="p-2 bg-white dark:bg-gray-600 rounded-full">
-        {getContributionIcon(contribution.type)}
-      </div>
-      <div>
-        <div className="flex items-center gap-2">
-          <p className="font-medium text-gray-900 dark:text-gray-100">
-            {contribution.organizationName}
-          </p>
-          {getStatusBadge(contribution.status)}
-        </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          {getContributionLabel(contribution.type)} &bull;{" "}
-          {formatDate(contribution.date)}
-        </p>
-      </div>
-    </div>
+    <ContributionInfo contribution={contribution} />
     <div className="text-right">
       {contribution.amount !== undefined && (
         <span className="font-semibold text-gray-900 dark:text-gray-100">

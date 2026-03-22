@@ -141,6 +141,28 @@ const MissionVisionSection: React.FC = () => (
   </section>
 );
 
+/** Call-to-action section inviting visitors to join Give Protocol. */
+const JoinUsSection: React.FC = () => (
+  <ScrollReveal direction="scale">
+    <section className="text-center bg-emerald-50 rounded-lg p-8">
+      <h2 className="text-3xl font-bold text-gray-900 mb-4">Join the Future of Giving</h2>
+      <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
+        Whether you&apos;re a donor looking to make an impact, a volunteer ready to contribute your time,
+        or an organization seeking support, Give Protocol provides the tools you need to create
+        meaningful change.
+      </p>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-sm hover:shadow-lg">
+          Start Giving
+        </button>
+        <button className="border-2 border-emerald-500 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
+          Find Opportunities
+        </button>
+      </div>
+    </section>
+  </ScrollReveal>
+);
+
 /** About page describing the Give Protocol mission, team, and values. */
 export const About: React.FC = () => {
   return (
@@ -153,26 +175,7 @@ export const About: React.FC = () => {
         <WhatWeDoSection />
         <ValuesSection />
         <TechnologySection />
-
-        {/* Join Us */}
-        <ScrollReveal direction="scale">
-        <section className="text-center bg-emerald-50 rounded-lg p-8">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Join the Future of Giving</h2>
-          <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-            Whether you&apos;re a donor looking to make an impact, a volunteer ready to contribute your time,
-            or an organization seeking support, Give Protocol provides the tools you need to create
-            meaningful change.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-3 rounded-lg font-semibold transition-colors shadow-sm hover:shadow-lg">
-              Start Giving
-            </button>
-            <button className="border-2 border-emerald-500 text-emerald-600 px-8 py-3 rounded-lg font-semibold hover:bg-emerald-50 transition-colors">
-              Find Opportunities
-            </button>
-          </div>
-        </section>
-        </ScrollReveal>
+        <JoinUsSection />
       </div>
     </StaticPageLayout>
   );

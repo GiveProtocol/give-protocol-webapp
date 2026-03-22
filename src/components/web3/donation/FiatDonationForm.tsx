@@ -293,7 +293,7 @@ export function FiatDonationForm({
         donationType: isMonthly ? 'subscription' : 'one-time',
         donorEmail: email.trim(),
         donorName: name.trim(),
-        donorId: donorId,
+        donorId,
       });
 
       onSuccess({

@@ -20,78 +20,68 @@ const HoursFilterPanel: React.FC<{
   onClearFilters: () => void;
   hasActiveFilters: boolean;
 }> = ({ filters, onStatusChange, onActivityTypeChange, onDateFromChange, onDateToChange, onClearFilters, hasActiveFilters }) => (
-  <div className="mb-6 p-4 bg-gray-50 rounded-lg">
-    <div className="flex flex-wrap gap-4 items-end">
-      <div>
-        <label htmlFor="status-filter" className="block text-xs font-medium text-gray-500 mb-1">
-          Status
-        </label>
-        <select
-          id="status-filter"
-          value={filters.status || ""}
-          onChange={onStatusChange}
-          className="block w-36 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
-        >
-          <option value="">All</option>
-          <option value={ValidationStatus.VALIDATED}>Validated</option>
-          <option value={ValidationStatus.PENDING}>Pending</option>
-          <option value={ValidationStatus.UNVALIDATED}>Unvalidated</option>
-          <option value={ValidationStatus.REJECTED}>Rejected</option>
-          <option value={ValidationStatus.EXPIRED}>Expired</option>
-        </select>
-      </div>
-      <div>
-        <label htmlFor="activity-filter" className="block text-xs font-medium text-gray-500 mb-1">
-          Activity Type
-        </label>
-        <select
-          id="activity-filter"
-          value={filters.activityType || ""}
-          onChange={onActivityTypeChange}
-          className="block w-44 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
-        >
-          <option value="">All Types</option>
-          {Object.entries(ACTIVITY_TYPE_LABELS).map(([value, label]) => (
-            <option key={value} value={value}>
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
-      <div>
-        <label htmlFor="date-from" className="block text-xs font-medium text-gray-500 mb-1">
-          From
-        </label>
-        <input
-          id="date-from"
-          type="date"
-          value={filters.dateFrom || ""}
-          onChange={onDateFromChange}
-          className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
-        />
-      </div>
-      <div>
-        <label htmlFor="date-to" className="block text-xs font-medium text-gray-500 mb-1">
-          To
-        </label>
-        <input
-          id="date-to"
-          type="date"
-          value={filters.dateTo || ""}
-          onChange={onDateToChange}
-          className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
-        />
-      </div>
-      {hasActiveFilters && (
-        <button
-          type="button"
-          onClick={onClearFilters}
-          className="text-sm text-emerald-600 hover:text-emerald-700 underline"
-        >
-          Clear filters
-        </button>
-      )}
-    </div>
+  <div className="mb-6 p-4 bg-gray-50 rounded-lg flex flex-wrap gap-4 items-end">
+    <label htmlFor="status-filter" className="block">
+      <span className="block text-xs font-medium text-gray-500 mb-1">Status</span>
+      <select
+        id="status-filter"
+        value={filters.status || ""}
+        onChange={onStatusChange}
+        className="block w-36 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
+      >
+        <option value="">All</option>
+        <option value={ValidationStatus.VALIDATED}>Validated</option>
+        <option value={ValidationStatus.PENDING}>Pending</option>
+        <option value={ValidationStatus.UNVALIDATED}>Unvalidated</option>
+        <option value={ValidationStatus.REJECTED}>Rejected</option>
+        <option value={ValidationStatus.EXPIRED}>Expired</option>
+      </select>
+    </label>
+    <label htmlFor="activity-filter" className="block">
+      <span className="block text-xs font-medium text-gray-500 mb-1">Activity Type</span>
+      <select
+        id="activity-filter"
+        value={filters.activityType || ""}
+        onChange={onActivityTypeChange}
+        className="block w-44 border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
+      >
+        <option value="">All Types</option>
+        {Object.entries(ACTIVITY_TYPE_LABELS).map(([value, label]) => (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        ))}
+      </select>
+    </label>
+    <label htmlFor="date-from" className="block">
+      <span className="block text-xs font-medium text-gray-500 mb-1">From</span>
+      <input
+        id="date-from"
+        type="date"
+        value={filters.dateFrom || ""}
+        onChange={onDateFromChange}
+        className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
+      />
+    </label>
+    <label htmlFor="date-to" className="block">
+      <span className="block text-xs font-medium text-gray-500 mb-1">To</span>
+      <input
+        id="date-to"
+        type="date"
+        value={filters.dateTo || ""}
+        onChange={onDateToChange}
+        className="block border border-gray-300 rounded-md px-3 py-2 text-sm focus:ring-emerald-500 focus:border-emerald-500"
+      />
+    </label>
+    {hasActiveFilters && (
+      <button
+        type="button"
+        onClick={onClearFilters}
+        className="text-sm text-emerald-600 hover:text-emerald-700 underline"
+      >
+        Clear filters
+      </button>
+    )}
   </div>
 );
 

@@ -113,6 +113,52 @@ function ScheduleCharityHeader({ schedule }: { schedule: ScheduledDonation }) {
   );
 }
 
+/** Grid of schedule detail cards showing commitment, payment, progress, and next date. */
+function ScheduleDetailsGrid({ schedule }: { schedule: ScheduledDonation }) {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
+        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+          Total Commitment
+        </p>
+        <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
+          {schedule.totalAmount} {schedule.tokenSymbol || 'tokens'}
+        </p>
+      </div>
+      <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
+        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+          Monthly Payment
+        </p>
+        <p className="text-base font-semibold text-green-700 dark:text-green-400">
+          {schedule.amountPerMonth} {schedule.tokenSymbol || 'tokens'}
+        </p>
+      </div>
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
+        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+          Progress
+        </p>
+        <p className="text-base font-semibold text-blue-700 dark:text-blue-400">
+          {12 - schedule.monthsRemaining} of 12 months
+        </p>
+        <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
+          <div
+            className="bg-blue-600 dark:bg-blue-500 h-1.5 rounded-full"
+            style={{ width: `${((12 - schedule.monthsRemaining) / 12) * 100}%` }}
+          />
+        </div>
+      </div>
+      <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
+        <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+          Next Payment
+        </p>
+        <p className="text-base font-semibold text-amber-700 dark:text-amber-400">
+          {formatDate(schedule.nextDistribution.toISOString())}
+        </p>
+      </div>
+    </div>
+  );
+}
+
 /** Individual schedule item row with details and cancel button. */
 function ScheduleItem({
   schedule,
@@ -127,59 +173,8 @@ function ScheduleItem({
     <div className="p-6 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-4">
         <div className="flex-1 space-y-4">
-          {/* Charity Name and Icon */}
           <ScheduleCharityHeader schedule={schedule} />
-
-          {/* Schedule Details Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {/* Total Commitment */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-3">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                Total Commitment
-              </p>
-              <p className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                {schedule.totalAmount} {schedule.tokenSymbol || 'tokens'}
-              </p>
-            </div>
-
-            {/* Monthly Amount */}
-            <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-3">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                Monthly Payment
-              </p>
-              <p className="text-base font-semibold text-green-700 dark:text-green-400">
-                {schedule.amountPerMonth} {schedule.tokenSymbol || 'tokens'}
-              </p>
-            </div>
-
-            {/* Progress */}
-            <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                Progress
-              </p>
-              <p className="text-base font-semibold text-blue-700 dark:text-blue-400">
-                {12 - schedule.monthsRemaining} of 12 months
-              </p>
-              <div className="mt-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5">
-                <div
-                  className="bg-blue-600 dark:bg-blue-500 h-1.5 rounded-full"
-                  style={{ width: `${((12 - schedule.monthsRemaining) / 12) * 100}%` }}
-                />
-              </div>
-            </div>
-
-            {/* Next Payment */}
-            <div className="bg-amber-50 dark:bg-amber-900/20 rounded-lg p-3">
-              <p className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
-                Next Payment
-              </p>
-              <p className="text-base font-semibold text-amber-700 dark:text-amber-400">
-                {formatDate(schedule.nextDistribution.toISOString())}
-              </p>
-            </div>
-          </div>
-
-          {/* Token Address */}
+          <ScheduleDetailsGrid schedule={schedule} />
           <div className="mt-3 flex items-center gap-2">
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Token Contract:
@@ -189,8 +184,6 @@ function ScheduleItem({
             </p>
           </div>
         </div>
-
-        {/* Cancel Button */}
         <div className="flex items-center">
           <Button
             variant="secondary"

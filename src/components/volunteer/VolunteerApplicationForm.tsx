@@ -464,6 +464,56 @@ const PersonalInfoSection: React.FC<{
   </section>
 );
 
+/** Tag-style skill input field with removable skill pills. */
+const SkillInputField: React.FC<{
+  skills: string[];
+  createRemoveSkillHandler: (_index: number) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  currentSkillInput: string;
+  handleSkillInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSkillInputKeyDown: (_e: React.KeyboardEvent<HTMLInputElement>) => void;
+  showSkillPlaceholder: boolean;
+  tagInputRef: React.RefObject<HTMLInputElement>;
+  error?: string;
+}> = ({ skills, createRemoveSkillHandler, currentSkillInput, handleSkillInputChange, handleSkillInputKeyDown, showSkillPlaceholder, tagInputRef, error }) => (
+  <div className="mb-4">
+    <label
+      htmlFor="skillInput"
+      className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
+    >
+      Skills and Areas of Interest{" "}
+      <span className="text-red-500 text-base">*</span>
+    </label>
+    <div className="relative border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 bg-gray-50 dark:bg-gray-700 transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full min-h-[100px]">
+      {skills.map((skill, index) => (
+        <SkillTag
+          key={skill}
+          skill={skill}
+          onRemove={createRemoveSkillHandler(index)}
+        />
+      ))}
+      <input
+        id="skillInput"
+        ref={tagInputRef}
+        type="text"
+        value={currentSkillInput}
+        onChange={handleSkillInputChange}
+        onKeyDown={handleSkillInputKeyDown}
+        className="w-full bg-transparent border-none outline-none text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 pt-6"
+        placeholder={
+          showSkillPlaceholder
+            ? "Start typing your skills (e.g., Python programming, Public speaking, Grant writing)"
+            : "Type a skill and press Enter..."
+        }
+      />
+    </div>
+    {error && (
+      <p className="text-sm text-red-600 mt-1">
+        {error}
+      </p>
+    )}
+  </div>
+);
+
 interface ApplicationDialogProps {
   handleSubmit: (_e: React.FormEvent) => void;
   formData: FormData;
@@ -528,43 +578,16 @@ const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
       <section className="mb-8 mt-8">
         <SectionHeader number={2} title="Skills & Interests" />
 
-        <div className="mb-4">
-          <label
-            htmlFor="skillInput"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-1"
-          >
-            Skills and Areas of Interest{" "}
-            <span className="text-red-500 text-base">*</span>
-          </label>
-          <div className="relative border-2 border-gray-200 dark:border-gray-600 rounded-xl p-4 bg-gray-50 dark:bg-gray-700 transition-all duration-200 focus-within:border-emerald-600 focus-within:ring-3 focus-within:ring-emerald-600/10 w-full min-h-[100px]">
-            {formData.skills.map((skill, index) => (
-              <SkillTag
-                key={skill}
-                skill={skill}
-                onRemove={createRemoveSkillHandler(index)}
-              />
-            ))}
-            <input
-              id="skillInput"
-              ref={tagInputRef}
-              type="text"
-              value={currentSkillInput}
-              onChange={handleSkillInputChange}
-              onKeyDown={handleSkillInputKeyDown}
-              className="w-full bg-transparent border-none outline-none text-gray-700 dark:text-gray-200 placeholder-gray-500 dark:placeholder-gray-400 pt-6"
-              placeholder={
-                showSkillPlaceholder
-                  ? "Start typing your skills (e.g., Python programming, Public speaking, Grant writing)"
-                  : "Type a skill and press Enter..."
-              }
-            />
-          </div>
-          {validationErrors.skills && (
-            <p className="text-sm text-red-600 mt-1">
-              {validationErrors.skills}
-            </p>
-          )}
-        </div>
+        <SkillInputField
+          skills={formData.skills}
+          createRemoveSkillHandler={createRemoveSkillHandler}
+          currentSkillInput={currentSkillInput}
+          handleSkillInputChange={handleSkillInputChange}
+          handleSkillInputKeyDown={handleSkillInputKeyDown}
+          showSkillPlaceholder={showSkillPlaceholder}
+          tagInputRef={tagInputRef}
+          error={validationErrors.skills}
+        />
 
         <fieldset className="mb-4">
           <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
