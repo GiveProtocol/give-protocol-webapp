@@ -161,7 +161,7 @@ export default function SentryTest() {
     addResult("Custom event sent directly to Sentry (in production)");
   }, [addResult]);
 
-  const testAsyncError = useCallback(async () => {
+  const testAsyncError = useCallback(() => {
     addResult("Triggering async error...");
     setTimeout(() => {
       throw new Error("Test Async Error - Delayed error after 2 seconds");

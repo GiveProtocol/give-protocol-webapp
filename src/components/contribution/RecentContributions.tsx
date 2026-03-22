@@ -58,6 +58,12 @@ function SourceFilterButtonComponent(props: SourceFilterButtonProps) {
 
 const SourceFilterButton = React.memo(SourceFilterButtonComponent);
 
+/**
+ * Returns the icon element for a given contribution source type.
+ *
+ * @param type - The contribution source type.
+ * @returns A JSX icon element representing the contribution type.
+ */
 function getContributionIcon(type: ContributionSource) {
   switch (type) {
     case "donation":

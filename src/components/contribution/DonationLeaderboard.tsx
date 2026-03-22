@@ -7,6 +7,7 @@ import { FixedSizeList } from "react-window";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
 import { useDonorLeaderboard } from "@/hooks/useContributionStats";
 
+/** Returns the background color class for a leaderboard rank badge. */
 const getRankColor = (rank: number): string => {
   switch (rank) {
     case 1:
@@ -26,6 +27,7 @@ interface LeaderboardRowProps {
   data: LeaderboardEntry[];
 }
 
+/** Renders a single row in the donation leaderboard with rank, name, and total donated. */
 const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   index,
   style,
@@ -58,6 +60,7 @@ const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   );
 };
 
+/** Donation leaderboard displaying top donors with search filtering and virtualized scrolling. */
 export const DonationLeaderboard: React.FC = () => {
   const { data: leaderboardData, isLoading, error } = useDonorLeaderboard(10);
   const { getAliasForAddress } = useWalletAlias();
@@ -84,6 +87,7 @@ export const DonationLeaderboard: React.FC = () => {
   useEffect(() => {
     if (leaderboard.length === 0) return;
 
+    /** Resolves wallet aliases for all leaderboard entries. */
     const updateAliases = async () => {
       const updatedLeaderboard = await Promise.all(
         leaderboard.map(async (entry) => {

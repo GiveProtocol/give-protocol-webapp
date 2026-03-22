@@ -222,6 +222,58 @@ const FormSelectField: React.FC<FormSelectFieldProps> = ({ id, label, required, 
   </div>
 );
 
+/** Consent explanation listing the data processing terms volunteers agree to. */
+const ConsentExplanation: React.FC = () => (
+  <div className="mb-4">
+    <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
+      I understand that:
+    </p>
+    <ol className="list-decimal pl-6 space-y-2 text-gray-700 dark:text-gray-300 text-sm">
+      <li>
+        My personal information will be processed for the purposes
+        of evaluating my volunteer application, managing volunteer
+        assignments, and related activities.
+      </li>
+      <li>
+        GIVE PROTOCOL may collect various categories of my personal
+        information, including identity information, contact
+        details, background information, availability, references,
+        and where relevant and permitted by law, certain special
+        categories of data.
+      </li>
+      <li>
+        My personal information may be shared with authorized
+        personnel within the charity organization offering the
+        volunteer opportunity, service providers, and third parties
+        as outlined in the Privacy Notice.
+      </li>
+      <li>
+        My personal information may be transferred internationally
+        with appropriate safeguards in place.
+      </li>
+      <li>
+        I have certain rights regarding my personal information,
+        which vary depending on my location, including the rights to
+        access, rectify, delete, restrict processing, data
+        portability, and object to processing.
+      </li>
+      <li>
+        I can withdraw my consent at any time by contacting{" "}
+        <a
+          href="mailto:legal@giveprotocol.io"
+          className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
+        >
+          legal@giveprotocol.io <Mail className="w-3 h-3" />
+        </a>
+        {", "}though this will not affect the lawfulness of
+        processing based on my consent before withdrawal.
+        Withdrawing consent may impact the organization&apos;s
+        ability to consider my volunteer application.
+      </li>
+    </ol>
+  </div>
+);
+
 interface ConsentPanelProps {
   formData: FormData;
   onCheckboxChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -295,56 +347,121 @@ const ConsentPanel: React.FC<ConsentPanelProps> = ({ formData, onCheckboxChange 
   </div>
 );
 
-/** Consent explanation listing the data processing terms volunteers agree to. */
-const ConsentExplanation: React.FC = () => (
-  <div className="mb-4">
-    <p className="font-semibold text-gray-900 dark:text-gray-100 mb-3">
-      I understand that:
-    </p>
-    <ol className="list-decimal pl-6 space-y-2 text-gray-700 dark:text-gray-300 text-sm">
-      <li>
-        My personal information will be processed for the purposes
-        of evaluating my volunteer application, managing volunteer
-        assignments, and related activities.
-      </li>
-      <li>
-        GIVE PROTOCOL may collect various categories of my personal
-        information, including identity information, contact
-        details, background information, availability, references,
-        and where relevant and permitted by law, certain special
-        categories of data.
-      </li>
-      <li>
-        My personal information may be shared with authorized
-        personnel within the charity organization offering the
-        volunteer opportunity, service providers, and third parties
-        as outlined in the Privacy Notice.
-      </li>
-      <li>
-        My personal information may be transferred internationally
-        with appropriate safeguards in place.
-      </li>
-      <li>
-        I have certain rights regarding my personal information,
-        which vary depending on my location, including the rights to
-        access, rectify, delete, restrict processing, data
-        portability, and object to processing.
-      </li>
-      <li>
-        I can withdraw my consent at any time by contacting{" "}
-        <a
-          href="mailto:legal@giveprotocol.io"
-          className="text-emerald-600 hover:text-emerald-700 inline-flex items-center gap-1"
-        >
-          legal@giveprotocol.io <Mail className="w-3 h-3" />
-        </a>
-        {", "}though this will not affect the lawfulness of
-        processing based on my consent before withdrawal.
-        Withdrawing consent may impact the organization&apos;s
-        ability to consider my volunteer application.
-      </li>
-    </ol>
-  </div>
+/** Personal information form section with name, email, phone, location, timezone, and age range fields. */
+const PersonalInfoSection: React.FC<{
+  formData: FormData;
+  validationErrors: Record<string, string>;
+  handleFieldChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  inputClasses: string;
+  selectClasses: string;
+}> = ({ formData, validationErrors, handleFieldChange, inputClasses, selectClasses }) => (
+  <section className="mb-8">
+    <SectionHeader number={1} title="Personal Information" />
+    <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
+      <FormField
+        id="firstName"
+        label="First Name"
+        required
+        value={formData.firstName}
+        onChange={handleFieldChange("firstName")}
+        className={inputClasses}
+        error={validationErrors.firstName}
+      />
+      <FormField
+        id="lastName"
+        label="Last Name"
+        required
+        value={formData.lastName}
+        onChange={handleFieldChange("lastName")}
+        className={inputClasses}
+        error={validationErrors.lastName}
+      />
+      <FormField
+        id="email"
+        label="Email Address"
+        required
+        type="email"
+        value={formData.email}
+        onChange={handleFieldChange("email")}
+        className={inputClasses}
+        error={validationErrors.email}
+      />
+      <FormField
+        id="phoneNumber"
+        label="Phone Number"
+        type="tel"
+        value={formData.phoneNumber}
+        onChange={handleFieldChange("phoneNumber")}
+        className={inputClasses}
+        error={validationErrors.phoneNumber}
+      />
+      <FormField
+        id="location"
+        label="Location/City"
+        value={formData.location}
+        onChange={handleFieldChange("location")}
+        className={inputClasses}
+        placeholder="e.g., San Francisco, CA"
+      />
+      <FormSelectField
+        id="timezone"
+        label="Time Zone"
+        value={formData.timezone}
+        onChange={handleFieldChange("timezone")}
+        className={selectClasses}
+      >
+        <option value="">Select Time Zone</option>
+        <option value="UTC-12">UTC-12 (Baker Island)</option>
+        <option value="UTC-11">UTC-11 (Hawaii-Aleutian)</option>
+        <option value="UTC-10">UTC-10 (Hawaii)</option>
+        <option value="UTC-9">UTC-9 (Alaska)</option>
+        <option value="UTC-8">UTC-8 (Pacific Time)</option>
+        <option value="UTC-7">UTC-7 (Mountain Time)</option>
+        <option value="UTC-6">UTC-6 (Central Time)</option>
+        <option value="UTC-5">UTC-5 (Eastern Time)</option>
+        <option value="UTC-4">UTC-4 (Atlantic Time)</option>
+        <option value="UTC-3">UTC-3 (Argentina, Brazil)</option>
+        <option value="UTC-2">UTC-2 (South Georgia)</option>
+        <option value="UTC-1">UTC-1 (Azores)</option>
+        <option value="UTC+0">UTC+0 (GMT/London)</option>
+        <option value="UTC+1">UTC+1 (Central Europe)</option>
+        <option value="UTC+2">UTC+2 (Eastern Europe)</option>
+        <option value="UTC+3">UTC+3 (Moscow, East Africa)</option>
+        <option value="UTC+4">UTC+4 (Gulf States)</option>
+        <option value="UTC+5">UTC+5 (Pakistan)</option>
+        <option value="UTC+5.5">UTC+5:30 (India)</option>
+        <option value="UTC+6">UTC+6 (Bangladesh)</option>
+        <option value="UTC+7">UTC+7 (Southeast Asia)</option>
+        <option value="UTC+8">UTC+8 (China, Singapore)</option>
+        <option value="UTC+9">UTC+9 (Japan, Korea)</option>
+        <option value="UTC+9.5">UTC+9:30 (Central Australia)</option>
+        <option value="UTC+10">UTC+10 (Eastern Australia)</option>
+        <option value="UTC+11">UTC+11 (Solomon Islands)</option>
+        <option value="UTC+12">UTC+12 (New Zealand)</option>
+        <option value="UTC+13">UTC+13 (Tonga)</option>
+        <option value="UTC+14">UTC+14 (Line Islands)</option>
+      </FormSelectField>
+      <FormSelectField
+        id="ageRange"
+        label="Age Range"
+        required
+        value={formData.ageRange}
+        onChange={handleFieldChange("ageRange")}
+        className={selectClasses}
+        error={validationErrors.ageRange}
+        colSpan
+      >
+        <option value="">Select Age Range</option>
+        <option value="under-18">Under 18</option>
+        <option value="18-24">18-24</option>
+        <option value="25-34">25-34</option>
+        <option value="35-44">35-44</option>
+        <option value="45-54">45-54</option>
+        <option value="55-64">55-64</option>
+        <option value="65+">65+</option>
+      </FormSelectField>
+    </div>
+  </section>
 );
 
 interface ApplicationDialogProps {
@@ -542,123 +659,6 @@ const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
       </div>
     </form>
   </dialog>
-);
-
-/** Personal information form section with name, email, phone, location, timezone, and age range fields. */
-const PersonalInfoSection: React.FC<{
-  formData: FormData;
-  validationErrors: Record<string, string>;
-  handleFieldChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  inputClasses: string;
-  selectClasses: string;
-}> = ({ formData, validationErrors, handleFieldChange, inputClasses, selectClasses }) => (
-  <section className="mb-8">
-    <SectionHeader number={1} title="Personal Information" />
-    <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
-      <FormField
-        id="firstName"
-        label="First Name"
-        required
-        value={formData.firstName}
-        onChange={handleFieldChange("firstName")}
-        className={inputClasses}
-        error={validationErrors.firstName}
-      />
-      <FormField
-        id="lastName"
-        label="Last Name"
-        required
-        value={formData.lastName}
-        onChange={handleFieldChange("lastName")}
-        className={inputClasses}
-        error={validationErrors.lastName}
-      />
-      <FormField
-        id="email"
-        label="Email Address"
-        required
-        type="email"
-        value={formData.email}
-        onChange={handleFieldChange("email")}
-        className={inputClasses}
-        error={validationErrors.email}
-      />
-      <FormField
-        id="phoneNumber"
-        label="Phone Number"
-        type="tel"
-        value={formData.phoneNumber}
-        onChange={handleFieldChange("phoneNumber")}
-        className={inputClasses}
-        error={validationErrors.phoneNumber}
-      />
-      <FormField
-        id="location"
-        label="Location/City"
-        value={formData.location}
-        onChange={handleFieldChange("location")}
-        className={inputClasses}
-        placeholder="e.g., San Francisco, CA"
-      />
-      <FormSelectField
-        id="timezone"
-        label="Time Zone"
-        value={formData.timezone}
-        onChange={handleFieldChange("timezone")}
-        className={selectClasses}
-      >
-        <option value="">Select Time Zone</option>
-        <option value="UTC-12">UTC-12 (Baker Island)</option>
-        <option value="UTC-11">UTC-11 (Hawaii-Aleutian)</option>
-        <option value="UTC-10">UTC-10 (Hawaii)</option>
-        <option value="UTC-9">UTC-9 (Alaska)</option>
-        <option value="UTC-8">UTC-8 (Pacific Time)</option>
-        <option value="UTC-7">UTC-7 (Mountain Time)</option>
-        <option value="UTC-6">UTC-6 (Central Time)</option>
-        <option value="UTC-5">UTC-5 (Eastern Time)</option>
-        <option value="UTC-4">UTC-4 (Atlantic Time)</option>
-        <option value="UTC-3">UTC-3 (Argentina, Brazil)</option>
-        <option value="UTC-2">UTC-2 (South Georgia)</option>
-        <option value="UTC-1">UTC-1 (Azores)</option>
-        <option value="UTC+0">UTC+0 (GMT/London)</option>
-        <option value="UTC+1">UTC+1 (Central Europe)</option>
-        <option value="UTC+2">UTC+2 (Eastern Europe)</option>
-        <option value="UTC+3">UTC+3 (Moscow, East Africa)</option>
-        <option value="UTC+4">UTC+4 (Gulf States)</option>
-        <option value="UTC+5">UTC+5 (Pakistan)</option>
-        <option value="UTC+5.5">UTC+5:30 (India)</option>
-        <option value="UTC+6">UTC+6 (Bangladesh)</option>
-        <option value="UTC+7">UTC+7 (Southeast Asia)</option>
-        <option value="UTC+8">UTC+8 (China, Singapore)</option>
-        <option value="UTC+9">UTC+9 (Japan, Korea)</option>
-        <option value="UTC+9.5">UTC+9:30 (Central Australia)</option>
-        <option value="UTC+10">UTC+10 (Eastern Australia)</option>
-        <option value="UTC+11">UTC+11 (Solomon Islands)</option>
-        <option value="UTC+12">UTC+12 (New Zealand)</option>
-        <option value="UTC+13">UTC+13 (Tonga)</option>
-        <option value="UTC+14">UTC+14 (Line Islands)</option>
-      </FormSelectField>
-      <FormSelectField
-        id="ageRange"
-        label="Age Range"
-        required
-        value={formData.ageRange}
-        onChange={handleFieldChange("ageRange")}
-        className={selectClasses}
-        error={validationErrors.ageRange}
-        colSpan
-      >
-        <option value="">Select Age Range</option>
-        <option value="under-18">Under 18</option>
-        <option value="18-24">18-24</option>
-        <option value="25-34">25-34</option>
-        <option value="35-44">35-44</option>
-        <option value="45-54">45-54</option>
-        <option value="55-64">55-64</option>
-        <option value="65+">65+</option>
-      </FormSelectField>
-    </div>
-  </section>
 );
 
 interface VolunteerApplicationFormProps {

@@ -11,6 +11,13 @@ import { WalletOption } from "./WalletOption";
 import { Portal } from "@/components/ui/Portal";
 import { Logger } from "@/utils/logger";
 
+/** Chain type tab configuration. */
+const CHAIN_TABS: { type: ChainType; label: string; activeClass: string }[] = [
+  { type: "evm", label: "EVM", activeClass: "bg-blue-600 text-white" },
+  { type: "solana", label: "Solana", activeClass: "bg-emerald-600 text-white" },
+  { type: "polkadot", label: "Polkadot", activeClass: "bg-pink-600 text-white" },
+];
+
 /** Dialog content for wallet modal with chain tabs, wallet list, and footer. */
 const WalletDialogContent: React.FC<{
   selectedChainType: ChainType;
@@ -116,13 +123,6 @@ const WalletDialogContent: React.FC<{
     </div>
   </dialog>
 );
-
-/** Chain type tab configuration. */
-const CHAIN_TABS: { type: ChainType; label: string; activeClass: string }[] = [
-  { type: "evm", label: "EVM", activeClass: "bg-blue-600 text-white" },
-  { type: "solana", label: "Solana", activeClass: "bg-emerald-600 text-white" },
-  { type: "polkadot", label: "Polkadot", activeClass: "bg-pink-600 text-white" },
-];
 
 interface WalletModalProps {
   isOpen: boolean;
