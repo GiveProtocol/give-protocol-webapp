@@ -206,39 +206,33 @@ const DonationModal: React.FC<DonationModalProps> = ({
         <h2 className="text-2xl font-bold mb-4">Donate to {fund.name}</h2>
 
         <p className="text-gray-600 text-sm mb-4">{fund.description}</p>
-        <div className="bg-blue-50 p-3 rounded-lg mb-4">
-          <p className="text-sm text-blue-800">
-            <strong>Equal Distribution:</strong> Your donation will be split
-            equally among {fund.charities.length} verified charities.
-          </p>
-        </div>
+        <p className="text-sm text-blue-800 bg-blue-50 p-3 rounded-lg mb-4">
+          <strong>Equal Distribution:</strong> Your donation will be split
+          equally among {fund.charities.length} verified charities.
+        </p>
 
-        <div className="mb-4">
-          <DonationTypeSelector
-            donationType={donationType}
-            onSelectNative={handleSetDonationTypeNative}
-            onSelectToken={handleSetDonationTypeToken}
-          />
-        </div>
+        <DonationTypeSelector
+          donationType={donationType}
+          onSelectNative={handleSetDonationTypeNative}
+          onSelectToken={handleSetDonationTypeToken}
+        />
 
-        <div className="mb-4">
-          <label
-            htmlFor="donation-amount"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Amount ({donationType === "native" ? "DEV" : "TEST"})
-          </label>
-          <input
-            id="donation-amount"
-            type="number"
-            value={amount}
-            onChange={handleAmountChange}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
-            placeholder="0.0"
-            step="0.001"
-            min="0"
-          />
-        </div>
+        <label
+          htmlFor="donation-amount"
+          className="block text-sm font-medium text-gray-700 mb-1 mt-4"
+        >
+          Amount ({donationType === "native" ? "DEV" : "TEST"})
+        </label>
+        <input
+          id="donation-amount"
+          type="number"
+          value={amount}
+          onChange={handleAmountChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500 mb-4"
+          placeholder="0.0"
+          step="0.001"
+          min="0"
+        />
 
         {amount && (
           <DonationSummary
