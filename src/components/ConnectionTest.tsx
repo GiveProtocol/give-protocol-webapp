@@ -31,21 +31,32 @@ const Web3StatusSection: React.FC<{
   <div>
     <h3 className="text-lg font-semibold mb-2">Web3 Connection</h3>
     <div className="flex items-center space-x-2 mb-2">
-      <div className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`} />
+      <div
+        className={`w-3 h-3 rounded-full ${isConnected ? "bg-green-500" : "bg-red-500"}`}
+      />
       <span>{isConnected ? "Wallet connected" : "Wallet not connected"}</span>
     </div>
     {chainId && (
       <p className="text-sm text-gray-600 mb-2">
-        Connected to chain ID: {chainId === CHAIN_IDS.MOONBASE ? "Moonbase Alpha (1287)" : chainId}
+        Connected to chain ID:{" "}
+        {chainId === CHAIN_IDS.MOONBASE ? "Moonbase Alpha (1287)" : chainId}
       </p>
     )}
-    {web3Error && <p className="text-sm text-red-600 mb-2">{web3Error.message}</p>}
+    {web3Error && (
+      <p className="text-sm text-red-600 mb-2">{web3Error.message}</p>
+    )}
     {!isConnected && (
-      <Button onClick={onConnect} className="mt-2">Connect Wallet</Button>
+      <Button onClick={onConnect} className="mt-2">
+        Connect Wallet
+      </Button>
     )}
   </div>
 );
 
+/**
+ * Component that tests Supabase and Web3 connections and displays status.
+ * @returns JSX.Element - The rendered connection test component.
+ */
 export const ConnectionTest: React.FC = () => {
   const [supabaseStatus, setSupabaseStatus] = useState<
     "checking" | "success" | "error"
@@ -53,6 +64,10 @@ export const ConnectionTest: React.FC = () => {
   const [supabaseError, setSupabaseError] = useState<string>("");
   const { connect, isConnected, chainId, error: web3Error } = useWeb3();
 
+  /**
+   * Tests the Supabase connection by querying the profiles table count.
+   * @returns Promise<void> - Resolves when the test completes and updates status.
+   */
   const testSupabaseConnection = async () => {
     try {
       const { data: _data, error } = await supabase
@@ -72,7 +87,11 @@ export const ConnectionTest: React.FC = () => {
     testSupabaseConnection();
   }, []);
 
-  // Extract nested ternary for status color
+  /**
+   * Returns the CSS class name for a given connection status.
+   * @param status - One of "checking", "success", or "error".
+   * @returns string - CSS class corresponding to the status color.
+   */
   const getStatusColor = (status: "checking" | "success" | "error") => {
     if (status === "checking") return "bg-yellow-500";
     if (status === "success") return "bg-green-500";

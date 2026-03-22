@@ -1,11 +1,16 @@
-import React from 'react';
-import { CharityDetails } from '@/types/charity';
-import { ImageWithFallback } from '@/components/ui/ImageWithFallback';
+import React from "react";
+import { CharityDetails } from "@/types/charity";
+import { ImageWithFallback } from "@/components/ui/ImageWithFallback";
 
 interface CharityProfileCardProps {
   profile: CharityDetails;
 }
 
+/**
+ * Renders a charity profile card displaying the charity's image, category, name, and description.
+ * @param {CharityDetails} profile - The charity profile details, including image_url, name, category, and description.
+ * @returns {JSX.Element} The rendered charity profile card component.
+ */
 const CharityProfileCard: React.FC<CharityProfileCardProps> = ({ profile }) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -24,9 +29,7 @@ const CharityProfileCard: React.FC<CharityProfileCardProps> = ({ profile }) => {
         <h3 className="mt-2 text-xl font-semibold text-gray-900">
           {profile.name}
         </h3>
-        <p className="mt-2 text-gray-600">
-          {profile.description}
-        </p>
+        <p className="mt-2 text-gray-600">{profile.description}</p>
       </div>
     </div>
   );

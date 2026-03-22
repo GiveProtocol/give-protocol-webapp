@@ -13,6 +13,12 @@ interface DonationExportModalProps {
   onClose: () => void;
 }
 
+/**
+ * DonationExportModal component renders a modal allowing users to export donation data.
+ * @param donations - Array of donation transactions to export.
+ * @param onClose - Function called when the modal is closed.
+ * @returns JSX.Element representing the export dialog.
+ */
 export const DonationExportModal: React.FC<DonationExportModalProps> = ({
   donations,
   onClose,
@@ -31,6 +37,10 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
     },
   });
 
+  /**
+   * Handles exporting the donations based on user-selected filename and options.
+   * @returns void
+   */
   const handleExport = useCallback(() => {
     // Filter donations based on date range if provided
     let filteredDonations = [...donations];
@@ -118,9 +128,14 @@ export const DonationExportModal: React.FC<DonationExportModalProps> = ({
 
   return (
     <section className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <form className="bg-white rounded-lg shadow-xl max-w-md w-full divide-y divide-gray-200" onSubmit={handleFormSubmit}>
+      <form
+        className="bg-white rounded-lg shadow-xl max-w-md w-full divide-y divide-gray-200"
+        onSubmit={handleFormSubmit}
+      >
         <div className="flex justify-between items-center p-6">
-          <h2 className="text-xl font-semibold text-gray-900">{t("export.title")}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {t("export.title")}
+          </h2>
           <button
             onClick={handleClose}
             className="p-0 text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded"

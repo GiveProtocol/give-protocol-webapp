@@ -20,7 +20,12 @@ interface CountrySelectProps {
 }
 
 /** Country dropdown selector with validation error display. */
-const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange, countries, error }) => (
+const CountrySelect: React.FC<CountrySelectProps> = ({
+  value,
+  onChange,
+  countries,
+  error,
+}) => (
   <label className="block">
     <span className="text-sm font-medium text-gray-700 mb-1 block">
       Country
@@ -39,14 +44,17 @@ const CountrySelect: React.FC<CountrySelectProps> = ({ value, onChange, countrie
         </option>
       ))}
     </select>
-    {error && (
-      <p className="mt-1 text-sm text-red-600">
-        {error}
-      </p>
-    )}
+    {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
   </label>
 );
 
+/**
+ * CharityVettingForm component
+ *
+ * Renders the charity vetting form for organizations to submit information.
+ *
+ * @returns {JSX.Element} The charity vetting form component.
+ */
 export const CharityVettingForm: React.FC = () => {
   const { register, loading } = useAuth();
   const { countries } = useCountries();
@@ -72,6 +80,11 @@ export const CharityVettingForm: React.FC = () => {
     confirmPassword: "",
   });
 
+  /**
+   * Handles change event for input and select fields in the form.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement | HTMLSelectElement>} event The change event triggered by input or select elements.
+   */
   const handleChange = useCallback(
     (
       e: React.ChangeEvent<

@@ -11,6 +11,10 @@ import { getCurrencyByCode } from "@/config/tokens";
 import { cn } from "@/utils/cn";
 import { useTranslation } from "@/hooks/useTranslation";
 
+/**
+ * SettingsMenu component renders a dropdown menu for user settings including language, currency, and theme options.
+ * @returns JSX.Element The rendered settings menu component.
+ */
 export const SettingsMenu: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const {
@@ -29,6 +33,10 @@ export const SettingsMenu: React.FC = () => {
 
   // Close menu when clicking outside
   useEffect(() => {
+    /**
+     * Handler to close the settings menu when clicking outside of it.
+     * @param event MouseEvent The mouse event triggered on the document.
+     */
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpen(false);
@@ -46,6 +54,10 @@ export const SettingsMenu: React.FC = () => {
 
   // Close menu when pressing Escape
   useEffect(() => {
+    /**
+     * Handles the Escape key press event to close the settings menu.
+     * @param event KeyboardEvent triggered by the key press.
+     */
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsOpen(false);

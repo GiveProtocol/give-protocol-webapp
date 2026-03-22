@@ -6,28 +6,31 @@ interface StatusBadgeProps {
   status: CharityProfileStatus;
 }
 
+/**
+ * Returns the display configuration for a given charity profile status.
+ *
+ * @param status - The current status of the charity profile.
+ * @returns An object containing background and text color classes, an icon component, and a label for the status.
+ */
 function getStatusConfig(status: CharityProfileStatus) {
   switch (status) {
     case 'unclaimed':
       return {
         bg: 'bg-amber-100',
         text: 'text-amber-700',
-        icon: <AlertTriangle className="h-3.5 w-3.5" />,
-        label: 'Unclaimed',
+        icon: <AlertTriangle className="h-3.5 w-3.5" />,\n        label: 'Unclaimed',
       };
     case 'claimed-pending':
       return {
         bg: 'bg-blue-100',
         text: 'text-blue-700',
-        icon: <Clock className="h-3.5 w-3.5" />,
-        label: 'Pending Verification',
+        icon: <Clock className="h-3.5 w-3.5" />,\n        label: 'Pending Verification',
       };
     case 'verified':
       return {
         bg: 'bg-emerald-100',
         text: 'text-emerald-700',
-        icon: <CheckCircle className="h-3.5 w-3.5" />,
-        label: 'Verified',
+        icon: <CheckCircle className="h-3.5 w-3.5" />,\n        label: 'Verified',
       };
     default:
       return {

@@ -12,6 +12,18 @@ interface LeaderboardRowProps {
   walletAddress?: string;
 }
 
+/**
+ * LeaderboardRow component renders a row in the leaderboard with rank, name, formatted value, and change indicator.
+ *
+ * @param {number} rank - The rank position to display.
+ * @param {string} name - The name to display.
+ * @param {number} value - The numeric value to display, formatted as currency.
+ * @param {number} change - The change in value compared to the previous period.
+ * @param {boolean} [isCurrentUser] - Whether this row represents the current user.
+ * @param {'donations'|'hours'} [metric] - The metric type, either donations or hours.
+ * @param {string} [walletAddress] - The wallet address to display in abbreviated form.
+ * @returns {JSX.Element} The rendered leaderboard row element.
+ */
 export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   rank,
   name,
@@ -21,6 +33,11 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   metric = 'donations',
   walletAddress
 }) => {
+  /**
+   * Returns a trophy icon for the top 3 ranks.
+   *
+   * @returns {JSX.Element|null} The trophy icon component if rank <= 3, otherwise null.
+   */
   const getRankIcon = () => {
     if (rank <= 3) {
       const colors = {
@@ -34,7 +51,7 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({
   };
 
   return (
-    <div className={`
+    <div className={``
       flex items-center justify-between p-4 rounded-lg
       ${isCurrentUser ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50'}
       ${rank <= 3 ? 'border-l-4 border-l-yellow-500' : ''}

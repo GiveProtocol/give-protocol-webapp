@@ -37,6 +37,13 @@ function getDisplayHours(volunteerHours: number | VolunteerHoursBreakdown): {
   };
 }
 
+/**
+ * DonationStats component displays donation and volunteer hour statistics.
+ *
+ * @param stats - Donation statistics including total amount donated and volunteer hours.
+ * @param isPersonal - Flag indicating whether to display personal statistics.
+ * @returns The rendered statistics component or null if no stats are provided.
+ */
 export const DonationStats: React.FC<DonationStatsProps> = ({
   stats,
   isPersonal,
