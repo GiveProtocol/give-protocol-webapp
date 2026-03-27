@@ -32,7 +32,6 @@
     "@sentry/react": "^9.24.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/web3.js": "^1.95.0",
-
     "@supabase/supabase-js": "^2.39.7",
     "@tailwindcss/typography": "^0.5.10",
     "@tanstack/react-query": "^5.24.1",
@@ -84,6 +83,7 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.18",
     "babel-jest": "^30.0.5",
+    "baseline-browser-mapping": "^2.10.10",
     "cypress": "^13.0.0",
     "dotenv": "^16.4.7",
     "eslint": "^8.57.0",
