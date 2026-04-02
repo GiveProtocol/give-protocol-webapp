@@ -7,7 +7,7 @@ import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSear
 import type { CharityOrganization } from "@/types/charityOrganization";
 
 interface CharityOrganizationSearchProps {
-  onOrganizationSelect: (organization: CharityOrganization) => void;
+  onOrganizationSelect: (_organization: CharityOrganization) => void;
   onSkip: () => void;
 }
 
