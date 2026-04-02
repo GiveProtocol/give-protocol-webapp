@@ -1,41 +1,39 @@
-import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { Building2, MapPin } from 'lucide-react';
-import type { IrsOrganization } from '@/types/irsOrganization';
-import { Card } from '@/components/ui/Card';
-import { cn } from '@/utils/cn';
+import React, { useCallback } from "react";
+import { Link } from "react-router-dom";
+import { Building2, MapPin } from "lucide-react";
+import type { CharityOrganization } from "@/types/charityOrganization";
+import { Card } from "@/components/ui/Card";
+import { cn } from "@/utils/cn";
 
-interface IrsOrganizationCardProps {
-  organization: IrsOrganization;
-  onSelect?: (org: IrsOrganization) => void;
+interface CharityOrganizationCardProps {
+  organization: CharityOrganization;
+  onSelect?: (org: CharityOrganization) => void;
   selected?: boolean;
 }
 
 /**
- * Card component for displaying an IRS organization record.
+ * Card component for displaying a charity organization record.
  * Shows name, EIN, location, NTEE code, and deductibility status.
  * When onSelect is provided, renders as a selectable button instead of a link.
  * @param props - Component props
- * @param props.organization - The IRS organization data to display
+ * @param props.organization - The charity organization data to display
  * @param props.onSelect - Optional callback when the card is clicked (renders as button)
  * @param props.selected - Whether the card is currently selected
  * @returns The rendered card component
  */
-export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
-  organization,
-  onSelect,
-  selected,
-}) => {
+export const CharityOrganizationCard: React.FC<
+  CharityOrganizationCardProps
+> = ({ organization, onSelect, selected }) => {
   const location = [organization.city, organization.state, organization.zip]
     .filter(Boolean)
-    .join(', ');
+    .join(", ");
 
   const handleSelect = useCallback(() => {
     onSelect?.(organization);
   }, [onSelect, organization]);
 
   const cardContent = (
-    <Card className={cn('p-6', selected && 'ring-2 ring-emerald-500')}>
+    <Card className={cn("p-6", selected && "ring-2 ring-emerald-500")}>
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 leading-tight">
           {organization.name}
@@ -49,13 +47,19 @@ export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
 
       <div className="space-y-2 text-sm text-gray-600">
         <div className="flex items-center">
-          <Building2 aria-hidden="true" className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
+          <Building2
+            aria-hidden="true"
+            className="h-4 w-4 mr-2 text-gray-400 shrink-0"
+          />
           <span>EIN: {organization.ein}</span>
         </div>
 
         {location && (
           <div className="flex items-center">
-            <MapPin aria-hidden="true" className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
+            <MapPin
+              aria-hidden="true"
+              className="h-4 w-4 mr-2 text-gray-400 shrink-0"
+            />
             <span>{location}</span>
           </div>
         )}

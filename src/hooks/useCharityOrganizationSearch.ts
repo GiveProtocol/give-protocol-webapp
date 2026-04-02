@@ -1,18 +1,19 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import type { IrsOrganization } from '@/types/irsOrganization';
-import { searchIrsOrganizations } from '@/services/irsOrganizationService';
+import { useState, useEffect, useCallback, useRef } from "react";
+import type { CharityOrganization } from "@/types/charityOrganization";
+import { searchCharityOrganizations } from "@/services/charityOrganizationService";
 
 const PAGE_SIZE = 20;
 const DEBOUNCE_MS = 350;
 
-interface UseIrsOrganizationSearchParams {
+interface UseCharityOrganizationSearchParams {
   searchTerm: string;
   filterState: string;
+  filterCountry: string;
   onPlatformOnly: boolean;
 }
 
-interface UseIrsOrganizationSearchReturn {
-  organizations: IrsOrganization[];
+interface UseCharityOrganizationSearchReturn {
+  organizations: CharityOrganization[];
   loading: boolean;
   hasMore: boolean;
   error: string | null;
@@ -20,17 +21,20 @@ interface UseIrsOrganizationSearchReturn {
 }
 
 /**
- * Hook for debounced search against the IRS organizations database.
+ * Hook for debounced search against the charity organizations database.
  * Resets pagination when inputs change. Supports client-side "on platform only" filtering.
  * @param params - Search term, state filter, and on-platform toggle
  * @returns Search results with loading/pagination state
  */
-export function useIrsOrganizationSearch({
+export function useCharityOrganizationSearch({
   searchTerm,
   filterState,
+  filterCountry,
   onPlatformOnly,
-}: UseIrsOrganizationSearchParams): UseIrsOrganizationSearchReturn {
-  const [allOrganizations, setAllOrganizations] = useState<IrsOrganization[]>([]);
+}: UseCharityOrganizationSearchParams): UseCharityOrganizationSearchReturn {
+  const [allOrganizations, setAllOrganizations] = useState<
+    CharityOrganization[]
+  >([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +49,7 @@ export function useIrsOrganizationSearch({
     setAllOrganizations([]);
     setHasMore(false);
     setError(null);
-  }, [searchTerm, filterState]);
+  }, [searchTerm, filterState, filterCountry]);
 
   // Debounced search effect
   useEffect(() => {
@@ -55,7 +59,7 @@ export function useIrsOrganizationSearch({
 
     const query = searchTerm.trim();
     const hasQuery = query.length >= 2;
-    const hasFilter = Boolean(filterState);
+    const hasFilter = Boolean(filterState) || Boolean(filterCountry);
 
     if (!hasQuery && !hasFilter) {
       setAllOrganizations([]);
@@ -70,10 +74,11 @@ export function useIrsOrganizationSearch({
 
     debounceTimerRef.current = setTimeout(async () => {
       try {
-        const result = await searchIrsOrganizations({
+        const result = await searchCharityOrganizations({
           search_query: hasQuery ? query : null,
           filter_state: filterState || null,
           filter_ntee: null,
+          filter_country: filterCountry || null,
           result_limit: PAGE_SIZE,
           result_offset: offset,
         });
@@ -89,7 +94,7 @@ export function useIrsOrganizationSearch({
         setError(null);
       } catch {
         if (!mountedRef.current) return;
-        setError('Failed to search organizations');
+        setError("Failed to search organizations");
       } finally {
         if (mountedRef.current) {
           setLoading(false);
@@ -102,7 +107,7 @@ export function useIrsOrganizationSearch({
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [searchTerm, filterState, offset]);
+  }, [searchTerm, filterState, filterCountry, offset]);
 
   // Cleanup on unmount
   useEffect(() => {

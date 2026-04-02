@@ -1,43 +1,45 @@
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { PasswordStrengthBar } from '@/components/auth/PasswordStrengthBar';
-import { supabase } from '@/lib/supabase';
-import { useToast } from '@/hooks/useToast';
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { PasswordStrengthBar } from "@/components/auth/PasswordStrengthBar";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/useToast";
 import {
   validateEmail,
   validatePassword,
   validateName,
   validatePhoneNumber,
-} from '@/utils/validation';
-import { Logger } from '@/utils/logger';
-import type { IrsOrganization } from '@/types/irsOrganization';
+} from "@/utils/validation";
+import { Logger } from "@/utils/logger";
+import type { CharityOrganization } from "@/types/charityOrganization";
 
 interface CharityClaimFormProps {
-  organization: IrsOrganization;
+  organization: CharityOrganization;
   onBack: () => void;
 }
 
-/** Read-only IRS organization details panel. */
-const IrsDetailsPanel: React.FC<{ organization: IrsOrganization; irsLocation: string }> = ({ organization, irsLocation }) => (
+/** Read-only organization details panel. */
+const RegistryDetailsPanel: React.FC<{
+  organization: CharityOrganization;
+  registryLocation: string;
+}> = ({ organization, registryLocation }) => (
   <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-1">
     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
-      Organization Details (from IRS)
+      Organization Details (from Registry)
     </h3>
     <p>
-      <span className="font-medium text-gray-700">Name:</span>{' '}
+      <span className="font-medium text-gray-700">Name:</span>{" "}
       {organization.name}
     </p>
     <p>
-      <span className="font-medium text-gray-700">EIN:</span>{' '}
-      {organization.ein}
+      <span className="font-medium text-gray-700">EIN:</span> {organization.ein}
     </p>
-    {irsLocation && (
+    {registryLocation && (
       <p>
-        <span className="font-medium text-gray-700">Location:</span>{' '}
-        {irsLocation}
+        <span className="font-medium text-gray-700">Location:</span>{" "}
+        {registryLocation}
       </p>
     )}
   </div>
@@ -58,26 +60,32 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
   const navigate = useNavigate();
   const { showToast } = useToast();
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+  const [error, setError] = useState("");
+  const [validationErrors, setValidationErrors] = useState<
+    Record<string, string>
+  >({});
 
   const [formData, setFormData] = useState({
-    contactName: '',
-    contactEmail: '',
-    contactPhone: '',
-    password: '',
-    confirmPassword: '',
+    contactName: "",
+    contactEmail: "",
+    contactPhone: "",
+    password: "",
+    confirmPassword: "",
   });
 
-  const irsLocation = [organization.city, organization.state, organization.zip]
+  const registryLocation = [
+    organization.city,
+    organization.state,
+    organization.zip,
+  ]
     .filter(Boolean)
-    .join(', ');
+    .join(", ");
 
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
-      setError('');
+      setError("");
 
       if (validationErrors[name]) {
         setValidationErrors((prev) => {
@@ -92,18 +100,26 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
   const validateField = useCallback(
     (name: string, value: string): string => {
       switch (name) {
-        case 'contactName':
-          return validateName(value) ? '' : 'Name must be between 2 and 100 characters';
-        case 'contactEmail':
-          return validateEmail(value) ? '' : 'Please enter a valid email address';
-        case 'contactPhone':
-          return validatePhoneNumber(value) ? '' : 'Please enter a valid phone number';
-        case 'password':
-          return validatePassword(value) ? '' : 'Password must be at least 8 characters long';
-        case 'confirmPassword':
-          return value === formData.password ? '' : 'Passwords do not match';
+        case "contactName":
+          return validateName(value)
+            ? ""
+            : "Name must be between 2 and 100 characters";
+        case "contactEmail":
+          return validateEmail(value)
+            ? ""
+            : "Please enter a valid email address";
+        case "contactPhone":
+          return validatePhoneNumber(value)
+            ? ""
+            : "Please enter a valid phone number";
+        case "password":
+          return validatePassword(value)
+            ? ""
+            : "Password must be at least 8 characters long";
+        case "confirmPassword":
+          return value === formData.password ? "" : "Passwords do not match";
         default:
-          return '';
+          return "";
       }
     },
     [formData.password],
@@ -112,16 +128,16 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
       e.preventDefault();
-      setError('');
+      setError("");
       setValidationErrors({});
 
       const errors: Record<string, string> = {};
       const fieldsToValidate = [
-        { name: 'contactName', value: formData.contactName },
-        { name: 'contactEmail', value: formData.contactEmail },
-        { name: 'contactPhone', value: formData.contactPhone },
-        { name: 'password', value: formData.password },
-        { name: 'confirmPassword', value: formData.confirmPassword },
+        { name: "contactName", value: formData.contactName },
+        { name: "contactEmail", value: formData.contactEmail },
+        { name: "contactPhone", value: formData.contactPhone },
+        { name: "password", value: formData.password },
+        { name: "confirmPassword", value: formData.confirmPassword },
       ];
 
       fieldsToValidate.forEach(({ name, value }) => {
@@ -133,7 +149,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
 
       if (Object.keys(errors).length > 0) {
         setValidationErrors(errors);
-        setError('Please correct the validation errors');
+        setError("Please correct the validation errors");
         return;
       }
 
@@ -141,17 +157,18 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
 
       try {
         // 1. Sign up the user
-        const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-          email: formData.contactEmail,
-          password: formData.password,
-          options: {
-            data: {
-              type: 'charity',
-              organizationName: organization.name,
-              ein: organization.ein,
+        const { data: signUpData, error: signUpError } =
+          await supabase.auth.signUp({
+            email: formData.contactEmail,
+            password: formData.password,
+            options: {
+              data: {
+                type: "charity",
+                organizationName: organization.name,
+                ein: organization.ein,
+              },
             },
-          },
-        });
+          });
 
         if (signUpError) {
           setError(signUpError.message);
@@ -160,44 +177,59 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
 
         const userId = signUpData.user?.id;
         if (!userId) {
-          setError('Account creation failed');
+          setError("Account creation failed");
           return;
         }
 
         // 2. Create profiles row
         const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({ user_id: userId, type: 'charity' });
+          .from("profiles")
+          .insert({ user_id: userId, type: "charity" });
 
         if (profileError) {
-          Logger.error('Failed to create profile row', { error: profileError });
+          Logger.error("Failed to create profile row", { error: profileError });
         }
 
         // 3. Ensure charity_profiles row exists
-        const { error: getOrCreateError } = await supabase.rpc('get_or_create_charity_profile', {
-          lookup_ein: organization.ein,
-        });
+        const { error: getOrCreateError } = await supabase.rpc(
+          "get_or_create_charity_profile",
+          {
+            lookup_ein: organization.ein,
+          },
+        );
 
         if (getOrCreateError) {
-          Logger.error('Failed to get/create charity profile', { error: getOrCreateError });
+          Logger.error("Failed to get/create charity profile", {
+            error: getOrCreateError,
+          });
         }
 
         // 4. Claim the charity profile
-        const { error: claimError } = await supabase.rpc('claim_charity_profile', {
-          p_ein: organization.ein,
-          p_signer_name: formData.contactName,
-          p_signer_email: formData.contactEmail,
-          p_signer_phone: formData.contactPhone,
-        });
+        const { error: claimError } = await supabase.rpc(
+          "claim_charity_profile",
+          {
+            p_ein: organization.ein,
+            p_signer_name: formData.contactName,
+            p_signer_email: formData.contactEmail,
+            p_signer_phone: formData.contactPhone,
+          },
+        );
 
         if (claimError) {
-          Logger.error('Failed to claim charity profile', { error: claimError });
+          Logger.error("Failed to claim charity profile", {
+            error: claimError,
+          });
         }
 
-        showToast('success', 'Account Created', 'Please check your email to verify your account.');
-        navigate('/auth');
+        showToast(
+          "success",
+          "Account Created",
+          "Please check your email to verify your account.",
+        );
+        navigate("/auth");
       } catch (err) {
-        const message = err instanceof Error ? err.message : 'Failed to create account';
+        const message =
+          err instanceof Error ? err.message : "Failed to create account";
         setError(message);
       } finally {
         setSubmitting(false);
@@ -225,9 +257,14 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           </div>
         )}
 
-        <IrsDetailsPanel organization={organization} irsLocation={irsLocation} />
+        <RegistryDetailsPanel
+          organization={organization}
+          registryLocation={registryLocation}
+        />
 
-        <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          Contact Information
+        </h3>
         <Input
           label="Contact Name"
           name="contactName"
@@ -235,7 +272,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           value={formData.contactName}
           onChange={handleChange}
           required
-          error={validationErrors['contactName']}
+          error={validationErrors["contactName"]}
         />
         <Input
           label="Contact Email"
@@ -245,7 +282,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           value={formData.contactEmail}
           onChange={handleChange}
           required
-          error={validationErrors['contactEmail']}
+          error={validationErrors["contactEmail"]}
         />
         <Input
           label="Contact Phone"
@@ -255,10 +292,12 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           value={formData.contactPhone}
           onChange={handleChange}
           required
-          error={validationErrors['contactPhone']}
+          error={validationErrors["contactPhone"]}
         />
 
-        <h3 className="text-lg font-semibold text-gray-900">Account Security</h3>
+        <h3 className="text-lg font-semibold text-gray-900">
+          Account Security
+        </h3>
         <div className="space-y-1">
           <Input
             label="Password"
@@ -268,7 +307,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
             value={formData.password}
             onChange={handleChange}
             required
-            error={validationErrors['password']}
+            error={validationErrors["password"]}
           />
           <PasswordStrengthBar password={formData.password} />
         </div>
@@ -280,7 +319,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           value={formData.confirmPassword}
           onChange={handleChange}
           required
-          error={validationErrors['confirmPassword']}
+          error={validationErrors["confirmPassword"]}
         />
 
         <Button
@@ -288,7 +327,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           className="w-full bg-gradient-to-b from-emerald-500 to-emerald-600 border border-emerald-700 shadow-none hover:from-emerald-600 hover:to-emerald-700 hover:shadow-none"
           disabled={submitting}
         >
-          {submitting ? 'Creating Account...' : 'Claim Organization'}
+          {submitting ? "Creating Account..." : "Claim Organization"}
         </Button>
       </form>
     </>

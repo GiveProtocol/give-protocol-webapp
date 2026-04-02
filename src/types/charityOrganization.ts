@@ -1,5 +1,5 @@
-/** Represents a row returned by the search_irs_organizations RPC function. */
-export interface IrsOrganization {
+/** Represents a row returned by the search_charity_organizations RPC function. */
+export interface CharityOrganization {
   ein: string;
   name: string;
   city: string | null;
@@ -10,19 +10,22 @@ export interface IrsOrganization {
   is_on_platform: boolean;
   platform_charity_id: string | null;
   rank: number;
+  country: string | null;
+  registry_source: string | null;
 }
 
-/** Parameters for the search_irs_organizations RPC call. */
-export interface IrsSearchParams {
+/** Parameters for the search_charity_organizations RPC call. */
+export interface CharitySearchParams {
   search_query: string | null;
   filter_state: string | null;
   filter_ntee: string | null;
+  filter_country: string | null;
   result_limit: number;
   result_offset: number;
 }
 
 /** Paginated search result wrapper. */
-export interface IrsSearchResult {
-  organizations: IrsOrganization[];
+export interface CharitySearchResult {
+  organizations: CharityOrganization[];
   hasMore: boolean;
 }
