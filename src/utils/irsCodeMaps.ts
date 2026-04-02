@@ -153,23 +153,23 @@ export function lookupSatActivityCode(code: string | null | undefined): string {
 
 /** CCEW (UK) 'What' classification codes from Charity Commission for England and Wales */
 const CCEW_CLASSIFICATION_MAP: Record<string, string> = {
-  '101': 'General Charitable Purposes',
-  '102': 'Education/Training',
-  '103': 'Advancement of Health or Saving of Lives',
-  '104': 'Disability',
-  '105': 'Prevention or Relief of Poverty',
-  '106': 'Overseas Aid/Famine Relief',
-  '107': 'Accommodation/Housing',
-  '108': 'Religious Activities',
-  '109': 'Arts/Culture/Heritage/Science',
-  '110': 'Amateur Sport',
-  '111': 'Animals',
-  '112': 'Environment/Conservation/Heritage',
-  '113': 'Economic/Community Development/Employment',
-  '114': 'Armed Forces/Emergency Service Efficiency',
-  '115': 'Human Rights/Equality/Diversity',
-  '116': 'Recreation',
-  '117': 'Other Charitable Purposes',
+  "101": "General Charitable Purposes",
+  "102": "Education/Training",
+  "103": "Advancement of Health or Saving of Lives",
+  "104": "Disability",
+  "105": "Prevention or Relief of Poverty",
+  "106": "Overseas Aid/Famine Relief",
+  "107": "Accommodation/Housing",
+  "108": "Religious Activities",
+  "109": "Arts/Culture/Heritage/Science",
+  "110": "Amateur Sport",
+  "111": "Animals",
+  "112": "Environment/Conservation/Heritage",
+  "113": "Economic/Community Development/Employment",
+  "114": "Armed Forces/Emergency Service Efficiency",
+  "115": "Human Rights/Equality/Diversity",
+  "116": "Recreation",
+  "117": "Other Charitable Purposes",
 };
 
 /**
@@ -177,44 +177,46 @@ const CCEW_CLASSIFICATION_MAP: Record<string, string> = {
  * @param code - The numeric CCEW classification code (101–117)
  * @returns The human-readable label, or the raw code if no match
  */
-export function lookupCcewClassificationCode(code: string | null | undefined): string {
-  if (!code) return '—';
+export function lookupCcewClassificationCode(
+  code: string | null | undefined,
+): string {
+  if (!code) return "—";
   const trimmed = code.trim();
   return CCEW_CLASSIFICATION_MAP[trimmed] ?? trimmed;
 }
 
 /** CRA (Canada) category codes from T3010 Open Data */
 const CRA_CATEGORY_MAP: Record<string, string> = {
-  '1': 'Organizations Relieving Poverty',
-  '2': 'Foundations Relieving Poverty',
-  '10': 'Teaching Institutions',
-  '11': 'Support of Schools and Education',
-  '12': 'Education in the Arts',
-  '13': 'Educational Organizations NEC',
-  '14': 'Research',
-  '15': 'Foundations Advancing Education',
-  '30': 'Christianity',
-  '40': 'Islam',
-  '50': 'Judaism',
-  '60': 'Other Religions',
-  '70': 'Support of Religion',
-  '80': 'Ecumenical and Inter-faith Organizations',
-  '90': 'Foundations Advancing Religions',
-  '100': 'Core Health Care',
-  '110': 'Supportive Health Care',
-  '120': 'Protective Health Care',
-  '130': 'Health Care Products',
-  '140': 'Complementary or Alternative Health Care',
-  '150': 'Relief of the Aged',
-  '155': 'Upholding Human Rights',
-  '160': 'Community Resource',
-  '170': 'Environment',
-  '175': 'Agriculture',
-  '180': 'Animal Welfare',
-  '190': 'Arts',
-  '200': 'Public Amenities',
-  '210': 'Foundations',
-  '215': 'NASO (Not Allocated Specific Object)',
+  "1": "Organizations Relieving Poverty",
+  "2": "Foundations Relieving Poverty",
+  "10": "Teaching Institutions",
+  "11": "Support of Schools and Education",
+  "12": "Education in the Arts",
+  "13": "Educational Organizations NEC",
+  "14": "Research",
+  "15": "Foundations Advancing Education",
+  "30": "Christianity",
+  "40": "Islam",
+  "50": "Judaism",
+  "60": "Other Religions",
+  "70": "Support of Religion",
+  "80": "Ecumenical and Inter-faith Organizations",
+  "90": "Foundations Advancing Religions",
+  "100": "Core Health Care",
+  "110": "Supportive Health Care",
+  "120": "Protective Health Care",
+  "130": "Health Care Products",
+  "140": "Complementary or Alternative Health Care",
+  "150": "Relief of the Aged",
+  "155": "Upholding Human Rights",
+  "160": "Community Resource",
+  "170": "Environment",
+  "175": "Agriculture",
+  "180": "Animal Welfare",
+  "190": "Arts",
+  "200": "Public Amenities",
+  "210": "Foundations",
+  "215": "NASO (Not Allocated Specific Object)",
 };
 
 /**
@@ -223,7 +225,7 @@ const CRA_CATEGORY_MAP: Record<string, string> = {
  * @returns The human-readable label, or the raw code if no match
  */
 export function lookupCraCategoryCode(code: string | null | undefined): string {
-  if (!code) return '—';
+  if (!code) return "—";
   const trimmed = code.trim();
   return CRA_CATEGORY_MAP[trimmed] ?? trimmed;
 }

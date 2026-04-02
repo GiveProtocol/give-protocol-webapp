@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
-import { Link } from 'react-router-dom';
-import { Building2, MapPin } from 'lucide-react';
-import type { CharityOrganization } from '@/types/charityOrganization';
-import { Card } from '@/components/ui/Card';
-import { cn } from '@/utils/cn';
+import React, { useCallback } from "react";
+import { Link } from "react-router-dom";
+import { Building2, MapPin } from "lucide-react";
+import type { CharityOrganization } from "@/types/charityOrganization";
+import { Card } from "@/components/ui/Card";
+import { cn } from "@/utils/cn";
 
 interface CharityOrganizationCardProps {
   organization: CharityOrganization;
@@ -21,21 +21,19 @@ interface CharityOrganizationCardProps {
  * @param props.selected - Whether the card is currently selected
  * @returns The rendered card component
  */
-export const CharityOrganizationCard: React.FC<CharityOrganizationCardProps> = ({
-  organization,
-  onSelect,
-  selected,
-}) => {
+export const CharityOrganizationCard: React.FC<
+  CharityOrganizationCardProps
+> = ({ organization, onSelect, selected }) => {
   const location = [organization.city, organization.state, organization.zip]
     .filter(Boolean)
-    .join(', ');
+    .join(", ");
 
   const handleSelect = useCallback(() => {
     onSelect?.(organization);
   }, [onSelect, organization]);
 
   const cardContent = (
-    <Card className={cn('p-6', selected && 'ring-2 ring-emerald-500')}>
+    <Card className={cn("p-6", selected && "ring-2 ring-emerald-500")}>
       <div className="flex items-start justify-between mb-3">
         <h3 className="text-lg font-semibold text-gray-900 leading-tight">
           {organization.name}
@@ -49,13 +47,19 @@ export const CharityOrganizationCard: React.FC<CharityOrganizationCardProps> = (
 
       <div className="space-y-2 text-sm text-gray-600">
         <div className="flex items-center">
-          <Building2 aria-hidden="true" className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
+          <Building2
+            aria-hidden="true"
+            className="h-4 w-4 mr-2 text-gray-400 shrink-0"
+          />
           <span>EIN: {organization.ein}</span>
         </div>
 
         {location && (
           <div className="flex items-center">
-            <MapPin aria-hidden="true" className="h-4 w-4 mr-2 text-gray-400 shrink-0" />
+            <MapPin
+              aria-hidden="true"
+              className="h-4 w-4 mr-2 text-gray-400 shrink-0"
+            />
             <span>{location}</span>
           </div>
         )}

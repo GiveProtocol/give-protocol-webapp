@@ -1,9 +1,9 @@
-import React, { useCallback } from 'react';
-import { useCharityOrganizationSearch } from '@/hooks/useCharityOrganizationSearch';
-import { CharityOrganizationCard } from './CharityOrganizationCard';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { Button } from '@/components/ui/Button';
-import { cn } from '@/utils/cn';
+import React, { useCallback } from "react";
+import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSearch";
+import { CharityOrganizationCard } from "./CharityOrganizationCard";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/utils/cn";
 
 interface CharityGridProps {
   searchTerm: string;
@@ -23,12 +23,13 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
   onPlatformOnly,
   className,
 }) => {
-  const { organizations, loading, hasMore, error, loadMore } = useCharityOrganizationSearch({
-    searchTerm,
-    filterState,
-    filterCountry: '',
-    onPlatformOnly,
-  });
+  const { organizations, loading, hasMore, error, loadMore } =
+    useCharityOrganizationSearch({
+      searchTerm,
+      filterState,
+      filterCountry: "",
+      onPlatformOnly,
+    });
 
   const handleLoadMore = useCallback(() => {
     loadMore();
@@ -47,7 +48,9 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
   if (!hasInput && !loading) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">Enter a search term or select a state to find charities.</p>
+        <p className="text-gray-500">
+          Enter a search term or select a state to find charities.
+        </p>
       </div>
     );
   }
@@ -63,14 +66,18 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
   if (organizations.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-gray-500">No charities found matching your criteria.</p>
+        <p className="text-gray-500">
+          No charities found matching your criteria.
+        </p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className={cn("grid gap-6 md:grid-cols-2 lg:grid-cols-3", className)}>
+      <div
+        className={cn("grid gap-6 md:grid-cols-2 lg:grid-cols-3", className)}
+      >
         {organizations.map((org) => (
           <CharityOrganizationCard key={org.ein} organization={org} />
         ))}
@@ -83,7 +90,7 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
             onClick={handleLoadMore}
             disabled={loading}
           >
-            {loading ? 'Loading...' : 'Load More'}
+            {loading ? "Loading..." : "Load More"}
           </Button>
         </div>
       )}

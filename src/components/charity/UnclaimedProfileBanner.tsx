@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { X, Building2 } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Modal } from '@/components/ui/Modal';
-import { submitRemovalRequest } from '@/services/charityDataService';
-import { useToast } from '@/hooks/useToast';
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { X, Building2 } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Modal } from "@/components/ui/Modal";
+import { submitRemovalRequest } from "@/services/charityDataService";
+import { useToast } from "@/hooks/useToast";
 
 /** Content of the removal request modal with reason textarea and submit/cancel buttons. */
 const RemovalModalContent: React.FC<{
@@ -34,7 +34,7 @@ const RemovalModalContent: React.FC<{
         onClick={onSubmit}
         disabled={submitting || !removalReason.trim()}
       >
-        {submitting ? 'Submitting...' : 'Submit request'}
+        {submitting ? "Submitting..." : "Submit request"}
       </Button>
     </div>
   </div>
@@ -75,14 +75,18 @@ const BannerContent: React.FC<{
       <X className="h-4 w-4" />
     </button>
     <div className="flex items-start gap-3 pr-6">
-      <Building2 aria-hidden="true" className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5" />
+      <Building2
+        aria-hidden="true"
+        className="h-5 w-5 text-emerald-600 shrink-0 mt-0.5"
+      />
       <div>
         <p className="font-semibold text-emerald-900 text-sm">
           Are you affiliated with this organization?
         </p>
         <p className="mt-1 text-sm text-emerald-700">
-          Claim this profile to manage it, add your mission and photos, and start
-          receiving donations — or request removal if it&apos;s listed in error.
+          Claim this profile to manage it, add your mission and photos, and
+          start receiving donations — or request removal if it&apos;s listed in
+          error.
         </p>
         <BannerActions onClaim={onClaim} onOpenRemoval={onOpenRemoval} />
       </div>
@@ -97,10 +101,12 @@ const BannerContent: React.FC<{
  * @param props.ein - The charity's EIN
  * @returns The rendered banner or null if dismissed
  */
-export const UnclaimedProfileBanner: React.FC<UnclaimedProfileBannerProps> = ({ ein }) => {
+export const UnclaimedProfileBanner: React.FC<UnclaimedProfileBannerProps> = ({
+  ein,
+}) => {
   const [dismissed, setDismissed] = useState(false);
   const [showRemovalModal, setShowRemovalModal] = useState(false);
-  const [removalReason, setRemovalReason] = useState('');
+  const [removalReason, setRemovalReason] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const navigate = useNavigate();
   const { showToast } = useToast();
@@ -119,7 +125,7 @@ export const UnclaimedProfileBanner: React.FC<UnclaimedProfileBannerProps> = ({ 
 
   const handleCloseRemoval = useCallback(() => {
     setShowRemovalModal(false);
-    setRemovalReason('');
+    setRemovalReason("");
   }, []);
 
   const handleRemovalReasonChange = useCallback(
@@ -135,10 +141,14 @@ export const UnclaimedProfileBanner: React.FC<UnclaimedProfileBannerProps> = ({ 
     const success = await submitRemovalRequest(ein, removalReason.trim());
     setSubmitting(false);
     if (success) {
-      showToast('success', 'Request submitted', 'We will review your removal request.');
+      showToast(
+        "success",
+        "Request submitted",
+        "We will review your removal request.",
+      );
       handleCloseRemoval();
     } else {
-      showToast('error', 'Failed to submit', 'Please try again later.');
+      showToast("error", "Failed to submit", "Please try again later.");
     }
   }, [ein, removalReason, showToast, handleCloseRemoval]);
 
