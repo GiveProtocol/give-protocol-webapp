@@ -2,10 +2,10 @@ import { supabase } from '@/lib/supabase';
 import { Logger } from '@/utils/logger';
 
 /**
- * Extended IRS organization record with all BMF fields.
- * Queried directly from irs_organizations table for the profile page.
+ * Extended charity organization record with all registry fields.
+ * Queried directly from charity_organizations table for the profile page.
  */
-export interface IrsRecord {
+export interface CharityRecord {
   ein: string;
   name: string;
   ico: string | null;
@@ -29,26 +29,26 @@ export interface IrsRecord {
 }
 
 /**
- * Fetches a full IRS organization record by EIN.
- * @param ein - The EIN (with or without hyphen)
- * @returns The IRS record or null if not found
+ * Fetches a full charity organization record by EIN.
+ * @param ein - The EIN or local registration number (with or without hyphen)
+ * @returns The charity record or null if not found
  */
-export async function getIrsRecordByEin(ein: string): Promise<IrsRecord | null> {
+export async function getCharityRecordByEin(ein: string): Promise<CharityRecord | null> {
   const normalized = ein.replace(/-/g, '');
   try {
     const { data, error } = await supabase
-      .from('irs_organizations')
+      .from('charity_organizations')
       .select('ein, name, ico, street, city, state, zip, group_exemption, subsection, affiliation, classification, ruling, deductibility, foundation, activity, organization, status, ntee_cd, sort_name, is_on_platform')
       .eq('ein', normalized)
       .single();
 
     if (error) {
-      Logger.error('Error fetching IRS record', { error, ein: normalized });
+      Logger.error('Error fetching charity record', { error, ein: normalized });
       return null;
     }
-    return data as IrsRecord;
+    return data as CharityRecord;
   } catch (error) {
-    Logger.error('IRS record fetch failed', {
+    Logger.error('Charity record fetch failed', {
       error: error instanceof Error ? error.message : String(error),
       ein: normalized,
     });

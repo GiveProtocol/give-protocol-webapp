@@ -23,8 +23,8 @@ import { PhotosCard } from '@/components/charity/PhotosCard';
 import { DonateWidget } from '@/components/charity/DonateWidget';
 import { DonationModal } from '@/components/web3/donation/DonationModal';
 import { getCharityProfileByEin } from '@/services/charityProfileService';
-import { getIrsRecordByEin } from '@/services/irsDataService';
-import type { IrsRecord } from '@/services/irsDataService';
+import { getCharityRecordByEin } from '@/services/charityDataService';
+import type { CharityRecord } from '@/services/charityDataService';
 import type { CharityProfile } from '@/types/charityProfile';
 import { formatNteeCode, getNteeCategory } from '@/utils/nteeMap';
 import {
@@ -95,9 +95,9 @@ function StatusPill({ profile }: { profile: CharityProfile }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* IRS public record (collapsible)                                     */
+/* Registry public record (collapsible)                                */
 /* ------------------------------------------------------------------ */
-function IrsPublicRecord({ irsRecord }: { irsRecord: IrsRecord }) {
+function RegistryPublicRecord({ charityRecord }: { charityRecord: CharityRecord }) {
   const [open, setOpen] = useState(false);
 
   const handleToggle = useCallback(() => {
@@ -106,35 +106,35 @@ function IrsPublicRecord({ irsRecord }: { irsRecord: IrsRecord }) {
 
   const rows = useMemo(
     () => [
-      { label: 'EIN', value: irsRecord.ein },
-      { label: 'Name', value: irsRecord.name },
+      { label: 'EIN', value: charityRecord.ein },
+      { label: 'Name', value: charityRecord.name },
       {
         label: 'Location',
-        value: [irsRecord.city, irsRecord.state, irsRecord.zip]
+        value: [charityRecord.city, charityRecord.state, charityRecord.zip]
           .filter(Boolean)
           .join(', ') || '—',
       },
-      { label: 'Ruling year', value: formatRulingYear(irsRecord.ruling) },
-      { label: 'NTEE code', value: formatNteeCode(irsRecord.ntee_cd) },
+      { label: 'Ruling year', value: formatRulingYear(charityRecord.ruling) },
+      { label: 'NTEE code', value: formatNteeCode(charityRecord.ntee_cd) },
       {
         label: 'Deductibility',
-        value: lookupIrsCode('deductibility', irsRecord.deductibility),
+        value: lookupIrsCode('deductibility', charityRecord.deductibility),
       },
       {
         label: 'Affiliation',
-        value: lookupIrsCode('affiliation', irsRecord.affiliation),
+        value: lookupIrsCode('affiliation', charityRecord.affiliation),
       },
-      { label: 'Classification', value: irsRecord.classification ?? '—' },
+      { label: 'Classification', value: charityRecord.classification ?? '—' },
       {
         label: 'Foundation type',
-        value: lookupIrsCode('foundation', irsRecord.foundation),
+        value: lookupIrsCode('foundation', charityRecord.foundation),
       },
-      { label: 'Activity codes', value: formatActivityCodes(irsRecord.activity) },
-      { label: 'Organization type', value: irsRecord.organization ?? '—' },
-      { label: 'Subsection', value: irsRecord.subsection ?? '—' },
-      { label: 'Status', value: irsRecord.status ?? '—' },
+      { label: 'Activity codes', value: formatActivityCodes(charityRecord.activity) },
+      { label: 'Organization type', value: charityRecord.organization ?? '—' },
+      { label: 'Subsection', value: charityRecord.subsection ?? '—' },
+      { label: 'Status', value: charityRecord.status ?? '—' },
     ],
-    [irsRecord],
+    [charityRecord],
   );
 
   return (
@@ -144,7 +144,7 @@ function IrsPublicRecord({ irsRecord }: { irsRecord: IrsRecord }) {
         onClick={handleToggle}
         className="w-full flex items-center justify-between"
       >
-        <h3 className="text-sm font-semibold text-gray-900">IRS Public Record</h3>
+        <h3 className="text-sm font-semibold text-gray-900">Registry Public Record</h3>
         {open ? (
           <ChevronUp className="h-4 w-4 text-gray-400" />
         ) : (
@@ -162,7 +162,7 @@ function IrsPublicRecord({ irsRecord }: { irsRecord: IrsRecord }) {
             ))}
           </dl>
           <p className="text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100">
-            Data sourced from IRS Exempt Organizations dataset.
+            Data sourced from official charity registry.
           </p>
         </div>
       )}
@@ -171,7 +171,7 @@ function IrsPublicRecord({ irsRecord }: { irsRecord: IrsRecord }) {
 }
 
 /* ------------------------------------------------------------------ */
-/* Derived display values from profile + IRS data                      */
+/* Derived display values from profile + charity record                */
 /* ------------------------------------------------------------------ */
 interface ProfileDisplayData {
   orgName: string;
@@ -191,21 +191,21 @@ interface ProfileDisplayData {
   claimedByUserId: string | null | undefined;
 }
 
-/** Extracts display-ready values from the raw profile and IRS record. */
+/** Extracts display-ready values from the raw profile and charity record. */
 function deriveDisplayData(
   profile: CharityProfile | null,
-  irsRecord: IrsRecord | null,
+  charityRecord: CharityRecord | null,
 ): ProfileDisplayData {
   return {
-    orgName: profile?.name ?? irsRecord?.name ?? 'Unknown Organization',
+    orgName: profile?.name ?? charityRecord?.name ?? 'Unknown Organization',
     location:
       profile?.location ??
-      [irsRecord?.city, irsRecord?.state].filter(Boolean).join(', ') ??
+      [charityRecord?.city, charityRecord?.state].filter(Boolean).join(', ') ??
       '',
-    rulingYear: formatRulingYear(irsRecord?.ruling),
+    rulingYear: formatRulingYear(charityRecord?.ruling),
     isUnclaimed: !profile || profile.status === 'unclaimed',
     isClaimed: profile?.status === 'claimed-pending' || profile?.status === 'verified',
-    nteeCategory: getNteeCategory(irsRecord?.ntee_cd ?? profile?.ntee_code),
+    nteeCategory: getNteeCategory(charityRecord?.ntee_cd ?? profile?.ntee_code),
     walletAddress: profile?.wallet_address ?? null,
     bannerImageUrl: (profile as Record<string, unknown>)?.banner_image_url as string | null | undefined,
     photo1Url: (profile as Record<string, unknown>)?.photo_1_url as string | null | undefined,
@@ -229,7 +229,7 @@ function HeaderInfo({
   rulingYear,
   nteeCategory,
   profile,
-  irsRecord,
+  charityRecord,
 }: {
   orgName: string;
   ein: string;
@@ -237,7 +237,7 @@ function HeaderInfo({
   rulingYear: string;
   nteeCategory: string;
   profile: CharityProfile | null;
-  irsRecord: IrsRecord | null;
+  charityRecord: CharityRecord | null;
 }) {
   return (
     <div className="space-y-2">
@@ -261,7 +261,7 @@ function HeaderInfo({
         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
           {nteeCategory}
         </span>
-        {irsRecord?.subsection === '03' && (
+        {charityRecord?.subsection === '03' && (
           <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">
             501(c)(3)
           </span>
@@ -279,7 +279,7 @@ function ProfileHeaderCard({
   rulingYear,
   nteeCategory,
   profile,
-  irsRecord,
+  charityRecord,
   onDonate,
   onShare,
   copied,
@@ -290,7 +290,7 @@ function ProfileHeaderCard({
   rulingYear: string;
   nteeCategory: string;
   profile: CharityProfile | null;
-  irsRecord: IrsRecord | null;
+  charityRecord: CharityRecord | null;
   onDonate: () => void;
   onShare: () => void;
   copied: boolean;
@@ -305,7 +305,7 @@ function ProfileHeaderCard({
           rulingYear={rulingYear}
           nteeCategory={nteeCategory}
           profile={profile}
-          irsRecord={irsRecord}
+          charityRecord={charityRecord}
         />
         <div className="flex items-center gap-2 shrink-0">
           <Button onClick={onDonate} icon={<Heart className="h-4 w-4" />}>
@@ -449,13 +449,13 @@ function ContactCard({
 
 /**
  * Full charity profile page with hero banner, header card, two-column layout,
- * and donate widget. Fetches data from both IRS records and charity_profiles.
+ * and donate widget. Fetches data from both charity records and charity_profiles.
  * @returns The rendered charity profile page
  */
 function CharityProfilePage() {
   const { ein: rawEin } = useParams<{ ein: string }>();
   const [profile, setProfile] = useState<CharityProfile | null>(null);
-  const [irsRecord, setIrsRecord] = useState<IrsRecord | null>(null);
+  const [charityRecord, setCharityRecord] = useState<CharityRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
   const [showDonationModal, setShowDonationModal] = useState(false);
@@ -473,11 +473,11 @@ function CharityProfilePage() {
 
     const [profileResult, irsResult] = await Promise.all([
       getCharityProfileByEin(einDigits),
-      getIrsRecordByEin(einDigits),
+      getCharityRecordByEin(einDigits),
     ]);
 
     if (irsResult) {
-      setIrsRecord(irsResult);
+      setCharityRecord(irsResult);
     }
 
     if (profileResult) {
@@ -495,14 +495,14 @@ function CharityProfilePage() {
 
   // Set page title
   useEffect(() => {
-    const name = profile?.name ?? irsRecord?.name;
+    const name = profile?.name ?? charityRecord?.name;
     if (name) {
       document.title = `${name} | Give Protocol`;
     }
     return () => {
       document.title = 'Give Protocol';
     };
-  }, [profile?.name, irsRecord?.name]);
+  }, [profile?.name, charityRecord?.name]);
 
   const handleShare = useCallback(() => {
     navigator.clipboard.writeText(window.location.href);
@@ -529,7 +529,7 @@ function CharityProfilePage() {
     return <ProfileSkeleton />;
   }
 
-  if (notFound && !irsRecord && !profile) {
+  if (notFound && !charityRecord && !profile) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
         <Card hover={false} className="p-8 text-center">
@@ -545,7 +545,7 @@ function CharityProfilePage() {
     );
   }
 
-  const display = deriveDisplayData(profile, irsRecord);
+  const display = deriveDisplayData(profile, charityRecord);
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-5">
@@ -560,7 +560,7 @@ function CharityProfilePage() {
           rulingYear={display.rulingYear}
           nteeCategory={display.nteeCategory}
           profile={profile}
-          irsRecord={irsRecord}
+          charityRecord={charityRecord}
           onDonate={handleOpenDonate}
           onShare={handleShare}
           copied={copied}
@@ -573,7 +573,7 @@ function CharityProfilePage() {
             description={display.description}
             missionStatement={display.missionStatement}
             mission={profile?.mission}
-            activity={irsRecord?.activity}
+            activity={charityRecord?.activity}
             website={display.website}
             einDigits={einDigits}
           />
@@ -586,7 +586,7 @@ function CharityProfilePage() {
             onPhotoUploaded={handlePhotoUploaded}
           />
 
-          {irsRecord && <IrsPublicRecord irsRecord={irsRecord} />}
+          {charityRecord && <RegistryPublicRecord charityRecord={charityRecord} />}
         </div>
 
         <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
@@ -598,7 +598,7 @@ function CharityProfilePage() {
             mode="sidebar"
           />
 
-          {irsRecord && <OrgDetailsCard irsRecord={irsRecord} />}
+          {charityRecord && <OrgDetailsCard charityRecord={charityRecord} />}
 
           {display.isClaimed && (display.contactEmail || display.website) && (
             <ContactCard website={display.website} contactEmail={display.contactEmail} />

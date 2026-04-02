@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { DonorRegistration } from '../components/auth/DonorRegistration';
 import { CharityVettingForm } from '../components/auth/CharityVettingForm';
-import { IrsOrganizationSearch } from '../components/auth/IrsOrganizationSearch';
+import { CharityOrganizationSearch } from '../components/auth/CharityOrganizationSearch';
 import { CharityClaimForm } from '../components/auth/CharityClaimForm';
 import { ShieldCheck, Link as LinkIcon } from 'lucide-react';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { formatAddress } from '@/components/Wallet/utils';
 import { Logo } from '@/components/Logo';
-import type { IrsOrganization } from '@/types/irsOrganization';
+import type { CharityOrganization } from '@/types/charityOrganization';
 
 type CharityStep = 'search' | 'claim-form' | 'manual-form';
 
@@ -320,7 +320,7 @@ const RegisterRightPanel: React.FC = () => {
   const typeParam = searchParams.get('type');
   const [userType, setUserType] = useState<'donor' | 'charity'>(typeParam === 'charity' ? 'charity' : 'donor');
   const [charityStep, setCharityStep] = useState<CharityStep>('search');
-  const [selectedOrg, setSelectedOrg] = useState<IrsOrganization | null>(null);
+  const [selectedOrg, setSelectedOrg] = useState<CharityOrganization | null>(null);
   const [linkWallet, setLinkWallet] = useState(true);
 
   const { address, isConnected } = useWeb3();
@@ -344,7 +344,7 @@ const RegisterRightPanel: React.FC = () => {
     setUserType('charity');
   }, []);
 
-  const handleOrganizationSelect = useCallback((org: IrsOrganization) => {
+  const handleOrganizationSelect = useCallback((org: CharityOrganization) => {
     setSelectedOrg(org);
     setCharityStep('claim-form');
   }, []);
@@ -367,7 +367,7 @@ const RegisterRightPanel: React.FC = () => {
     switch (charityStep) {
       case 'search':
         return (
-          <IrsOrganizationSearch
+          <CharityOrganizationSearch
             onOrganizationSelect={handleOrganizationSelect}
             onSkip={handleSkipSearch}
           />

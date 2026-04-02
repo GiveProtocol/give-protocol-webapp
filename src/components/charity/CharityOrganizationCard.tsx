@@ -1,27 +1,27 @@
 import React, { useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { Building2, MapPin } from 'lucide-react';
-import type { IrsOrganization } from '@/types/irsOrganization';
+import type { CharityOrganization } from '@/types/charityOrganization';
 import { Card } from '@/components/ui/Card';
 import { cn } from '@/utils/cn';
 
-interface IrsOrganizationCardProps {
-  organization: IrsOrganization;
-  onSelect?: (org: IrsOrganization) => void;
+interface CharityOrganizationCardProps {
+  organization: CharityOrganization;
+  onSelect?: (org: CharityOrganization) => void;
   selected?: boolean;
 }
 
 /**
- * Card component for displaying an IRS organization record.
+ * Card component for displaying a charity organization record.
  * Shows name, EIN, location, NTEE code, and deductibility status.
  * When onSelect is provided, renders as a selectable button instead of a link.
  * @param props - Component props
- * @param props.organization - The IRS organization data to display
+ * @param props.organization - The charity organization data to display
  * @param props.onSelect - Optional callback when the card is clicked (renders as button)
  * @param props.selected - Whether the card is currently selected
  * @returns The rendered card component
  */
-export const IrsOrganizationCard: React.FC<IrsOrganizationCardProps> = ({
+export const CharityOrganizationCard: React.FC<CharityOrganizationCardProps> = ({
   organization,
   onSelect,
   selected,

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { X, Building2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Modal } from '@/components/ui/Modal';
-import { submitRemovalRequest } from '@/services/irsDataService';
+import { submitRemovalRequest } from '@/services/charityDataService';
 import { useToast } from '@/hooks/useToast';
 
 /** Content of the removal request modal with reason textarea and submit/cancel buttons. */

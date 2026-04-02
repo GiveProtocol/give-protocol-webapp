@@ -13,18 +13,18 @@ import {
   validatePhoneNumber,
 } from '@/utils/validation';
 import { Logger } from '@/utils/logger';
-import type { IrsOrganization } from '@/types/irsOrganization';
+import type { CharityOrganization } from '@/types/charityOrganization';
 
 interface CharityClaimFormProps {
-  organization: IrsOrganization;
+  organization: CharityOrganization;
   onBack: () => void;
 }
 
-/** Read-only IRS organization details panel. */
-const IrsDetailsPanel: React.FC<{ organization: IrsOrganization; irsLocation: string }> = ({ organization, irsLocation }) => (
+/** Read-only organization details panel. */
+const RegistryDetailsPanel: React.FC<{ organization: CharityOrganization; registryLocation: string }> = ({ organization, registryLocation }) => (
   <div className="bg-gray-50 p-4 rounded-lg text-sm space-y-1">
     <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wide mb-2">
-      Organization Details (from IRS)
+      Organization Details (from Registry)
     </h3>
     <p>
       <span className="font-medium text-gray-700">Name:</span>{' '}
@@ -34,10 +34,10 @@ const IrsDetailsPanel: React.FC<{ organization: IrsOrganization; irsLocation: st
       <span className="font-medium text-gray-700">EIN:</span>{' '}
       {organization.ein}
     </p>
-    {irsLocation && (
+    {registryLocation && (
       <p>
         <span className="font-medium text-gray-700">Location:</span>{' '}
-        {irsLocation}
+        {registryLocation}
       </p>
     )}
   </div>
@@ -69,7 +69,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
     confirmPassword: '',
   });
 
-  const irsLocation = [organization.city, organization.state, organization.zip]
+  const registryLocation = [organization.city, organization.state, organization.zip]
     .filter(Boolean)
     .join(', ');
 
@@ -225,7 +225,7 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           </div>
         )}
 
-        <IrsDetailsPanel organization={organization} irsLocation={irsLocation} />
+        <RegistryDetailsPanel organization={organization} registryLocation={registryLocation} />
 
         <h3 className="text-lg font-semibold text-gray-900">Contact Information</h3>
         <Input

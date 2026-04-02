@@ -1,17 +1,17 @@
 import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { setMockResult, resetMockState } from '@/test-utils/supabaseMock';
-import { getIrsRecordByEin, submitRemovalRequest } from './irsDataService';
+import { getCharityRecordByEin, submitRemovalRequest } from './charityDataService';
 
 jest.mock('@/utils/logger', () => ({
   Logger: { info: jest.fn(), warn: jest.fn(), error: jest.fn() },
 }));
 
-describe('irsDataService', () => {
+describe('charityDataService', () => {
   beforeEach(() => {
     resetMockState();
   });
 
-  describe('getIrsRecordByEin', () => {
+  describe('getCharityRecordByEin', () => {
     const mockRecord = {
       ein: '123456789',
       name: 'Test Org',
@@ -35,29 +35,29 @@ describe('irsDataService', () => {
       is_on_platform: false,
     };
 
-    it('should return the IRS record on success', async () => {
-      setMockResult('irs_organizations', { data: mockRecord, error: null });
+    it('should return the charity record on success', async () => {
+      setMockResult('charity_organizations', { data: mockRecord, error: null });
 
-      const result = await getIrsRecordByEin('123456789');
+      const result = await getCharityRecordByEin('123456789');
 
       expect(result).toEqual(mockRecord);
     });
 
     it('should strip hyphens from the EIN before querying', async () => {
-      setMockResult('irs_organizations', { data: mockRecord, error: null });
+      setMockResult('charity_organizations', { data: mockRecord, error: null });
 
-      const result = await getIrsRecordByEin('12-3456789');
+      const result = await getCharityRecordByEin('12-3456789');
 
       expect(result).toEqual(mockRecord);
     });
 
     it('should return null when supabase returns an error', async () => {
-      setMockResult('irs_organizations', {
+      setMockResult('charity_organizations', {
         data: null,
         error: { message: 'Not found', code: 'PGRST116' },
       });
 
-      const result = await getIrsRecordByEin('000000000');
+      const result = await getCharityRecordByEin('000000000');
 
       expect(result).toBeNull();
     });
@@ -69,7 +69,7 @@ describe('irsDataService', () => {
         throw new Error('Network error');
       });
 
-      const result = await getIrsRecordByEin('123456789');
+      const result = await getCharityRecordByEin('123456789');
 
       expect(result).toBeNull();
 
@@ -83,7 +83,7 @@ describe('irsDataService', () => {
         throw 'string error';
       });
 
-      const result = await getIrsRecordByEin('123456789');
+      const result = await getCharityRecordByEin('123456789');
 
       expect(result).toBeNull();
 

@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
-import { useIrsOrganizationSearch } from '@/hooks/useIrsOrganizationSearch';
-import { IrsOrganizationCard } from './IrsOrganizationCard';
+import { useCharityOrganizationSearch } from '@/hooks/useCharityOrganizationSearch';
+import { CharityOrganizationCard } from './CharityOrganizationCard';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { Button } from '@/components/ui/Button';
 import { cn } from '@/utils/cn';
@@ -13,7 +13,7 @@ interface CharityGridProps {
 }
 
 /**
- * Grid of IRS organization cards with server-side search and pagination.
+ * Grid of charity organization cards with server-side search and pagination.
  * @param props - Search term, state filter, on-platform toggle, and optional className
  * @returns The rendered grid component
  */
@@ -23,9 +23,10 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
   onPlatformOnly,
   className,
 }) => {
-  const { organizations, loading, hasMore, error, loadMore } = useIrsOrganizationSearch({
+  const { organizations, loading, hasMore, error, loadMore } = useCharityOrganizationSearch({
     searchTerm,
     filterState,
+    filterCountry: '',
     onPlatformOnly,
   });
 
@@ -71,7 +72,7 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
     <div>
       <div className={cn("grid gap-6 md:grid-cols-2 lg:grid-cols-3", className)}>
         {organizations.map((org) => (
-          <IrsOrganizationCard key={org.ein} organization={org} />
+          <CharityOrganizationCard key={org.ein} organization={org} />
         ))}
       </div>
 
