@@ -7,7 +7,7 @@ import { cn } from "@/utils/cn";
 
 interface CharityOrganizationCardProps {
   organization: CharityOrganization;
-  onSelect?: (org: CharityOrganization) => void;
+  onSelect?: (_org: CharityOrganization) => void;
   selected?: boolean;
 }
 

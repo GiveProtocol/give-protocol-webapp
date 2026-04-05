@@ -147,7 +147,7 @@ describe("irsCodeMaps", () => {
     });
 
     it('should return "—" for undefined', () => {
-      expect(lookupSatActivityCode(undefined)).toBe("—");
+      expect(lookupSatActivityCode()).toBe("—");
     });
 
     it('should return "—" for empty string', () => {
@@ -189,7 +189,7 @@ describe("irsCodeMaps", () => {
     });
 
     it('should return "—" for undefined', () => {
-      expect(lookupCcewClassificationCode(undefined)).toBe("—");
+      expect(lookupCcewClassificationCode()).toBe("—");
     });
 
     it('should return "—" for empty string', () => {
@@ -230,7 +230,7 @@ describe("irsCodeMaps", () => {
     });
 
     it('should return "—" for undefined', () => {
-      expect(lookupCraCategoryCode(undefined)).toBe("—");
+      expect(lookupCraCategoryCode()).toBe("—");
     });
 
     it('should return "—" for empty string', () => {
