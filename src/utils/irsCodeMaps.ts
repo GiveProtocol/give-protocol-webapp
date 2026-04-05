@@ -145,7 +145,7 @@ const SAT_ACTIVITY_MAP: Record<string, string> = {
  * @param code - The single-letter SAT activity code (A–M)
  * @returns The human-readable label, or the raw code if no match
  */
-export function lookupSatActivityCode(code: string | null | undefined): string {
+export function lookupSatActivityCode(code?: string | null): string {
   if (!code) return "—";
   const trimmed = code.trim().toUpperCase();
   return SAT_ACTIVITY_MAP[trimmed] ?? trimmed;
@@ -178,7 +178,7 @@ const CCEW_CLASSIFICATION_MAP: Record<string, string> = {
  * @returns The human-readable label, or the raw code if no match
  */
 export function lookupCcewClassificationCode(
-  code: string | null | undefined,
+  code?: string | null,
 ): string {
   if (!code) return "—";
   const trimmed = code.trim();
@@ -224,7 +224,7 @@ const CRA_CATEGORY_MAP: Record<string, string> = {
  * @param code - The numeric CRA category code (e.g. "30", "100")
  * @returns The human-readable label, or the raw code if no match
  */
-export function lookupCraCategoryCode(code: string | null | undefined): string {
+export function lookupCraCategoryCode(code?: string | null): string {
   if (!code) return "—";
   const trimmed = code.trim();
   return CRA_CATEGORY_MAP[trimmed] ?? trimmed;
