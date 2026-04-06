@@ -177,9 +177,7 @@ const CCEW_CLASSIFICATION_MAP: Record<string, string> = {
  * @param code - The numeric CCEW classification code (101–117)
  * @returns The human-readable label, or the raw code if no match
  */
-export function lookupCcewClassificationCode(
-  code?: string | null,
-): string {
+export function lookupCcewClassificationCode(code?: string | null): string {
   if (!code) return "—";
   const trimmed = code.trim();
   return CCEW_CLASSIFICATION_MAP[trimmed] ?? trimmed;
