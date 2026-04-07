@@ -1,6 +1,12 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { DonorLogin } from "../DonorLogin";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -120,7 +126,9 @@ describe("DonorLogin", () => {
     // which AuthContext treats as failed login (no user).
     // This confirms the error path renders without throwing.
     await waitFor(() => {
-      expect(screen.queryByRole("button", { name: /sign in/i })).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: /sign in/i }),
+      ).toBeInTheDocument();
     });
   });
 });
