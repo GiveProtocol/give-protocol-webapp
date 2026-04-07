@@ -13,6 +13,7 @@
  *   Step 3  — Anonymize charity_profile authorized signer fields
  *   Step 4  — Anonymize charity_nominations.nominator_email
  *   Step 5  — Set volunteer_verifications.volunteer_id = NULL
+ *   Step 5b — Anonymize fiat_donations PII fields; set donor_id = NULL
  *   Step 6  — Hard delete wallet_aliases
  *   Step 7  — Hard delete user_identities
  *   Step 8  — Hard delete user_preferences
@@ -65,6 +66,7 @@ const STEPS = {
   ANONYMIZE_CHARITY_PROFILE: 'anonymize_charity_profile',
   ANONYMIZE_CHARITY_NOMINATIONS: 'anonymize_charity_nominations',
   NULL_VOLUNTEER_VERIFICATIONS: 'null_volunteer_verifications',
+  ANONYMIZE_FIAT_DONATIONS: 'anonymize_fiat_donations',
   DELETE_WALLET_ALIASES: 'delete_wallet_aliases',
   DELETE_USER_IDENTITIES: 'delete_user_identities',
   DELETE_USER_PREFERENCES: 'delete_user_preferences',
@@ -183,6 +185,7 @@ async function executeTransactionalErasure(
     STEPS.ANONYMIZE_CHARITY_PROFILE,
     STEPS.ANONYMIZE_CHARITY_NOMINATIONS,
     STEPS.NULL_VOLUNTEER_VERIFICATIONS,
+    STEPS.ANONYMIZE_FIAT_DONATIONS,
     STEPS.DELETE_WALLET_ALIASES,
     STEPS.DELETE_USER_IDENTITIES,
     STEPS.DELETE_USER_PREFERENCES,

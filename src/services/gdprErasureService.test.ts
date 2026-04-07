@@ -342,6 +342,7 @@ describe('executeTransactionalErasure (Steps 2–9)', () => {
       'anonymize_charity_profile',
       'anonymize_charity_nominations',
       'null_volunteer_verifications',
+      'anonymize_fiat_donations',
       'delete_wallet_aliases',
       'delete_user_identities',
       'delete_user_preferences',
@@ -357,10 +358,10 @@ describe('executeTransactionalErasure (Steps 2–9)', () => {
       p_user_id: 'user-1',
       p_user_email: 'alice@example.com',
     });
-    expect(steps).toHaveLength(8);
+    expect(steps).toHaveLength(9);
   });
 
-  it('returns all 8 SQL-layer step names on success', async () => {
+  it('returns all 9 SQL-layer step names on success', async () => {
     const supabase = makeMockSupabase();
     const steps = await executeTransactionalErasure('user-2', 'bob@example.com', supabase);
 
@@ -368,6 +369,7 @@ describe('executeTransactionalErasure (Steps 2–9)', () => {
     expect(steps).toContain('anonymize_charity_profile');
     expect(steps).toContain('anonymize_charity_nominations');
     expect(steps).toContain('null_volunteer_verifications');
+    expect(steps).toContain('anonymize_fiat_donations');
     expect(steps).toContain('delete_wallet_aliases');
     expect(steps).toContain('delete_user_identities');
     expect(steps).toContain('delete_user_preferences');

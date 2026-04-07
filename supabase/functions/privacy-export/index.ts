@@ -54,6 +54,7 @@ async function assembleExportPackage(
     volunteerHoursResult,
     selfReportedResult,
     volunteerVerifResult,
+    fiatDonationsResult,
   ] = await Promise.all([
     supabase.auth.admin.getUserById(userId),
     supabase.from('profiles').select('*').eq('user_id', userId).single(),
@@ -72,6 +73,9 @@ async function assembleExportPackage(
     supabase.from('volunteer_verifications').select(
       'verified_at, blockchain_tx_hash, nft_token_id, verification_hash'
     ).eq('volunteer_id', userId),
+    supabase.from('fiat_donations').select(
+      'charity_id, amount_cents, currency, payment_method, card_type, card_last_four, cause_name, fund_name, created_at'
+    ).eq('donor_id', userId),
   ]);
 
   const authUser = authUserResult.data?.user;
@@ -132,6 +136,17 @@ async function assembleExportPackage(
       verified_at: v.verified_at,
       blockchain_tx_hash: v.blockchain_tx_hash,
       nft_token_id: v.nft_token_id,
+    })),
+    fiat_donations: (fiatDonationsResult.data ?? []).map((d) => ({
+      charity_id: d.charity_id,
+      amount_cents: d.amount_cents,
+      currency: d.currency,
+      payment_method: d.payment_method,
+      card_type: d.card_type,
+      card_last_four: d.card_last_four,
+      cause_name: d.cause_name,
+      fund_name: d.fund_name,
+      created_at: d.created_at,
     })),
   };
 }
