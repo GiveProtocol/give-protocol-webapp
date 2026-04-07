@@ -12,6 +12,9 @@ export interface CharityOrganization {
   rank: number;
   country: string | null;
   registry_source: string | null;
+  data_source: string | null;
+  data_vintage: string | null;
+  last_synced_at: string | null;
 }
 
 /** Parameters for the search_charity_organizations RPC call. */

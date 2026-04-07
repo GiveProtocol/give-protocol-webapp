@@ -26,6 +26,9 @@ export interface CharityRecord {
   ntee_cd: string | null;
   sort_name: string | null;
   is_on_platform: boolean;
+  data_source: string | null;
+  data_vintage: string | null;
+  last_synced_at: string | null;
 }
 
 /**
@@ -41,7 +44,7 @@ export async function getCharityRecordByEin(
     const { data, error } = await supabase
       .from("charity_organizations")
       .select(
-        "ein, name, ico, street, city, state, zip, group_exemption, subsection, affiliation, classification, ruling, deductibility, foundation, activity, organization, status, ntee_cd, sort_name, is_on_platform",
+        "ein, name, ico, street, city, state, zip, group_exemption, subsection, affiliation, classification, ruling, deductibility, foundation, activity, organization, status, ntee_cd, sort_name, is_on_platform, data_source, data_vintage, last_synced_at",
       )
       .eq("ein", normalized)
       .single();
