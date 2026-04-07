@@ -44,39 +44,65 @@ export default {
     // Library mocks
     "^ethers$": "<rootDir>/src/test-utils/ethersMock.js",
     // Hook mocks
-    "^@/hooks/useTranslation$": "<rootDir>/src/test-utils/useTranslationMock.js",
-    "(.*)/hooks/useTranslation(\\.tsx?)?$": "<rootDir>/src/test-utils/useTranslationMock.js",
-    "^@/hooks/web3/useScheduledDonation$": "<rootDir>/src/test-utils/useScheduledDonationMock.js",
-    "(.*)/hooks/web3/useScheduledDonation(\\.tsx?)?$": "<rootDir>/src/test-utils/useScheduledDonationMock.js",
-    "^@/hooks/useContributionStats$": "<rootDir>/src/test-utils/useContributionStatsMock.js",
-    "(.*)/hooks/useContributionStats(\\.tsx?)?$": "<rootDir>/src/test-utils/useContributionStatsMock.js",
-    "^@/hooks/useVolunteerVerification$": "<rootDir>/src/test-utils/useVolunteerVerificationMock.js",
-    "(.*)/hooks/useVolunteerVerification(\\.tsx?)?$": "<rootDir>/src/test-utils/useVolunteerVerificationMock.js",
-    "^@/hooks/useWalletAlias$": "<rootDir>/src/test-utils/useWalletAliasMock.js",
-    "(.*)/hooks/useWalletAlias(\\.tsx?)?$": "<rootDir>/src/test-utils/useWalletAliasMock.js",
+    "^@/hooks/useTranslation$":
+      "<rootDir>/src/test-utils/useTranslationMock.js",
+    "(.*)/hooks/useTranslation(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useTranslationMock.js",
+    "^@/hooks/web3/useScheduledDonation$":
+      "<rootDir>/src/test-utils/useScheduledDonationMock.js",
+    "(.*)/hooks/web3/useScheduledDonation(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useScheduledDonationMock.js",
+    "^@/hooks/useContributionStats$":
+      "<rootDir>/src/test-utils/useContributionStatsMock.js",
+    "(.*)/hooks/useContributionStats(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useContributionStatsMock.js",
+    "^@/hooks/useVolunteerVerification$":
+      "<rootDir>/src/test-utils/useVolunteerVerificationMock.js",
+    "(.*)/hooks/useVolunteerVerification(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useVolunteerVerificationMock.js",
+    "^@/hooks/useWalletAlias$":
+      "<rootDir>/src/test-utils/useWalletAliasMock.js",
+    "(.*)/hooks/useWalletAlias(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useWalletAliasMock.js",
     "^@/hooks/useProfile$": "<rootDir>/src/test-utils/useProfileMock.js",
-    "(.*)/hooks/useProfile(\\.tsx?)?$": "<rootDir>/src/test-utils/useProfileMock.js",
+    "(.*)/hooks/useProfile(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useProfileMock.js",
     "^@/hooks/useWallet$": "<rootDir>/src/test-utils/useWalletMock.js",
-    "(.*)/hooks/useWallet(\\.tsx?)?$": "<rootDir>/src/test-utils/useWalletMock.js",
+    "(.*)/hooks/useWallet(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useWalletMock.js",
     "^@/hooks/useOnboarding$": "<rootDir>/src/test-utils/useOnboardingMock.js",
-    "(.*)/hooks/useOnboarding(\\.tsx?)?$": "<rootDir>/src/test-utils/useOnboardingMock.js",
-    "^@/hooks/useSafeAutoConnect$": "<rootDir>/src/test-utils/safeAutoConnectMock.js",
-    "(.*)/hooks/useSafeAutoConnect(\\.tsx?)?$": "<rootDir>/src/test-utils/safeAutoConnectMock.js",
-    "^@/hooks/useWalletAuthSync$": "<rootDir>/src/test-utils/walletAuthSyncMock.js",
-    "(.*)/hooks/useWalletAuthSync(\\.tsx?)?$": "<rootDir>/src/test-utils/walletAuthSyncMock.js",
+    "(.*)/hooks/useOnboarding(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useOnboardingMock.js",
+    "^@/hooks/useSafeAutoConnect$":
+      "<rootDir>/src/test-utils/safeAutoConnectMock.js",
+    "(.*)/hooks/useSafeAutoConnect(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/safeAutoConnectMock.js",
+    "^@/hooks/useWalletAuthSync$":
+      "<rootDir>/src/test-utils/walletAuthSyncMock.js",
+    "(.*)/hooks/useWalletAuthSync(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/walletAuthSyncMock.js",
     // Context mocks
-    "^@/contexts/SettingsContext$": "<rootDir>/src/test-utils/settingsContextMock.js",
-    "(.*)/contexts/SettingsContext(\\.tsx?)?$": "<rootDir>/src/test-utils/settingsContextMock.js",
+    "^@/contexts/SettingsContext$":
+      "<rootDir>/src/test-utils/settingsContextMock.js",
+    "(.*)/contexts/SettingsContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/settingsContextMock.js",
     "^@/contexts/ToastContext$": "<rootDir>/src/test-utils/toastContextMock.js",
-    "(.*)/contexts/ToastContext(\\.tsx?)?$": "<rootDir>/src/test-utils/toastContextMock.js",
-    "^@/contexts/MultiChainContext$": "<rootDir>/src/test-utils/multiChainContextMock.js",
-    "(.*)/contexts/MultiChainContext(\\.tsx?)?$": "<rootDir>/src/test-utils/multiChainContextMock.js",
+    "(.*)/contexts/ToastContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/toastContextMock.js",
+    "^@/contexts/MultiChainContext$":
+      "<rootDir>/src/test-utils/multiChainContextMock.js",
+    "(.*)/contexts/MultiChainContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/multiChainContextMock.js",
     "^@/contexts/Web3Context$": "<rootDir>/src/test-utils/web3ContextMock.js",
-    "(.*)/contexts/Web3Context(\\.tsx?)?$": "<rootDir>/src/test-utils/web3ContextMock.js",
+    "(.*)/contexts/Web3Context(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/web3ContextMock.js",
     "^@/contexts/ChainContext$": "<rootDir>/src/test-utils/chainContextMock.js",
-    "(.*)/contexts/ChainContext(\\.tsx?)?$": "<rootDir>/src/test-utils/chainContextMock.js",
-    "^@/contexts/CurrencyContext$": "<rootDir>/src/test-utils/currencyContextMock.js",
-    "(.*)/contexts/CurrencyContext(\\.tsx?)?$": "<rootDir>/src/test-utils/currencyContextMock.js",
+    "(.*)/contexts/ChainContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/chainContextMock.js",
+    "^@/contexts/CurrencyContext$":
+      "<rootDir>/src/test-utils/currencyContextMock.js",
+    "(.*)/contexts/CurrencyContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/currencyContextMock.js",
     // Utility mocks
     "^@/utils/logger$": "<rootDir>/src/test-utils/loggerMock.js",
     "(.*)/utils/logger(\\.tsx?)?$": "<rootDir>/src/test-utils/loggerMock.js",
@@ -85,96 +111,149 @@ export default {
     "^@/utils/web3$": "<rootDir>/src/test-utils/web3UtilsMock.js",
     "(.*)/utils/web3(\\.tsx?)?$": "<rootDir>/src/test-utils/web3UtilsMock.js",
     "^@/utils/monitoring$": "<rootDir>/src/test-utils/monitoringMock.js",
-    "(.*)/utils/monitoring(\\.tsx?)?$": "<rootDir>/src/test-utils/monitoringMock.js",
+    "(.*)/utils/monitoring(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/monitoringMock.js",
     // Component mocks
-    "^@/components/CurrencyDisplay$": "<rootDir>/src/test-utils/currencyDisplayMock.js",
-    "(.*)/components/CurrencyDisplay(\\.tsx?)?$": "<rootDir>/src/test-utils/currencyDisplayMock.js",
-    "^@/components/ui/LoadingSpinner$": "<rootDir>/src/test-utils/loadingSpinnerMock.js",
-    "(.*)/components/ui/LoadingSpinner(\\.tsx?)?$": "<rootDir>/src/test-utils/loadingSpinnerMock.js",
-    "^@/components/contribution/DonationExportModal$": "<rootDir>/src/test-utils/donationExportModalMock.js",
-    "(.*)/contribution/DonationExportModal(\\.tsx?)?$": "<rootDir>/src/test-utils/donationExportModalMock.js",
-    "^@/components/contribution/DonationStats$": "<rootDir>/src/test-utils/donationStatsMock.js",
-    "(.*)/contribution/DonationStats(\\.tsx?)?$": "<rootDir>/src/test-utils/donationStatsMock.js",
-    "^\\.\/DonationStats(\\.tsx?)?$": "<rootDir>/src/test-utils/donationStatsMock.js",
-    "^@/components/contribution/RecentContributions$": "<rootDir>/src/test-utils/recentContributionsMock.js",
-    "(.*)/contribution/RecentContributions(\\.tsx?)?$": "<rootDir>/src/test-utils/recentContributionsMock.js",
-    "^\\.\/RecentContributions(\\.tsx?)?$": "<rootDir>/src/test-utils/recentContributionsMock.js",
-    "^@/components/contribution/VolunteerImpact$": "<rootDir>/src/test-utils/volunteerImpactMock.js",
-    "(.*)/contribution/VolunteerImpact(\\.tsx?)?$": "<rootDir>/src/test-utils/volunteerImpactMock.js",
-    "^\\.\/VolunteerImpact(\\.tsx?)?$": "<rootDir>/src/test-utils/volunteerImpactMock.js",
-    "^@/components/contribution/DonationLeaderboard$": "<rootDir>/src/test-utils/donationLeaderboardMock.js",
-    "(.*)/contribution/DonationLeaderboard(\\.tsx?)?$": "<rootDir>/src/test-utils/donationLeaderboardMock.js",
-    "^\\.\/DonationLeaderboard(\\.tsx?)?$": "<rootDir>/src/test-utils/donationLeaderboardMock.js",
-    "^@/components/contribution/VolunteerLeaderboard$": "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
-    "(.*)/contribution/VolunteerLeaderboard(\\.tsx?)?$": "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
-    "^\\.\/VolunteerLeaderboard(\\.tsx?)?$": "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
-    "^@/components/ErrorBoundary$": "<rootDir>/src/test-utils/errorBoundaryMock.js",
-    "(.*)/components/ErrorBoundary(\\.tsx?)?$": "<rootDir>/src/test-utils/errorBoundaryMock.js",
-    "^@/components/web3/ChainSelectionModal$": "<rootDir>/src/test-utils/chainSelectionModalMock.js",
-    "(.*)/components/web3/ChainSelectionModal(\\.tsx?)?$": "<rootDir>/src/test-utils/chainSelectionModalMock.js",
+    "^@/components/CurrencyDisplay$":
+      "<rootDir>/src/test-utils/currencyDisplayMock.js",
+    "(.*)/components/CurrencyDisplay(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/currencyDisplayMock.js",
+    "^@/components/ui/LoadingSpinner$":
+      "<rootDir>/src/test-utils/loadingSpinnerMock.js",
+    "(.*)/components/ui/LoadingSpinner(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/loadingSpinnerMock.js",
+    "^@/components/contribution/DonationExportModal$":
+      "<rootDir>/src/test-utils/donationExportModalMock.js",
+    "(.*)/contribution/DonationExportModal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donationExportModalMock.js",
+    "^@/components/contribution/DonationStats$":
+      "<rootDir>/src/test-utils/donationStatsMock.js",
+    "(.*)/contribution/DonationStats(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donationStatsMock.js",
+    "^\\.\/DonationStats(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donationStatsMock.js",
+    "^@/components/contribution/RecentContributions$":
+      "<rootDir>/src/test-utils/recentContributionsMock.js",
+    "(.*)/contribution/RecentContributions(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/recentContributionsMock.js",
+    "^\\.\/RecentContributions(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/recentContributionsMock.js",
+    "^@/components/contribution/VolunteerImpact$":
+      "<rootDir>/src/test-utils/volunteerImpactMock.js",
+    "(.*)/contribution/VolunteerImpact(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/volunteerImpactMock.js",
+    "^\\.\/VolunteerImpact(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/volunteerImpactMock.js",
+    "^@/components/contribution/DonationLeaderboard$":
+      "<rootDir>/src/test-utils/donationLeaderboardMock.js",
+    "(.*)/contribution/DonationLeaderboard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donationLeaderboardMock.js",
+    "^\\.\/DonationLeaderboard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donationLeaderboardMock.js",
+    "^@/components/contribution/VolunteerLeaderboard$":
+      "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
+    "(.*)/contribution/VolunteerLeaderboard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
+    "^\\.\/VolunteerLeaderboard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
+    "^@/components/ErrorBoundary$":
+      "<rootDir>/src/test-utils/errorBoundaryMock.js",
+    "(.*)/components/ErrorBoundary(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/errorBoundaryMock.js",
+    "^@/components/web3/ChainSelectionModal$":
+      "<rootDir>/src/test-utils/chainSelectionModalMock.js",
+    "(.*)/components/web3/ChainSelectionModal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/chainSelectionModalMock.js",
     // Layout and routes mocks
     "^@/components/layout$": "<rootDir>/src/test-utils/layoutMock.js",
-    "(.*)/components/layout(\\.tsx?)?$": "<rootDir>/src/test-utils/layoutMock.js",
+    "(.*)/components/layout(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/layoutMock.js",
     "^@/routes$": "<rootDir>/src/test-utils/routesMock.js",
     "(.*)/routes(\\.tsx?)?$": "<rootDir>/src/test-utils/routesMock.js",
     // Charity portal tabs mock.
     // CharityPortal.tsx uses a relative import "./charity-portal/components"
     // (no @/ prefix) so the pattern must match without the "/pages/" segment.
-    "(.*)/charity-portal/components(/index)?(\\.tsx?)?$": "<rootDir>/src/test-utils/charityPortalTabsMock.js",
+    "(.*)/charity-portal/components(/index)?(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityPortalTabsMock.js",
     // Config mocks
     "^@/config/contracts$": "<rootDir>/src/test-utils/contractsMock.js",
-    "(.*)/config/contracts(\\.tsx?)?$": "<rootDir>/src/test-utils/contractsMock.js",
+    "(.*)/config/contracts(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/contractsMock.js",
     "^@/config/chains$": "<rootDir>/src/test-utils/chainsMock.js",
     "(.*)/config/chains(\\.tsx?)?$": "<rootDir>/src/test-utils/chainsMock.js",
     // TipTap editor mocks
     "^@tiptap/react$": "<rootDir>/src/test-utils/tiptapReactMock.js",
     "^@tiptap/starter-kit$": "<rootDir>/src/test-utils/tiptapStarterKitMock.js",
-    "^@tiptap/extension-link$": "<rootDir>/src/test-utils/tiptapExtensionLinkMock.js",
+    "^@tiptap/extension-link$":
+      "<rootDir>/src/test-utils/tiptapExtensionLinkMock.js",
     // Additional component mocks
     "^@/components/ui/Card$": "<rootDir>/src/test-utils/cardMock.js",
-    "(.*)/components/ui/Card(\\.tsx?)?$": "<rootDir>/src/test-utils/cardMock.js",
-    "^@/components/web3/WalletModal/WalletModal$": "<rootDir>/src/test-utils/walletModalMock.js",
-    "(.*)/WalletModal/WalletModal(\\.tsx?)?$": "<rootDir>/src/test-utils/walletModalMock.js",
+    "(.*)/components/ui/Card(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/cardMock.js",
+    "^@/components/web3/WalletModal/WalletModal$":
+      "<rootDir>/src/test-utils/walletModalMock.js",
+    "(.*)/WalletModal/WalletModal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/walletModalMock.js",
     // Layout sub-component mocks (also match relative imports e.g. "./Logo")
     "(.*)/Logo(\\.tsx?)?$": "<rootDir>/src/test-utils/logoMock.js",
-    "(.*)/SettingsMenu(\\.tsx?)?$": "<rootDir>/src/test-utils/settingsMenuMock.js",
+    "(.*)/SettingsMenu(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/settingsMenuMock.js",
     // Broader context patterns for relative imports within context files
-    "(.*)/ToastContext(\\.tsx?)?$": "<rootDir>/src/test-utils/toastContextMock.js",
+    "(.*)/ToastContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/toastContextMock.js",
     // Auth context and hook mocks
     "^@/contexts/AuthContext$": "<rootDir>/src/test-utils/authContextMock.js",
-    "(.*)/contexts/AuthContext(\\.tsx?)?$": "<rootDir>/src/test-utils/authContextMock.js",
+    "(.*)/contexts/AuthContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/authContextMock.js",
     "^@/hooks/useAuth$": "<rootDir>/src/test-utils/authContextMock.js",
-    "(.*)/hooks/useAuth(\\.tsx?)?$": "<rootDir>/src/test-utils/authContextMock.js",
+    "(.*)/hooks/useAuth(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/authContextMock.js",
     // useToast hook mock (same mock file as ToastContext)
     "^@/hooks/useToast$": "<rootDir>/src/test-utils/toastContextMock.js",
-    "(.*)/hooks/useToast(\\.tsx?)?$": "<rootDir>/src/test-utils/toastContextMock.js",
+    "(.*)/hooks/useToast(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/toastContextMock.js",
     // Button and Input component mocks
     "^@/components/ui/Button$": "<rootDir>/src/test-utils/buttonMock.js",
-    "(.*)/components/ui/Button(\\.tsx?)?$": "<rootDir>/src/test-utils/buttonMock.js",
+    "(.*)/components/ui/Button(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/buttonMock.js",
     "^@/components/ui/Input$": "<rootDir>/src/test-utils/inputMock.js",
-    "(.*)/components/ui/Input(\\.tsx?)?$": "<rootDir>/src/test-utils/inputMock.js",
+    "(.*)/components/ui/Input(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/inputMock.js",
     // Auth component mocks
-    "^@/components/auth/PasswordStrengthBar$": "<rootDir>/src/test-utils/passwordStrengthBarMock.js",
-    "(.*)/components/auth/PasswordStrengthBar(\\.tsx?)?$": "<rootDir>/src/test-utils/passwordStrengthBarMock.js",
+    "^@/components/auth/PasswordStrengthBar$":
+      "<rootDir>/src/test-utils/passwordStrengthBarMock.js",
+    "(.*)/components/auth/PasswordStrengthBar(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/passwordStrengthBarMock.js",
     // Additional hook mocks
     "^@/hooks/useCountries$": "<rootDir>/src/test-utils/useCountriesMock.js",
-    "(.*)/hooks/useCountries(\\.tsx?)?$": "<rootDir>/src/test-utils/useCountriesMock.js",
+    "(.*)/hooks/useCountries(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useCountriesMock.js",
     // Validation utility mock
     "^@/utils/validation$": "<rootDir>/src/test-utils/validationMock.js",
-    "(.*)/utils/validation(\\.tsx?)?$": "<rootDir>/src/test-utils/validationMock.js",
+    "(.*)/utils/validation(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/validationMock.js",
     // Chainlink config mock
     "^@/config/chainlink$": "<rootDir>/src/test-utils/chainlinkMock.js",
-    "(.*)/config/chainlink(\\.tsx?)?$": "<rootDir>/src/test-utils/chainlinkMock.js",
+    "(.*)/config/chainlink(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/chainlinkMock.js",
     // GiveDashboard sub-component mocks
-    "^@/components/settings/WalletAliasSettings$": "<rootDir>/src/test-utils/walletAliasSettingsComponentMock.js",
-    "(.*)/settings/WalletAliasSettings(\\.tsx?)?$": "<rootDir>/src/test-utils/walletAliasSettingsComponentMock.js",
-    "^@/components/donor/ScheduledDonations$": "<rootDir>/src/test-utils/scheduledDonationsComponentMock.js",
-    "(.*)/donor/ScheduledDonations(\\.tsx?)?$": "<rootDir>/src/test-utils/scheduledDonationsComponentMock.js",
-    "^@/components/volunteer/self-reported$": "<rootDir>/src/test-utils/selfReportedMock.js",
-    "(.*)/volunteer/self-reported(\\.tsx?)?$": "<rootDir>/src/test-utils/selfReportedMock.js",
+    "^@/components/settings/WalletAliasSettings$":
+      "<rootDir>/src/test-utils/walletAliasSettingsComponentMock.js",
+    "(.*)/settings/WalletAliasSettings(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/walletAliasSettingsComponentMock.js",
+    "^@/components/donor/ScheduledDonations$":
+      "<rootDir>/src/test-utils/scheduledDonationsComponentMock.js",
+    "(.*)/donor/ScheduledDonations(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/scheduledDonationsComponentMock.js",
+    "^@/components/volunteer/self-reported$":
+      "<rootDir>/src/test-utils/selfReportedMock.js",
+    "(.*)/volunteer/self-reported(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/selfReportedMock.js",
     // OpportunityForm mock — inline jest.mock() doesn't intercept in ESM mode
-    "^@/components/volunteer/OpportunityForm$": "<rootDir>/src/test-utils/opportunityFormMock.js",
-    "(.*)/components/volunteer/OpportunityForm(\\.tsx?)?$": "<rootDir>/src/test-utils/opportunityFormMock.js",
+    "^@/components/volunteer/OpportunityForm$":
+      "<rootDir>/src/test-utils/opportunityFormMock.js",
+    "(.*)/components/volunteer/OpportunityForm(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/opportunityFormMock.js",
     // Generic path mapping
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",

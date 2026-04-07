@@ -137,7 +137,6 @@ jest.mock("@/lib/supabase", () => {
   };
 });
 
-
 describe("CharityPortal", () => {
   const renderWithRouter = (props = {}) => {
     return render(

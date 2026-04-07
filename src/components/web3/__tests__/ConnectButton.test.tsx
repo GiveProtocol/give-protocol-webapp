@@ -121,7 +121,9 @@ describe("ConnectButton", () => {
       await waitFor(() => {
         expect(screen.getAllByText("EVM").length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText("Solana").length).toBeGreaterThanOrEqual(1);
-        expect(screen.getAllByText("Polkadot").length).toBeGreaterThanOrEqual(1);
+        expect(screen.getAllByText("Polkadot").length).toBeGreaterThanOrEqual(
+          1,
+        );
       });
     });
   });

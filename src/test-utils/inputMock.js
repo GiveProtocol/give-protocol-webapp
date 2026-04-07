@@ -7,7 +7,9 @@ let _inputCounter = 0;
 export const Input = ({ label, error, id, ...props }) => {
   // Generate a stable ID when none is provided, so htmlFor links to the input.
   // This mirrors the real component's useId() behaviour.
-  const inputId = id || `input-mock-${label ? label.toLowerCase().replace(/\s+/g, "-") : ++_inputCounter}`;
+  const inputId =
+    id ||
+    `input-mock-${label ? label.toLowerCase().replace(/\s+/g, "-") : ++_inputCounter}`;
   return (
     <div>
       {label && <label htmlFor={inputId}>{label}</label>}

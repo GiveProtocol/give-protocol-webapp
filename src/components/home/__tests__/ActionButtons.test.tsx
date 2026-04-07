@@ -10,17 +10,29 @@ describe("ActionButtons", () => {
   });
 
   it("renders successfully", () => {
-    const { container } = render(<MemoryRouter><ActionButtons /></MemoryRouter>);
+    const { container } = render(
+      <MemoryRouter>
+        <ActionButtons />
+      </MemoryRouter>,
+    );
     expect(container.firstChild).toBeInTheDocument();
   });
 
   it('renders the "Start Donating" text', () => {
-    render(<MemoryRouter><ActionButtons /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <ActionButtons />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Start Donating")).toBeInTheDocument();
   });
 
   it("renders a link pointing to /browse", () => {
-    render(<MemoryRouter><ActionButtons /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <ActionButtons />
+      </MemoryRouter>,
+    );
     const link = screen.getByRole("link");
     expect(link).toHaveAttribute("href", "/browse");
   });
