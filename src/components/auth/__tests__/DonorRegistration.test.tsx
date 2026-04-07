@@ -60,7 +60,7 @@ describe("DonorRegistration", () => {
   it("shows validation error for invalid email", async () => {
     render(<DonorRegistration />);
     fireEvent.change(screen.getByLabelText(/email/i), {
-      target: { value: "not-an-email" },
+      target: { value: "bad@domain" },
     });
     fireEvent.change(screen.getByLabelText(/^password$/i), {
       target: { value: "password123" },

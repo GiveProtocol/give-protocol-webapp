@@ -230,29 +230,14 @@ describe("GiveDashboard", () => {
   });
 
   describe("Wallet Connection", () => {
-    it("shows connect wallet page when user is authenticated but wallet not connected", () => {
+    it("shows dashboard when user is authenticated but wallet not connected", () => {
       mockUseWeb3.mockReturnValue(
         createMockWeb3({ address: null, isConnected: false }),
       );
 
       renderWithRouter();
-      expect(screen.getByText("Connect Your Wallet")).toBeInTheDocument();
-      expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
-    });
-
-    it("calls connect when Connect Wallet button is clicked", () => {
-      const mockConnect = jest.fn();
-      mockUseWeb3.mockReturnValue(
-        createMockWeb3({
-          address: null,
-          isConnected: false,
-          connect: mockConnect,
-        }),
-      );
-
-      renderWithRouter();
-      fireEvent.click(screen.getByText("Connect Wallet"));
-      expect(mockConnect).toHaveBeenCalled();
+      // Dashboard renders normally even without wallet connection
+      expect(screen.getByText("dashboard.title")).toBeInTheDocument();
     });
   });
 
