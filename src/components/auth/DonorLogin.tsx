@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -15,8 +15,22 @@ export const DonorLogin: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
+  const redirectTarget = useRef<string | null>(null);
 
   const _from = location.state?.from?.pathname || "/give-dashboard";
+
+  useEffect(() => {
+    if (redirectCountdown === null) return undefined;
+    if (redirectCountdown === 0) {
+      if (redirectTarget.current) {
+        navigate(redirectTarget.current);
+      }
+      return undefined;
+    }
+    const id = setTimeout(() => setRedirectCountdown((c) => (c !== null ? c - 1 : null)), 1000);
+    return () => clearTimeout(id);
+  }, [redirectCountdown, navigate]);
 
   const handleEmailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,11 +64,10 @@ export const DonorLogin: React.FC = () => {
             "Donor User Account Not Found. This email is registered as a charity account. Please use the Charity Login.",
           );
 
-          // Disconnect wallet and redirect to login page after a short delay
+          // Disconnect wallet and start countdown redirect
           await disconnect();
-          setTimeout(() => {
-            navigate("/login?type=charity");
-          }, 3000);
+          redirectTarget.current = "/login?type=charity";
+          setRedirectCountdown(3);
         } else {
           setError(message);
         }
@@ -72,7 +85,12 @@ export const DonorLogin: React.FC = () => {
           aria-live="assertive"
         >
           <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0" aria-hidden="true" />
-          <span>{error}</span>
+          <span>
+            {error}
+            {redirectCountdown !== null && redirectCountdown > 0 && (
+              <> Redirecting in {redirectCountdown}&hellip;</>
+            )}
+          </span>
         </div>
       )}
       <Input

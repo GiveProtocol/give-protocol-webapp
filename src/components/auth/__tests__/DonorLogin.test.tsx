@@ -1,9 +1,10 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, act } from "@testing-library/react";
 import { DonorLogin } from "../DonorLogin";
 
 const mockLogin = jest.fn();
+const mockNavigate = jest.fn();
 
 jest.mock("@/contexts/AuthContext", () => ({
   useAuth: () => ({
@@ -67,7 +68,7 @@ jest.mock("@/contexts/SettingsContext", () => ({
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn(),
+  useNavigate: () => mockNavigate,
   useLocation: () => ({
     state: null,
     pathname: "/login",
@@ -80,6 +81,7 @@ jest.mock("react-router-dom", () => ({
 describe("DonorLogin", () => {
   beforeEach(() => {
     mockLogin.mockClear();
+    mockNavigate.mockClear();
   });
 
   it("renders login form", () => {
@@ -107,5 +109,37 @@ describe("DonorLogin", () => {
       "password123",
       "donor",
     );
+  });
+
+  it("shows countdown and redirects on charity account mismatch", async () => {
+    jest.useFakeTimers();
+    mockLogin.mockRejectedValue(
+      new Error("This account is registered as a charity account"),
+    );
+
+    render(<DonorLogin />);
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "charity@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: { value: "pass" },
+    });
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    });
+
+    expect(screen.getByRole("alert")).toHaveTextContent(/Redirecting in 3/);
+
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect(screen.getByRole("alert")).toHaveTextContent(/Redirecting in 2/);
+
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect(screen.getByRole("alert")).toHaveTextContent(/Redirecting in 1/);
+
+    await act(async () => { jest.advanceTimersByTime(1000); });
+    expect(mockNavigate).toHaveBeenCalledWith("/login?type=charity");
+
+    jest.useRealTimers();
   });
 });
