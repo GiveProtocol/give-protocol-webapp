@@ -67,11 +67,6 @@ export const DonorRegistration: React.FC = () => {
     [formData, register],
   );
 
-  const handleGoogleOAuth = useCallback(() => {
-    // Google OAuth integration placeholder
-    // Full implementation pending OAuth provider configuration
-  }, []);
-
   return (
     <div className="space-y-6">
       <form
@@ -151,7 +146,8 @@ export const DonorRegistration: React.FC = () => {
         type="button"
         variant="secondary"
         className="w-full"
-        onClick={handleGoogleOAuth}
+        disabled
+        title="Google sign-in coming soon"
       >
         <svg className="w-5 h-5 mr-2" viewBox="0 0 24 24" aria-hidden="true">
           <path

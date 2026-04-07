@@ -186,6 +186,12 @@ export function useUnifiedAuth(): UnifiedAuthState {
       setLoading(true);
       setError(null);
 
+      if (typeof window !== 'undefined' && !('ethereum' in window)) {
+        throw new Error(
+          'No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.',
+        );
+      }
+
       if (!web3.provider) {
         await web3.connect();
       }
@@ -195,9 +201,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
         throw new Error('No wallet provider available');
       }
 
-      const signer = await new ethers.BrowserProvider(
-        (window as unknown as { ethereum: ethers.Eip1193Provider }).ethereum,
-      ).getSigner();
+      const signer = await (provider as ethers.BrowserProvider).getSigner();
       const address = await signer.getAddress();
       const nonce = generateNonce();
       const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
@@ -248,9 +252,11 @@ export function useUnifiedAuth(): UnifiedAuthState {
         await web3.connect();
       }
 
-      const signer = await new ethers.BrowserProvider(
-        (window as unknown as { ethereum: ethers.Eip1193Provider }).ethereum,
-      ).getSigner();
+      const walletProvider = web3.provider;
+      if (!walletProvider) {
+        throw new Error('No wallet provider available');
+      }
+      const signer = await (walletProvider as ethers.BrowserProvider).getSigner();
       const address = await signer.getAddress();
       const message = `Link wallet to Give Protocol account.\n\nAccount: ${auth.user.email ?? auth.user.id}\nTimestamp: ${new Date().toISOString()}`;
       const signature = await signer.signMessage(message);
@@ -292,7 +298,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
     } finally {
       setLoading(false);
     }
-  }, [auth.user, web3.isConnected, web3.connect]);
+  }, [auth.user, web3.isConnected, web3.connect, web3.provider]);
 
   const unlinkWallet = useCallback(async () => {
     try {
