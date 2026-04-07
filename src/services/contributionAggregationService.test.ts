@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach } from "@jest/globals";
+import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import {
   supabase,
   setMockResult,
@@ -735,4 +735,7 @@ describe("contributionAggregationService", () => {
       jest.restoreAllMocks();
     });
   });
+
+  // Privacy filtering tests are in contributionPrivacyFiltering.test.ts
+  // to avoid state contamination from jest.restoreAllMocks() in error catch tests.
 });

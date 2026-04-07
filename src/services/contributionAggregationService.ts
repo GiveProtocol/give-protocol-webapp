@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
+import { getPrivateUserIds } from "@/services/privacySettingsService";
 
 /**
  * Contribution source types
@@ -479,13 +480,15 @@ export async function getVolunteerLeaderboard(
       ? supabase.from("self_reported_hours").select("volunteer_id, hours, validation_status")
       : supabase.from("self_reported_hours").select("volunteer_id, hours, validation_status").eq("validation_status", "validated");
 
-    // Fetch both sources in parallel
+    // Fetch data sources and privacy settings in parallel
     const [
       { data: formalData, error: formalError },
       { data: selfReportedData, error: selfReportedError },
+      privateUserIds,
     ] = await Promise.all([
       supabase.from("volunteer_hours").select("volunteer_id, hours").eq("status", "approved"),
       selfReportedQuery,
+      getPrivateUserIds("showVolunteerHours"),
     ]);
 
     if (formalError) {
@@ -504,8 +507,9 @@ export async function getVolunteerLeaderboard(
     aggregateHours(formalData, "formal", userHours);
     aggregateHours(selfReportedData, "selfReported", userHours);
 
-    // Convert to array and sort
+    // Convert to array, filter out private users, and sort
     const entries: VolunteerLeaderboardEntry[] = Array.from(userHours.entries())
+      .filter(([userId]) => !privateUserIds.has(userId))
       .map(([userId, hours]) => ({
         rank: 0,
         userId,
@@ -535,13 +539,15 @@ export async function getDonorLeaderboard(
   limit = 10,
 ): Promise<DonorLeaderboardEntry[]> {
   try {
-    // Fetch both donation sources in parallel
+    // Fetch donation sources and privacy settings in parallel
     const [
       { data, error },
       { data: fiatData, error: fiatError },
+      privateUserIds,
     ] = await Promise.all([
       supabase.from("donations").select("donor_id, amount, charity_id"),
       supabase.from("fiat_donations").select("donor_id, amount_cents, charity_id"),
+      getPrivateUserIds("showDonations"),
     ]);
 
     if (error) {
@@ -585,8 +591,9 @@ export async function getDonorLeaderboard(
       userDonations.set(record.donor_id, existing);
     });
 
-    // Convert to array and sort
+    // Convert to array, filter out private users, and sort
     const entries: DonorLeaderboardEntry[] = Array.from(userDonations.entries())
+      .filter(([userId]) => !privateUserIds.has(userId))
       .map(([userId, stats]) => ({
         rank: 0,
         userId,
@@ -624,19 +631,23 @@ export async function getGlobalContributionStats(): Promise<{
   totalSkillsEndorsed: number;
 }> {
   try {
-    // Fetch all global stats in parallel
+    // Fetch all global stats and privacy settings in parallel
     const [
       { data: donations, error: donationsError },
       { data: fiatDonations, error: fiatDonationsError },
       { data: formalHours, error: formalError },
       { data: selfReported, error: selfReportedError },
       { count: endorsementsCount, error: endorsementsError },
+      privateDonorIds,
+      privateVolunteerIds,
     ] = await Promise.all([
       supabase.from("donations").select("amount, donor_id"),
       supabase.from("fiat_donations").select("amount_cents, donor_id"),
       supabase.from("volunteer_hours").select("hours, volunteer_id").eq("status", "approved"),
       supabase.from("self_reported_hours").select("hours, validation_status, volunteer_id"),
       supabase.from("skill_endorsements").select("id", { count: "exact", head: true }),
+      getPrivateUserIds("showDonations"),
+      getPrivateUserIds("showVolunteerHours"),
     ]);
 
     if (donationsError) {
@@ -655,26 +666,40 @@ export async function getGlobalContributionStats(): Promise<{
       Logger.warn("Error fetching global skill endorsements", { error: endorsementsError });
     }
 
-    // Calculate stats
+    // Filter out private users from individual records
+    const publicDonations = donations?.filter(
+      (d) => !privateDonorIds.has(d.donor_id),
+    );
+    const publicFiatDonations = fiatDonations?.filter(
+      (d) => !privateDonorIds.has(d.donor_id),
+    );
+    const publicFormalHours = formalHours?.filter(
+      (h) => !privateVolunteerIds.has(h.volunteer_id),
+    );
+    const publicSelfReported = selfReported?.filter(
+      (h) => !privateVolunteerIds.has(h.volunteer_id),
+    );
+
+    // Calculate stats from public-only data
     const cryptoDonationAmount =
-      donations?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
+      publicDonations?.reduce((sum, d) => sum + (d.amount || 0), 0) || 0;
     const fiatDonationAmount =
-      fiatDonations?.reduce((sum, d) => sum + (d.amount_cents || 0), 0) / 100 || 0;
+      publicFiatDonations?.reduce((sum, d) => sum + (d.amount_cents || 0), 0) / 100 || 0;
     const totalDonationAmount = cryptoDonationAmount + fiatDonationAmount;
 
     const uniqueDonors = new Set([
-      ...(donations?.map((d) => d.donor_id) || []),
-      ...(fiatDonations?.map((d) => d.donor_id) || []),
+      ...(publicDonations?.map((d) => d.donor_id) || []),
+      ...(publicFiatDonations?.map((d) => d.donor_id) || []),
     ]);
 
     const totalFormalHours =
-      formalHours?.reduce((sum, h) => sum + (h.hours || 0), 0) || 0;
+      publicFormalHours?.reduce((sum, h) => sum + (h.hours || 0), 0) || 0;
 
     let validatedSelfReported = 0;
     let pendingSelfReported = 0;
     let totalSelfReported = 0;
 
-    selfReported?.forEach((h) => {
+    publicSelfReported?.forEach((h) => {
       const hours = h.hours || 0;
       totalSelfReported += hours;
       if (h.validation_status === "validated") {
@@ -684,17 +709,17 @@ export async function getGlobalContributionStats(): Promise<{
       }
     });
 
-    // Get unique volunteers from both sources
+    // Get unique public volunteers from both sources
     const volunteerIds = new Set<string>();
-    formalHours?.forEach((h) => {
+    publicFormalHours?.forEach((h) => {
       if (h.volunteer_id) volunteerIds.add(h.volunteer_id);
     });
-    selfReported?.forEach((h) => {
+    publicSelfReported?.forEach((h) => {
       if (h.volunteer_id) volunteerIds.add(h.volunteer_id);
     });
 
     return {
-      totalDonations: (donations?.length || 0) + (fiatDonations?.length || 0),
+      totalDonations: (publicDonations?.length || 0) + (publicFiatDonations?.length || 0),
       totalDonationAmount,
       totalFormalVolunteerHours: totalFormalHours,
       totalSelfReportedHours: {
