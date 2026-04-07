@@ -1,42 +1,30 @@
-import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { DonorRegistration } from "../DonorRegistration";
+import { useAuth } from "@/contexts/AuthContext";
+
+// AuthContext, useAuth, and PasswordStrengthBar are all mocked via moduleNameMapper
 
 const mockRegister = jest.fn();
-
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({
-    register: mockRegister,
-    loading: false,
-    error: null,
-    user: null,
-    isAuthenticated: false,
-    login: jest.fn(),
-    logout: jest.fn(),
-  }),
-  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
-}));
-
-jest.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({
-    register: mockRegister,
-    loading: false,
-    error: null,
-    user: null,
-    isAuthenticated: false,
-    login: jest.fn(),
-    logout: jest.fn(),
-  }),
-}));
-
-jest.mock("@/components/auth/PasswordStrengthBar", () => ({
-  PasswordStrengthBar: () => null,
-}));
+const mockUseAuth = jest.mocked(useAuth);
 
 describe("DonorRegistration", () => {
   beforeEach(() => {
     mockRegister.mockClear();
+    mockUseAuth.mockReturnValue({
+      register: mockRegister,
+      loading: false,
+      error: null,
+      user: null,
+      userType: null,
+      isAuthenticated: false,
+      login: jest.fn(),
+      loginWithGoogle: jest.fn(),
+      logout: jest.fn(),
+      resetPassword: jest.fn(),
+      refreshSession: jest.fn(),
+      sendUsernameReminder: jest.fn(),
+    });
   });
 
   it("renders registration form fields and submit button", () => {
@@ -70,9 +58,7 @@ describe("DonorRegistration", () => {
     });
     fireEvent.click(screen.getByRole("button", { name: /create donor account/i }));
     await waitFor(() => {
-      expect(screen.getByRole("alert")).toHaveTextContent(
-        /valid email/i,
-      );
+      expect(screen.getByRole("alert")).toHaveTextContent(/valid email/i);
     });
     expect(mockRegister).not.toHaveBeenCalled();
   });

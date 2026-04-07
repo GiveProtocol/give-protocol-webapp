@@ -1,15 +1,6 @@
 import { jest } from "@jest/globals";
 import { PerformanceMetrics } from "../metrics";
-import { Logger } from "../../logger";
-
-// Mock the Logger
-jest.mock("../../logger", () => ({
-  Logger: {
-    warn: jest.fn(),
-    info: jest.fn(),
-    error: jest.fn(),
-  },
-}));
+import { Logger } from "@/utils/logger";
 
 // Mock performance.now()
 const mockPerformanceNow = jest.spyOn(performance, "now");

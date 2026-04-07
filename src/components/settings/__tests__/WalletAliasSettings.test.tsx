@@ -1,7 +1,10 @@
-import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { WalletAliasSettings } from "../WalletAliasSettings";
+import { useWalletAlias } from "@/hooks/useWalletAlias";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/useToast";
 import {
   createMockWalletAlias,
   createMockWeb3,
@@ -9,94 +12,14 @@ import {
   testAddresses,
 } from "@/test-utils/mockSetup";
 
-// Top-level jest.fn() instances for robust ESM mock support
-const mockUseWalletAlias = jest.fn();
-const mockUseWeb3 = jest.fn();
-const mockUseAuth = jest.fn();
-const mockUseToast = jest.fn();
+// All mocks handled via moduleNameMapper:
+// useWalletAlias, Web3Context, AuthContext/useAuth, useToast/ToastContext,
+// utils/web3, useTranslation, logger, ui/Button, ui/Input, ui/Card
 
-jest.mock("@/hooks/useWalletAlias", () => ({
-  useWalletAlias: (...args: unknown[]) => mockUseWalletAlias(...args),
-}));
-jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: (...args: unknown[]) => mockUseWeb3(...args),
-}));
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: (...args: unknown[]) => mockUseAuth(...args),
-}));
-jest.mock("@/hooks/useToast", () => ({
-  useToast: (...args: unknown[]) => mockUseToast(...args),
-}));
-jest.mock("@/utils/web3", () => ({
-  shortenAddress: jest.fn(
-    (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
-  ),
-}));
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(() => ({
-    t: jest.fn((key: string, fallback?: string) => fallback || key),
-  })),
-}));
-jest.mock("@/utils/logger", () => ({
-  Logger: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
-/* eslint-disable react/prop-types */
-jest.mock("@/components/ui/Button", () => ({
-  Button: ({
-    children,
-    onClick,
-    disabled,
-    className,
-    type,
-    ...props
-  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: string;
-    size?: string;
-  }) => (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={className}
-      type={type}
-      {...props}
-    >
-      {children}
-    </button>
-  ),
-}));
-jest.mock("@/components/ui/Input", () => ({
-  Input: ({
-    label,
-    error,
-    ...props
-  }: React.InputHTMLAttributes<HTMLInputElement> & {
-    label?: string;
-    error?: string;
-  }) => (
-    <div>
-      {label && <label>{label}</label>}
-      <input {...props} data-testid="alias-input" />
-      {error && <span>{error}</span>}
-    </div>
-  ),
-}));
-jest.mock("@/components/ui/Card", () => ({
-  Card: ({
-    children,
-    className,
-    ...props
-  }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div data-testid="card" className={className} {...props}>
-      {children}
-    </div>
-  ),
-}));
-/* eslint-enable react/prop-types */
+const mockUseWalletAlias = jest.mocked(useWalletAlias);
+const mockUseWeb3 = jest.mocked(useWeb3);
+const mockUseAuth = jest.mocked(useAuth);
+const mockUseToast = jest.mocked(useToast);
 
 describe("WalletAliasSettings", () => {
   const mockSetWalletAlias = jest.fn();
@@ -136,7 +59,7 @@ describe("WalletAliasSettings", () => {
     render(<WalletAliasSettings />);
     // Click "Set Wallet Alias" to enter edit mode
     fireEvent.click(screen.getByText("Set Wallet Alias"));
-    const input = screen.getByTestId("alias-input");
+    const input = screen.getByRole("textbox");
     if (value) fireEvent.change(input, { target: { value } });
     // Submit form via Save Alias button
     await act(() => {
@@ -170,16 +93,16 @@ describe("WalletAliasSettings", () => {
     it("enters edit mode when set wallet alias is clicked", () => {
       render(<WalletAliasSettings />);
       fireEvent.click(screen.getByText("Set Wallet Alias"));
-      expect(screen.getByTestId("alias-input")).toBeInTheDocument();
+      expect(screen.getByRole("textbox")).toBeInTheDocument();
     });
 
     it("allows user to enter alias in edit mode", () => {
       render(<WalletAliasSettings />);
       fireEvent.click(screen.getByText("Set Wallet Alias"));
-      fireEvent.change(screen.getByTestId("alias-input"), {
+      fireEvent.change(screen.getByRole("textbox"), {
         target: { value: "MyWallet" },
       });
-      expect(screen.getByTestId("alias-input")).toHaveValue("MyWallet");
+      expect(screen.getByRole("textbox")).toHaveValue("MyWallet");
     });
 
     it("submits alias when form is submitted", async () => {
@@ -218,8 +141,8 @@ describe("WalletAliasSettings", () => {
 
       fireEvent.click(screen.getByText("Edit"));
 
-      expect(screen.getByTestId("alias-input")).toBeInTheDocument();
-      expect(screen.getByTestId("alias-input")).toHaveValue("ExistingAlias");
+      expect(screen.getByRole("textbox")).toBeInTheDocument();
+      expect(screen.getByRole("textbox")).toHaveValue("ExistingAlias");
     });
 
     describe("Edit Mode", () => {
@@ -239,7 +162,7 @@ describe("WalletAliasSettings", () => {
         fireEvent.click(screen.getByText("Cancel"));
 
         expect(screen.getByText("ExistingAlias")).toBeInTheDocument();
-        expect(screen.queryByTestId("alias-input")).not.toBeInTheDocument();
+        expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
       });
     });
   });

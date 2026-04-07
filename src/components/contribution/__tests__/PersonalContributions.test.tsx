@@ -8,42 +8,8 @@ interface StatsShape {
   totalDonated: number;
 }
 
-jest.mock("@/hooks/useContributionStats", () => ({
-  useUserContributionStats: jest.fn(),
-}));
-
-jest.mock("../DonationStats", () => ({
-  DonationStats: ({
-    stats,
-    isPersonal,
-  }: {
-    stats?: StatsShape;
-    isPersonal?: boolean;
-  }) => (
-    <div data-testid="donation-stats">
-      {stats
-        ? JSON.stringify({ totalDonated: stats.totalDonated })
-        : "No stats"}
-      {isPersonal ? " (personal)" : ""}
-    </div>
-  ),
-}));
-
-jest.mock("../RecentContributions", () => ({
-  RecentContributions: () => (
-    <div data-testid="recent-contributions">Recent Contributions</div>
-  ),
-}));
-
-jest.mock("../VolunteerImpact", () => ({
-  VolunteerImpact: () => (
-    <div data-testid="volunteer-impact">Volunteer Impact</div>
-  ),
-}));
-
-jest.mock("@/components/ui/LoadingSpinner", () => ({
-  LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
-}));
+// useUserContributionStats, DonationStats, RecentContributions, VolunteerImpact,
+// and LoadingSpinner are all mocked via moduleNameMapper
 
 const mockUseUserContributionStats = jest.mocked(useUserContributionStats);
 

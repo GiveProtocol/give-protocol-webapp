@@ -1,73 +1,41 @@
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { OpportunityManagement } from "../OpportunityManagement";
+import { useProfile } from "@/hooks/useProfile";
+import { supabase, setMockResult, resetMockState } from "@/lib/supabase";
 
-// Mock dependencies
-jest.mock("@/hooks/useProfile", () => ({
-  useProfile: () => ({ profile: { id: "charity-123" } }),
-}));
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: () => ({
-    t: (key: string, fallback?: string) => fallback || key,
-  }),
-}));
-jest.mock("@/components/volunteer/OpportunityForm", () => ({
-  OpportunityForm: ({
-    onSuccess,
-    onCancel,
-  }: {
-    onSuccess?: () => void;
-    onCancel?: () => void;
-  }) => (
-    <div data-testid="opportunity-form">
-      <span>Add Opportunity</span>
-      <button onClick={onSuccess}>Save</button>
-      <button onClick={onCancel}>Cancel Form</button>
-    </div>
-  ),
-}));
-jest.mock("@/lib/supabase", () => ({
-  supabase: {
-    from: jest.fn(() => ({
-      select: jest.fn(() => ({
-        eq: jest.fn(() => ({
-          order: jest.fn(() =>
-            Promise.resolve({
-              data: [
-                {
-                  id: "1",
-                  title: "Beach Cleanup",
-                  description: "Help clean the beach",
-                  work_language: "en",
-                  requirements: "None",
-                  time_commitment: "2 hours",
-                  skills: ["cleaning", "sorting"],
-                  commitment: "2 hours",
-                  location: "Beach",
-                  type: "in-person",
-                  status: "active",
-                  created_at: "2024-01-01",
-                },
-              ],
-              error: null,
-            }),
-          ),
-        })),
-      })),
-      insert: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      update: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      })),
-      delete: jest.fn(() => ({
-        eq: jest.fn(() => Promise.resolve({ data: null, error: null })),
-      })),
-    })),
-  },
-}));
+// OpportunityForm is handled via moduleNameMapper in jest.config.mjs —
+// inline jest.mock() does not intercept ESM imports in Jest 30 + ts-jest.
+
+const beachCleanupOpportunity = {
+  id: "1",
+  title: "Beach Cleanup",
+  description: "Help clean the beach",
+  work_language: "en",
+  requirements: "None",
+  time_commitment: "2 hours",
+  skills: ["cleaning", "sorting"],
+  commitment: "2 hours",
+  location: "Beach",
+  type: "in-person",
+  status: "active",
+  created_at: "2024-01-01",
+};
 
 describe("OpportunityManagement", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    resetMockState();
+    jest.mocked(useProfile).mockReturnValue({
+      profile: { id: "charity-123" },
+      loading: false,
+      error: null,
+      updateProfile: jest.fn(),
+    });
+    setMockResult("volunteer_opportunities", {
+      data: [beachCleanupOpportunity],
+      error: null,
+    });
   });
 
   it("renders opportunities list", async () => {
@@ -108,14 +76,12 @@ describe("OpportunityManagement", () => {
     render(<OpportunityManagement />);
 
     await waitFor(() => {
-      const mockSupabase = jest.requireMock("@/lib/supabase").supabase;
-      expect(mockSupabase.from).toHaveBeenCalledWith("volunteer_opportunities");
+      expect(supabase.from).toHaveBeenCalledWith("volunteer_opportunities");
     });
   });
 
   it("handles supabase error", async () => {
-    const mockSupabase = jest.requireMock("@/lib/supabase").supabase;
-    mockSupabase.from.mockReturnValueOnce({
+    (supabase.from as jest.Mock).mockReturnValueOnce({
       select: () => ({
         eq: () => ({
           order: () =>
@@ -144,8 +110,7 @@ describe("OpportunityManagement", () => {
   });
 
   it("shows empty state when no opportunities", async () => {
-    const mockSupabase = jest.requireMock("@/lib/supabase").supabase;
-    mockSupabase.from.mockReturnValueOnce({
+    (supabase.from as jest.Mock).mockReturnValueOnce({
       select: () => ({
         eq: () => ({
           order: () =>

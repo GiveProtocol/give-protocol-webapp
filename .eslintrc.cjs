@@ -42,6 +42,15 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      // Test-utils mock files are plain-JS stubs — prop-types validation is irrelevant.
+      files: ["src/test-utils/**/*.js"],
+      rules: {
+        "react/prop-types": "off",
+      },
+    },
+  ],
   settings: {
     react: {
       version: "detect",
