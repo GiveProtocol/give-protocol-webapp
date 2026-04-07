@@ -40,6 +40,8 @@ export interface Database {
             };
             [key: string]: unknown;
           };
+          /** AES-256-GCM encrypted JSON blob: {contact:{email,phone},address:{...}} */
+          pii_encrypted?: string;
           created_at: string;
         };
         Insert: {
@@ -52,6 +54,7 @@ export interface Database {
             location?: string;
             description?: string;
             yearFounded?: number;
+            /** @deprecated contact.email and contact.phone will be moved to pii_encrypted */
             address?: {
               street?: string;
               city?: string;
@@ -72,6 +75,8 @@ export interface Database {
             };
             [key: string]: unknown;
           };
+          /** AES-256-GCM encrypted JSON blob: {contact:{email,phone},address:{...}} */
+          pii_encrypted?: string;
           created_at?: string;
         };
         Update: {
@@ -104,6 +109,8 @@ export interface Database {
             };
             [key: string]: unknown;
           };
+          /** AES-256-GCM encrypted JSON blob: {contact:{email,phone},address:{...}} */
+          pii_encrypted?: string;
           created_at?: string;
         };
       };
@@ -196,9 +203,20 @@ export interface Database {
           opportunity_id: string;
           applicant_id: string;
           charity_id: string;
+          /** @deprecated Will be dropped after backfill + 30-day hold. Use full_name_encrypted. */
           full_name: string;
+          /** @deprecated Will be dropped after backfill + 30-day hold. Use email_encrypted + email_hmac. */
           email: string;
+          /** @deprecated Will be dropped after backfill + 30-day hold. Use phone_encrypted. */
           phone?: string;
+          /** AES-256-GCM encrypted full name. Format: v{ver}:<b64_iv>:<b64_ct> */
+          full_name_encrypted?: string;
+          /** AES-256-GCM encrypted email. Format: v{ver}:<b64_iv>:<b64_ct> */
+          email_encrypted?: string;
+          /** HMAC-SHA256 blind index of email for equality lookups */
+          email_hmac?: string;
+          /** AES-256-GCM encrypted phone. Format: v{ver}:<b64_iv>:<b64_ct> */
+          phone_encrypted?: string;
           message?: string;
           status: "pending" | "approved" | "rejected";
           applied_at: string;
@@ -214,9 +232,16 @@ export interface Database {
           opportunity_id: string;
           applicant_id: string;
           charity_id: string;
-          full_name: string;
-          email: string;
+          /** @deprecated Use full_name_encrypted instead */
+          full_name?: string;
+          /** @deprecated Use email_encrypted + email_hmac instead */
+          email?: string;
+          /** @deprecated Use phone_encrypted instead */
           phone?: string;
+          full_name_encrypted?: string;
+          email_encrypted?: string;
+          email_hmac?: string;
+          phone_encrypted?: string;
           message?: string;
           status?: "pending" | "approved" | "rejected";
           applied_at?: string;
@@ -228,14 +253,59 @@ export interface Database {
           opportunity_id?: string;
           applicant_id?: string;
           charity_id?: string;
+          /** @deprecated Use full_name_encrypted instead */
           full_name?: string;
+          /** @deprecated Use email_encrypted + email_hmac instead */
           email?: string;
+          /** @deprecated Use phone_encrypted instead */
           phone?: string;
+          full_name_encrypted?: string;
+          email_encrypted?: string;
+          email_hmac?: string;
+          phone_encrypted?: string;
           message?: string;
           status?: "pending" | "approved" | "rejected";
           applied_at?: string;
           reviewed_at?: string;
           reviewed_by?: string;
+        };
+      };
+      key_rotation_jobs: {
+        Row: {
+          id: string;
+          dek_version_from: number;
+          dek_version_to: number;
+          target_table: string;
+          rows_total: number;
+          rows_done: number;
+          status: "pending" | "running" | "done" | "failed";
+          error_message?: string;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          dek_version_from: number;
+          dek_version_to: number;
+          target_table: string;
+          rows_total?: number;
+          rows_done?: number;
+          status?: "pending" | "running" | "done" | "failed";
+          error_message?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          dek_version_from?: number;
+          dek_version_to?: number;
+          target_table?: string;
+          rows_total?: number;
+          rows_done?: number;
+          status?: "pending" | "running" | "done" | "failed";
+          error_message?: string;
+          created_at?: string;
+          updated_at?: string;
         };
       };
       volunteer_verifications: {
