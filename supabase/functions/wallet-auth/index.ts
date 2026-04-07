@@ -21,19 +21,25 @@ interface WalletAuthRequest {
   signature: string;
   message: string;
   nonce: string;
+  accountType?: 'donor' | 'charity';
 }
 
 /** Type guard for incoming request body */
 function validateRequest(body: unknown): body is WalletAuthRequest {
   if (typeof body !== 'object' || body === null) return false;
   const req = body as Record<string, unknown>;
+  const validAccountType =
+    req.accountType === undefined ||
+    req.accountType === 'donor' ||
+    req.accountType === 'charity';
   return (
     typeof req.walletAddress === 'string' &&
     typeof req.signature === 'string' &&
     typeof req.message === 'string' &&
     typeof req.nonce === 'string' &&
     req.walletAddress.length === 42 &&
-    req.walletAddress.startsWith('0x')
+    req.walletAddress.startsWith('0x') &&
+    validAccountType
   );
 }
 
@@ -107,11 +113,12 @@ serve(async (req: Request) => {
     } else {
       // No existing identity — create a new user
       const placeholderEmail = `${normalizedAddress}@wallet.giveprotocol.io`;
+      const profileType = body.accountType ?? 'donor';
 
       const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
         email: placeholderEmail,
         email_confirm: true,
-        user_metadata: { type: 'donor', auth_method: 'wallet' },
+        user_metadata: { type: profileType, auth_method: 'wallet' },
       });
 
       if (createError || !newUser.user) {
@@ -126,8 +133,8 @@ serve(async (req: Request) => {
         .from('profiles')
         .insert({
           user_id: userId,
-          type: 'donor',
-          role: 'donor',
+          type: profileType,
+          role: profileType,
         });
 
       if (profileError) {
