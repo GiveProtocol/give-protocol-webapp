@@ -86,6 +86,20 @@ serve(async (req: Request) => {
       return jsonResponse({ success: false, error: 'Invalid nonce in message' }, 401);
     }
 
+    // Verify message timestamp is within 5 minutes to prevent replay attacks
+    const timestampMatch = body.message.match(/Timestamp: (.+)$/m);
+    if (!timestampMatch) {
+      return jsonResponse({ success: false, error: 'Missing timestamp in message' }, 401);
+    }
+    const messageTime = new Date(timestampMatch[1]).getTime();
+    if (Number.isNaN(messageTime)) {
+      return jsonResponse({ success: false, error: 'Invalid timestamp in message' }, 401);
+    }
+    const fiveMinutesMs = 5 * 60 * 1000;
+    if (Date.now() - messageTime > fiveMinutesMs) {
+      return jsonResponse({ success: false, error: 'Signature has expired. Please sign in again.' }, 401);
+    }
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL');
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
     if (!supabaseUrl || !supabaseServiceKey) {

@@ -338,6 +338,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!isValidLogin) {
           // Sign out the user immediately to prevent session creation
           await supabase.auth.signOut();
+          if (accountType === "charity" && userType === "donor") {
+            throw new Error(
+              "This account is registered as a donor account. Please use the Donor Login.",
+            );
+          }
+          if (
+            accountType === "donor" &&
+            (userType === "charity" || userType === "admin")
+          ) {
+            throw new Error(
+              "This account is registered as a charity account. Please use the Charity Login.",
+            );
+          }
           throw new Error(
             "Account not found. Please check your email and password.",
           );
