@@ -11,6 +11,10 @@ interface Withdrawal {
   processed_at: string | null;
 }
 
+/**
+ * Hook for charities to fetch their withdrawal history and submit new withdrawal requests.
+ * @returns Withdrawal records list, a requestWithdrawal action, and loading/error state
+ */
 export const useWithdrawals = () => {
   const { profile } = useProfile();
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
