@@ -8,18 +8,20 @@ import { cn } from "@/utils/cn";
 interface CharityGridProps {
   searchTerm: string;
   filterState: string;
+  filterCountry: string;
   onPlatformOnly: boolean;
   className?: string;
 }
 
 /**
  * Grid of charity organization cards with server-side search and pagination.
- * @param props - Search term, state filter, on-platform toggle, and optional className
+ * @param props - Search term, state/country filters, on-platform toggle, and optional className
  * @returns The rendered grid component
  */
 export const CharityGrid: React.FC<CharityGridProps> = ({
   searchTerm,
   filterState,
+  filterCountry,
   onPlatformOnly,
   className,
 }) => {
@@ -27,7 +29,7 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
     useCharityOrganizationSearch({
       searchTerm,
       filterState,
-      filterCountry: "",
+      filterCountry,
       onPlatformOnly,
     });
 
@@ -43,13 +45,16 @@ export const CharityGrid: React.FC<CharityGridProps> = ({
     );
   }
 
-  const hasInput = searchTerm.trim().length >= 2 || Boolean(filterState);
+  const hasInput =
+    searchTerm.trim().length >= 2 ||
+    Boolean(filterState) ||
+    Boolean(filterCountry);
 
   if (!hasInput && !loading) {
     return (
       <div className="text-center py-12">
         <p className="text-gray-500">
-          Enter a search term or select a state to find charities.
+          Enter a search term or add a location filter to find charities.
         </p>
       </div>
     );
