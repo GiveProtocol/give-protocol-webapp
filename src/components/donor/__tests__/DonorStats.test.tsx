@@ -1,20 +1,8 @@
-import { jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 import { DonorStats } from "../DonorStats";
 
-// These must be top-level jest.mock calls (not inside setupCommonMocks)
-// so babel-jest hoists them before imports resolve
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(() => ({
-    t: jest.fn((key: string, fallback?: string) => fallback || key),
-  })),
-}));
-
-jest.mock("@/components/CurrencyDisplay", () => ({
-  CurrencyDisplay: ({ amount }: { amount: number }) => (
-    <span data-testid="currency-display">${amount}</span>
-  ),
-}));
+// useTranslation and CurrencyDisplay are mocked via moduleNameMapper
+// (useTranslationMock.js, currencyDisplayMock.js)
 
 describe("DonorStats", () => {
   const defaultProps = {

@@ -45,7 +45,7 @@ describe('Footer', () => {
   it('shows navigation links', () => {
     renderFooter();
     
-    const links = screen.getAllByTestId('footer-link');
+    const links = screen.getAllByRole('link');
     expect(links.length).toBeGreaterThan(0);
   });
 

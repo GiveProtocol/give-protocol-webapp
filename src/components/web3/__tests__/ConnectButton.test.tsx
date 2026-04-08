@@ -1,17 +1,31 @@
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import { screen, fireEvent, waitFor } from "@testing-library/react";
+import React from "react";
+import { screen, fireEvent, waitFor, render } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { ConnectButton } from "../ConnectButton";
-import { renderWithRouter } from "@/test-utils/testHelpers";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useMultiChainContext } from "@/contexts/MultiChainContext";
+import { useWalletAlias } from "@/hooks/useWalletAlias";
+import { useUnifiedWallets } from "@/hooks/useWallet";
+import { AuthProvider } from "@/contexts/AuthContext";
 import { testAddresses } from "@/test-utils/mockSetup";
 
-// Mock modules before imports
+// Web3Context, MultiChainContext, useWallet, useWalletAlias, utils/web3,
+// utils/logger, WalletModal, config/contracts, and config/chains are all
+// mocked via moduleNameMapper. AuthContext uses real AuthProvider with
+// supabase mocked — user starts as null.
+
+const mockUseWeb3 = jest.mocked(useWeb3);
+const mockUseMultiChainContext = jest.mocked(useMultiChainContext);
+const mockUseWalletAlias = jest.mocked(useWalletAlias);
+const mockUseUnifiedWallets = jest.mocked(useUnifiedWallets);
+
 const mockConnect = jest.fn();
 const mockDisconnect = jest.fn();
 const mockSwitchChain = jest.fn();
 const mockMultiChainConnect = jest.fn();
 const mockMultiChainDisconnect = jest.fn();
 
-// Default mock values
 const defaultWeb3Mock = {
   provider: null,
   signer: null,
@@ -23,7 +37,7 @@ const defaultWeb3Mock = {
   connect: mockConnect,
   disconnect: mockDisconnect,
   switchChain: mockSwitchChain,
-};
+} as ReturnType<typeof useWeb3>;
 
 const defaultMultiChainMock = {
   wallet: null,
@@ -39,112 +53,60 @@ const defaultMultiChainMock = {
   switchChainType: jest.fn(),
   switchChain: jest.fn(),
   clearError: jest.fn(),
-};
+} as ReturnType<typeof useMultiChainContext>;
 
-let web3MockValue = { ...defaultWeb3Mock };
-let multiChainMockValue = { ...defaultMultiChainMock };
-let walletAliasMockValue = { alias: null, setAlias: jest.fn(), isLoading: false };
+const defaultWalletAliasMock = {
+  alias: null,
+  setAlias: jest.fn(),
+  isLoading: false,
+} as ReturnType<typeof useWalletAlias>;
 
-jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: () => web3MockValue,
-}));
+const defaultUnifiedWalletsMock = {
+  wallets: [
+    {
+      name: "Phantom",
+      icon: "phantom",
+      category: "multichain" as const,
+      supportedChainTypes: ["evm" as const, "solana" as const],
+      isInstalled: () => true,
+    },
+    {
+      name: "MetaMask",
+      icon: "metamask",
+      category: "browser" as const,
+      supportedChainTypes: ["evm" as const],
+      isInstalled: () => true,
+    },
+  ],
+  isLoading: false,
+} as ReturnType<typeof useUnifiedWallets>;
 
-jest.mock("@/contexts/MultiChainContext", () => ({
-  useMultiChainContext: () => multiChainMockValue,
-}));
-
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: () => ({
-    user: null,
-    logout: jest.fn(),
-    signOut: jest.fn(),
-  }),
-}));
-
-jest.mock("@/hooks/useWallet", () => ({
-  useWallet: () => ({
-    getInstalledWallets: () => [
-      { name: "MetaMask", id: "metamask", icon: "metamask" },
-      { name: "WalletConnect", id: "walletconnect", icon: "walletconnect" },
-    ],
-    connectWallet: jest.fn(),
-  }),
-  useUnifiedWallets: () => ({
-    wallets: [
-      {
-        name: "Phantom",
-        icon: "phantom",
-        category: "multichain",
-        supportedChainTypes: ["evm", "solana"],
-        isInstalled: () => true,
-      },
-      {
-        name: "MetaMask",
-        icon: "metamask",
-        category: "browser",
-        supportedChainTypes: ["evm"],
-        isInstalled: () => true,
-      },
-    ],
-    isLoading: false,
-  }),
-}));
-
-jest.mock("@/hooks/useWalletAlias", () => ({
-  useWalletAlias: () => walletAliasMockValue,
-}));
-
-jest.mock("@/utils/web3", () => ({
-  shortenAddress: (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
-}));
-
-jest.mock("@/utils/logger", () => ({
-  Logger: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-  },
-}));
-
-jest.mock("@/config/contracts", () => ({
-  CHAIN_IDS: {
-    MOONBASE: 1287,
-    BASE: 8453,
-  },
-  CHAIN_CONFIGS: {
-    1287: { name: "Moonbase Alpha", blockExplorerUrls: ["https://moonbase.moonscan.io"] },
-    8453: { name: "Base", blockExplorerUrls: ["https://basescan.org"] },
-  },
-}));
-
-jest.mock("@/config/chains", () => ({
-  getEVMChainConfig: (chainId: number) => ({
-    id: chainId,
-    name: chainId === 1287 ? "Moonbase Alpha" : "Base",
-    blockExplorerUrls: chainId === 1287 ? ["https://moonbase.moonscan.io"] : ["https://basescan.org"],
-  }),
-  DEFAULT_EVM_CHAIN_ID: 8453,
-}));
+const renderConnectButton = () =>
+  render(
+    <AuthProvider>
+      <MemoryRouter>
+        <ConnectButton />
+      </MemoryRouter>
+    </AuthProvider>,
+  );
 
 describe("ConnectButton", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-
-    // Reset mock values
-    web3MockValue = { ...defaultWeb3Mock };
-    multiChainMockValue = { ...defaultMultiChainMock };
-    walletAliasMockValue = { alias: null, setAlias: jest.fn(), isLoading: false };
+    mockUseWeb3.mockReturnValue(defaultWeb3Mock);
+    mockUseMultiChainContext.mockReturnValue(defaultMultiChainMock);
+    mockUseWalletAlias.mockReturnValue(defaultWalletAliasMock);
+    mockUseUnifiedWallets.mockReturnValue(defaultUnifiedWalletsMock);
   });
 
   describe("when wallet is not connected", () => {
     it("renders connect button", () => {
-      renderWithRouter(<ConnectButton />);
-
+      renderConnectButton();
       expect(screen.getByText("Connect")).toBeInTheDocument();
     });
 
     it("shows wallet modal when connect button is clicked", async () => {
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       fireEvent.click(screen.getByText("Connect"));
       await waitFor(() => {
@@ -153,12 +115,10 @@ describe("ConnectButton", () => {
     });
 
     it("shows chain type tabs in modal", async () => {
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       fireEvent.click(screen.getByText("Connect"));
       await waitFor(() => {
-        // Chain type tabs are rendered - there may be multiple elements with these texts
-        // (tabs and wallet badges), so we use getAllByText
         expect(screen.getAllByText("EVM").length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText("Solana").length).toBeGreaterThanOrEqual(1);
         expect(screen.getAllByText("Polkadot").length).toBeGreaterThanOrEqual(1);
@@ -168,13 +128,13 @@ describe("ConnectButton", () => {
 
   describe("when wallet is connected", () => {
     beforeEach(() => {
-      web3MockValue = {
+      mockUseWeb3.mockReturnValue({
         ...defaultWeb3Mock,
         address: testAddresses.mainWallet,
         chainId: 1287,
         isConnected: true,
-      };
-      multiChainMockValue = {
+      });
+      mockUseMultiChainContext.mockReturnValue({
         ...defaultMultiChainMock,
         isConnected: true,
         activeAccount: {
@@ -185,17 +145,16 @@ describe("ConnectButton", () => {
           chainName: "Moonbase Alpha",
           source: "MetaMask",
         },
-      };
+      });
     });
 
     it("renders wallet address button", () => {
-      renderWithRouter(<ConnectButton />);
-
+      renderConnectButton();
       expect(screen.getByText(testAddresses.shortAddress)).toBeInTheDocument();
     });
 
     it("shows account menu when wallet button is clicked", async () => {
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       fireEvent.click(screen.getByText(testAddresses.shortAddress));
 
@@ -206,7 +165,7 @@ describe("ConnectButton", () => {
     });
 
     it("shows chain name in account dropdown", async () => {
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       fireEvent.click(screen.getByText(testAddresses.shortAddress));
 
@@ -216,7 +175,7 @@ describe("ConnectButton", () => {
     });
 
     it("calls disconnect when disconnect is clicked", async () => {
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       fireEvent.click(screen.getByText(testAddresses.shortAddress));
 
@@ -234,13 +193,13 @@ describe("ConnectButton", () => {
 
   describe("with wallet alias", () => {
     beforeEach(() => {
-      web3MockValue = {
+      mockUseWeb3.mockReturnValue({
         ...defaultWeb3Mock,
         address: testAddresses.mainWallet,
         chainId: 1287,
         isConnected: true,
-      };
-      multiChainMockValue = {
+      });
+      mockUseMultiChainContext.mockReturnValue({
         ...defaultMultiChainMock,
         isConnected: true,
         activeAccount: {
@@ -251,22 +210,21 @@ describe("ConnectButton", () => {
           chainName: "Moonbase Alpha",
           source: "MetaMask",
         },
-      };
-      walletAliasMockValue = {
+      });
+      mockUseWalletAlias.mockReturnValue({
         alias: "My Wallet",
         setAlias: jest.fn(),
         isLoading: false,
-      };
+      });
     });
 
     it("renders wallet alias instead of address", () => {
-      renderWithRouter(<ConnectButton />);
-
+      renderConnectButton();
       expect(screen.getByText("My Wallet")).toBeInTheDocument();
     });
 
     it("shows change alias option in menu", async () => {
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       fireEvent.click(screen.getByText("My Wallet"));
 
@@ -278,23 +236,23 @@ describe("ConnectButton", () => {
 
   describe("error handling", () => {
     it("shows error button when connection error occurs", () => {
-      web3MockValue = {
+      mockUseWeb3.mockReturnValue({
         ...defaultWeb3Mock,
         error: new Error("Connection failed"),
-      };
+      });
 
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       expect(screen.getByText("Error")).toBeInTheDocument();
     });
 
     it("shows error message on larger screens", () => {
-      multiChainMockValue = {
+      mockUseMultiChainContext.mockReturnValue({
         ...defaultMultiChainMock,
         error: new Error("User rejected connection"),
-      };
+      });
 
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       expect(screen.getByText(/User rejected connection/)).toBeInTheDocument();
     });
@@ -302,23 +260,23 @@ describe("ConnectButton", () => {
 
   describe("connecting state", () => {
     it("shows connecting text when connecting", () => {
-      web3MockValue = {
+      mockUseWeb3.mockReturnValue({
         ...defaultWeb3Mock,
         isConnecting: true,
-      };
+      });
 
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       expect(screen.getByText("Connecting...")).toBeInTheDocument();
     });
 
     it("disables button when connecting", () => {
-      multiChainMockValue = {
+      mockUseMultiChainContext.mockReturnValue({
         ...defaultMultiChainMock,
         isConnecting: true,
-      };
+      });
 
-      renderWithRouter(<ConnectButton />);
+      renderConnectButton();
 
       const button = screen.getByRole("button");
       expect(button).toBeDisabled();

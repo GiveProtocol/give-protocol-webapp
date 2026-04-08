@@ -8,22 +8,14 @@ import {
   createMockWeb3,
   createMockTranslation,
 } from "@/test-utils/mockSetup";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { useTranslation } from "@/hooks/useTranslation";
 
-// Declare jest.fn() mocks BEFORE jest.mock() so .mockReturnValue() works
-const mockUseAuth = jest.fn();
-const mockUseWeb3 = jest.fn();
-const mockUseTranslation = jest.fn();
-
-// Top-level mocks with explicit factories for ESM compatibility
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: (...args: unknown[]) => mockUseAuth(...args),
-}));
-jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: (...args: unknown[]) => mockUseWeb3(...args),
-}));
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
-}));
+// Use jest.mocked() — mapper provides jest.fn() mocks for these hooks
+const mockUseAuth = jest.mocked(useAuth);
+const mockUseWeb3 = jest.mocked(useWeb3);
+const mockUseTranslation = jest.mocked(useTranslation);
 
 jest.mock("@/utils/date", () => ({
   formatDate: jest.fn((date: string) => date),

@@ -8,50 +8,12 @@ import {
   testPropsDefaults,
 } from "@/test-utils/mockSetup";
 import { cssClasses } from "@/test-utils/types";
+import { useVolunteerVerification } from "@/hooks/useVolunteerVerification";
+import { useTranslation } from "@/hooks/useTranslation";
 
-// Top-level jest.fn() instances for robust ESM mock support
-const mockUseVolunteerVerification = jest.fn();
-const mockUseTranslation = jest.fn();
-
-jest.mock("@/hooks/useVolunteerVerification", () => ({
-  useVolunteerVerification: (
-    ...args: unknown[]
-  ) => mockUseVolunteerVerification(...args),
-}));
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
-}));
-jest.mock("@/utils/logger", () => ({
-  Logger: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
-/* eslint-disable react/prop-types */
-jest.mock("@/components/ui/Button", () => ({
-  Button: ({
-    children,
-    onClick,
-    disabled,
-    className,
-    ...props
-  }: React.ButtonHTMLAttributes<HTMLButtonElement> & {
-    variant?: string;
-    size?: string;
-  }) => (
-    <button
-      onClick={onClick}
-      disabled={disabled}
-      className={className}
-      {...props}
-    >
-      {children}
-    </button>
-  ),
-}));
-/* eslint-enable react/prop-types */
+// Use jest.mocked() to get typed references to the mapper-provided mocks
+const mockUseVolunteerVerification = jest.mocked(useVolunteerVerification);
+const mockUseTranslation = jest.mocked(useTranslation);
 
 describe("ApplicationAcceptance", () => {
   const mockAcceptApplication = jest.fn();

@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import { jest } from "@jest/globals";
 
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
@@ -7,52 +6,8 @@ import { useScheduledDonation } from "@/hooks/web3/useScheduledDonation";
 import { useToast } from "@/contexts/ToastContext";
 import { formatDate } from "@/utils/date";
 
-// Mock the dependencies
-jest.mock("@/hooks/web3/useScheduledDonation");
-jest.mock("@/contexts/ToastContext");
-jest.mock("@/utils/date", () => ({
-  formatDate: jest.fn((date: string) => new Date(date).toLocaleDateString()),
-}));
-jest.mock("@/utils/logger", () => ({
-  Logger: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-  },
-}));
-jest.mock("@/components/ui/Card", () => ({
-  Card: ({
-    children,
-    className,
-  }: {
-    children: ReactNode;
-    className?: string;
-  }) => (
-    <div className={className} data-testid="card">
-      {children}
-    </div>
-  ),
-}));
-jest.mock("@/components/ui/Button", () => ({
-  Button: ({
-    children,
-    onClick,
-    variant,
-    disabled,
-  }: {
-    children: ReactNode;
-    onClick?: () => void;
-    variant?: string;
-    disabled?: boolean;
-  }) => (
-    <button onClick={onClick} disabled={disabled} data-variant={variant}>
-      {children}
-    </button>
-  ),
-}));
-jest.mock("@/components/ui/LoadingSpinner", () => ({
-  LoadingSpinner: () => <div data-testid="loading-spinner">Loading...</div>,
-}));
+// useScheduledDonation, useToast, formatDate, Logger, Card, and LoadingSpinner
+// are all mocked via moduleNameMapper
 
 describe("ScheduledDonations", () => {
   const mockGetDonorSchedules = jest.fn();

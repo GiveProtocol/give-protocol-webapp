@@ -1,69 +1,40 @@
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { CharityVettingForm } from "../CharityVettingForm";
+import { useAuth } from "@/contexts/AuthContext";
 
-// Minimal shared mocks
+// All mocks handled via moduleNameMapper:
+// useAuth/AuthContext, Web3Context, ToastContext, SettingsContext, useTranslation,
+// useCountries, ui/Button, ui/Input, ui/Card
+
 const mockRegister = jest.fn();
-jest.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({ register: mockRegister, loading: false }),
-}));
+const mockUseAuth = jest.mocked(useAuth);
 
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: jest.fn(() => ({
-    register: mockRegister,
-    loading: false,
-    user: null,
-    userType: null,
-  })),
-}));
-
-jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: jest.fn(() => ({
-    disconnect: jest.fn(),
-    isConnected: false,
-    account: null,
-    chainId: null,
-  })),
-}));
-
-jest.mock("@/contexts/ToastContext", () => ({
-  useToast: jest.fn(() => ({
-    showToast: jest.fn(),
-  })),
-}));
-
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(() => ({
-    t: jest.fn((key: string, fallback?: string) => fallback || key),
-  })),
-}));
-
-jest.mock("@/contexts/SettingsContext", () => ({
-  useSettings: jest.fn(() => ({
-    language: "en",
-    setLanguage: jest.fn(),
-    currency: "USD",
-    setCurrency: jest.fn(),
-    theme: "light",
-    setTheme: jest.fn(),
-    languageOptions: [],
-    currencyOptions: [],
-  })),
-}));
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn(),
-}));
-
-jest.mock("@/hooks/useCountries", () => ({
-  useCountries: () => ({ countries: [{ code: "US", name: "United States" }] }),
-}));
-
-const renderForm = () => render(<CharityVettingForm />);
+const renderForm = () =>
+  render(
+    <MemoryRouter>
+      <CharityVettingForm />
+    </MemoryRouter>,
+  );
 
 describe("CharityVettingForm", () => {
-  beforeEach(() => jest.clearAllMocks());
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockUseAuth.mockReturnValue({
+      register: mockRegister,
+      loading: false,
+      user: null,
+      userType: null,
+      login: jest.fn(),
+      loginWithGoogle: jest.fn(),
+      logout: jest.fn(),
+      resetPassword: jest.fn(),
+      refreshSession: jest.fn(),
+      sendUsernameReminder: jest.fn(),
+      error: null,
+    });
+  });
 
   it("renders all form fields", () => {
     renderForm();
@@ -88,7 +59,6 @@ describe("CharityVettingForm", () => {
   it("handles form submission with valid data", async () => {
     renderForm();
 
-    // Fill minimal valid data
     fireEvent.change(screen.getByLabelText(/organization name/i), {
       target: { value: "Test Charity" },
     });
@@ -204,7 +174,6 @@ describe("CharityVettingForm", () => {
     mockRegister.mockRejectedValueOnce(new Error("Registration failed"));
     renderForm();
 
-    // Fill all required fields to pass validation
     fireEvent.change(screen.getByLabelText(/organization name/i), {
       target: { value: "Test Charity" },
     });
@@ -254,8 +223,6 @@ describe("CharityVettingForm", () => {
   });
 
   it("shows submitting text when loading", () => {
-    // The loading state is controlled by the useAuth hook
-    // We can verify the button text changes when loading
     renderForm();
     expect(
       screen.getByRole("button", { name: /submit charity application/i }),
