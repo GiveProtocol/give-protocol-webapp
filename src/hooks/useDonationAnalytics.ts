@@ -16,37 +16,15 @@ interface TimeseriesData {
 }
 
 /**
- * Donation analytics hook for fetching and managing donation metrics and timeseries data
- * @function useDonationAnalytics
- * @description Provides comprehensive donation analytics including aggregate metrics (total donated, donation count, averages)
- * and timeseries data for charting. Uses Supabase RPC functions for optimized data aggregation and automatic refresh on profile changes.
- * @returns {Object} Donation analytics data and utilities
- * @returns {DonationMetrics | null} returns.metrics - Aggregate donation metrics including totalDonated, donationCount, averageDonation, and impactMetrics
- * @returns {TimeseriesData[]} returns.timeseriesData - Array of time-series data points with date and amount for charts
- * @returns {boolean} returns.loading - Loading state for analytics fetch operations
- * @returns {Function} returns.refreshAnalytics - Manually refresh analytics data: () => Promise<void>
- * @example
- * ```tsx
- * const { metrics, timeseriesData, loading, refreshAnalytics } = useDonationAnalytics();
+ * Donation analytics hook for fetching and managing donation metrics and timeseries data.
  *
- * if (loading) return <AnalyticsLoading />;
+ * Privacy: This hook fetches the authenticated user's own donation data only.
+ * The RPC functions (get_donation_metrics, get_donation_timeseries) should enforce
+ * that the caller can only access their own data. Privacy settings (showDonations)
+ * do not restrict self-view — they control visibility to OTHER users via leaderboards
+ * and public-facing queries (handled in contributionAggregationService).
  *
- * return (
- *   <div>
- *     <MetricCard
- *       title="Total Donated"
- *       value={metrics?.totalDonated || 0}
- *       format="currency"
- *     />
- *     <MetricCard
- *       title="Donation Count"
- *       value={metrics?.donationCount || 0}
- *     />
- *     <Chart data={timeseriesData} />
- *     <button onClick={refreshAnalytics}>Refresh</button>
- *   </div>
- * );
- * ```
+ * @returns Donation analytics data and utilities
  */
 export function useDonationAnalytics() {
   const [metrics, setMetrics] = useState<DonationMetrics | null>(null);

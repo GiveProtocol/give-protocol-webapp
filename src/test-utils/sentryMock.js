@@ -1,5 +1,6 @@
 // Mock for @/lib/sentry module
 // Provides no-op implementations of all Sentry helper functions
+import { jest } from "@jest/globals";
 
 export function initSentry() {
   // No-op in tests
@@ -33,6 +34,6 @@ export function captureCustomEvent(_message, _data, _level) {
   // No-op in tests
 }
 
-// Aliases for AuthContext compatibility
-export const setSentryUser = setUserContext;
-export const clearSentryUser = clearUserContext;
+// Aliases for AuthContext compatibility — jest.fn() for toHaveBeenCalledWith assertions
+export const setSentryUser = jest.fn();
+export const clearSentryUser = jest.fn();

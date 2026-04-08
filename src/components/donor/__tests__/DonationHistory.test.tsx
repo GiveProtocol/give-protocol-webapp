@@ -3,14 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import { DonationHistory } from "../DonationHistory";
 import type { Transaction } from "@/types/contribution";
 
-// Mock the DonationExportModal component
-jest.mock("@/components/contribution/DonationExportModal", () => ({
-  DonationExportModal: ({ onClose }: { onClose: () => void }) => (
-    <div data-testid="export-modal">
-      Export Modal <button onClick={onClose}>Close</button>
-    </div>
-  ),
-}));
+// DonationExportModal is mocked via moduleNameMapper
 
 describe("DonationHistory Component", () => {
   const mockDonations: Transaction[] = [

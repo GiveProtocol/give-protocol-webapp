@@ -1,14 +1,16 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Wallet } from "lucide-react";
 
-/** Login form component for charity accounts with email and password authentication. */
+/** Login form component for charity accounts with email/password and wallet authentication. */
 export const CharityLogin: React.FC = () => {
-  const { login, loading } = useAuth();
+  const { login, loading: emailLoading } = useAuth();
+  const { signInWithWallet } = useUnifiedAuth();
   const { disconnect } = useWeb3();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,8 +18,25 @@ export const CharityLogin: React.FC = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [fieldErrors, setFieldErrors] = useState({ email: "", password: "" });
+  const [redirectCountdown, setRedirectCountdown] = useState<number | null>(null);
+  const [walletLoading, setWalletLoading] = useState(false);
+  const redirectTarget = useRef<string | null>(null);
 
   const _from = location.state?.from?.pathname || "/charity-portal";
+
+  const loading = emailLoading || walletLoading;
+
+  useEffect(() => {
+    if (redirectCountdown === null) return undefined;
+    if (redirectCountdown === 0) {
+      if (redirectTarget.current) {
+        navigate(redirectTarget.current);
+      }
+      return undefined;
+    }
+    const id = setTimeout(() => setRedirectCountdown((c) => (c !== null ? c - 1 : null)), 1000);
+    return () => clearTimeout(id);
+  }, [redirectCountdown, navigate]);
 
   const handleEmailChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,11 +74,10 @@ export const CharityLogin: React.FC = () => {
             "Charity User Not Found. This email is registered as a donor account. Please use the Donor Login.",
           );
 
-          // Disconnect wallet and redirect to login page after a short delay
+          // Disconnect wallet and start countdown redirect
           await disconnect();
-          setTimeout(() => {
-            navigate("/login?type=donor");
-          }, 3000);
+          redirectTarget.current = "/login?type=donor";
+          setRedirectCountdown(3);
         } else {
           setError(message);
         }
@@ -68,15 +86,25 @@ export const CharityLogin: React.FC = () => {
     [email, password, login, disconnect, navigate],
   );
 
+  const handleWalletLogin = useCallback(async () => {
+    setError("");
+    setWalletLoading(true);
+    try {
+      await signInWithWallet("charity");
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to connect wallet";
+      setError(message);
+    } finally {
+      setWalletLoading(false);
+    }
+  }, [signInWithWallet]);
+
   return (
-    <form
-      onSubmit={handleEmailLogin}
-      className="space-y-4"
-      aria-label="Charity login form"
-    >
+    <div>
       {error && (
         <div
-          className="p-3 bg-red-50 text-red-600 rounded-md flex items-start"
+          className="p-3 mb-4 bg-red-50 text-red-600 rounded-md flex items-start"
           role="alert"
           aria-live="assertive"
         >
@@ -84,41 +112,67 @@ export const CharityLogin: React.FC = () => {
             className="h-5 w-5 text-red-500 mt-0.5 mr-2 flex-shrink-0"
             aria-hidden="true"
           />
-          <span>{error}</span>
+          <span>
+            {error}
+            {redirectCountdown !== null && redirectCountdown > 0 && (
+              <> Redirecting in {redirectCountdown}&hellip;</>
+            )}
+          </span>
         </div>
       )}
-      <Input
-        label="Email"
-        type="email"
-        name="email"
-        autoComplete="email"
-        value={email}
-        onChange={handleEmailChange}
-        error={fieldErrors.email}
-        variant="enhanced"
-        required
-        aria-required="true"
-      />
-      <Input
-        label="Password"
-        type="password"
-        name="password"
-        autoComplete="current-password"
-        value={password}
-        onChange={handlePasswordChange}
-        error={fieldErrors.password}
-        variant="enhanced"
-        required
-        aria-required="true"
-      />
+      <form
+        onSubmit={handleEmailLogin}
+        className="space-y-4"
+        aria-label="Charity login form"
+      >
+        <Input
+          label="Email"
+          type="email"
+          name="email"
+          autoComplete="email"
+          value={email}
+          onChange={handleEmailChange}
+          error={fieldErrors.email}
+          variant="enhanced"
+          required
+          aria-required="true"
+        />
+        <Input
+          label="Password"
+          type="password"
+          name="password"
+          autoComplete="current-password"
+          value={password}
+          onChange={handlePasswordChange}
+          error={fieldErrors.password}
+          variant="enhanced"
+          required
+          aria-required="true"
+        />
+        <Button
+          type="submit"
+          className="w-full min-h-[48px]"
+          disabled={loading}
+          aria-busy={loading}
+        >
+          {emailLoading ? "Signing in..." : "Sign In"}
+        </Button>
+      </form>
+      <div className="flex items-center gap-3 my-5">
+        <div className="flex-1 h-px bg-gray-200" />
+        <span className="text-xs text-gray-400 font-medium">or</span>
+        <div className="flex-1 h-px bg-gray-200" />
+      </div>
       <Button
-        type="submit"
+        type="button"
+        variant="secondary"
         className="w-full min-h-[48px]"
         disabled={loading}
-        aria-busy={loading}
+        onClick={handleWalletLogin}
+        icon={<Wallet className="h-4 w-4" />}
       >
-        {loading ? "Signing in..." : "Sign In"}
+        {walletLoading ? "Connecting..." : "Connect Wallet"}
       </Button>
-    </form>
+    </div>
   );
 };

@@ -2,6 +2,7 @@ import React from 'react';
 import { Settings } from 'lucide-react';
 import { WalletLinkCard } from '@/components/wallet/WalletLinkCard';
 import { WalletAliasSettings } from '@/components/settings/WalletAliasSettings';
+import { PrivacySettings } from '@/components/settings/PrivacySettings';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 
 /** Dashboard settings page with wallet linking and account preferences. */
@@ -51,7 +52,12 @@ const DashboardSettings: React.FC = () => {
       </div>
 
       {/* Wallet alias settings */}
-      <WalletAliasSettings />
+      <div className="mb-6">
+        <WalletAliasSettings />
+      </div>
+
+      {/* Privacy — GDPR data export and account erasure */}
+      <PrivacySettings />
     </div>
   );
 };

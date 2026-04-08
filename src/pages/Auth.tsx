@@ -4,8 +4,10 @@ import { ShieldCheck, Building2, Wallet, Mail, Lock } from 'lucide-react';
 import { Logo } from '@/components/Logo';
 import { Button } from '@/components/ui/Button';
 import { FormInput } from '@/components/ui/FormInput';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ForgotPassword } from '@/components/auth/ForgotPassword';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
+import type { WalletAuthStep } from '@/hooks/useUnifiedAuth';
 import { Logger } from '@/utils/logger';
 
 type View = 'signin' | 'forgotPassword';
@@ -156,6 +158,17 @@ const SignInFormFields: React.FC<{
   </form>
 );
 
+/** Returns the human-readable label for each wallet auth step. */
+function walletStepLabel(step: WalletAuthStep): string {
+  switch (step) {
+    case 'connecting': return 'Connecting wallet\u2026';
+    case 'signing':    return 'Signing message\u2026';
+    case 'verifying':  return 'Verifying\u2026';
+    case 'session':    return 'Opening session\u2026';
+    default:           return 'Connect Wallet';
+  }
+}
+
 /** Right panel content with sign-in form and wallet authentication. */
 const AuthRightPanel: React.FC = () => {
   const [view, setView] = useState<View>('signin');
@@ -167,6 +180,7 @@ const AuthRightPanel: React.FC = () => {
     isAuthenticated,
     role,
     loading,
+    walletAuthStep,
     signInWithEmail,
     signInWithWallet,
     isWalletConnected: _isWalletConnected,
@@ -296,11 +310,11 @@ const AuthRightPanel: React.FC = () => {
           variant="secondary"
           fullWidth
           size="lg"
-          icon={<Wallet className="h-4 w-4" />}
+          icon={walletAuthStep !== null ? <LoadingSpinner size="sm" color="secondary" /> : <Wallet className="h-4 w-4" />}
           disabled={loading}
           className="font-semibold"
         >
-          Connect Wallet
+          {walletStepLabel(walletAuthStep)}
         </Button>
 
         {/* Sign up prompt */}

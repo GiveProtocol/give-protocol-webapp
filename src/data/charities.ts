@@ -1,3 +1,7 @@
+/**
+ * Sample charity data used for development and testing purposes.
+ * Each entry represents a charity with basic display information.
+ */
 export const SAMPLE_CHARITIES = [
   {
     id: 1,

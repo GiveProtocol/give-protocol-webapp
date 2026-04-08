@@ -63,13 +63,13 @@ async function fetchUserTypeFromProfile(userId: string): Promise<UserType> {
 /**
  * Gets user type from metadata or falls back to profile table
  */
-async function resolveUserType(
+function resolveUserType(
   user: User | null | undefined,
 ): Promise<UserType> {
-  if (!user) return null;
+  if (!user) return Promise.resolve(null);
 
   const metadataType = user.user_metadata?.type as UserType;
-  if (metadataType) return metadataType;
+  if (metadataType) return Promise.resolve(metadataType);
 
   return fetchUserTypeFromProfile(user.id);
 }
@@ -163,6 +163,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     let mounted = true;
     let refreshInterval: ReturnType<typeof setTimeout>;
 
+    /** Displays a toast and starts/stops session refresh based on the auth event */
     const handleAuthEvent = (
       event: string,
       startRefresh: () => void,
@@ -186,14 +187,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    /** Starts periodic session refresh on a fixed interval */
     const startRefreshInterval = () => {
       refreshInterval = setInterval(refreshSession, SESSION_REFRESH_INTERVAL);
     };
 
+    /** Clears the periodic session refresh interval */
     const stopRefreshInterval = () => {
       if (refreshInterval) clearInterval(refreshInterval);
     };
 
+    /** Loads the current session, resolves user type, and subscribes to auth changes */
     const initializeAuth = async () => {
       try {
         const {
@@ -338,6 +342,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!isValidLogin) {
           // Sign out the user immediately to prevent session creation
           await supabase.auth.signOut();
+          if (accountType === "charity" && userType === "donor") {
+            throw new Error(
+              "This account is registered as a donor account. Please use the Donor Login.",
+            );
+          }
+          if (
+            accountType === "donor" &&
+            (userType === "charity" || userType === "admin")
+          ) {
+            throw new Error(
+              "This account is registered as a charity account. Please use the Charity Login.",
+            );
+          }
           throw new Error(
             "Account not found. Please check your email and password.",
           );
@@ -561,7 +578,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const sendUsernameReminder = useCallback(
-    async (_email: string) => {
+    (_email: string): Promise<void> => {
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
         // In a real app, this would send an email with the username
@@ -571,7 +588,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           "Username reminder sent",
           "If an account exists with this email, a reminder will be sent",
         );
-        return;
+        return Promise.resolve();
       } catch (err) {
         const message =
           err instanceof Error
@@ -582,7 +599,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ...prev,
           error: err instanceof Error ? err : new Error(message),
         }));
-        throw err;
+        return Promise.reject(err);
       } finally {
         setState((prev) => ({ ...prev, loading: false }));
       }

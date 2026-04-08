@@ -1,9 +1,14 @@
 import { Logger } from './logger';
 
+/**
+ * Centralised error handling utility for the Give Protocol application.
+ * Provides synchronous and async wrappers that log errors and sanitize
+ * messages in production to avoid leaking implementation details.
+ */
 export const ErrorHandler = {
   handle(error: unknown, context?: string): Error {
     const err = error instanceof Error ? error : new Error(String(error));
-    
+
     // Log the error
     Logger.error(err.message, {
       context,

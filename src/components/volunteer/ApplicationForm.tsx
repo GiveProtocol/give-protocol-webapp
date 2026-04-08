@@ -11,6 +11,7 @@ import {
   validatePhoneNumber,
 } from "@/utils/validation";
 import { AlertCircle } from "lucide-react";
+import { encryptVolunteerApplicationPII } from "@/utils/crypto/piiEncryption";
 
 interface ApplicationFormProps {
   opportunityId: string;
@@ -544,14 +545,18 @@ export const ApplicationForm: React.FC<ApplicationFormProps> = ({
           applicantId: profile.id,
         });
 
+        const encryptedPII = await encryptVolunteerApplicationPII({
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phoneNumber || undefined,
+        });
+
         const { error: submitError } = await supabase
           .from("volunteer_applications")
           .insert({
             opportunity_id: opportunityId,
             applicant_id: profile.id,
-            full_name: formData.fullName,
-            phone_number: formData.phoneNumber,
-            email: formData.email,
+            ...encryptedPII,
             date_of_birth: formData.dateOfBirth || null,
             availability: {
               days: formData.availability.days,

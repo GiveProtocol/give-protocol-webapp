@@ -23,6 +23,8 @@ interface UnifiedUser {
   displayName: string | null;
 }
 
+export type WalletAuthStep = 'connecting' | 'signing' | 'verifying' | 'session' | null;
+
 interface UnifiedAuthState {
   user: UnifiedUser | null;
   isAuthenticated: boolean;
@@ -34,11 +36,12 @@ interface UnifiedAuthState {
   chainId: number | null;
   role: 'donor' | 'charity' | 'volunteer' | 'admin';
   loading: boolean;
+  walletAuthStep: WalletAuthStep;
   error: string | null;
 
   signInWithEmail: (_email: string, _password: string) => Promise<void>;
   signUpWithEmail: (_email: string, _password: string, _metadata?: Record<string, unknown>) => Promise<void>;
-  signInWithWallet: () => Promise<void>;
+  signInWithWallet: (_accountType?: 'donor' | 'charity') => Promise<void>;
   linkWallet: () => Promise<void>;
   unlinkWallet: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -60,6 +63,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
   const web3 = useWeb3();
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [loading, setLoading] = useState(false);
+  const [walletAuthStep, setWalletAuthStep] = useState<WalletAuthStep>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Fetch the user_identities record when the auth user changes
@@ -181,10 +185,17 @@ export function useUnifiedAuth(): UnifiedAuthState {
     }
   }, []);
 
-  const signInWithWallet = useCallback(async () => {
+  const signInWithWallet = useCallback(async (accountType: 'donor' | 'charity' = 'donor') => {
     try {
       setLoading(true);
+      setWalletAuthStep('connecting');
       setError(null);
+
+      if (typeof window !== 'undefined' && !('ethereum' in window)) {
+        throw new Error(
+          'No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.',
+        );
+      }
 
       if (!web3.provider) {
         await web3.connect();
@@ -195,14 +206,14 @@ export function useUnifiedAuth(): UnifiedAuthState {
         throw new Error('No wallet provider available');
       }
 
-      const signer = await new ethers.BrowserProvider(
-        (window as unknown as { ethereum: ethers.Eip1193Provider }).ethereum,
-      ).getSigner();
+      setWalletAuthStep('signing');
+      const signer = await (provider as ethers.BrowserProvider).getSigner();
       const address = await signer.getAddress();
       const nonce = generateNonce();
       const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
       const signature = await signer.signMessage(message);
 
+      setWalletAuthStep('verifying');
       // Call the wallet-auth edge function
       const { data, error: fnError } = await supabase.functions.invoke('wallet-auth', {
         body: {
@@ -210,6 +221,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
           signature,
           message,
           nonce,
+          accountType,
         },
       });
 
@@ -217,6 +229,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
         throw new Error(data?.error ?? fnError?.message ?? 'Wallet authentication failed');
       }
 
+      setWalletAuthStep('session');
       // Set the session from the edge function response
       const { error: sessionError } = await supabase.auth.setSession({
         access_token: data.session.access_token,
@@ -232,6 +245,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
       throw err;
     } finally {
       setLoading(false);
+      setWalletAuthStep(null);
     }
   }, [web3.provider, web3.connect]);
 
@@ -248,9 +262,11 @@ export function useUnifiedAuth(): UnifiedAuthState {
         await web3.connect();
       }
 
-      const signer = await new ethers.BrowserProvider(
-        (window as unknown as { ethereum: ethers.Eip1193Provider }).ethereum,
-      ).getSigner();
+      const walletProvider = web3.provider;
+      if (!walletProvider) {
+        throw new Error('No wallet provider available');
+      }
+      const signer = await (walletProvider as ethers.BrowserProvider).getSigner();
       const address = await signer.getAddress();
       const message = `Link wallet to Give Protocol account.\n\nAccount: ${auth.user.email ?? auth.user.id}\nTimestamp: ${new Date().toISOString()}`;
       const signature = await signer.signMessage(message);
@@ -292,7 +308,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
     } finally {
       setLoading(false);
     }
-  }, [auth.user, web3.isConnected, web3.connect]);
+  }, [auth.user, web3.isConnected, web3.connect, web3.provider]);
 
   const unlinkWallet = useCallback(async () => {
     try {
@@ -361,6 +377,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
     chainId: web3.chainId,
     role: resolvedRole,
     loading: loading || auth.loading,
+    walletAuthStep,
     error,
     signInWithEmail,
     signUpWithEmail,

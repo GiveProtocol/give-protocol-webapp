@@ -1,5 +1,6 @@
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent } from "@testing-library/react";
+import { useEditor } from "@tiptap/react";
 import { Editor } from "../Editor";
 
 // Create mock functions at module level
@@ -25,36 +26,8 @@ const createMockEditor = () => ({
   getHTML: mockGetHTML,
 });
 
-let mockEditorInstance: ReturnType<typeof createMockEditor> | null =
-  createMockEditor();
-
-// Mock TipTap editor
-jest.mock("@tiptap/react", () => ({
-  useEditor: () => mockEditorInstance,
-  EditorContent: ({
-    editor,
-    className,
-  }: {
-    editor: unknown;
-    className?: string;
-  }) =>
-    editor ? (
-      <div className={className} data-testid="editor-content">
-        Editor Content
-      </div>
-    ) : null,
-}));
-
-jest.mock("@tiptap/starter-kit", () => ({
-  default: {},
-}));
-
-jest.mock("@tiptap/extension-link", () => ({
-  __esModule: true,
-  default: {
-    configure: () => ({}),
-  },
-}));
+// useEditor is provided by tiptapReactMock.js via moduleNameMapper (jest.fn())
+const mockUseEditor = useEditor as unknown as jest.Mock;
 
 describe("Editor Component", () => {
   const defaultProps = {
@@ -64,7 +37,7 @@ describe("Editor Component", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    mockEditorInstance = createMockEditor();
+    mockUseEditor.mockReturnValue(createMockEditor());
   });
 
   it("renders editor with toolbar buttons", () => {
@@ -127,7 +100,7 @@ describe("Editor Component", () => {
   });
 
   it("returns null when editor is not initialized", () => {
-    mockEditorInstance = null;
+    mockUseEditor.mockReturnValue(null);
 
     const { container } = render(<Editor {...defaultProps} />);
 

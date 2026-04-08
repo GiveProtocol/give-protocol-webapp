@@ -15,7 +15,7 @@ export const commonMocks = {
     info: jest.fn(),
     warn: jest.fn(),
   },
-  formatDate: jest.fn((date: string) => new Date(date).toLocaleDateString()),
+  formatDate: jest.fn((date: string) => new Date(date).toLocaleDateString("en-US")),
   shortenAddress: jest.fn(
     (address: string) => `${address.slice(0, 6)}...${address.slice(-4)}`,
   ),

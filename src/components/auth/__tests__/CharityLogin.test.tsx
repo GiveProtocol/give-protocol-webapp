@@ -1,47 +1,31 @@
+import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { CharityLogin } from "../CharityLogin";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
+import { CharityLogin } from "../CharityLogin";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ToastProvider } from "@/contexts/ToastContext";
+import { ChainProvider } from "@/contexts/ChainContext";
+import { MultiChainProvider } from "@/contexts/MultiChainContext";
+import { Web3Provider } from "@/contexts/Web3Context";
+import { supabase } from "@/lib/supabase";
 
-const mockLogin = jest.fn();
-const mockDisconnect = jest.fn();
+// Note: jest.mock for "@/hooks/useAuth", "@/contexts/AuthContext",
+// "@/contexts/Web3Context", and "@/hooks/useUnifiedAuth" does not reliably
+// intercept ESM imports in this Jest 30 + ts-jest setup. We use real providers
+// with mocked leaf dependencies and supabase mock overrides instead.
 
-jest.mock("@/hooks/useAuth", () => ({
-  useAuth: jest.fn(() => ({
-    login: mockLogin,
-    loading: false,
-    error: null,
-  })),
-}));
-
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: jest.fn(() => ({
-    login: mockLogin,
-    loading: false,
-    error: null,
-    user: null,
-    userType: null,
-  })),
-}));
-
-jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: jest.fn(() => ({
-    disconnect: mockDisconnect,
-    isConnected: false,
-    account: null,
-    chainId: 1287,
-  })),
-}));
-
-jest.mock("@/contexts/ToastContext", () => ({
-  useToast: jest.fn(() => ({
-    showToast: jest.fn(),
-  })),
-}));
+const mockNavigate = jest.fn();
 
 jest.mock("@/hooks/useTranslation", () => ({
   useTranslation: jest.fn(() => ({
-    t: jest.fn((key: string, fallback?: string) => fallback || key),
+    t: jest.fn((key: string, fallback?: string) => fallback ?? key),
   })),
 }));
 
@@ -58,57 +42,146 @@ jest.mock("@/contexts/SettingsContext", () => ({
   })),
 }));
 
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useNavigate: () => mockNavigate,
+  useLocation: () => ({
+    state: null,
+    pathname: "/auth/charity",
+    search: "",
+    hash: "",
+    key: "test",
+  }),
+}));
+
+jest.mock("@/utils/logger", () => ({
+  Logger: {
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+    debug: jest.fn(),
+  },
+}));
+
+jest.mock("@/utils/security/rateLimiter", () => ({
+  RateLimiter: {
+    getInstance: jest.fn(() => ({
+      isRateLimited: jest.fn(() => false),
+      increment: jest.fn(),
+      reset: jest.fn(),
+    })),
+  },
+}));
+
 const renderCharityLogin = () => {
   return render(
     <MemoryRouter>
-      <CharityLogin />
+      <ToastProvider>
+        <ChainProvider>
+          <MultiChainProvider>
+            <Web3Provider>
+              <AuthProvider>
+                <CharityLogin />
+              </AuthProvider>
+            </Web3Provider>
+          </MultiChainProvider>
+        </ChainProvider>
+      </ToastProvider>
     </MemoryRouter>,
   );
 };
 
 describe("CharityLogin", () => {
   beforeEach(() => {
-    mockLogin.mockClear();
+    mockNavigate.mockClear();
   });
 
   it("renders login form", () => {
     renderCharityLogin();
-    expect(screen.getAllByDisplayValue("")).toHaveLength(2); // Email and password inputs
+    expect(screen.getAllByDisplayValue("")).toHaveLength(2);
     expect(
       screen.getByRole("button", { name: /sign in/i }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/email/i)).toBeInTheDocument(); // Email label
-    expect(screen.getByText(/password/i)).toBeInTheDocument(); // Password label
+    expect(screen.getByText(/email/i)).toBeInTheDocument();
+    expect(screen.getByText(/password/i)).toBeInTheDocument();
   });
 
-  it("calls login on form submission", () => {
+  it("renders wallet connect button", () => {
+    renderCharityLogin();
+    expect(
+      screen.getByRole("button", { name: /connect wallet/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("wallet button click triggers sign-in attempt", async () => {
     renderCharityLogin();
 
-    const inputs = screen.getAllByDisplayValue("");
-    const emailInput = inputs.find(
-      (input) => input.getAttribute("type") === "email",
-    );
-    const passwordInput = inputs.find(
-      (input) => input.getAttribute("type") === "password",
-    );
-
-    // Ensure inputs are found before using them
-    if (!emailInput || !passwordInput) {
-      throw new Error("Email or password input not found in the form");
-    }
-
-    fireEvent.change(emailInput, {
-      target: { value: "test@charity.com" },
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
     });
-    fireEvent.change(passwordInput, {
+
+    // In the test environment there is no wallet extension installed, so the
+    // sign-in attempt immediately surfaces an error alert. This confirms the
+    // click handler runs and the error state is surfaced correctly.
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+    });
+  });
+
+  it("shows error message when wallet sign-in fails", async () => {
+    renderCharityLogin();
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
+    });
+
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(screen.getByText(/no wallet detected/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows countdown when email login detects a donor account mismatch", async () => {
+    // Override signInWithPassword for this test so AuthContext receives a donor-type
+    // user, detects the charity/donor mismatch, and throws the error that triggers
+    // the countdown redirect UI in CharityLogin.
+    (supabase.auth.signInWithPassword as jest.Mock).mockResolvedValueOnce({
+      data: {
+        user: {
+          id: "donor-test-id",
+          email: "donor@example.com",
+          user_metadata: { type: "donor" },
+          app_metadata: {},
+          aud: "authenticated",
+          created_at: "2024-01-01T00:00:00Z",
+        },
+        session: null,
+      },
+      error: null,
+    });
+
+    jest.useFakeTimers();
+    renderCharityLogin();
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "donor@example.com" },
+    });
+    fireEvent.change(screen.getByLabelText(/password/i), {
       target: { value: "password123" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
-    expect(mockLogin).toHaveBeenCalledWith(
-      "test@charity.com",
-      "password123",
-      "charity",
-    );
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    });
+
+    await waitFor(() => {
+      // Multiple alerts and text matches may be present (inline error + toast).
+      // Verify the mismatch message appears somewhere on the page.
+      expect(
+        screen.getAllByText(/registered as a donor account/i).length,
+      ).toBeGreaterThan(0);
+    });
+
+    jest.useRealTimers();
   });
 });

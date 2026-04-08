@@ -8,30 +8,14 @@ import {
   createMockTranslation,
 } from "@/test-utils/mockSetup";
 import { MemoryRouter } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { useProfile } from "@/hooks/useProfile";
+import { useTranslation } from "@/hooks/useTranslation";
 
-// Declare jest.fn() mocks BEFORE jest.mock() so .mockReturnValue() works
-const mockUseAuth = jest.fn();
-const mockUseProfile = jest.fn();
-const mockUseTranslation = jest.fn();
-
-// Top-level mocks with explicit factories for ESM compatibility
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: (...args: unknown[]) => mockUseAuth(...args),
-}));
-jest.mock("@/hooks/useProfile", () => ({
-  useProfile: (...args: unknown[]) => mockUseProfile(...args),
-}));
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: (...args: unknown[]) => mockUseTranslation(...args),
-}));
-jest.mock("@/utils/logger", () => ({
-  Logger: {
-    error: jest.fn(),
-    info: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
+// Use jest.mocked() — mapper provides jest.fn() mocks for these hooks
+const mockUseAuth = jest.mocked(useAuth);
+const mockUseProfile = jest.mocked(useProfile);
+const mockUseTranslation = jest.mocked(useTranslation);
 
 // Mock UI components
 /* eslint-disable react/prop-types */
@@ -152,7 +136,6 @@ jest.mock("@/lib/supabase", () => {
     },
   };
 });
-
 
 describe("CharityPortal", () => {
   const renderWithRouter = (props = {}) => {

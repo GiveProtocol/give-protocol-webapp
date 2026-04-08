@@ -1,70 +1,16 @@
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { ForgotCredentials } from "../ForgotCredentials";
+import { useAuth } from "@/contexts/AuthContext";
+
+// All mocks handled via moduleNameMapper:
+// useAuth/AuthContext, Web3Context, ToastContext, SettingsContext,
+// useTranslation, validation
 
 const mockResetPassword = jest.fn();
 const mockSendUsernameReminder = jest.fn();
-
-jest.mock("@/hooks/useAuth", () => ({
-  useAuth: () => ({
-    resetPassword: mockResetPassword,
-    sendUsernameReminder: mockSendUsernameReminder,
-    loading: false,
-  }),
-}));
-
-jest.mock("@/contexts/AuthContext", () => ({
-  useAuth: jest.fn(() => ({
-    resetPassword: mockResetPassword,
-    sendUsernameReminder: mockSendUsernameReminder,
-    loading: false,
-    user: null,
-    userType: null,
-  })),
-}));
-
-jest.mock("@/contexts/Web3Context", () => ({
-  useWeb3: jest.fn(() => ({
-    disconnect: jest.fn(),
-    isConnected: false,
-    account: null,
-    chainId: null,
-  })),
-}));
-
-jest.mock("@/contexts/ToastContext", () => ({
-  useToast: jest.fn(() => ({
-    showToast: jest.fn(),
-  })),
-}));
-
-jest.mock("@/hooks/useTranslation", () => ({
-  useTranslation: jest.fn(() => ({
-    t: jest.fn((key: string, fallback?: string) => fallback || key),
-  })),
-}));
-
-jest.mock("@/contexts/SettingsContext", () => ({
-  useSettings: jest.fn(() => ({
-    language: "en",
-    setLanguage: jest.fn(),
-    currency: "USD",
-    setCurrency: jest.fn(),
-    theme: "light",
-    setTheme: jest.fn(),
-    languageOptions: [],
-    currencyOptions: [],
-  })),
-}));
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useNavigate: () => jest.fn(),
-}));
-
-jest.mock("@/utils/validation", () => ({
-  validateEmail: jest.fn((email: string) => email.includes("@")),
-}));
+const mockUseAuth = jest.mocked(useAuth);
 
 describe("ForgotCredentials", () => {
   const mockOnBack = jest.fn();
@@ -73,12 +19,29 @@ describe("ForgotCredentials", () => {
     mockResetPassword.mockClear();
     mockSendUsernameReminder.mockClear();
     mockOnBack.mockClear();
-    mockResetPassword.mockResolvedValue();
-    mockSendUsernameReminder.mockResolvedValue();
+    mockResetPassword.mockResolvedValue(undefined);
+    mockSendUsernameReminder.mockResolvedValue(undefined);
+    mockUseAuth.mockReturnValue({
+      resetPassword: mockResetPassword,
+      sendUsernameReminder: mockSendUsernameReminder,
+      loading: false,
+      user: null,
+      userType: null,
+      login: jest.fn(),
+      loginWithGoogle: jest.fn(),
+      logout: jest.fn(),
+      refreshSession: jest.fn(),
+      register: jest.fn(),
+      error: null,
+    });
   });
 
   it("renders forgot password form", () => {
-    render(<ForgotCredentials type="password" onBack={mockOnBack} />);
+    render(
+      <MemoryRouter>
+        <ForgotCredentials type="password" onBack={mockOnBack} />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Reset Password")).toBeInTheDocument();
     expect(
       screen.getByPlaceholderText("Enter your email address"),
@@ -89,7 +52,11 @@ describe("ForgotCredentials", () => {
   });
 
   it("renders forgot username form", () => {
-    render(<ForgotCredentials type="username" onBack={mockOnBack} />);
+    render(
+      <MemoryRouter>
+        <ForgotCredentials type="username" onBack={mockOnBack} />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Forgot Username")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: /send username/i }),
@@ -97,7 +64,11 @@ describe("ForgotCredentials", () => {
   });
 
   it("calls resetPassword when reset button clicked", async () => {
-    render(<ForgotCredentials type="password" onBack={mockOnBack} />);
+    render(
+      <MemoryRouter>
+        <ForgotCredentials type="password" onBack={mockOnBack} />
+      </MemoryRouter>,
+    );
 
     fireEvent.change(screen.getByPlaceholderText("Enter your email address"), {
       target: { value: "test@example.com" },
@@ -110,7 +81,11 @@ describe("ForgotCredentials", () => {
   });
 
   it("calls sendUsernameReminder when username button clicked", async () => {
-    render(<ForgotCredentials type="username" onBack={mockOnBack} />);
+    render(
+      <MemoryRouter>
+        <ForgotCredentials type="username" onBack={mockOnBack} />
+      </MemoryRouter>,
+    );
 
     fireEvent.change(screen.getByPlaceholderText("Enter your email address"), {
       target: { value: "test@example.com" },

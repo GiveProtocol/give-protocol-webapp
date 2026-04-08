@@ -9,7 +9,10 @@ const getEnv = (key: string): string | undefined => {
   return undefined;
 };
 
-// Documentation configuration
+/**
+ * Documentation site configuration for the Give Protocol application.
+ * Reads the VITE_DOCS_URL environment variable with a fallback to the production docs URL.
+ */
 export const DOCS_CONFIG = {
   // URL for the Jekyll documentation site
   url: getEnv('VITE_DOCS_URL') || 'https://docs.giveprotocol.io',

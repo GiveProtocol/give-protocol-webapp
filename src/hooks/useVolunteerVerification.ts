@@ -14,6 +14,12 @@ import {
 } from '@/utils/volunteer';
 import { Logger } from '@/utils/logger';
 
+/**
+ * Hook for charity coordinators to accept volunteer applications, verify hours,
+ * and look up verification records. Requires the signed-in user to own the
+ * associated charity opportunity or hours record.
+ * @returns Actions (acceptApplication, verifyHours, getVerificationByHash) and loading/error state
+ */
 export const useVolunteerVerification = () => {
   const { profile } = useProfile();
   const { showToast } = useToast();

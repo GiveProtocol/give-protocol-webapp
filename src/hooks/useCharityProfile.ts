@@ -4,6 +4,10 @@ import { useProfile } from "@/hooks/useProfile";
 import { CharityDetails } from "@/types/charity";
 import { Logger } from "@/utils/logger";
 
+/**
+ * Hook for fetching and updating the charity profile of the currently signed-in user.
+ * @returns Charity profile data, an updateProfile action, and loading/error state
+ */
 export const useCharityProfile = () => {
   const { profile } = useProfile();
   const [charityProfile, setCharityProfile] = useState<CharityDetails | null>(

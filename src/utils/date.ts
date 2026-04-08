@@ -1,5 +1,11 @@
 import { Logger } from "@/utils/logger";
 
+/**
+ * Formats a date string into a human-readable format.
+ * @param dateString - ISO date string to format
+ * @param includeTime - Whether to include time in the output (HH:MM UTC)
+ * @returns Formatted date string, or empty string if invalid
+ */
 export const formatDate = (dateString: string, includeTime = false): string => {
   if (!dateString) return "";
 
@@ -35,11 +41,21 @@ export const formatDate = (dateString: string, includeTime = false): string => {
   }
 };
 
+/**
+ * Checks whether a date string represents a valid date.
+ * @param dateString - Date string to validate
+ * @returns True if the string parses to a valid date, false otherwise
+ */
 export const isValidDate = (dateString: string): boolean => {
   const date = new Date(dateString);
   return date instanceof Date && !Number.isNaN(date.getTime());
 };
 
+/**
+ * Formats a date string into YYYY-MM-DD format suitable for HTML date inputs.
+ * @param dateString - ISO date string to format
+ * @returns Date string in YYYY-MM-DD format, or empty string if invalid
+ */
 export const formatDateForInput = (dateString: string): string => {
   if (!dateString) return "";
 
@@ -51,6 +67,11 @@ export const formatDateForInput = (dateString: string): string => {
   }
 };
 
+/**
+ * Computes a start and end Date pair for a named time period relative to now.
+ * @param period - One of "week", "month", "quarter", "year", or any other string for all-time
+ * @returns Object containing start and end Date instances
+ */
 export const getDateRange = (period: string): { start: Date; end: Date } => {
   const end = new Date();
   const start = new Date();
