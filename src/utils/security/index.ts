@@ -227,7 +227,7 @@ export class SecurityManager {
 
   private monitorNetworkRequests(): void {
     const originalFetch = window.fetch;
-    window.fetch = async (
+    window.fetch = (
       input: RequestInfo | URL,
       init?: RequestInit | undefined,
     ) => {
