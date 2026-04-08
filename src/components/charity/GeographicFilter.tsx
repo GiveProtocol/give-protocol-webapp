@@ -90,9 +90,7 @@ export const GeographicFilter: React.FC<GeographicFilterProps> = ({
 
   const handleRemoveImpact = useCallback(
     (id: string) => {
-      onImpactLocationsChange(
-        impactLocations.filter((loc) => loc.id !== id),
-      );
+      onImpactLocationsChange(impactLocations.filter((loc) => loc.id !== id));
     },
     [impactLocations, onImpactLocationsChange],
   );

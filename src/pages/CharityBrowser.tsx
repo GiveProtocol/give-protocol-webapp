@@ -54,13 +54,9 @@ const CharityBrowser: React.FC = () => {
       const targetLocations =
         activeCategory === "impact" ? impactLocations : hqLocations;
       const onChange =
-        activeCategory === "impact"
-          ? setImpactLocations
-          : setHqLocations;
+        activeCategory === "impact" ? setImpactLocations : setHqLocations;
 
-      const isDuplicate = targetLocations.some(
-        (loc) => loc.id === location.id,
-      );
+      const isDuplicate = targetLocations.some((loc) => loc.id === location.id);
       if (!isDuplicate) {
         onChange([...targetLocations, location]);
       }
@@ -70,12 +66,9 @@ const CharityBrowser: React.FC = () => {
     [locationInput, activeCategory, impactLocations, hqLocations],
   );
 
-  const handleCategoryChange = useCallback(
-    (category: FilterCategory) => {
-      setActiveCategory(category);
-    },
-    [],
-  );
+  const handleCategoryChange = useCallback((category: FilterCategory) => {
+    setActiveCategory(category);
+  }, []);
 
   const handleCharitiesClick = useCallback(() => {
     setViewMode("charities");
@@ -100,13 +93,9 @@ const CharityBrowser: React.FC = () => {
   const renderContent = () => {
     switch (viewMode) {
       case "causes":
-        return (
-          <CauseGrid searchTerm={searchTerm} category="" />
-        );
+        return <CauseGrid searchTerm={searchTerm} category="" />;
       case "portfolios":
-        return (
-          <PortfolioGrid searchTerm={searchTerm} category="" />
-        );
+        return <PortfolioGrid searchTerm={searchTerm} category="" />;
       case "charities":
       default:
         return (
@@ -154,7 +143,11 @@ const CharityBrowser: React.FC = () => {
       <ScrollReveal direction="up" delay={200}>
         <div className="space-y-2">
           <div className="flex gap-3">
-            <div className={isCharities ? "relative flex-[7]" : "relative flex-grow"}>
+            <div
+              className={
+                isCharities ? "relative flex-[7]" : "relative flex-grow"
+              }
+            >
               <input
                 type="text"
                 placeholder="Search charities..."
@@ -163,7 +156,10 @@ const CharityBrowser: React.FC = () => {
                 value={searchTerm}
                 onChange={handleSearchChange}
               />
-              <Search aria-hidden="true" className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+              <Search
+                aria-hidden="true"
+                className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+              />
             </div>
             {isCharities && (
               <div className="relative flex-[3]">
@@ -176,7 +172,10 @@ const CharityBrowser: React.FC = () => {
                   aria-label="Search location"
                   className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
                 />
-                <MapPin aria-hidden="true" className="absolute left-3 top-2.5 h-4 w-4 text-gray-400" />
+                <MapPin
+                  aria-hidden="true"
+                  className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+                />
               </div>
             )}
           </div>

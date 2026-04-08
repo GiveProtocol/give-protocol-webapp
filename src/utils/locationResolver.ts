@@ -54,9 +54,7 @@ export function resolveLocation(input: string): LocationFilter {
   const lower = trimmed.toLowerCase();
 
   // Match US states by code (exact, case-insensitive)
-  const stateByCode = US_STATES.find(
-    (s) => s.code.toLowerCase() === lower,
-  );
+  const stateByCode = US_STATES.find((s) => s.code.toLowerCase() === lower);
   if (stateByCode) {
     return {
       id: `state:${stateByCode.code}`,
@@ -68,9 +66,7 @@ export function resolveLocation(input: string): LocationFilter {
   }
 
   // Match US states by name (case-insensitive)
-  const stateByName = US_STATES.find(
-    (s) => s.name.toLowerCase() === lower,
-  );
+  const stateByName = US_STATES.find((s) => s.name.toLowerCase() === lower);
   if (stateByName) {
     return {
       id: `state:${stateByName.code}`,
@@ -82,9 +78,7 @@ export function resolveLocation(input: string): LocationFilter {
   }
 
   // Match countries by code (exact, case-insensitive)
-  const countryByCode = COUNTRIES.find(
-    (c) => c.code.toLowerCase() === lower,
-  );
+  const countryByCode = COUNTRIES.find((c) => c.code.toLowerCase() === lower);
   if (countryByCode) {
     return {
       id: `country:${countryByCode.code}`,
@@ -96,9 +90,7 @@ export function resolveLocation(input: string): LocationFilter {
   }
 
   // Match countries by name (case-insensitive)
-  const countryByName = COUNTRIES.find(
-    (c) => c.name.toLowerCase() === lower,
-  );
+  const countryByName = COUNTRIES.find((c) => c.name.toLowerCase() === lower);
   if (countryByName) {
     return {
       id: `country:${countryByName.code}`,

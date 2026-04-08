@@ -66,9 +66,7 @@ describe("GeographicFilter", () => {
   });
 
   it("shows checkbox as checked when onPlatformOnly is true", () => {
-    render(
-      <GeographicFilter {...defaultProps} onPlatformOnly={true} />,
-    );
+    render(<GeographicFilter {...defaultProps} onPlatformOnly={true} />);
     expect(screen.getByRole("checkbox")).toBeChecked();
   });
 
@@ -92,9 +90,7 @@ describe("GeographicFilter", () => {
       makeLocation("state", "CA", "California"),
       makeLocation("state", "NY", "New York"),
     ];
-    render(
-      <GeographicFilter {...defaultProps} hqLocations={hq} />,
-    );
+    render(<GeographicFilter {...defaultProps} hqLocations={hq} />);
 
     fireEvent.click(screen.getByLabelText("Remove California"));
 
@@ -107,12 +103,7 @@ describe("GeographicFilter", () => {
 
   it("calls onImpactLocationsChange when removing an Impact pill", () => {
     const impact = [makeLocation("region", "se-asia", "SE Asia")];
-    render(
-      <GeographicFilter
-        {...defaultProps}
-        impactLocations={impact}
-      />,
-    );
+    render(<GeographicFilter {...defaultProps} impactLocations={impact} />);
 
     fireEvent.click(screen.getByLabelText("Remove SE Asia"));
 

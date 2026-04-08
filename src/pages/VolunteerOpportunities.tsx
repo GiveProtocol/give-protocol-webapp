@@ -181,8 +181,7 @@ const VolunteerOpportunities: React.FC = () => {
           .includes(searchTerm.toLowerCase());
       const matchesSkill =
         !selectedSkill || opportunity.skills.includes(selectedSkill);
-      const matchesType =
-        !selectedType || opportunity.type === selectedType;
+      const matchesType = !selectedType || opportunity.type === selectedType;
       const matchesLanguage =
         !selectedLanguage || opportunity.workLanguage === selectedLanguage;
       const matchesLocation =
@@ -197,7 +196,13 @@ const VolunteerOpportunities: React.FC = () => {
         matchesLocation
       );
     });
-  }, [searchTerm, locationSearch, selectedSkill, selectedType, selectedLanguage]);
+  }, [
+    searchTerm,
+    locationSearch,
+    selectedSkill,
+    selectedType,
+    selectedLanguage,
+  ]);
 
   const handleApply = useCallback(
     (opportunity: Opportunity) => {
@@ -254,12 +259,9 @@ const VolunteerOpportunities: React.FC = () => {
     [],
   );
 
-  const handleTypeChange = useCallback(
-    (category: string) => {
-      setSelectedType((prev) => (prev === category ? "" : category));
-    },
-    [],
-  );
+  const handleTypeChange = useCallback((category: string) => {
+    setSelectedType((prev) => (prev === category ? "" : category));
+  }, []);
 
   const handleRemoteClick = useCallback(() => {
     handleTypeChange("remote");
@@ -441,9 +443,7 @@ const VolunteerOpportunities: React.FC = () => {
               className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
               aria-label={t("volunteer.selectSkill", "Select skill")}
             >
-              <option value="">
-                {t("volunteer.allSkills", "All Skills")}
-              </option>
+              <option value="">{t("volunteer.allSkills", "All Skills")}</option>
               {SKILLS.map((skill) => (
                 <option key={skill} value={skill}>
                   {skill}
@@ -462,10 +462,7 @@ const VolunteerOpportunities: React.FC = () => {
               </option>
               {Object.values(WorkLanguage).map((language) => (
                 <option key={language} value={language}>
-                  {t(
-                    `language.${language}`,
-                    formatLanguageName(language),
-                  )}
+                  {t(`language.${language}`, formatLanguageName(language))}
                 </option>
               ))}
             </select>
@@ -497,9 +494,7 @@ const VolunteerOpportunities: React.FC = () => {
                 <p className="text-sm font-medium text-emerald-600 mb-2">
                   {opportunity.organization}
                 </p>
-                <p className="text-gray-600 mb-4">
-                  {opportunity.description}
-                </p>
+                <p className="text-gray-600 mb-4">{opportunity.description}</p>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center text-sm text-gray-500">
@@ -523,10 +518,7 @@ const VolunteerOpportunities: React.FC = () => {
                         key={skill}
                         className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
                       >
-                        <Award
-                          aria-hidden="true"
-                          className="h-3 w-3 mr-1"
-                        />
+                        <Award aria-hidden="true" className="h-3 w-3 mr-1" />
                         {skill}
                       </span>
                     ))}
