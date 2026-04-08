@@ -1,6 +1,12 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  act,
+  waitFor,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { CharityLogin } from "../CharityLogin";
 import { AuthProvider } from "@/contexts/AuthContext";
@@ -93,7 +99,9 @@ describe("CharityLogin", () => {
   it("renders login form", () => {
     renderCharityLogin();
     expect(screen.getAllByDisplayValue("")).toHaveLength(2);
-    expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign in/i }),
+    ).toBeInTheDocument();
     expect(screen.getByText(/email/i)).toBeInTheDocument();
     expect(screen.getByText(/password/i)).toBeInTheDocument();
   });
@@ -169,7 +177,9 @@ describe("CharityLogin", () => {
     await waitFor(() => {
       // Multiple alerts and text matches may be present (inline error + toast).
       // Verify the mismatch message appears somewhere on the page.
-      expect(screen.getAllByText(/registered as a donor account/i).length).toBeGreaterThan(0);
+      expect(
+        screen.getAllByText(/registered as a donor account/i).length,
+      ).toBeGreaterThan(0);
     });
 
     jest.useRealTimers();

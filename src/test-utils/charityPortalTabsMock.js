@@ -4,9 +4,7 @@ export const ApplicationsTab = () => (
   <div data-testid="applications-tab">Applications</div>
 );
 
-export const CausesTab = () => (
-  <div data-testid="causes-tab">Causes</div>
-);
+export const CausesTab = () => <div data-testid="causes-tab">Causes</div>;
 
 export const HoursVerificationTab = () => (
   <div data-testid="hours-tab">Hours</div>
@@ -24,9 +22,7 @@ export const OrganizationProfileTab = () => (
   <div data-testid="org-profile-tab">Org Profile</div>
 );
 
-export const StatsCards = () => (
-  <div data-testid="stats-cards">Stats</div>
-);
+export const StatsCards = () => <div data-testid="stats-cards">Stats</div>;
 
 export const TransactionsTab = () => (
   <div data-testid="transactions-tab">Transactions</div>

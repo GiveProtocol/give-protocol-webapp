@@ -18,7 +18,13 @@ import { DonorStats } from "../../components/donor/DonorStats";
 
 describe("mock test", () => {
   it("should use mock", () => {
-    render(<DonorStats totalDonated={100} impactGrowth={50} charitiesSupported={3} />);
+    render(
+      <DonorStats
+        totalDonated={100}
+        impactGrowth={50}
+        charitiesSupported={3}
+      />,
+    );
     expect(screen.getAllByTestId("currency-display").length).toBeGreaterThan(0);
   });
 });

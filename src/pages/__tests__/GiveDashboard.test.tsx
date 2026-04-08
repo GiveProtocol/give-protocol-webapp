@@ -124,7 +124,12 @@ jest.mock("@/hooks/useContributionStats", () => ({
       totalFiatDonated: 450,
       fiatDonationCount: 3,
       formalVolunteerHours: 30,
-      selfReportedHours: { validated: 18, pending: 0, unvalidated: 0, total: 18 },
+      selfReportedHours: {
+        validated: 18,
+        pending: 0,
+        unvalidated: 0,
+        total: 18,
+      },
       totalVolunteerHours: 48,
       skillsEndorsed: 12,
       organizationsHelped: 4,

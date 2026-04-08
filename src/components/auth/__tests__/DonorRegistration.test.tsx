@@ -56,7 +56,9 @@ describe("DonorRegistration", () => {
     fireEvent.change(screen.getByLabelText(/confirm password/i), {
       target: { value: "password123" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /create donor account/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /create donor account/i }),
+    );
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(/valid email/i);
     });
@@ -74,7 +76,9 @@ describe("DonorRegistration", () => {
     fireEvent.change(screen.getByLabelText(/confirm password/i), {
       target: { value: "short" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /create donor account/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /create donor account/i }),
+    );
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(/8 characters/i);
     });
@@ -92,7 +96,9 @@ describe("DonorRegistration", () => {
     fireEvent.change(screen.getByLabelText(/confirm password/i), {
       target: { value: "different456" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /create donor account/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /create donor account/i }),
+    );
     await waitFor(() => {
       expect(screen.getByRole("alert")).toHaveTextContent(/do not match/i);
     });
@@ -111,7 +117,9 @@ describe("DonorRegistration", () => {
     fireEvent.change(screen.getByLabelText(/confirm password/i), {
       target: { value: "password123" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /create donor account/i }));
+    fireEvent.click(
+      screen.getByRole("button", { name: /create donor account/i }),
+    );
     await waitFor(() => {
       expect(mockRegister).toHaveBeenCalledWith(
         "donor@example.com",

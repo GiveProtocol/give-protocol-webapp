@@ -1,5 +1,11 @@
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { WalletAliasSettings } from "../WalletAliasSettings";
 import { useWalletAlias } from "@/hooks/useWalletAlias";
 import { useWeb3 } from "@/contexts/Web3Context";
