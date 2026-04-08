@@ -4,10 +4,6 @@ import { render, screen } from "@testing-library/react";
 import { PersonalContributions } from "../PersonalContributions";
 import { useUserContributionStats } from "@/hooks/useContributionStats";
 
-interface StatsShape {
-  totalDonated: number;
-}
-
 jest.mock("@/hooks/useContributionStats", () => ({
   useUserContributionStats: jest.fn(),
 }));
@@ -17,7 +13,7 @@ jest.mock("../DonationStats", () => ({
     stats,
     isPersonal,
   }: {
-    stats?: StatsShape;
+    stats?: { totalDonated: number };
     isPersonal?: boolean;
   }) => (
     <div data-testid="donation-stats">

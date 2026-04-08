@@ -18,6 +18,7 @@ export const useWithdrawals = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    /** Fetches withdrawal requests from Supabase for the current charity. */
     const fetchWithdrawals = async () => {
       if (!profile?.id) return;
 
@@ -41,6 +42,7 @@ export const useWithdrawals = () => {
     fetchWithdrawals();
   }, [profile]);
 
+  /** Submits a new withdrawal request for the given amount. */
   const requestWithdrawal = async (amount: number) => {
     if (!profile?.id) return;
 

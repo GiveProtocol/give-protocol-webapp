@@ -11,6 +11,7 @@ export const useCharityProfile = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    /** Fetches the charity profile from Supabase for the current user. */
     const fetchCharityProfile = async () => {
       if (!profile?.id) return;
 
@@ -34,6 +35,7 @@ export const useCharityProfile = () => {
     fetchCharityProfile();
   }, [profile]);
 
+  /** Updates the charity profile with the given partial fields. */
   const updateProfile = async (updates: Partial<CharityDetails>) => {
     if (!profile?.id) return;
 
