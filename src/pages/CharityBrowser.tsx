@@ -140,8 +140,7 @@ const CharityBrowser: React.FC = () => {
         </div>
       </ScrollReveal>
 
-      <ScrollReveal direction="up" delay={200}>
-        <div className="space-y-2">
+      <ScrollReveal direction="up" delay={200} className="space-y-2">
           <div className="flex gap-3">
             <div
               className={
@@ -192,7 +191,6 @@ const CharityBrowser: React.FC = () => {
               onPlatformOnlyChange={handleOnPlatformChange}
             />
           )}
-        </div>
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={300}>

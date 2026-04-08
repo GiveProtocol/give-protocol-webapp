@@ -355,8 +355,7 @@ const VolunteerOpportunities: React.FC = () => {
         {t("volunteer.opportunities", "Volunteer Opportunities")}
       </h1>
 
-      <ScrollReveal direction="up" delay={100}>
-        <div className="space-y-2">
+      <ScrollReveal direction="up" delay={100} className="space-y-2">
           <div className="flex gap-3 items-center">
             <div className="relative flex-[3]">
               <input
@@ -475,7 +474,6 @@ const VolunteerOpportunities: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={200}>
@@ -496,33 +494,31 @@ const VolunteerOpportunities: React.FC = () => {
                 </p>
                 <p className="text-gray-600 mb-4">{opportunity.description}</p>
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
-                    {opportunity.commitment}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
-                    {opportunity.location}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
-                    {t(
-                      `language.${opportunity.workLanguage}`,
-                      formatLanguageName(opportunity.workLanguage),
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {opportunity.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
-                      >
-                        <Award aria-hidden="true" className="h-3 w-3 mr-1" />
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
+                  {opportunity.commitment}
+                </div>
+                <div className="flex items-center text-sm text-gray-500 mt-2">
+                  <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
+                  {opportunity.location}
+                </div>
+                <div className="flex items-center text-sm text-gray-500 mt-2">
+                  <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
+                  {t(
+                    `language.${opportunity.workLanguage}`,
+                    formatLanguageName(opportunity.workLanguage),
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                  {opportunity.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
+                    >
+                      <Award aria-hidden="true" className="h-3 w-3 mr-1" />
+                      {skill}
+                    </span>
+                  ))}
                 </div>
 
                 <button

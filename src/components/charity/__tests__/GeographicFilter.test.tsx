@@ -66,7 +66,7 @@ describe("GeographicFilter", () => {
   });
 
   it("shows checkbox as checked when onPlatformOnly is true", () => {
-    render(<GeographicFilter {...defaultProps} onPlatformOnly={true} />);
+    render(<GeographicFilter {...defaultProps} onPlatformOnly />);
     expect(screen.getByRole("checkbox")).toBeChecked();
   });
 
