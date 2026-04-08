@@ -70,9 +70,6 @@ export default {
     "^@/hooks/useWallet$": "<rootDir>/src/test-utils/useWalletMock.js",
     "(.*)/hooks/useWallet(\\.tsx?)?$":
       "<rootDir>/src/test-utils/useWalletMock.js",
-    "^@/hooks/useOnboarding$": "<rootDir>/src/test-utils/useOnboardingMock.js",
-    "(.*)/hooks/useOnboarding(\\.tsx?)?$":
-      "<rootDir>/src/test-utils/useOnboardingMock.js",
     "^@/hooks/useSafeAutoConnect$":
       "<rootDir>/src/test-utils/safeAutoConnectMock.js",
     "(.*)/hooks/useSafeAutoConnect(\\.tsx?)?$":

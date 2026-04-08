@@ -1,15 +1,20 @@
 /**
  * WalletModal - Main wallet connection modal.
- * Filter-first navigation with chain type tabs, unified flat wallet list,
- * and streamlined wallet rows without redundant badges.
+ * Two-step flow: Step 1 is network selection, Step 2 is wallet provider selection.
  */
 
 import React, { useState, useCallback, useMemo, useEffect } from "react";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import type { ChainType, UnifiedWalletProvider } from "@/types/wallet";
+import type { ChainId, ChainConfig } from "@/contexts/ChainContext";
+import { useChain } from "@/contexts/ChainContext";
 import { WalletOption } from "./WalletOption";
+import { NetworkGrid } from "../NetworkGrid";
 import { Portal } from "@/components/ui/Portal";
 import { Logger } from "@/utils/logger";
+
+/** Two-step modal flow: network selection then wallet selection. */
+type ModalStep = "network" | "wallet";
 
 /** Chain type tab configuration. */
 const CHAIN_TABS: { type: ChainType; label: string; activeClass: string }[] = [
@@ -18,17 +23,14 @@ const CHAIN_TABS: { type: ChainType; label: string; activeClass: string }[] = [
   { type: "polkadot", label: "Polkadot", activeClass: "bg-pink-600 text-white" },
 ];
 
-/** Dialog content for wallet modal with chain tabs, wallet list, and footer. */
-const WalletDialogContent: React.FC<{
-  selectedChainType: ChainType;
-  onChainTabClick: (_e: React.MouseEvent<HTMLButtonElement>) => void;
+/** Network selection step dialog content. */
+const NetworkDialogContent: React.FC<{
+  chains: ChainConfig[];
+  selectedNetworkId: ChainId | null;
+  onNetworkSelect: (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  onContinue: () => void;
   onClose: () => void;
-  isConnecting: boolean;
-  error: string | null;
-  filteredWallets: UnifiedWalletProvider[];
-  connectingWallet: string | null;
-  onSelectWallet: (_wallet: UnifiedWalletProvider) => void;
-}> = ({ selectedChainType, onChainTabClick, onClose, isConnecting, error, filteredWallets, connectingWallet, onSelectWallet }) => (
+}> = ({ chains, selectedNetworkId, onNetworkSelect, onContinue, onClose }) => (
   <dialog
     open
     className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
@@ -38,8 +40,77 @@ const WalletDialogContent: React.FC<{
     {/* Header */}
     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
       <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
-        Connect Wallet
+        Select Network
       </h3>
+      <button
+        type="button"
+        onClick={onClose}
+        className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xl leading-none"
+        aria-label="Close modal"
+      >
+        &times;
+      </button>
+    </div>
+
+    {/* Network Grid — dark bg required for glassmorphic NetworkCard styles */}
+    <div className="px-4 py-4">
+      <div className="bg-gray-900 rounded-xl p-3">
+        <NetworkGrid
+          chains={chains}
+          selectedChainId={selectedNetworkId}
+          onChainSelect={onNetworkSelect}
+          comingSoonCount={0}
+        />
+      </div>
+    </div>
+
+    {/* Footer */}
+    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+      <button
+        type="button"
+        onClick={onContinue}
+        disabled={selectedNetworkId === null}
+        className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        Continue
+      </button>
+    </div>
+  </dialog>
+);
+
+/** Dialog content for wallet modal with chain tabs, wallet list, and footer. */
+const WalletDialogContent: React.FC<{
+  selectedChainType: ChainType;
+  onChainTabClick: (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  onBack: () => void;
+  onClose: () => void;
+  isConnecting: boolean;
+  error: string | null;
+  filteredWallets: UnifiedWalletProvider[];
+  connectingWallet: string | null;
+  onSelectWallet: (_wallet: UnifiedWalletProvider) => void;
+}> = ({ selectedChainType, onChainTabClick, onBack, onClose, isConnecting, error, filteredWallets, connectingWallet, onSelectWallet }) => (
+  <dialog
+    open
+    className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
+    aria-modal="true"
+    aria-labelledby="wallet-modal-title"
+  >
+    {/* Header */}
+    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={onBack}
+          className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+          aria-label="Back to network selection"
+        >
+          <ArrowLeft className="w-5 h-5" />
+        </button>
+        <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+          Connect Wallet
+        </h3>
+      </div>
       <button
         type="button"
         onClick={onClose}
@@ -74,7 +145,7 @@ const WalletDialogContent: React.FC<{
     </div>
 
     {/* Error Message */}
-    {error && (
+    {error !== null && (
       <div className="mx-6 mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-start gap-2">
         <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
         <p className="text-sm text-red-700 dark:text-red-400">{error}</p>
@@ -133,13 +204,14 @@ interface WalletModalProps {
 }
 
 /**
- * Full-featured wallet selection modal with chain type filter tabs
- * and a flat, unified wallet list.
+ * Full-featured wallet selection modal with a two-step flow:
+ * Step 1 — network selection via NetworkGrid.
+ * Step 2 — wallet provider selection with chain type filter tabs.
  * @param isOpen - Whether modal is visible
  * @param onClose - Callback to close modal
  * @param wallets - Available wallet providers
  * @param onConnect - Callback when connecting to a wallet
- * @param initialChainType - Initial selected chain type (defaults to EVM)
+ * @param initialChainType - Initial selected chain type for Step 2 (defaults to EVM)
  */
 export const WalletModal: React.FC<WalletModalProps> = ({
   isOpen,
@@ -148,14 +220,26 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   onConnect,
   initialChainType = "evm",
 }) => {
+  const [step, setStep] = useState<ModalStep>("network");
+  const [selectedNetworkId, setSelectedNetworkId] = useState<ChainId | null>(null);
   const [selectedChainType, setSelectedChainType] = useState<ChainType>(initialChainType);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const { availableChains, selectChain } = useChain();
+
+  // Mainnet chains only for Step 1
+  const mainnetChains = useMemo(
+    () => availableChains.filter((chain) => !chain.isTestnet),
+    [availableChains],
+  );
+
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
+      setStep("network");
+      setSelectedNetworkId(null);
       setSelectedChainType(initialChainType);
       setIsConnecting(false);
       setConnectingWallet(null);
@@ -176,6 +260,26 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       return a.name.localeCompare(b.name);
     });
   }, [wallets, selectedChainType]);
+
+  const handleNetworkSelect = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+    const chainIdStr = e.currentTarget.dataset.chainId;
+    if (chainIdStr) {
+      setSelectedNetworkId(Number(chainIdStr) as ChainId);
+    }
+  }, []);
+
+  const handleContinue = useCallback(() => {
+    if (selectedNetworkId !== null) {
+      selectChain(selectedNetworkId);
+      // All current NetworkGrid options are EVM networks
+      setSelectedChainType("evm");
+      setStep("wallet");
+    }
+  }, [selectedNetworkId, selectChain]);
+
+  const handleBack = useCallback(() => {
+    setStep("network");
+  }, []);
 
   const handleChainTabClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
     const chainType = e.currentTarget.dataset.chainType as ChainType;
@@ -243,16 +347,27 @@ export const WalletModal: React.FC<WalletModalProps> = ({
           tabIndex={-1}
         />
 
-        <WalletDialogContent
-          selectedChainType={selectedChainType}
-          onChainTabClick={handleChainTabClick}
-          onClose={onClose}
-          isConnecting={isConnecting}
-          error={error}
-          filteredWallets={filteredWallets}
-          connectingWallet={connectingWallet}
-          onSelectWallet={handleSelectWallet}
-        />
+        {step === "network" ? (
+          <NetworkDialogContent
+            chains={mainnetChains}
+            selectedNetworkId={selectedNetworkId}
+            onNetworkSelect={handleNetworkSelect}
+            onContinue={handleContinue}
+            onClose={onClose}
+          />
+        ) : (
+          <WalletDialogContent
+            selectedChainType={selectedChainType}
+            onChainTabClick={handleChainTabClick}
+            onBack={handleBack}
+            onClose={onClose}
+            isConnecting={isConnecting}
+            error={error}
+            filteredWallets={filteredWallets}
+            connectingWallet={connectingWallet}
+            onSelectWallet={handleSelectWallet}
+          />
+        )}
       </div>
     </Portal>
   );

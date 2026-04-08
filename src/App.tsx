@@ -11,8 +11,6 @@ import { CurrencyProvider } from "./contexts/CurrencyContext";
 import { AppRoutes } from "./routes";
 import { Layout } from "./components/layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
-import { ChainSelectionModal } from "./components/web3/ChainSelectionModal";
-import { useOnboarding } from "./hooks/useOnboarding";
 import { useSafeAutoConnect } from "./hooks/useSafeAutoConnect";
 import { useWalletAuthSync } from "./hooks/useWalletAuthSync";
 import { MonitoringService } from "./utils/monitoring";
@@ -88,18 +86,6 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
   </CoreProviders>
 );
 
-// Chain selection wrapper for onboarding
-const ChainOnboarding = () => {
-  const { showChainSelection, completeOnboarding } = useOnboarding();
-
-  return (
-    <ChainSelectionModal
-      isOpen={showChainSelection}
-      onComplete={completeOnboarding}
-    />
-  );
-};
-
 // Safe auto-connect wrapper
 const SafeAutoConnectWrapper = ({ children }: { children: React.ReactElement }) => {
   useSafeAutoConnect();
@@ -112,7 +98,6 @@ const AppRouter = () => (
     <Layout>
       <AppRoutes />
     </Layout>
-    <ChainOnboarding />
   </SafeAutoConnectWrapper>
 );
 

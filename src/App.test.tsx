@@ -7,8 +7,6 @@ import { MemoryRouter } from "react-router-dom";
 // - routes → routesMock.js (AppRoutes renders data-testid="app-routes")
 // - components/layout → layoutMock.js (Layout renders data-testid="layout")
 // - components/ErrorBoundary → errorBoundaryMock.js (pass-through)
-// - components/web3/ChainSelectionModal → chainSelectionModalMock.js
-// - hooks/useOnboarding → useOnboardingMock.js ({ showChainSelection: false })
 // - hooks/useSafeAutoConnect → safeAutoConnectMock.js (no-op)
 // - hooks/useWalletAuthSync → walletAuthSyncMock.js (no-op)
 // - utils/monitoring → monitoringMock.js
