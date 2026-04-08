@@ -61,10 +61,10 @@ function errorResponse(message: string, status: number): Response {
 function verifyWalletSignature(body: WalletAuthRequest): string | null {
   const recoveredAddress = ethers.verifyMessage(body.message, body.signature);
   if (recoveredAddress.toLowerCase() !== body.walletAddress.toLowerCase()) {
-    return 'Signature verification failed';
+    return "Signature verification failed";
   }
   if (!body.message.includes(body.nonce)) {
-    return 'Invalid nonce in message';
+    return "Invalid nonce in message";
   }
   return null;
 }
@@ -73,15 +73,15 @@ function verifyWalletSignature(body: WalletAuthRequest): string | null {
 function verifyTimestamp(message: string): string | null {
   const timestampMatch = message.match(/Timestamp: (.+)$/m);
   if (!timestampMatch) {
-    return 'Missing timestamp in message';
+    return "Missing timestamp in message";
   }
   const messageTime = new Date(timestampMatch[1]).getTime();
   if (Number.isNaN(messageTime)) {
-    return 'Invalid timestamp in message';
+    return "Invalid timestamp in message";
   }
   const fiveMinutesMs = 5 * 60 * 1000;
   if (Date.now() - messageTime > fiveMinutesMs) {
-    return 'Signature has expired. Please sign in again.';
+    return "Signature has expired. Please sign in again.";
   }
   return null;
 }
@@ -90,42 +90,46 @@ function verifyTimestamp(message: string): string | null {
 async function createWalletUser(
   supabase: ReturnType<typeof createClient>,
   normalizedAddress: string,
-  accountType: 'donor' | 'charity',
+  accountType: "donor" | "charity",
 ): Promise<{ userId: string } | { error: string }> {
   const placeholderEmail = `${normalizedAddress}@wallet.giveprotocol.io`;
 
-  const { data: newUser, error: createError } = await supabase.auth.admin.createUser({
-    email: placeholderEmail,
-    email_confirm: true,
-    user_metadata: { type: accountType, auth_method: 'wallet' },
-  });
+  const { data: newUser, error: createError } =
+    await supabase.auth.admin.createUser({
+      email: placeholderEmail,
+      email_confirm: true,
+      user_metadata: { type: accountType, auth_method: "wallet" },
+    });
 
   if (createError || !newUser.user) {
-    console.error('Failed to create wallet user:', createError);
-    return { error: 'Failed to create user account' };
+    console.error("Failed to create wallet user:", createError);
+    return { error: "Failed to create user account" };
   }
 
   const userId = newUser.user.id;
 
   const { error: profileError } = await supabase
-    .from('profiles')
+    .from("profiles")
     .insert({ user_id: userId, type: accountType, role: accountType });
 
   if (profileError) {
-    console.error('Failed to create profile:', profileError);
+    console.error("Failed to create profile:", profileError);
   }
 
   const { error: identityError } = await supabase
-    .from('user_identities')
-    .upsert({
-      user_id: userId,
-      wallet_address: normalizedAddress,
-      primary_auth_method: 'wallet',
-      wallet_linked_at: new Date().toISOString(),
-    }, { onConflict: 'user_id' });
+    .from("user_identities")
+    .upsert(
+      {
+        user_id: userId,
+        wallet_address: normalizedAddress,
+        primary_auth_method: "wallet",
+        wallet_linked_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
 
   if (identityError) {
-    console.error('Failed to create identity:', identityError);
+    console.error("Failed to create identity:", identityError);
   }
 
   return { userId };
@@ -136,32 +140,35 @@ async function generateSession(
   supabase: ReturnType<typeof createClient>,
   userId: string,
 ): Promise<{ session: Record<string, unknown> } | { error: string }> {
-  const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email: (await supabase.auth.admin.getUserById(userId)).data.user?.email ?? '',
-  });
+  const { data: linkData, error: linkError } =
+    await supabase.auth.admin.generateLink({
+      type: "magiclink",
+      email:
+        (await supabase.auth.admin.getUserById(userId)).data.user?.email ?? "",
+    });
 
   if (linkError || !linkData) {
-    console.error('Failed to generate session link:', linkError);
-    return { error: 'Failed to create session' };
+    console.error("Failed to generate session link:", linkError);
+    return { error: "Failed to create session" };
   }
 
   const url = new URL(linkData.properties.action_link);
-  const token = url.searchParams.get('token');
-  const tokenType = url.searchParams.get('type') ?? 'magiclink';
+  const token = url.searchParams.get("token");
+  const tokenType = url.searchParams.get("type") ?? "magiclink";
 
   if (!token) {
-    return { error: 'Failed to generate auth token' };
+    return { error: "Failed to generate auth token" };
   }
 
-  const { data: sessionData, error: verifyError } = await supabase.auth.verifyOtp({
-    token_hash: token,
-    type: tokenType as 'magiclink',
-  });
+  const { data: sessionData, error: verifyError } =
+    await supabase.auth.verifyOtp({
+      token_hash: token,
+      type: tokenType as "magiclink",
+    });
 
   if (verifyError || !sessionData.session) {
-    console.error('Failed to verify OTP:', verifyError);
-    return { error: 'Failed to establish session' };
+    console.error("Failed to verify OTP:", verifyError);
+    return { error: "Failed to establish session" };
   }
 
   return {
