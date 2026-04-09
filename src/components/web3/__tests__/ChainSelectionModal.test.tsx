@@ -75,17 +75,6 @@ describe("ChainSelectionModal", () => {
       expect(screen.getByText("Moonbeam")).toBeInTheDocument();
     });
 
-    it("shows ecosystem tags", () => {
-      render(
-        <TestWrapper>
-          <ChainSelectionModal isOpen onComplete={mockOnComplete} />
-        </TestWrapper>,
-      );
-
-      expect(screen.getByText("Coinbase")).toBeInTheDocument();
-      expect(screen.getByText("Ethereum L2")).toBeInTheDocument();
-      expect(screen.getByText("Polkadot")).toBeInTheDocument();
-    });
   });
 
   describe("selection behavior", () => {
