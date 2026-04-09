@@ -130,31 +130,31 @@ export default {
       "<rootDir>/src/test-utils/donationStatsMock.js",
     "(.*)/contribution/DonationStats(\\.tsx?)?$":
       "<rootDir>/src/test-utils/donationStatsMock.js",
-    "^\\.\/DonationStats(\\.tsx?)?$":
+    "^\\./DonationStats(\\.tsx?)?$":
       "<rootDir>/src/test-utils/donationStatsMock.js",
     "^@/components/contribution/RecentContributions$":
       "<rootDir>/src/test-utils/recentContributionsMock.js",
     "(.*)/contribution/RecentContributions(\\.tsx?)?$":
       "<rootDir>/src/test-utils/recentContributionsMock.js",
-    "^\\.\/RecentContributions(\\.tsx?)?$":
+    "^\\./RecentContributions(\\.tsx?)?$":
       "<rootDir>/src/test-utils/recentContributionsMock.js",
     "^@/components/contribution/VolunteerImpact$":
       "<rootDir>/src/test-utils/volunteerImpactMock.js",
     "(.*)/contribution/VolunteerImpact(\\.tsx?)?$":
       "<rootDir>/src/test-utils/volunteerImpactMock.js",
-    "^\\.\/VolunteerImpact(\\.tsx?)?$":
+    "^\\./VolunteerImpact(\\.tsx?)?$":
       "<rootDir>/src/test-utils/volunteerImpactMock.js",
     "^@/components/contribution/DonationLeaderboard$":
       "<rootDir>/src/test-utils/donationLeaderboardMock.js",
     "(.*)/contribution/DonationLeaderboard(\\.tsx?)?$":
       "<rootDir>/src/test-utils/donationLeaderboardMock.js",
-    "^\\.\/DonationLeaderboard(\\.tsx?)?$":
+    "^\\./DonationLeaderboard(\\.tsx?)?$":
       "<rootDir>/src/test-utils/donationLeaderboardMock.js",
     "^@/components/contribution/VolunteerLeaderboard$":
       "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
     "(.*)/contribution/VolunteerLeaderboard(\\.tsx?)?$":
       "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
-    "^\\.\/VolunteerLeaderboard(\\.tsx?)?$":
+    "^\\./VolunteerLeaderboard(\\.tsx?)?$":
       "<rootDir>/src/test-utils/volunteerLeaderboardMock.js",
     "^@/components/ErrorBoundary$":
       "<rootDir>/src/test-utils/errorBoundaryMock.js",
