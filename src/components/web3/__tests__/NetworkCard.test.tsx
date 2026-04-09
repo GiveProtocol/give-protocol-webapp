@@ -38,18 +38,6 @@ describe("NetworkCard", () => {
       expect(screen.getByText("Base")).toBeInTheDocument();
     });
 
-    it("renders ecosystem badge", () => {
-      render(
-        <NetworkCard
-          chain={mockChain}
-          isSelected={false}
-          onSelect={mockOnSelect}
-        />,
-      );
-
-      expect(screen.getByText("Coinbase")).toBeInTheDocument();
-    });
-
     it("renders description", () => {
       render(
         <NetworkCard

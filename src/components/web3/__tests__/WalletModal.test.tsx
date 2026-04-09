@@ -64,14 +64,14 @@ describe("WalletModal", () => {
 
     it("disables Continue button when no network is selected", () => {
       renderModal();
-      const continueBtn = screen.getByRole("button", { name: /Continue/i });
+      const continueBtn = screen.getByRole("button", { name: /Next Step: Connect Wallet/i });
       expect(continueBtn).toBeDisabled();
     });
 
     it("enables Continue button after selecting a network", () => {
       renderModal();
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      const continueBtn = screen.getByRole("button", { name: /Continue/i });
+      const continueBtn = screen.getByRole("button", { name: /Next Step: Connect Wallet/i });
       expect(continueBtn).not.toBeDisabled();
     });
 
@@ -100,7 +100,7 @@ describe("WalletModal", () => {
     it("transitions to Step 2 when Continue is clicked after selecting a network", async () => {
       renderModal();
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      fireEvent.click(screen.getByRole("button", { name: /Continue/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Next Step: Connect Wallet/i }));
 
       await waitFor(() => {
         expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
@@ -110,7 +110,7 @@ describe("WalletModal", () => {
     it("shows chain type tabs in Step 2", async () => {
       renderModal();
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      fireEvent.click(screen.getByRole("button", { name: /Continue/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Next Step: Connect Wallet/i }));
 
       await waitFor(() => {
         expect(screen.getByRole("tab", { name: /EVM/i })).toBeInTheDocument();
@@ -122,7 +122,7 @@ describe("WalletModal", () => {
     it("shows available wallets in Step 2", async () => {
       renderModal();
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      fireEvent.click(screen.getByRole("button", { name: /Continue/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Next Step: Connect Wallet/i }));
 
       await waitFor(() => {
         expect(screen.getByText("MetaMask")).toBeInTheDocument();
@@ -134,7 +134,7 @@ describe("WalletModal", () => {
     const goToStep2 = async () => {
       renderModal();
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      fireEvent.click(screen.getByRole("button", { name: /Continue/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Next Step: Connect Wallet/i }));
       await waitFor(() => {
         expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
       });
@@ -160,7 +160,7 @@ describe("WalletModal", () => {
 
       // Go to Step 2
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      fireEvent.click(screen.getByRole("button", { name: /Continue/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Next Step: Connect Wallet/i }));
       await waitFor(() => {
         expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
       });
@@ -197,7 +197,7 @@ describe("WalletModal", () => {
     it("dismisses on Escape key when on Step 2", async () => {
       renderModal();
       fireEvent.click(screen.getByRole("button", { name: /Base/i }));
-      fireEvent.click(screen.getByRole("button", { name: /Continue/i }));
+      fireEvent.click(screen.getByRole("button", { name: /Next Step: Connect Wallet/i }));
       await waitFor(() => {
         expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
       });

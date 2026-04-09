@@ -33,47 +33,50 @@ const NetworkDialogContent: React.FC<{
 }> = ({ chains, selectedNetworkId, onNetworkSelect, onContinue, onClose }) => (
   <dialog
     open
-    className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
+    className="relative w-full max-w-md mx-4 bg-white/80 backdrop-blur-[10px] rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.1)] border border-white/30"
     aria-modal="true"
     aria-labelledby="wallet-modal-title"
   >
     {/* Header */}
-    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-      <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200/50">
+      <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
         Select Network
       </h3>
       <button
         type="button"
         onClick={onClose}
-        className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors text-xl leading-none"
+        className="p-1 w-7 h-7 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors text-xl leading-none"
         aria-label="Close modal"
       >
         &times;
       </button>
     </div>
 
-    {/* Network Grid — dark bg required for glassmorphic NetworkCard styles */}
+    {/* Network Stack */}
     <div className="px-4 py-4">
-      <div className="bg-gray-900 rounded-xl p-3">
-        <NetworkGrid
-          chains={chains}
-          selectedChainId={selectedNetworkId}
-          onChainSelect={onNetworkSelect}
-          comingSoonCount={0}
-        />
-      </div>
+      <NetworkGrid
+        chains={chains}
+        selectedChainId={selectedNetworkId}
+        onChainSelect={onNetworkSelect}
+        comingSoonCount={0}
+      />
     </div>
 
     {/* Footer */}
-    <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
+    <div className="px-6 py-4 border-t border-gray-200/50">
       <button
         type="button"
         onClick={onContinue}
         disabled={selectedNetworkId === null}
-        className="w-full px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="w-full px-8 py-3 bg-gradient-to-r from-teal-500 to-green-500 text-white rounded-xl font-semibold hover:from-teal-600 hover:to-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
       >
-        Continue
+        Next Step: Connect Wallet
       </button>
+      <div className="mt-3 text-center">
+        <a href="/network-selection" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+          Learn more about network selection
+        </a>
+      </div>
     </div>
   </dialog>
 );

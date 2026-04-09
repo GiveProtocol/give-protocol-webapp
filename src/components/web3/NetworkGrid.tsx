@@ -9,16 +9,16 @@ interface NetworkGridProps {
   selectedChainId: ChainId | null;
   /** Selection handler */
   onChainSelect: (_e: React.MouseEvent<HTMLButtonElement>) => void;
-  /** Number of Coming Soon placeholder cards (default: auto-fill last row, min 1) */
+  /** Number of Coming Soon placeholder cards (default: 1) */
   comingSoonCount?: number;
   /** Additional CSS classes */
   className?: string;
 }
 
 /**
- * Responsive grid container for network cards
+ * Vertical stack container for network cards
  * @param props - Component props
- * @returns Network grid component
+ * @returns Network stack component
  */
 export const NetworkGrid: React.FC<NetworkGridProps> = ({
   chains,
@@ -29,14 +29,12 @@ export const NetworkGrid: React.FC<NetworkGridProps> = ({
 }) => {
   const placeholderCount = useMemo(() => {
     if (comingSoonCount !== undefined) return comingSoonCount;
-    // Auto-fill: ensure at least 1 placeholder, fill to complete the last row of 3
-    const remainder = chains.length % 3;
-    return remainder === 0 ? 1 : 3 - remainder;
-  }, [comingSoonCount, chains.length]);
+    return 1;
+  }, [comingSoonCount]);
 
   return (
     <div className={`scrollbar-styled max-h-[60vh] overflow-y-auto ${className}`}>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+      <div className="flex flex-col gap-3">
         {chains.map((chain, index) => (
           <NetworkCard
             key={chain.id}

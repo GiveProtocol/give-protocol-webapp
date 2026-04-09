@@ -16,7 +16,7 @@ interface NetworkCardProps {
 }
 
 /**
- * Bento-style glassmorphism network tile
+ * Horizontal glassmorphism network card for vertical network selection list
  * @param props - Component props
  * @returns Network card button component
  */
@@ -33,14 +33,14 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({
         type="button"
         disabled
         aria-label="Coming Soon"
-        className="relative rounded-xl p-4 text-left opacity-0 animate-staggerIn
-          bg-white/[0.07] backdrop-blur-md border border-white/[0.12]
-          shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]
+        className="relative w-full rounded-xl text-left opacity-0 animate-staggerIn
+          bg-white/80 backdrop-blur-[10px] border border-white/30
+          shadow-[0_10px_30px_rgba(0,0,0,0.05)]
           opacity-50 grayscale cursor-not-allowed
-          flex flex-col items-center justify-center gap-2 min-h-[140px]"
+          flex items-center justify-center gap-3 min-h-[80px]"
         style={{ animationDelay: `${animationDelay}ms` }}
       >
-        <Plus className="w-6 h-6 text-gray-400" />
+        <Plus className="w-5 h-5 text-gray-400" />
         <span className="text-sm text-gray-400 font-medium">Coming Soon</span>
       </button>
     );
@@ -53,58 +53,63 @@ export const NetworkCard: React.FC<NetworkCardProps> = ({
       data-chain-id={chain.id}
       aria-label={chain.name}
       aria-pressed={isSelected}
-      className={`relative rounded-xl p-4 text-left opacity-0 animate-staggerIn
-        bg-white/[0.07] backdrop-blur-md border border-white/[0.12]
-        shadow-[inset_0_1px_1px_rgba(255,255,255,0.08)]
-        transition-all duration-200 hover:bg-white/[0.12] hover:border-white/[0.20]
-        focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900
-        ${isSelected ? "border-white/[0.25]" : ""}`}
-      style={{ animationDelay: `${animationDelay}ms` }}
+      className={`relative w-full rounded-xl text-left opacity-0 animate-staggerIn
+        bg-white/80 backdrop-blur-[10px] border
+        shadow-[0_10px_30px_rgba(0,0,0,0.05)]
+        transition-all duration-200
+        flex items-center gap-4 min-h-[80px] py-4 pr-4 pl-0
+        focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2
+        overflow-hidden
+        ${isSelected
+          ? "border-transparent"
+          : "border-white/30 hover:border-white/50 hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)]"
+        }`}
+      style={{
+        animationDelay: `${animationDelay}ms`,
+        ...(isSelected && {
+          boxShadow: `0 0 0 2px ${chain.color}, 0 10px 30px rgba(0,0,0,0.05)`,
+        }),
+      }}
     >
-      {/* Breathing glow overlay */}
-      {isSelected && (
-        <div
-          className="absolute inset-0 rounded-xl animate-breathe pointer-events-none"
-          style={{
-            boxShadow: `0 0 20px 4px ${chain.color}40, inset 0 0 20px 4px ${chain.color}15`,
-          }}
-        />
-      )}
+      {/* Left accent border matching network brand color */}
+      <div
+        className="w-1 self-stretch rounded-l-xl flex-shrink-0"
+        style={{ backgroundColor: chain.color }}
+      />
 
-      {/* Checkmark */}
+      {/* Chain icon */}
+      <img
+        src={chain.iconPath}
+        alt={`${chain.name} icon`}
+        className="w-10 h-10 flex-shrink-0"
+        width={40}
+        height={40}
+      />
+
+      {/* Title + subtext */}
+      <div className="flex-1 text-left min-w-0">
+        <p className="font-bold text-gray-900 leading-tight" style={{ fontSize: "1.1rem" }}>
+          {chain.name}
+        </p>
+        <p className="text-sm text-gray-500 mt-0.5 leading-relaxed">
+          {chain.description}
+        </p>
+      </div>
+
+      {/* Selection indicator */}
       {isSelected && (
-        <div className="absolute top-3 right-3 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
-          <Check className="w-3 h-3 text-white" />
+        <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0">
+          <Check className="w-3.5 h-3.5 text-white" />
         </div>
       )}
 
-      {/* Content */}
-      <div className="flex items-center gap-3 mb-2">
-        <img
-          src={chain.iconPath}
-          alt={`${chain.name} icon`}
-          className="w-6 h-6"
-          width={24}
-          height={24}
+      {/* Breathing glow overlay when selected */}
+      {isSelected && (
+        <div
+          className="absolute inset-0 rounded-xl animate-breathe pointer-events-none"
+          style={{ boxShadow: `inset 0 0 20px 4px ${chain.color}15` }}
         />
-        <span className="font-semibold text-white text-sm">{chain.name}</span>
-      </div>
-
-      {/* Ecosystem badge */}
-      <span
-        className="inline-block text-xs px-2 py-0.5 rounded-full font-medium mb-2"
-        style={{
-          backgroundColor: `${chain.color}20`,
-          color: chain.color,
-        }}
-      >
-        {chain.ecosystem}
-      </span>
-
-      {/* Description */}
-      <p className="text-xs text-gray-400 leading-relaxed">
-        {chain.description}
-      </p>
+      )}
     </button>
   );
 };
