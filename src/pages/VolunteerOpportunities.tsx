@@ -125,6 +125,68 @@ const SKILLS = [
   "German",
 ];
 
+/**
+ * Segmented toggle for work type (Remote / On-site / Hybrid).
+ * @param props - Component props
+ * @returns The rendered toggle group
+ */
+function WorkTypeToggle({
+  selectedType,
+  onRemoteClick,
+  onOnsiteClick,
+  onHybridClick,
+}: {
+  selectedType: string;
+  onRemoteClick: () => void;
+  onOnsiteClick: () => void;
+  onHybridClick: () => void;
+}) {
+  return (
+    <div
+      className="inline-flex rounded-full bg-gray-100 p-0.5 border border-gray-200 shrink-0"
+      role="group"
+      aria-label="Work type filter"
+    >
+      <button
+        type="button"
+        onClick={onRemoteClick}
+        className={cn(
+          "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
+          selectedType === "remote"
+            ? "bg-white text-emerald-700 shadow-sm"
+            : "text-gray-500 hover:text-gray-700",
+        )}
+      >
+        Remote
+      </button>
+      <button
+        type="button"
+        onClick={onOnsiteClick}
+        className={cn(
+          "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
+          selectedType === "onsite"
+            ? "bg-white text-emerald-700 shadow-sm"
+            : "text-gray-500 hover:text-gray-700",
+        )}
+      >
+        On-site
+      </button>
+      <button
+        type="button"
+        onClick={onHybridClick}
+        className={cn(
+          "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
+          selectedType === "hybrid"
+            ? "bg-white text-emerald-700 shadow-sm"
+            : "text-gray-500 hover:text-gray-700",
+        )}
+      >
+        Hybrid
+      </button>
+    </div>
+  );
+}
+
 /** A single active filter for display as a removable pill. */
 interface ActiveFilter {
   key: string;
@@ -393,48 +455,12 @@ const VolunteerOpportunities: React.FC = () => {
             />
           </div>
 
-          <div
-            className="inline-flex rounded-full bg-gray-100 p-0.5 border border-gray-200 shrink-0"
-            role="group"
-            aria-label="Work type filter"
-          >
-            <button
-              type="button"
-              onClick={handleRemoteClick}
-              className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
-                selectedType === "remote"
-                  ? "bg-white text-emerald-700 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
-              )}
-            >
-              Remote
-            </button>
-            <button
-              type="button"
-              onClick={handleOnsiteClick}
-              className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
-                selectedType === "onsite"
-                  ? "bg-white text-emerald-700 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
-              )}
-            >
-              On-site
-            </button>
-            <button
-              type="button"
-              onClick={handleHybridClick}
-              className={cn(
-                "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
-                selectedType === "hybrid"
-                  ? "bg-white text-emerald-700 shadow-sm"
-                  : "text-gray-500 hover:text-gray-700",
-              )}
-            >
-              Hybrid
-            </button>
-          </div>
+          <WorkTypeToggle
+            selectedType={selectedType}
+            onRemoteClick={handleRemoteClick}
+            onOnsiteClick={handleOnsiteClick}
+            onHybridClick={handleHybridClick}
+          />
 
           <select
             value={selectedSkill}
