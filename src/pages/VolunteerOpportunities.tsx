@@ -355,127 +355,125 @@ const VolunteerOpportunities: React.FC = () => {
         {t("volunteer.opportunities", "Volunteer Opportunities")}
       </h1>
 
-      <ScrollReveal direction="up" delay={100}>
-        <div className="space-y-2">
-          <div className="flex gap-3 items-center">
-            <div className="relative flex-[3]">
-              <input
-                type="text"
-                placeholder={t(
-                  "volunteer.searchOpportunities",
-                  "Search opportunities...",
-                )}
-                aria-label={t(
-                  "volunteer.searchOpportunities",
-                  "Search opportunities",
-                )}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                value={searchTerm}
-                onChange={handleSearchChange}
-              />
-              <Search
-                aria-hidden="true"
-                className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-              />
-            </div>
-
-            <div className="relative flex-[2]">
-              <input
-                type="text"
-                placeholder="City or region..."
-                aria-label="Search location"
-                className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-                value={locationSearch}
-                onChange={handleLocationChange}
-              />
-              <MapPin
-                aria-hidden="true"
-                className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-              />
-            </div>
-
-            <div
-              className="inline-flex rounded-full bg-gray-100 p-0.5 border border-gray-200 shrink-0"
-              role="group"
-              aria-label="Work type filter"
-            >
-              <button
-                type="button"
-                onClick={handleRemoteClick}
-                className={cn(
-                  "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
-                  selectedType === "remote"
-                    ? "bg-white text-emerald-700 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700",
-                )}
-              >
-                Remote
-              </button>
-              <button
-                type="button"
-                onClick={handleOnsiteClick}
-                className={cn(
-                  "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
-                  selectedType === "onsite"
-                    ? "bg-white text-emerald-700 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700",
-                )}
-              >
-                On-site
-              </button>
-              <button
-                type="button"
-                onClick={handleHybridClick}
-                className={cn(
-                  "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
-                  selectedType === "hybrid"
-                    ? "bg-white text-emerald-700 shadow-sm"
-                    : "text-gray-500 hover:text-gray-700",
-                )}
-              >
-                Hybrid
-              </button>
-            </div>
-
-            <select
-              value={selectedSkill}
-              onChange={handleSkillChange}
-              className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
-              aria-label={t("volunteer.selectSkill", "Select skill")}
-            >
-              <option value="">{t("volunteer.allSkills", "All Skills")}</option>
-              {SKILLS.map((skill) => (
-                <option key={skill} value={skill}>
-                  {skill}
-                </option>
-              ))}
-            </select>
-
-            <select
-              value={selectedLanguage}
-              onChange={handleLanguageChange}
-              className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
-              aria-label={t("volunteer.selectLanguage", "Select language")}
-            >
-              <option value="">
-                {t("volunteer.allLanguages", "All Languages")}
-              </option>
-              {Object.values(WorkLanguage).map((language) => (
-                <option key={language} value={language}>
-                  {t(`language.${language}`, formatLanguageName(language))}
-                </option>
-              ))}
-            </select>
+      <ScrollReveal direction="up" delay={100} className="space-y-2">
+        <div className="flex gap-3 items-center">
+          <div className="relative flex-[3]">
+            <input
+              type="text"
+              placeholder={t(
+                "volunteer.searchOpportunities",
+                "Search opportunities...",
+              )}
+              aria-label={t(
+                "volunteer.searchOpportunities",
+                "Search opportunities",
+              )}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+              value={searchTerm}
+              onChange={handleSearchChange}
+            />
+            <Search
+              aria-hidden="true"
+              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+            />
           </div>
 
-          {activeFilters.length > 0 && (
-            <div className="flex items-center flex-wrap gap-2">
-              {activeFilters.map((filter) => (
-                <FilterPill key={filter.key} filter={filter} />
-              ))}
-            </div>
-          )}
+          <div className="relative flex-[2]">
+            <input
+              type="text"
+              placeholder="City or region..."
+              aria-label="Search location"
+              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+              value={locationSearch}
+              onChange={handleLocationChange}
+            />
+            <MapPin
+              aria-hidden="true"
+              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+            />
+          </div>
+
+          <div
+            className="inline-flex rounded-full bg-gray-100 p-0.5 border border-gray-200 shrink-0"
+            role="group"
+            aria-label="Work type filter"
+          >
+            <button
+              type="button"
+              onClick={handleRemoteClick}
+              className={cn(
+                "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
+                selectedType === "remote"
+                  ? "bg-white text-emerald-700 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              Remote
+            </button>
+            <button
+              type="button"
+              onClick={handleOnsiteClick}
+              className={cn(
+                "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
+                selectedType === "onsite"
+                  ? "bg-white text-emerald-700 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              On-site
+            </button>
+            <button
+              type="button"
+              onClick={handleHybridClick}
+              className={cn(
+                "px-2.5 py-1 text-xs font-medium rounded-full transition-all",
+                selectedType === "hybrid"
+                  ? "bg-white text-emerald-700 shadow-sm"
+                  : "text-gray-500 hover:text-gray-700",
+              )}
+            >
+              Hybrid
+            </button>
+          </div>
+
+          <select
+            value={selectedSkill}
+            onChange={handleSkillChange}
+            className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
+            aria-label={t("volunteer.selectSkill", "Select skill")}
+          >
+            <option value="">{t("volunteer.allSkills", "All Skills")}</option>
+            {SKILLS.map((skill) => (
+              <option key={skill} value={skill}>
+                {skill}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={selectedLanguage}
+            onChange={handleLanguageChange}
+            className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
+            aria-label={t("volunteer.selectLanguage", "Select language")}
+          >
+            <option value="">
+              {t("volunteer.allLanguages", "All Languages")}
+            </option>
+            {Object.values(WorkLanguage).map((language) => (
+              <option key={language} value={language}>
+                {t(`language.${language}`, formatLanguageName(language))}
+              </option>
+            ))}
+          </select>
         </div>
+
+        {activeFilters.length > 0 && (
+          <div className="flex items-center flex-wrap gap-2">
+            {activeFilters.map((filter) => (
+              <FilterPill key={filter.key} filter={filter} />
+            ))}
+          </div>
+        )}
       </ScrollReveal>
 
       <ScrollReveal direction="up" delay={200}>
@@ -496,33 +494,31 @@ const VolunteerOpportunities: React.FC = () => {
                 </p>
                 <p className="text-gray-600 mb-4">{opportunity.description}</p>
 
-                <div className="space-y-2 mb-4">
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
-                    {opportunity.commitment}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
-                    {opportunity.location}
-                  </div>
-                  <div className="flex items-center text-sm text-gray-500">
-                    <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
-                    {t(
-                      `language.${opportunity.workLanguage}`,
-                      formatLanguageName(opportunity.workLanguage),
-                    )}
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {opportunity.skills.map((skill) => (
-                      <span
-                        key={skill}
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
-                      >
-                        <Award aria-hidden="true" className="h-3 w-3 mr-1" />
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
+                  {opportunity.commitment}
+                </div>
+                <div className="flex items-center text-sm text-gray-500 mt-2">
+                  <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
+                  {opportunity.location}
+                </div>
+                <div className="flex items-center text-sm text-gray-500 mt-2">
+                  <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
+                  {t(
+                    `language.${opportunity.workLanguage}`,
+                    formatLanguageName(opportunity.workLanguage),
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2 mb-4">
+                  {opportunity.skills.map((skill) => (
+                    <span
+                      key={skill}
+                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
+                    >
+                      <Award aria-hidden="true" className="h-3 w-3 mr-1" />
+                      {skill}
+                    </span>
+                  ))}
                 </div>
 
                 <button
