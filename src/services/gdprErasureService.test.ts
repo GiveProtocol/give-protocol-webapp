@@ -25,7 +25,7 @@ import { createHash } from 'crypto';
  * Mirrors the sha256Hex function in the Edge Function.
  * Uses Node.js crypto in tests (same algorithm; Deno uses Web Crypto API at runtime).
  */
-async function sha256Hex(input: string): Promise<string> {
+function sha256Hex(input: string): Promise<string> {
   return Promise.resolve(createHash('sha256').update(input, 'utf8').digest('hex'));
 }
 
@@ -210,24 +210,19 @@ describe('collectBlockchainRefs', () => {
     userId: string,
     supabase: ReturnType<typeof makeMockSupabase>,
   ): Promise<{ refs: BlockchainRef[]; stepsCompleted: string[] }> {
-    const selfReportedChain = {
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      not: jest.fn().mockResolvedValue({ data: [], error: null }),
-    };
-    const verifChain = {
-      select: jest.fn().mockReturnThis(),
-      eq: jest.fn().mockReturnThis(),
-      not: jest.fn().mockResolvedValue({ data: [], error: null }),
+    type MockChainBuilder = {
+      select: ReturnType<typeof jest.fn>;
+      eq: ReturnType<typeof jest.fn>;
+      not: ReturnType<typeof jest.fn>;
     };
 
     // Use the actual mock setup from test context
-    const selfReportedResult = await (supabase.from('self_reported_hours') as unknown as typeof selfReportedChain)
+    const selfReportedResult = await (supabase.from('self_reported_hours') as unknown as MockChainBuilder)
       .select('id, blockchain_tx_hash, sbt_token_id')
       .eq('volunteer_id', userId)
       .not('blockchain_tx_hash', 'is', null);
 
-    const verifResult = await (supabase.from('volunteer_verifications') as unknown as typeof verifChain)
+    const verifResult = await (supabase.from('volunteer_verifications') as unknown as MockChainBuilder)
       .select('id, blockchain_tx_hash, nft_token_id')
       .eq('volunteer_id', userId)
       .not('blockchain_tx_hash', 'is', null);

@@ -116,7 +116,7 @@ describe("CharityLogin", () => {
   it("wallet button click triggers sign-in attempt", async () => {
     renderCharityLogin();
 
-    await act(async () => {
+    await act(() => {
       fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
     });
 
@@ -131,7 +131,7 @@ describe("CharityLogin", () => {
   it("shows error message when wallet sign-in fails", async () => {
     renderCharityLogin();
 
-    await act(async () => {
+    await act(() => {
       fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
     });
 
@@ -170,7 +170,7 @@ describe("CharityLogin", () => {
       target: { value: "password123" },
     });
 
-    await act(async () => {
+    await act(() => {
       fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
     });
 

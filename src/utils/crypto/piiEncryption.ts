@@ -139,7 +139,7 @@ export async function encryptVolunteerApplicationPII(params: {
  * @param pii - The PII fields to encrypt
  * @returns Ciphertext string for storage in profiles.pii_encrypted
  */
-export async function encryptProfilePII(pii: ProfilePII): Promise<string> {
+export function encryptProfilePII(pii: ProfilePII): Promise<string> {
   const piiJson = JSON.stringify(pii);
   return encryptPII(piiJson, 'profile_pii');
 }

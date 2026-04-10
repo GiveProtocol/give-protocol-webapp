@@ -5,7 +5,6 @@ import {
   resetMockState,
 } from '@/test-utils/supabaseMock';
 import type {
-  ExportRequestResult,
   ExportStatusResult,
   ErasureRequestResult,
 } from './privacyRequestService';

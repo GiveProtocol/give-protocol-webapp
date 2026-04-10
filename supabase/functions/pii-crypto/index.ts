@@ -49,7 +49,7 @@ function bytesToBase64(bytes: Uint8Array): string {
 }
 
 /** Import a raw AES-256-GCM key from base64-encoded key material. */
-async function importAesKey(keyBase64: string, usage: 'encrypt' | 'decrypt'): Promise<CryptoKey> {
+function importAesKey(keyBase64: string, usage: 'encrypt' | 'decrypt'): Promise<CryptoKey> {
   const keyBytes = base64ToBytes(keyBase64);
   return crypto.subtle.importKey(
     'raw',
@@ -61,7 +61,7 @@ async function importAesKey(keyBase64: string, usage: 'encrypt' | 'decrypt'): Pr
 }
 
 /** Import a raw HMAC-SHA256 key from base64-encoded key material. */
-async function importHmacKey(keyBase64: string): Promise<CryptoKey> {
+function importHmacKey(keyBase64: string): Promise<CryptoKey> {
   const keyBytes = base64ToBytes(keyBase64);
   return crypto.subtle.importKey(
     'raw',
@@ -161,7 +161,7 @@ serve(async (req: Request) => {
     }
 
     const body = await req.json() as PiiCryptoRequest;
-    const { operation, value, field } = body;
+    const { operation, value } = body;
 
     if (!operation || !value) {
       return new Response(JSON.stringify({ error: 'Missing required fields: operation, value' }), {
