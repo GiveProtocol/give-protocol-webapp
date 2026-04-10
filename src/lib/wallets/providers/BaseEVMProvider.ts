@@ -88,11 +88,11 @@ export abstract class BaseEVMProvider implements UnifiedWalletProvider {
    * @param _chainType - Optional chain type filter (only EVM supported)
    * @returns Array of accounts
    */
-  async getAccounts(_chainType?: ChainType): Promise<UnifiedAccount[]> {
+  getAccounts(_chainType?: ChainType): Promise<UnifiedAccount[]> {
     if (this.evmAdapter) {
       return this.evmAdapter.getAccounts();
     }
-    return [];
+    return Promise.resolve([]);
   }
 
   /**
@@ -113,11 +113,11 @@ export abstract class BaseEVMProvider implements UnifiedWalletProvider {
    * @param tx - Transaction request
    * @returns Transaction hash
    */
-  async signTransaction(tx: UnifiedTransactionRequest): Promise<string> {
+  signTransaction(tx: UnifiedTransactionRequest): Promise<string> {
     if (tx.chainType === "evm" && this.evmAdapter) {
       return this.evmAdapter.signTransaction(tx);
     }
-    throw new Error(`${this.name} only supports EVM transactions`);
+    return Promise.reject(new Error(`${this.name} only supports EVM transactions`));
   }
 
   /**
@@ -126,10 +126,10 @@ export abstract class BaseEVMProvider implements UnifiedWalletProvider {
    * @param _chainType - Chain type (only EVM supported)
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
+  signMessage(message: string | Uint8Array, _chainType: ChainType): Promise<string> {
     if (this.evmAdapter) {
       return this.evmAdapter.signMessage(message);
     }
-    throw new Error(`${this.name} not connected`);
+    return Promise.reject(new Error(`${this.name} not connected`));
   }
 }
