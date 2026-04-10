@@ -201,13 +201,20 @@ export function useUnifiedAuth(): UnifiedAuthState {
         await web3.connect();
       }
 
-      const provider = web3.provider;
-      if (!provider) {
+      // web3.provider is captured at useCallback creation time and may be a stale
+      // null snapshot when multiChain connected the wallet before signInWithWallet ran.
+      // Resolve a live provider: prefer the synced context value, fall back to window.ethereum.
+      const ethersProvider: ethers.Provider | null =
+        web3.provider ??
+        (typeof window !== 'undefined' && window.ethereum
+          ? new ethers.BrowserProvider(window.ethereum)
+          : null);
+      if (!ethersProvider) {
         throw new Error('No wallet provider available');
       }
 
       setWalletAuthStep('signing');
-      const signer = await (provider as ethers.BrowserProvider).getSigner();
+      const signer = await (ethersProvider as ethers.BrowserProvider).getSigner();
       const address = await signer.getAddress();
       const nonce = generateNonce();
       const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
