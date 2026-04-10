@@ -289,8 +289,8 @@ This is the **webapp** repository in the Give Protocol multi-repo architecture:
 | Repository | Purpose |
 |------------|---------|
 | [give-protocol-webapp](https://github.com/GiveProtocol/give-protocol-webapp) | React web application (this repo) |
-| [give-protocol-backend](https://github.com/GiveProtocol/give-protocol-backend) | Supabase database and admin |
-| [give-protocol-contracts](https://github.com/GiveProtocol/give-protocol-contracts) | Solidity smart contracts |
+| [give-protocol-backend](https://github.com/GiveProtocol/give-protocol-backend) | Database and admin |
+| [give-protocol-contracts](https://github.com/GiveProtocol/give-protocol-contracts) | Smart contracts |
 | [give-protocol-docs](https://github.com/GiveProtocol/give-protocol-docs) | Documentation site |
 
 **Boundary rules:** Database schema migrations go in the backend repo. Edge functions (Deno) go in this repo under `supabase/functions/`. Smart contracts go in the contracts repo. 
