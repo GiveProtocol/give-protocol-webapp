@@ -6,8 +6,12 @@ import { Button } from '@/components/ui/Button';
 import { FormInput } from '@/components/ui/FormInput';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { ForgotPassword } from '@/components/auth/ForgotPassword';
+import { WalletModal } from '@/components/web3/WalletModal/WalletModal';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 import type { WalletAuthStep } from '@/hooks/useUnifiedAuth';
+import { useUnifiedWallets } from '@/hooks/useWallet';
+import { useMultiChainContext } from '@/contexts/MultiChainContext';
+import type { UnifiedWalletProvider, ChainType } from '@/types/wallet';
 import { Logger } from '@/utils/logger';
 
 type View = 'signin' | 'forgotPassword';
@@ -175,6 +179,7 @@ const AuthRightPanel: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [formError, setFormError] = useState<string | null>(null);
+  const [showWalletModal, setShowWalletModal] = useState(false);
 
   const {
     isAuthenticated,
@@ -185,6 +190,9 @@ const AuthRightPanel: React.FC = () => {
     signInWithWallet,
     isWalletConnected: _isWalletConnected,
   } = useUnifiedAuth();
+
+  const { wallets } = useUnifiedWallets();
+  const multiChain = useMultiChainContext();
 
   const location = useLocation();
 
@@ -213,16 +221,27 @@ const AuthRightPanel: React.FC = () => {
     }
   }, [email, password, signInWithEmail]);
 
-  const handleWalletSignIn = useCallback(async () => {
+  const handleWalletButtonClick = useCallback(() => {
     setFormError(null);
+    setShowWalletModal(true);
+  }, []);
+
+  const handleWalletModalClose = useCallback(() => {
+    setShowWalletModal(false);
+  }, []);
+
+  const handleWalletModalConnect = useCallback(async (wallet: UnifiedWalletProvider, chainType: ChainType) => {
     try {
+      await multiChain.connect(wallet, chainType);
+      setShowWalletModal(false);
       await signInWithWallet();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Wallet sign-in failed';
       setFormError(msg);
-      Logger.error('Wallet sign-in failed', { error: msg });
+      Logger.error('Wallet sign-in via modal failed', { error: msg });
+      throw err;
     }
-  }, [signInWithWallet]);
+  }, [multiChain, signInWithWallet]);
 
   const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value);
@@ -306,7 +325,7 @@ const AuthRightPanel: React.FC = () => {
 
         {/* Wallet sign in */}
         <Button
-          onClick={handleWalletSignIn}
+          onClick={handleWalletButtonClick}
           variant="secondary"
           fullWidth
           size="lg"
@@ -316,6 +335,14 @@ const AuthRightPanel: React.FC = () => {
         >
           {walletStepLabel(walletAuthStep)}
         </Button>
+
+        <WalletModal
+          isOpen={showWalletModal}
+          onClose={handleWalletModalClose}
+          wallets={wallets}
+          onConnect={handleWalletModalConnect}
+          initialChainType="evm"
+        />
 
         {/* Sign up prompt */}
         <p className="mt-6 text-center text-sm text-gray-500">
