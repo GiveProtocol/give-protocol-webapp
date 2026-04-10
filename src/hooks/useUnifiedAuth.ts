@@ -197,18 +197,22 @@ export function useUnifiedAuth(): UnifiedAuthState {
         );
       }
 
-      if (!web3.provider) {
-        await web3.connect();
-      }
+      // Always call connect() to ensure MetaMask is on the user-selected network.
+      // For already-authorised wallets eth_requestAccounts returns immediately
+      // (no popup). connect() also performs the chain switch via
+      // ChainContext.selectedChainId, which handles the case where web3.provider
+      // was already set from initProvider on a different chain (e.g. Base when
+      // the user selected Moonbeam).
+      await web3.connect();
 
-      // web3.provider is captured at useCallback creation time and may be a stale
-      // null snapshot when multiChain connected the wallet before signInWithWallet ran.
-      // Resolve a live provider: prefer the synced context value, fall back to window.ethereum.
+      // Prefer a fresh BrowserProvider wrapping window.ethereum (authoritative
+      // after the chain switch in connect()) over the stale web3.provider
+      // closure snapshot, which may still point to the pre-switch chain.
       const ethersProvider: ethers.Provider | null =
-        web3.provider ??
         (typeof window !== 'undefined' && window.ethereum
           ? new ethers.BrowserProvider(window.ethereum)
-          : null);
+          : null) ??
+        web3.provider;
       if (!ethersProvider) {
         throw new Error('No wallet provider available');
       }

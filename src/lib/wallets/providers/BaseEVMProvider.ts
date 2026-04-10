@@ -12,7 +12,6 @@ import type {
   WalletCategory,
 } from "@/types/wallet";
 import { EVMAdapter, isEIP1193Provider } from "../adapters/EVMAdapter";
-import { DEFAULT_EVM_CHAIN_ID } from "@/config/chains";
 
 /**
  * BaseEVMProvider - Abstract base for EVM-only browser wallets
@@ -52,7 +51,9 @@ export abstract class BaseEVMProvider implements UnifiedWalletProvider {
       }
 
       this.evmAdapter = new EVMAdapter(evmProvider);
-      const accounts = await this.evmAdapter.connect(DEFAULT_EVM_CHAIN_ID);
+      // Do not specify a targetChainId here — the user-selected network is stored
+      // in ChainContext and applied later via Web3Context.connect().
+      const accounts = await this.evmAdapter.connect();
 
       if (accounts.length === 0) {
         throw new Error("No accounts connected");
