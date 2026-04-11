@@ -83,7 +83,7 @@ export function useAdminCharities() {
   );
 
   const approveCharity = useCallback(
-    async (
+    (
       charityId: string,
       reason?: string,
       currentFilters?: AdminCharityListFilters,
@@ -99,7 +99,7 @@ export function useAdminCharities() {
   );
 
   const rejectCharity = useCallback(
-    async (
+    (
       charityId: string,
       reason: string,
       currentFilters?: AdminCharityListFilters,
@@ -115,7 +115,7 @@ export function useAdminCharities() {
   );
 
   const suspendCharity = useCallback(
-    async (
+    (
       charityId: string,
       reason: string,
       currentFilters?: AdminCharityListFilters,
@@ -131,7 +131,7 @@ export function useAdminCharities() {
   );
 
   const reinstateCharity = useCallback(
-    async (
+    (
       charityId: string,
       reason?: string,
       currentFilters?: AdminCharityListFilters,
