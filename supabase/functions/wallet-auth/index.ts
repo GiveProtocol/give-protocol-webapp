@@ -223,12 +223,20 @@ async function verifyWalletSignature(
   }
 
   if (chainType === "evm") {
-    const valid = verifyEVMSignature(body.message, body.signature, body.walletAddress);
+    const valid = verifyEVMSignature(
+      body.message,
+      body.signature,
+      body.walletAddress,
+    );
     return valid ? null : "EVM signature verification failed";
   }
 
   if (chainType === "polkadot") {
-    const valid = await verifyPolkadotSignature(body.message, body.signature, body.walletAddress);
+    const valid = await verifyPolkadotSignature(
+      body.message,
+      body.signature,
+      body.walletAddress,
+    );
     return valid ? null : "Polkadot signature verification failed";
   }
 
