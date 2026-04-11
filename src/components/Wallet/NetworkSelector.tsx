@@ -1,4 +1,10 @@
-import React, { useState, useRef, useEffect, useCallback, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
 import { ChevronDown, Check, Globe } from "lucide-react";
 import type { NetworkSelectorProps, NetworkType, NetworkConfig } from "./types";
 import { NETWORKS } from "./types";
@@ -187,7 +193,10 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
         aria-haspopup="listbox"
         aria-label={`Current network: ${currentNetworkConfig?.name || currentNetwork}`}
       >
-        <Globe aria-hidden="true" className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+        <Globe
+          aria-hidden="true"
+          className="h-4 w-4 text-gray-500 dark:text-gray-400"
+        />
         {currentNetworkConfig && (
           <>
             <ChainIcon network={currentNetworkConfig} size={16} />
@@ -211,24 +220,25 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
           role="menu"
           aria-label="Select network"
         >
-          {CHAIN_TYPE_ORDER.filter((ct) => groupedNetworks[ct]).map((chainType) => (
-            <div key={chainType}>
-              <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 uppercase tracking-wider">
-                {CHAIN_TYPE_LABELS[chainType]}
-              </div>
-              <div className="p-1">
-                {groupedNetworks[chainType].map((network) => {
-                  const isSelected = network.id === currentNetwork;
-                  return (
-                    <button
-                      key={network.id}
-                      type="button"
-                      role="menuitemradio"
-                      aria-checked={isSelected}
-                      data-network-id={network.id}
-                      onClick={handleNetworkClick}
-                      onKeyDown={handleNetworkKeyDown}
-                      className={`
+          {CHAIN_TYPE_ORDER.filter((ct) => groupedNetworks[ct]).map(
+            (chainType) => (
+              <div key={chainType}>
+                <div className="px-3 py-1.5 text-xs font-semibold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800/50 uppercase tracking-wider">
+                  {CHAIN_TYPE_LABELS[chainType]}
+                </div>
+                <div className="p-1">
+                  {groupedNetworks[chainType].map((network) => {
+                    const isSelected = network.id === currentNetwork;
+                    return (
+                      <button
+                        key={network.id}
+                        type="button"
+                        role="menuitemradio"
+                        aria-checked={isSelected}
+                        data-network-id={network.id}
+                        onClick={handleNetworkClick}
+                        onKeyDown={handleNetworkKeyDown}
+                        className={`
                         w-full flex items-center gap-3 px-3 py-2.5
                         rounded-lg transition-colors
                         ${
@@ -237,23 +247,27 @@ export const NetworkSelector: React.FC<NetworkSelectorProps> = ({
                             : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
                         }
                       `}
-                    >
-                      <ChainIcon network={network} size={20} />
-                      <div className="flex-1 text-left">
-                        <p className="text-sm font-medium">{network.name}</p>
-                        <p className="text-xs text-gray-500 dark:text-gray-400">
-                          {network.token}
-                        </p>
-                      </div>
-                      {isSelected && (
-                        <Check aria-hidden="true" className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
-                      )}
-                    </button>
-                  );
-                })}
+                      >
+                        <ChainIcon network={network} size={20} />
+                        <div className="flex-1 text-left">
+                          <p className="text-sm font-medium">{network.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            {network.token}
+                          </p>
+                        </div>
+                        {isSelected && (
+                          <Check
+                            aria-hidden="true"
+                            className="h-4 w-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0"
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          ))}
+            ),
+          )}
         </div>
       )}
     </div>

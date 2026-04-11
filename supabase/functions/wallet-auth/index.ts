@@ -92,7 +92,8 @@ function validateRequest(body: unknown): body is WalletAuthRequest {
 
   // Validate address format based on chain type
   const chainType =
-    (req.chainType as ChainType) || detectChainType(req.walletAddress as string);
+    (req.chainType as ChainType) ||
+    detectChainType(req.walletAddress as string);
 
   if (chainType === "evm") {
     return (
@@ -158,7 +159,11 @@ async function verifyPolkadotSignature(
 
     // Some wallets wrap signRaw data with <Bytes>...</Bytes>
     const wrappedMessage = `<Bytes>${message}</Bytes>`;
-    const wrappedResult = crypto.signatureVerify(wrappedMessage, signature, address);
+    const wrappedResult = crypto.signatureVerify(
+      wrappedMessage,
+      signature,
+      address,
+    );
     return wrappedResult.isValid;
   } catch (err) {
     console.error("Polkadot signature verification error:", err);
@@ -176,7 +181,10 @@ function jsonResponse(body: Record<string, unknown>, status: number): Response {
 
 /** Build an error JSON response with CORS headers, includes version for debugging */
 function errorResponse(message: string, status: number): Response {
-  return jsonResponse({ success: false, error: message, _v: FUNCTION_VERSION }, status);
+  return jsonResponse(
+    { success: false, error: message, _v: FUNCTION_VERSION },
+    status,
+  );
 }
 
 /**
@@ -212,8 +220,13 @@ serve(async (req: Request) => {
     const reqShape = body as Record<string, unknown>;
     console.log(`[${FUNCTION_VERSION}] Request:`, {
       hasWalletAddress: typeof reqShape.walletAddress === "string",
-      walletAddressLen: typeof reqShape.walletAddress === "string" ? (reqShape.walletAddress as string).length : 0,
-      hasSignature: typeof reqShape.signature === "string" && (reqShape.signature as string).length > 0,
+      walletAddressLen:
+        typeof reqShape.walletAddress === "string"
+          ? (reqShape.walletAddress as string).length
+          : 0,
+      hasSignature:
+        typeof reqShape.signature === "string" &&
+        (reqShape.signature as string).length > 0,
       hasMessage: typeof reqShape.message === "string",
       hasNonce: typeof reqShape.nonce === "string",
       chainType: reqShape.chainType,
@@ -223,9 +236,17 @@ serve(async (req: Request) => {
     if (!validateRequest(body)) {
       // Include debug shape in error for troubleshooting (no secrets)
       const shape = {
-        walletAddressLen: typeof reqShape.walletAddress === "string" ? (reqShape.walletAddress as string).length : null,
-        walletAddressPrefix: typeof reqShape.walletAddress === "string" ? (reqShape.walletAddress as string).slice(0, 4) : null,
-        hasSig: typeof reqShape.signature === "string" && (reqShape.signature as string).length > 0,
+        walletAddressLen:
+          typeof reqShape.walletAddress === "string"
+            ? (reqShape.walletAddress as string).length
+            : null,
+        walletAddressPrefix:
+          typeof reqShape.walletAddress === "string"
+            ? (reqShape.walletAddress as string).slice(0, 4)
+            : null,
+        hasSig:
+          typeof reqShape.signature === "string" &&
+          (reqShape.signature as string).length > 0,
         hasMsg: typeof reqShape.message === "string",
         hasNonce: typeof reqShape.nonce === "string",
         chainType: reqShape.chainType,
@@ -233,7 +254,8 @@ serve(async (req: Request) => {
       return jsonResponse(
         {
           success: false,
-          error: "Invalid request. Required: walletAddress, signature, message, nonce",
+          error:
+            "Invalid request. Required: walletAddress, signature, message, nonce",
           _v: FUNCTION_VERSION,
           _debug: shape,
         },
@@ -270,7 +292,11 @@ serve(async (req: Request) => {
       // For Polkadot: indicate if crypto library failed to load
       if (chainType === "polkadot" && !polkadotCrypto) {
         return jsonResponse(
-          { success: false, error: "Polkadot crypto library unavailable", _v: FUNCTION_VERSION },
+          {
+            success: false,
+            error: "Polkadot crypto library unavailable",
+            _v: FUNCTION_VERSION,
+          },
           503,
         );
       }
@@ -293,10 +319,7 @@ serve(async (req: Request) => {
     }
     const fiveMinutesMs = 5 * 60 * 1000;
     if (Date.now() - messageTime > fiveMinutesMs) {
-      return errorResponse(
-        "Signature has expired. Please sign in again.",
-        401,
-      );
+      return errorResponse("Signature has expired. Please sign in again.", 401);
     }
 
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -345,7 +368,10 @@ serve(async (req: Request) => {
         // User may already exist in Auth (e.g. identity record was deleted).
         // Use generateLink as a reliable email-based lookup — unlike listUsers()
         // it is not paginated and will find the user directly.
-        console.warn("createUser failed, attempting email lookup:", createError?.message);
+        console.warn(
+          "createUser failed, attempting email lookup:",
+          createError?.message,
+        );
 
         const { data: fallbackLink, error: fallbackError } =
           await supabase.auth.admin.generateLink({
@@ -354,21 +380,30 @@ serve(async (req: Request) => {
           });
 
         if (fallbackError || !fallbackLink?.user) {
-          console.error("Failed to create or find wallet user:", createError, fallbackError);
+          console.error(
+            "Failed to create or find wallet user:",
+            createError,
+            fallbackError,
+          );
           return errorResponse("Failed to create user account", 500);
         }
 
         userId = fallbackLink.user.id;
-        console.log("Found existing auth user via email lookup for wallet:", normalizedAddress);
+        console.log(
+          "Found existing auth user via email lookup for wallet:",
+          normalizedAddress,
+        );
       } else {
         userId = newUser.user.id;
       }
 
       // Create profile (upsert to handle re-registration)
-      const { error: profileError } = await supabase.from("profiles").upsert(
-        { user_id: userId, type: profileType, role: profileType },
-        { onConflict: "user_id" },
-      );
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .upsert(
+          { user_id: userId, type: profileType, role: profileType },
+          { onConflict: "user_id" },
+        );
 
       if (profileError) {
         console.error("Failed to create profile:", profileError);

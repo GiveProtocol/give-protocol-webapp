@@ -5,13 +5,15 @@
  */
 
 import { Logger } from "@/utils/logger";
-import type {
-  ChainType,
-  UnifiedAccount,
-  WalletCategory,
-} from "@/types/wallet";
-import { PolkadotAdapter, enablePolkadotExtension } from "../adapters/PolkadotAdapter";
-import { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
+import type { ChainType, UnifiedAccount, WalletCategory } from "@/types/wallet";
+import {
+  PolkadotAdapter,
+  enablePolkadotExtension,
+} from "../adapters/PolkadotAdapter";
+import {
+  BaseMultiChainProvider,
+  type SecondaryChainAdapter,
+} from "./BaseMultiChainProvider";
 
 /**
  * SubWalletProvider - Multi-chain wallet for EVM and Polkadot
@@ -51,7 +53,9 @@ export class SubWalletProvider extends BaseMultiChainProvider {
    * Override: Polkadot doesn't have chain switching in the same way
    * @param chainId - Target chain ID
    */
-  protected override switchSecondaryChain(chainId: number | string): Promise<void> {
+  protected override switchSecondaryChain(
+    chainId: number | string,
+  ): Promise<void> {
     Logger.info(`${this.name}: Polkadot chain switch requested`, { chainId });
     return Promise.resolve();
   }
@@ -67,12 +71,14 @@ export class SubWalletProvider extends BaseMultiChainProvider {
     // Check for SubWallet's EVM provider
     const hasEVM = Boolean(
       (window as { SubWallet?: unknown }).SubWallet ||
-      (window as { injectedWeb3?: { "subwallet-js"?: unknown } }).injectedWeb3?.["subwallet-js"]
+      (window as { injectedWeb3?: { "subwallet-js"?: unknown } })
+        .injectedWeb3?.["subwallet-js"],
     );
 
     // Check for SubWallet's Polkadot provider
     const hasPolkadot = Boolean(
-      (window as { injectedWeb3?: { "subwallet-js"?: unknown } }).injectedWeb3?.["subwallet-js"]
+      (window as { injectedWeb3?: { "subwallet-js"?: unknown } })
+        .injectedWeb3?.["subwallet-js"],
     );
 
     return hasEVM || hasPolkadot;
@@ -101,7 +107,10 @@ export class SubWalletProvider extends BaseMultiChainProvider {
       throw new Error("SubWallet Polkadot extension not available");
     }
 
-    this.polkadotAdapter = await enablePolkadotExtension(extensionName, "Give Protocol");
+    this.polkadotAdapter = await enablePolkadotExtension(
+      extensionName,
+      "Give Protocol",
+    );
     if (!this.polkadotAdapter) {
       throw new Error("Failed to enable SubWallet Polkadot extension");
     }
@@ -114,7 +123,8 @@ export class SubWalletProvider extends BaseMultiChainProvider {
   private static getPolkadotExtensionName(): string | null {
     if (typeof window === "undefined") return null;
 
-    const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> }).injectedWeb3;
+    const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> })
+      .injectedWeb3;
     if (injectedWeb3?.["subwallet-js"]) {
       return "subwallet-js";
     }

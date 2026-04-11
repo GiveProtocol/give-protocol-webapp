@@ -147,18 +147,72 @@ export interface NetworkConfig {
  */
 export const NETWORKS: NetworkConfig[] = [
   // EVM Mainnets
-  { id: "base", name: "Base", token: "ETH", color: "#0052FF", chainType: "evm" },
-  { id: "optimism", name: "Optimism", token: "ETH", color: "#FF0420", chainType: "evm" },
-  { id: "moonbeam", name: "Moonbeam", token: "GLMR", color: "#53CBC8", chainType: "evm" },
+  {
+    id: "base",
+    name: "Base",
+    token: "ETH",
+    color: "#0052FF",
+    chainType: "evm",
+  },
+  {
+    id: "optimism",
+    name: "Optimism",
+    token: "ETH",
+    color: "#FF0420",
+    chainType: "evm",
+  },
+  {
+    id: "moonbeam",
+    name: "Moonbeam",
+    token: "GLMR",
+    color: "#53CBC8",
+    chainType: "evm",
+  },
   // EVM Testnets
-  { id: "base-sepolia", name: "Base Sepolia", token: "ETH", color: "#0052FF", chainType: "evm" },
-  { id: "optimism-sepolia", name: "OP Sepolia", token: "ETH", color: "#FF0420", chainType: "evm" },
-  { id: "moonbase", name: "Moonbase Alpha", token: "DEV", color: "#53CBC8", chainType: "evm" },
+  {
+    id: "base-sepolia",
+    name: "Base Sepolia",
+    token: "ETH",
+    color: "#0052FF",
+    chainType: "evm",
+  },
+  {
+    id: "optimism-sepolia",
+    name: "OP Sepolia",
+    token: "ETH",
+    color: "#FF0420",
+    chainType: "evm",
+  },
+  {
+    id: "moonbase",
+    name: "Moonbase Alpha",
+    token: "DEV",
+    color: "#53CBC8",
+    chainType: "evm",
+  },
   // Solana
-  { id: "solana-mainnet", name: "Solana", token: "SOL", color: "#9945FF", chainType: "solana" },
+  {
+    id: "solana-mainnet",
+    name: "Solana",
+    token: "SOL",
+    color: "#9945FF",
+    chainType: "solana",
+  },
   // Polkadot
-  { id: "polkadot", name: "Polkadot", token: "DOT", color: "#E6007A", chainType: "polkadot" },
-  { id: "kusama", name: "Kusama", token: "KSM", color: "#000000", chainType: "polkadot" },
+  {
+    id: "polkadot",
+    name: "Polkadot",
+    token: "DOT",
+    color: "#E6007A",
+    chainType: "polkadot",
+  },
+  {
+    id: "kusama",
+    name: "Kusama",
+    token: "KSM",
+    color: "#000000",
+    chainType: "polkadot",
+  },
 ];
 
 /**

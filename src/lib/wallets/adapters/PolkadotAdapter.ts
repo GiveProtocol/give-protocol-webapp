@@ -34,14 +34,16 @@ interface PolkadotExtension {
   accounts: {
     get: (_anyType?: boolean) => Promise<InjectedAccountWithMeta[]>;
     subscribe: (
-      _callback: (_accounts: InjectedAccountWithMeta[]) => void
+      _callback: (_accounts: InjectedAccountWithMeta[]) => void,
     ) => () => void;
   };
   signer: {
     signPayload: (_payload: unknown) => Promise<{ signature: string }>;
-    signRaw: (
-      _raw: { address: string; data: string; type: "bytes" | "payload" }
-    ) => Promise<{ signature: string }>;
+    signRaw: (_raw: {
+      address: string;
+      data: string;
+      type: "bytes" | "payload";
+    }) => Promise<{ signature: string }>;
   };
 }
 
@@ -50,7 +52,9 @@ interface PolkadotExtension {
  * @param provider - Provider to check
  * @returns True if provider has Polkadot extension interface
  */
-export function isPolkadotExtension(provider: unknown): provider is PolkadotExtension {
+export function isPolkadotExtension(
+  provider: unknown,
+): provider is PolkadotExtension {
   return (
     typeof provider === "object" &&
     provider !== null &&
@@ -73,7 +77,7 @@ export class PolkadotAdapter {
   constructor(
     extension: PolkadotExtension,
     extensionName: string,
-    chain: PolkadotChainId = DEFAULT_POLKADOT_CHAIN
+    chain: PolkadotChainId = DEFAULT_POLKADOT_CHAIN,
   ) {
     this.extension = extension;
     this.extensionName = extensionName;
@@ -201,7 +205,7 @@ export class PolkadotAdapter {
 
     // Use the signer to sign the payload
     const { signature } = await this.extension.signer.signPayload(
-      tx.polkadotExtrinsic
+      tx.polkadotExtrinsic,
     );
 
     Logger.info("Polkadot extrinsic signed");
@@ -214,7 +218,10 @@ export class PolkadotAdapter {
    * @param address - Address to sign with
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, address?: string): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    address?: string,
+  ): Promise<string> {
     const signerAddress = address || this.accounts[0]?.address;
     if (!signerAddress) {
       throw new Error("No account available for signing");
@@ -241,7 +248,7 @@ export class PolkadotAdapter {
    * @returns Cleanup function
    */
   subscribeAccounts(
-    callback: (_accounts: UnifiedAccount[]) => void
+    callback: (_accounts: UnifiedAccount[]) => void,
   ): () => void {
     /** Handles account changes from the Polkadot extension */
     const handleAccountsChanged = (accounts: InjectedAccountWithMeta[]) => {
@@ -265,7 +272,9 @@ export class PolkadotAdapter {
    * @param accounts - Array of Substrate injected accounts
    * @returns Array of unified accounts
    */
-  private toUnifiedAccounts(accounts: InjectedAccountWithMeta[]): UnifiedAccount[] {
+  private toUnifiedAccounts(
+    accounts: InjectedAccountWithMeta[],
+  ): UnifiedAccount[] {
     const chainConfig = getPolkadotChainConfig(this.currentChain);
 
     return accounts.map((account) => ({
@@ -289,7 +298,8 @@ export class PolkadotAdapter {
     accounts: InjectedAccountWithMeta[],
   ): InjectedAccountWithMeta[] {
     return accounts.filter(
-      (account) => !account.address.startsWith("0x") && account.type !== "ethereum"
+      (account) =>
+        !account.address.startsWith("0x") && account.type !== "ethereum",
     );
   }
 
@@ -315,7 +325,7 @@ export class PolkadotAdapter {
  */
 export async function enablePolkadotExtension(
   extensionName: string,
-  appName: string
+  appName: string,
 ): Promise<PolkadotAdapter | null> {
   try {
     // Dynamic import to avoid SSR crashes — the module accesses window at top level
@@ -348,7 +358,10 @@ export async function enablePolkadotExtension(
 
     return new PolkadotAdapter(extension, extensionName);
   } catch (error) {
-    Logger.error("Failed to enable Polkadot extension", { extensionName, error });
+    Logger.error("Failed to enable Polkadot extension", {
+      extensionName,
+      error,
+    });
     return null;
   }
 }

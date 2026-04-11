@@ -28,7 +28,14 @@ const DesktopNavLinks: React.FC<{
   isAuthenticated: boolean;
   handleDashboardClick: () => void;
   t: (_key: string) => string;
-}> = ({ isLimitedNavPage, isActive, userType, isAuthenticated, handleDashboardClick, t }) => {
+}> = ({
+  isLimitedNavPage,
+  isActive,
+  userType,
+  isAuthenticated,
+  handleDashboardClick,
+  t,
+}) => {
   if (isLimitedNavPage) {
     return (
       <>
@@ -220,7 +227,10 @@ const MobileMenu: React.FC<{
 
   return (
     <nav className="md:hidden" id="mobile-menu" aria-label="Mobile navigation">
-      <div className="px-2 pt-2 pb-3 space-y-1 shadow-lg" style={{ background: 'rgba(6, 78, 59, 0.95)' }}>
+      <div
+        className="px-2 pt-2 pb-3 space-y-1 shadow-lg"
+        style={{ background: "rgba(6, 78, 59, 0.95)" }}
+      >
         {children}
       </div>
     </nav>
@@ -252,9 +262,18 @@ const MobileMenuButton: React.FC<{
 
 // Nav header component to reduce nesting
 const NavHeader: React.FC = () => (
-  <Link to="/" className="flex items-center gap-2.5" aria-label="Give Protocol home">
+  <Link
+    to="/"
+    className="flex items-center gap-2.5"
+    aria-label="Give Protocol home"
+  >
     <Logo className="h-7 w-7" />
-    <span className="font-serif text-white" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Give Protocol</span>
+    <span
+      className="font-serif text-white"
+      style={{ fontSize: "1.1rem", letterSpacing: "-0.01em" }}
+    >
+      Give Protocol
+    </span>
   </Link>
 );
 
@@ -512,10 +531,7 @@ export const AppNavbar: React.FC = () => {
 
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(
-    () =>
-      ["/about", "/legal", "/privacy"].includes(
-        location.pathname,
-      ),
+    () => ["/about", "/legal", "/privacy"].includes(location.pathname),
     [location.pathname],
   );
 
@@ -567,16 +583,14 @@ export const AppNavbar: React.FC = () => {
     <nav
       className="relative z-30 border-b shadow-lg"
       style={{
-        background: 'rgba(6, 78, 59, 0.92)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderColor: 'rgba(52, 211, 153, 0.15)',
+        background: "rgba(6, 78, 59, 0.92)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderColor: "rgba(52, 211, 153, 0.15)",
       }}
       aria-label="Application navigation"
     >
-      <div
-        className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]"
-      >
+      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]">
         <div className="flex items-center">
           <NavHeader />
           <div className="hidden md:ml-6 md:flex md:gap-6">
