@@ -346,47 +346,8 @@ const AuthRightPanel: React.FC = () => {
 
   const handleWalletButtonClick = useCallback(() => {
     setFormError(null);
-    try {
-      await signInWithEmail(email, password);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Sign in failed";
-      setFormError(msg);
-      Logger.error("Email sign-in failed", { error: msg });
-    }
-  }, [email, password, signInWithEmail]);
-
-  const handleWalletButtonClick = useCallback(() => {
-    setFormError(null);
     setShowWalletModal(true);
   }, []);
-
-  const handleWalletModalClose = useCallback(() => {
-    setShowWalletModal(false);
-  }, []);
-
-  const handleWalletModalConnect = useCallback(
-    async (wallet: UnifiedWalletProvider, chainType: ChainType) => {
-      try {
-        await multiChain.connect(wallet, chainType);
-        setShowWalletModal(false);
-        await signInWithWallet();
-      } catch (err) {
-        const msg =
-          err instanceof Error ? err.message : "Wallet sign-in failed";
-        setFormError(msg);
-        Logger.error("Wallet sign-in via modal failed", { error: msg });
-        throw err;
-      }
-    },
-    [multiChain, signInWithWallet],
-  );
-
-  const handleEmailChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(e.target.value);
-    },
-    [],
-  );
 
   const handleWalletModalClose = useCallback(() => {
     setShowWalletModal(false);

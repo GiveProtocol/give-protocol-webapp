@@ -14,12 +14,21 @@ import { ethers } from "https://esm.sh/ethers@6.9.0";
 
 const FUNCTION_VERSION = "v5";
 
+/** Minimal interface for the dynamically-loaded @polkadot/util-crypto module */
+interface PolkadotCryptoModule {
+  signatureVerify: (
+    message: string | Uint8Array,
+    signature: string | Uint8Array,
+    address: string,
+  ) => { isValid: boolean };
+  cryptoWaitReady: () => Promise<boolean>;
+}
+
 // Polkadot crypto is loaded dynamically to avoid crashing the module on Deno Deploy
-// deno-lint-ignore no-explicit-any
-let polkadotCrypto: any = null;
+let polkadotCrypto: PolkadotCryptoModule | null = null;
 
 /** Lazily initialize Polkadot crypto on first use */
-async function getPolkadotCrypto() {
+async function getPolkadotCrypto(): Promise<PolkadotCryptoModule | null> {
   if (polkadotCrypto) return polkadotCrypto;
 
   try {
@@ -199,6 +208,145 @@ function normalizeAddress(address: string, chainType: ChainType): string {
   return address;
 }
 
+/**
+ * Verify wallet signature based on chain type, delegating to chain-specific verifiers
+ * @param body - The wallet auth request
+ * @param chainType - Detected or provided chain type
+ * @returns Error message string, or null if valid
+ */
+async function verifyWalletSignature(
+  body: WalletAuthRequest,
+  chainType: ChainType,
+): Promise<string | null> {
+  if (!body.message.includes(body.nonce)) {
+    return "Invalid nonce in message";
+  }
+
+  if (chainType === "evm") {
+    const valid = verifyEVMSignature(
+      body.message,
+      body.signature,
+      body.walletAddress,
+    );
+    return valid ? null : "EVM signature verification failed";
+  }
+
+  if (chainType === "polkadot") {
+    const valid = await verifyPolkadotSignature(
+      body.message,
+      body.signature,
+      body.walletAddress,
+    );
+    return valid ? null : "Polkadot signature verification failed";
+  }
+
+  return "Unsupported chain type for signature verification";
+}
+
+/** Verify message timestamp is within 5 minutes to prevent replay attacks */
+function verifyTimestamp(message: string): string | null {
+  const timestampMatch = message.match(/Timestamp: (.+)$/m);
+  if (!timestampMatch) return "Missing timestamp in message";
+  const messageTime = new Date(timestampMatch[1]).getTime();
+  if (Number.isNaN(messageTime)) return "Invalid timestamp in message";
+  const fiveMinutesMs = 5 * 60 * 1000;
+  if (Date.now() - messageTime > fiveMinutesMs) {
+    return "Signature has expired. Please sign in again.";
+  }
+  return null;
+}
+
+/** Create a new user account, profile, and wallet identity record */
+async function createWalletUser(
+  supabase: ReturnType<typeof createClient>,
+  walletAddress: string,
+  accountType: "donor" | "charity",
+): Promise<{ userId: string } | { error: string }> {
+  const placeholderEmail = `${walletAddress}@wallet.giveprotocol.io`;
+
+  const { data: newUser, error: createError } =
+    await supabase.auth.admin.createUser({
+      email: placeholderEmail,
+      email_confirm: true,
+      user_metadata: { type: accountType, auth_method: "wallet" },
+    });
+
+  if (createError || !newUser.user) {
+    console.error("Failed to create wallet user:", createError);
+    return { error: "Failed to create user account" };
+  }
+
+  const userId = newUser.user.id;
+
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .insert({ user_id: userId, type: accountType, role: accountType });
+  if (profileError) console.error("Failed to create profile:", profileError);
+
+  const { error: identityError } = await supabase
+    .from("user_identities")
+    .upsert(
+      {
+        user_id: userId,
+        wallet_address: walletAddress,
+        primary_auth_method: "wallet",
+        wallet_linked_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id" },
+    );
+  if (identityError) console.error("Failed to create identity:", identityError);
+
+  return { userId };
+}
+
+/** Generate a session for the given user via magic link verification */
+async function generateSession(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+): Promise<{ session: Record<string, unknown> } | { error: string }> {
+  const { data: linkData, error: linkError } =
+    await supabase.auth.admin.generateLink({
+      type: "magiclink",
+      email:
+        (await supabase.auth.admin.getUserById(userId)).data.user?.email ?? "",
+    });
+
+  if (linkError || !linkData) {
+    console.error("Failed to generate session link:", linkError);
+    return { error: "Failed to create session" };
+  }
+
+  const url = new URL(linkData.properties.action_link);
+  const token = url.searchParams.get("token");
+  const tokenType = url.searchParams.get("type") ?? "magiclink";
+  if (!token) return { error: "Failed to generate auth token" };
+
+  const { data: sessionData, error: verifyError } =
+    await supabase.auth.verifyOtp({
+      token_hash: token,
+      type: tokenType as "magiclink",
+    });
+
+  if (verifyError || !sessionData.session) {
+    console.error("Failed to verify OTP:", verifyError);
+    return { error: "Failed to establish session" };
+  }
+
+  return {
+    session: {
+      access_token: sessionData.session.access_token,
+      refresh_token: sessionData.session.refresh_token,
+      expires_in: sessionData.session.expires_in,
+      token_type: sessionData.session.token_type,
+      user: {
+        id: sessionData.session.user.id,
+        email: sessionData.session.user.email,
+        user_metadata: sessionData.session.user.user_metadata,
+      },
+    },
+  };
+}
+
 serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -240,8 +388,10 @@ serve(async (req: Request) => {
       );
     }
 
+    const chainType = body.chainType ?? detectChainType(body.walletAddress);
+
     // Verify signature and timestamp
-    const sigError = verifyWalletSignature(body);
+    const sigError = await verifyWalletSignature(body, chainType);
     if (sigError) return errorResponse(sigError, 401);
 
     const tsError = verifyTimestamp(body.message);
