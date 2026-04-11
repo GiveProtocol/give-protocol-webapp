@@ -256,25 +256,20 @@ export function ConnectButton() {
       if (user) {
         try {
           await logout();
-          window.location.href = `${window.location.origin}/auth`;
         } catch (logoutError) {
           Logger.warn(
-            "Logout failed during wallet disconnect, redirecting anyway",
+            "Logout failed during wallet disconnect",
             { error: logoutError }
           );
-          window.location.href = `${window.location.origin}/auth`;
         }
-      } else {
-        Logger.info("Wallet disconnected while not logged in, refreshing page");
-        window.location.reload();
+        navigate("/auth");
       }
     } catch (err) {
       Logger.error("Wallet disconnection failed", { error: err });
       setShowAccountMenu(false);
       setConnectionError(null);
-      window.location.reload();
     }
-  }, [multiChain, web3, logout, user]);
+  }, [multiChain, web3, logout, user, navigate]);
 
   // Handle manage alias
   const handleManageAlias = useCallback(() => {
@@ -287,24 +282,7 @@ export function ConnectButton() {
     setShowAccountMenu((prev) => !prev);
   }, []);
 
-  // Error state
-  if (connectionError || error) {
-    return (
-      <button
-        type="button"
-        onClick={handleOpenModal}
-        className="flex items-center text-red-300 bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
-      >
-        <AlertTriangle className="h-4 w-4 mr-2" />
-        <span className="hidden sm:inline max-w-32 truncate">
-          {connectionError || error?.message || "Connection Error"}
-        </span>
-        <span className="sm:hidden">Error</span>
-      </button>
-    );
-  }
-
-  // Connected state
+  // Connected state — check before error so disconnect is always accessible
   if (isConnected && address) {
     // Create a fallback account if multichain context doesn't have one
     const displayAccount: UnifiedAccount = activeAccount || {
@@ -340,6 +318,23 @@ export function ConnectButton() {
           />
         )}
       </div>
+    );
+  }
+
+  // Error state (only shown when not connected)
+  if (connectionError || error) {
+    return (
+      <button
+        type="button"
+        onClick={handleOpenModal}
+        className="flex items-center text-red-300 bg-red-500/10 border border-red-500/30 hover:bg-red-500/20 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200"
+      >
+        <AlertTriangle className="h-4 w-4 mr-2" />
+        <span className="hidden sm:inline max-w-32 truncate">
+          {connectionError || error?.message || "Connection Error"}
+        </span>
+        <span className="sm:hidden">Error</span>
+      </button>
     );
   }
 

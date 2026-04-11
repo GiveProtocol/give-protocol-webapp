@@ -48,7 +48,8 @@ export default defineConfig(({ mode }) => ({
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src')
+      '@': path.resolve(__dirname, './src'),
+      buffer: 'buffer/'
     }
   },
   server: {
@@ -67,6 +68,9 @@ export default defineConfig(({ mode }) => ({
   envDir: '.',
   envPrefix: 'VITE_',
   mode: mode === 'app' ? 'app' : 'production',
+  define: {
+    'globalThis.Buffer': 'globalThis.Buffer'
+  },
   optimizeDeps: {
     include: [
       'react',
@@ -74,7 +78,8 @@ export default defineConfig(({ mode }) => ({
       'react-router-dom',
       '@supabase/supabase-js',
       'ethers',
-      'viem'
+      'viem',
+      'buffer'
     ]
   },
   ssr: {

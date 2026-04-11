@@ -153,6 +153,13 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
           );
         }
 
+        // Clear disconnect flag since user is explicitly connecting
+        try {
+          localStorage.removeItem("giveprotocol_wallet_disconnected");
+        } catch {
+          // Ignore storage errors
+        }
+
         // Connect to wallet
         const connectedAccounts = await walletProvider.connect(targetChainType);
 
@@ -190,6 +197,13 @@ export function MultiChainProvider({ children }: MultiChainProviderProps) {
    */
   const disconnect = useCallback(async () => {
     try {
+      // Mark explicit disconnect to prevent auto-reconnect on page reload
+      try {
+        localStorage.setItem("giveprotocol_wallet_disconnected", "true");
+      } catch {
+        // Ignore storage errors
+      }
+
       if (walletRef.current) {
         await walletRef.current.disconnect();
       }

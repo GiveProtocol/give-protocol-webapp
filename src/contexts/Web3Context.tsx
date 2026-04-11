@@ -251,6 +251,15 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     /** Check for existing wallet connection and restore provider state */
     const initProvider = async () => {
+      // Don't auto-restore if user explicitly disconnected
+      try {
+        if (localStorage.getItem("giveprotocol_wallet_disconnected") === "true") {
+          return;
+        }
+      } catch {
+        // Ignore storage errors
+      }
+
       if (typeof window.ethereum !== "undefined") {
         try {
           // Check if already connected
@@ -325,6 +334,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       const syncProvider = async () => {
         try {
           isConnectingRef.current = true;
+
+          // Clear disconnect flag — user connected via MultiChain
+          try {
+            localStorage.removeItem("giveprotocol_wallet_disconnected");
+          } catch {
+            // Ignore storage errors
+          }
 
           const ethersProvider = new ethers.BrowserProvider(
             evmProvider as ethers.Eip1193Provider,
@@ -490,6 +506,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         isConnectingRef.current = true;
         setError(null);
 
+        // Clear disconnect flag since user is explicitly connecting
+        try {
+          localStorage.removeItem("giveprotocol_wallet_disconnected");
+        } catch {
+          // Ignore storage errors
+        }
+
         // Request account access
         const accounts = (await walletProvider.request({
           method: "eth_requestAccounts",
@@ -558,6 +581,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   const disconnect = useCallback(async () => {
     try {
+      // Mark explicit disconnect to prevent auto-reconnect on page reload
+      try {
+        localStorage.setItem("giveprotocol_wallet_disconnected", "true");
+      } catch {
+        // Ignore storage errors
+      }
+
       // Clear state immediately
       setProvider(null);
       setSigner(null);

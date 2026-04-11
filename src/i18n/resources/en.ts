@@ -156,6 +156,7 @@ export default {
     'filter.donations': 'Donations',
     'filter.volunteerApplications': 'Volunteer Applications',
     'filter.volunteerHours': 'Volunteer Hours',
+    'filter.fiatDonations': 'Fiat Donations',
     
     // Export
     'export.title': 'Export Contribution Data',
