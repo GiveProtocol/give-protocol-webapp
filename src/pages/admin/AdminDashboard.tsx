@@ -298,8 +298,8 @@ const AdminDashboard: React.FC = () => {
               ({alerts.length} pending)
             </span>
           </h2>
-          {alerts.map((alert, idx) => (
-            <AlertItem key={`${alert.alertType}-${alert.entityId}-${idx}`} alert={alert} />
+          {alerts.map((alert) => (
+            <AlertItem key={`${alert.alertType}-${alert.entityId}-${alert.createdAt}`} alert={alert} />
           ))}
         </Card>
       )}
