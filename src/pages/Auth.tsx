@@ -346,17 +346,6 @@ const AuthRightPanel: React.FC = () => {
 
   const handleWalletButtonClick = useCallback(() => {
     setFormError(null);
-    try {
-      await signInWithEmail(email, password);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "Sign in failed";
-      setFormError(msg);
-      Logger.error("Email sign-in failed", { error: msg });
-    }
-  }, [email, password, signInWithEmail]);
-
-  const handleWalletButtonClick = useCallback(() => {
-    setFormError(null);
     setShowWalletModal(true);
   }, []);
 
