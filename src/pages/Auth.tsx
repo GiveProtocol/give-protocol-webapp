@@ -358,34 +358,6 @@ const AuthRightPanel: React.FC = () => {
       try {
         await multiChain.connect(wallet, chainType);
         setShowWalletModal(false);
-        await signInWithWallet();
-      } catch (err) {
-        const msg =
-          err instanceof Error ? err.message : "Wallet sign-in failed";
-        setFormError(msg);
-        Logger.error("Wallet sign-in via modal failed", { error: msg });
-        throw err;
-      }
-    },
-    [multiChain, signInWithWallet],
-  );
-
-  const handleEmailChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      setEmail(e.target.value);
-    },
-    [],
-  );
-
-  const handleWalletModalClose = useCallback(() => {
-    setShowWalletModal(false);
-  }, []);
-
-  const handleWalletModalConnect = useCallback(
-    async (wallet: UnifiedWalletProvider, chainType: ChainType) => {
-      try {
-        await multiChain.connect(wallet, chainType);
-        setShowWalletModal(false);
 
         if (chainType !== "evm") {
           // For non-EVM chains, get the connected account address and pass wallet info
