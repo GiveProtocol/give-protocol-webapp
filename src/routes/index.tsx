@@ -65,6 +65,7 @@ const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"));
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
 const AdminCharityManagement = lazy(() => import("@/pages/admin/AdminCharityManagement"));
 const AdminDonorManagement = lazy(() => import("@/pages/admin/AdminDonorManagement"));
+const AdminDonationMonitoring = lazy(() => import("@/pages/admin/AdminDonationMonitoring"));
 const CharityRegistration = lazy(() => import("@/pages/admin/CharityRegistration"));
 const CharityDiagnostics = lazy(() => import("@/pages/admin/CharityDiagnostics"));
 const TokenManagement = lazy(() => import("@/pages/admin/TokenManagement"));
@@ -174,6 +175,18 @@ export function AppRoutes() {
               <RouteTransition>
                 <Suspense fallback={<LoadingFallback />}>
                   <AdminDonorManagement />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/donations"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminDonationMonitoring />
                 </Suspense>
               </RouteTransition>
             </ProtectedRoute>

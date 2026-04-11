@@ -248,6 +248,10 @@ const AdminDashboard: React.FC = () => {
     navigate('/admin/charities');
   }, [navigate]);
 
+  const handleNavigateDonations = useCallback(() => {
+    navigate('/admin/donations');
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -371,6 +375,11 @@ const AdminDashboard: React.FC = () => {
             title="Manage Impact Metrics"
             description="Configure impact calculator data"
             onClick={handleNavigateImpactMetrics}
+          />
+          <QuickActionButton
+            title="Donation Monitoring"
+            description="Monitor, flag, and report on donations"
+            onClick={handleNavigateDonations}
           />
         </div>
       </Card>
