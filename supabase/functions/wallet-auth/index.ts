@@ -283,7 +283,8 @@ serve(async (req: Request) => {
 
     // Generate session
     const sessionResult = await generateSession(supabase, userId);
-    if ("error" in sessionResult) return errorResponse(sessionResult.error, 500);
+    if ("error" in sessionResult)
+      return errorResponse(sessionResult.error, 500);
 
     return jsonResponse(
       { success: true, session: sessionResult.session, isNewUser },
