@@ -244,6 +244,10 @@ const AdminDashboard: React.FC = () => {
     navigate('/admin/impact-metrics');
   }, [navigate]);
 
+  const handleNavigateCharities = useCallback(() => {
+    navigate('/admin/charities');
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -361,7 +365,7 @@ const AdminDashboard: React.FC = () => {
         <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <QuickActionButton title="View Reports" description="Generate detailed analytics" />
-          <QuickActionButton title="Manage Charities" description="Review and approve organizations" />
+          <QuickActionButton title="Manage Charities" description="Review and approve organizations" onClick={handleNavigateCharities} />
           <QuickActionButton title="System Settings" description="Configure platform parameters" />
           <QuickActionButton
             title="Manage Impact Metrics"
