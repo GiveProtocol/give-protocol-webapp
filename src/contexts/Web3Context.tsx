@@ -251,6 +251,17 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     /** Check for existing wallet connection and restore provider state */
     const initProvider = async () => {
+      // Don't auto-restore if user explicitly disconnected
+      try {
+        if (
+          localStorage.getItem("giveprotocol_wallet_disconnected") === "true"
+        ) {
+          return;
+        }
+      } catch {
+        // Ignore storage errors
+      }
+
       if (typeof window.ethereum !== "undefined") {
         try {
           // Check if already connected
@@ -305,9 +316,7 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   // This ensures all 39+ components using useWeb3() see the connection
   // established via the WalletModal → MultiChainContext flow.
   useEffect(() => {
-    const evmAccount = multiChain.accounts.find(
-      (a) => a.chainType === "evm",
-    );
+    const evmAccount = multiChain.accounts.find((a) => a.chainType === "evm");
 
     if (multiChain.isConnected && multiChain.wallet && evmAccount) {
       const evmProvider = multiChain.wallet.providers.evm;
@@ -325,6 +334,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
       const syncProvider = async () => {
         try {
           isConnectingRef.current = true;
+
+          // Clear disconnect flag — user connected via MultiChain
+          try {
+            localStorage.removeItem("giveprotocol_wallet_disconnected");
+          } catch {
+            // Ignore storage errors
+          }
 
           const ethersProvider = new ethers.BrowserProvider(
             evmProvider as ethers.Eip1193Provider,
@@ -372,7 +388,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   // Set up event listeners
   useEffect(() => {
-    const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
+    const walletProvider =
+      currentWalletProvider ||
+      (typeof window !== "undefined" ? window.ethereum : null);
     if (!walletProvider || typeof walletProvider.on !== "function") return;
 
     /** Clear all connection state when wallet fires disconnect event */
@@ -410,7 +428,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
+      const walletProvider =
+        currentWalletProvider ||
+        (typeof window !== "undefined" ? window.ethereum : null);
       if (!walletProvider || typeof walletProvider.request !== "function")
         return;
 
@@ -442,7 +462,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   const switchChain = useCallback(
     async (targetChainId: number) => {
-      const walletProvider = currentWalletProvider || (typeof window !== "undefined" ? window.ethereum : null);
+      const walletProvider =
+        currentWalletProvider ||
+        (typeof window !== "undefined" ? window.ethereum : null);
       if (!walletProvider) {
         throw new Error("No wallet provider found");
       }
@@ -459,7 +481,8 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   const connect = useCallback(
     async (_walletProvider?: unknown) => {
       // Resolve wallet provider (ignore events from onClick={connect})
-      const defaultProvider = typeof window !== "undefined" ? window.ethereum : null;
+      const defaultProvider =
+        typeof window !== "undefined" ? window.ethereum : null;
       const walletProvider = isEventObject(_walletProvider)
         ? defaultProvider
         : _walletProvider || defaultProvider;
@@ -489,6 +512,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         setIsConnecting(true);
         isConnectingRef.current = true;
         setError(null);
+
+        // Clear disconnect flag since user is explicitly connecting
+        try {
+          localStorage.removeItem("giveprotocol_wallet_disconnected");
+        } catch {
+          // Ignore storage errors
+        }
 
         // Request account access
         const accounts = (await walletProvider.request({
@@ -558,6 +588,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   const disconnect = useCallback(async () => {
     try {
+      // Mark explicit disconnect to prevent auto-reconnect on page reload
+      try {
+        localStorage.setItem("giveprotocol_wallet_disconnected", "true");
+      } catch {
+        // Ignore storage errors
+      }
+
       // Clear state immediately
       setProvider(null);
       setSigner(null);
@@ -681,7 +718,7 @@ export function useWeb3MultiChain() {
         const evmProvider = multiChain.wallet.providers.evm;
         if (isEIP1193Provider(evmProvider)) {
           const ethersProvider = new ethers.BrowserProvider(
-            evmProvider as ethers.Eip1193Provider
+            evmProvider as ethers.Eip1193Provider,
           );
           const ethersSigner = await ethersProvider.getSigner();
           setProvider(ethersProvider);
@@ -744,14 +781,14 @@ export function useWeb3MultiChain() {
       // No provider passed, throw error
       throw new Error("No wallet provider specified");
     },
-    [multiChain, chainId]
+    [multiChain, chainId],
   );
 
   const switchChain = useCallback(
     async (targetChainId: number) => {
       await multiChain.switchChain(targetChainId, "evm");
     },
-    [multiChain]
+    [multiChain],
   );
 
   return {

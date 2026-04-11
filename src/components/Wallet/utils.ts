@@ -62,6 +62,7 @@ const EXPLORER_URLS: Record<string, string> = {
   "base-sepolia": "https://sepolia.basescan.org/address/",
   optimism: "https://optimistic.etherscan.io/address/",
   "optimism-sepolia": "https://sepolia-optimistic.etherscan.io/address/",
+  "solana-mainnet": "https://explorer.solana.com/address/",
 };
 
 /**
@@ -87,6 +88,7 @@ export const NETWORK_NAMES: Record<string, string> = {
   "base-sepolia": "Base Sepolia",
   optimism: "Optimism",
   "optimism-sepolia": "OP Sepolia",
+  "solana-mainnet": "Solana",
 };
 
 /**
@@ -101,6 +103,7 @@ export const NETWORK_TOKENS: Record<string, string> = {
   "base-sepolia": "ETH",
   optimism: "ETH",
   "optimism-sepolia": "ETH",
+  "solana-mainnet": "SOL",
 };
 
 /**

@@ -1,6 +1,6 @@
 /**
  * Polkadot Chain Adapter for Give Protocol
- * Wraps @polkadot/api and @polkadot/extension-dapp for Substrate blockchain interactions
+ * Wraps @polkadot/extension-dapp for Substrate blockchain interactions
  */
 
 import { Logger } from "@/utils/logger";
@@ -34,14 +34,16 @@ interface PolkadotExtension {
   accounts: {
     get: (_anyType?: boolean) => Promise<InjectedAccountWithMeta[]>;
     subscribe: (
-      _callback: (_accounts: InjectedAccountWithMeta[]) => void
+      _callback: (_accounts: InjectedAccountWithMeta[]) => void,
     ) => () => void;
   };
   signer: {
     signPayload: (_payload: unknown) => Promise<{ signature: string }>;
-    signRaw: (
-      _raw: { address: string; data: string; type: "bytes" | "payload" }
-    ) => Promise<{ signature: string }>;
+    signRaw: (_raw: {
+      address: string;
+      data: string;
+      type: "bytes" | "payload";
+    }) => Promise<{ signature: string }>;
   };
 }
 
@@ -50,7 +52,9 @@ interface PolkadotExtension {
  * @param provider - Provider to check
  * @returns True if provider has Polkadot extension interface
  */
-export function isPolkadotExtension(provider: unknown): provider is PolkadotExtension {
+export function isPolkadotExtension(
+  provider: unknown,
+): provider is PolkadotExtension {
   return (
     typeof provider === "object" &&
     provider !== null &&
@@ -73,7 +77,7 @@ export class PolkadotAdapter {
   constructor(
     extension: PolkadotExtension,
     extensionName: string,
-    chain: PolkadotChainId = DEFAULT_POLKADOT_CHAIN
+    chain: PolkadotChainId = DEFAULT_POLKADOT_CHAIN,
   ) {
     this.extension = extension;
     this.extensionName = extensionName;
@@ -114,17 +118,19 @@ export class PolkadotAdapter {
 
   /**
    * Connect to the Polkadot extension
-   * Retrieves all accounts from the extension
+   * Retrieves Substrate accounts from the extension (excludes EVM accounts)
    * @returns Array of connected accounts
    */
   async connect(): Promise<UnifiedAccount[]> {
     try {
-      // Get accounts from extension
-      this.accounts = await this.extension.accounts.get(true);
+      // Get accounts from extension and filter to Substrate-only
+      const allAccounts = await this.extension.accounts.get(true);
+      this.accounts = PolkadotAdapter.filterSubstrateAccounts(allAccounts);
 
       if (this.accounts.length === 0) {
-        Logger.info("Polkadot extension has no accounts", {
+        Logger.info("Polkadot extension has no Substrate accounts", {
           extension: this.extensionName,
+          totalAccounts: allAccounts.length,
         });
         return [];
       }
@@ -156,12 +162,13 @@ export class PolkadotAdapter {
   }
 
   /**
-   * Get current accounts
-   * @returns Array of connected accounts
+   * Get current Substrate accounts
+   * @returns Array of connected accounts (EVM accounts excluded)
    */
   async getAccounts(): Promise<UnifiedAccount[]> {
-    // Refresh accounts from extension
-    this.accounts = await this.extension.accounts.get(true);
+    // Refresh accounts from extension, filter to Substrate-only
+    const allAccounts = await this.extension.accounts.get(true);
+    this.accounts = PolkadotAdapter.filterSubstrateAccounts(allAccounts);
     return this.toUnifiedAccounts(this.accounts);
   }
 
@@ -198,7 +205,7 @@ export class PolkadotAdapter {
 
     // Use the signer to sign the payload
     const { signature } = await this.extension.signer.signPayload(
-      tx.polkadotExtrinsic
+      tx.polkadotExtrinsic,
     );
 
     Logger.info("Polkadot extrinsic signed");
@@ -211,7 +218,10 @@ export class PolkadotAdapter {
    * @param address - Address to sign with
    * @returns Signature
    */
-  async signMessage(message: string | Uint8Array, address?: string): Promise<string> {
+  async signMessage(
+    message: string | Uint8Array,
+    address?: string,
+  ): Promise<string> {
     const signerAddress = address || this.accounts[0]?.address;
     if (!signerAddress) {
       throw new Error("No account available for signing");
@@ -238,7 +248,7 @@ export class PolkadotAdapter {
    * @returns Cleanup function
    */
   subscribeAccounts(
-    callback: (_accounts: UnifiedAccount[]) => void
+    callback: (_accounts: UnifiedAccount[]) => void,
   ): () => void {
     /** Handles account changes from the Polkadot extension */
     const handleAccountsChanged = (accounts: InjectedAccountWithMeta[]) => {
@@ -257,11 +267,14 @@ export class PolkadotAdapter {
   }
 
   /**
-   * Convert injected accounts to unified accounts
-   * @param accounts - Array of Polkadot injected accounts
+   * Convert injected accounts to unified accounts.
+   * Assumes accounts are already filtered to Substrate-only.
+   * @param accounts - Array of Substrate injected accounts
    * @returns Array of unified accounts
    */
-  private toUnifiedAccounts(accounts: InjectedAccountWithMeta[]): UnifiedAccount[] {
+  private toUnifiedAccounts(
+    accounts: InjectedAccountWithMeta[],
+  ): UnifiedAccount[] {
     const chainConfig = getPolkadotChainConfig(this.currentChain);
 
     return accounts.map((account) => ({
@@ -270,9 +283,24 @@ export class PolkadotAdapter {
       chainType: "polkadot" as const,
       chainId: this.currentChain,
       chainName: chainConfig?.name || "Polkadot",
-      source: account.meta.source,
-      name: account.meta.name,
+      source: account.meta?.source || this.extensionName,
+      name: account.meta?.name,
     }));
+  }
+
+  /**
+   * Filter to Substrate accounts only.
+   * Multi-chain wallets (SubWallet) return both EVM and Substrate accounts.
+   * @param accounts - All accounts from extension
+   * @returns Only Substrate accounts (excludes 0x addresses and ethereum type)
+   */
+  private static filterSubstrateAccounts(
+    accounts: InjectedAccountWithMeta[],
+  ): InjectedAccountWithMeta[] {
+    return accounts.filter(
+      (account) =>
+        !account.address.startsWith("0x") && account.type !== "ethereum",
+    );
   }
 
   /**
@@ -288,42 +316,52 @@ export class PolkadotAdapter {
 }
 
 /**
- * Enable a Polkadot wallet extension
- * This requests permission from the user to access their accounts
+ * Enable a Polkadot wallet extension using @polkadot/extension-dapp.
+ * This library handles browser-specific issues (Firefox DataCloneError, etc.)
+ * and provides a normalized interface across extension versions.
  * @param extensionName - Name of the extension (e.g., "talisman", "subwallet-js")
  * @param appName - Name of this app (shown in extension popup)
  * @returns PolkadotAdapter instance or null
  */
 export async function enablePolkadotExtension(
   extensionName: string,
-  appName: string
+  appName: string,
 ): Promise<PolkadotAdapter | null> {
   try {
-    // Check if injectedWeb3 is available
-    const injectedWeb3 = (window as { injectedWeb3?: Record<string, unknown> })
-      .injectedWeb3;
+    // Dynamic import to avoid SSR crashes — the module accesses window at top level
+    const { web3Enable } = await import("@polkadot/extension-dapp");
 
-    if (!injectedWeb3?.[extensionName]) {
-      Logger.info("Polkadot extension not found", { extensionName });
+    // Use @polkadot/extension-dapp which handles browser compatibility
+    // (Firefox structured clone issues, extension messaging, etc.)
+    const extensions = await web3Enable(appName);
+
+    if (extensions.length === 0) {
+      Logger.info("No Polkadot extensions enabled", { extensionName });
       return null;
     }
 
-    const injectedExtension = injectedWeb3[extensionName] as {
-      enable: (_origin: string) => Promise<unknown>;
-      version: string;
-    };
+    // Find the specific extension by name
+    const extension = extensions.find((ext) => ext.name === extensionName);
 
-    // Enable the extension (will show popup for permission)
-    const extension = await injectedExtension.enable(appName);
+    if (!extension) {
+      Logger.info("Polkadot extension not found or not authorized", {
+        extensionName,
+        availableExtensions: extensions.map((e) => e.name),
+      });
+      return null;
+    }
 
     if (!isPolkadotExtension(extension)) {
-      Logger.error("Invalid Polkadot extension", { extensionName });
+      Logger.error("Invalid Polkadot extension interface", { extensionName });
       return null;
     }
 
     return new PolkadotAdapter(extension, extensionName);
   } catch (error) {
-    Logger.error("Failed to enable Polkadot extension", { extensionName, error });
+    Logger.error("Failed to enable Polkadot extension", {
+      extensionName,
+      error,
+    });
     return null;
   }
 }
