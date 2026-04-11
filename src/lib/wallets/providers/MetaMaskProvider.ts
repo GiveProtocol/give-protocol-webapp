@@ -5,6 +5,57 @@
 
 import { BaseEVMProvider } from "./BaseEVMProvider";
 
+/** Type for the ethereum provider with common wallet flags */
+interface EthereumProvider {
+  isMetaMask?: boolean;
+  isPhantom?: boolean;
+  isCoinbaseWallet?: boolean;
+  isRabby?: boolean;
+  isBraveWallet?: boolean;
+  providers?: EthereumProvider[];
+  request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+}
+
+/**
+ * Find the real MetaMask provider, avoiding imposters like Phantom that also
+ * set `isMetaMask = true` on `window.ethereum`.
+ *
+ * When multiple wallet extensions are installed, MetaMask places all providers
+ * in `window.ethereum.providers[]`. We search that array for the entry that
+ * has `isMetaMask` but none of the flags belonging to other wallets.
+ *
+ * @returns The genuine MetaMask provider, or null
+ */
+function findMetaMaskProvider(): EthereumProvider | null {
+  if (typeof window === "undefined" || !window.ethereum) return null;
+
+  const ethereum = window.ethereum as EthereumProvider;
+
+  // When multiple wallets are installed, check the providers array
+  if (Array.isArray(ethereum.providers) && ethereum.providers.length > 0) {
+    const real = ethereum.providers.find(
+      (p) =>
+        p.isMetaMask &&
+        !p.isPhantom &&
+        !p.isCoinbaseWallet &&
+        !p.isRabby &&
+        !p.isBraveWallet,
+    );
+    if (real) return real;
+  }
+
+  // Single provider: only return it if it's genuinely MetaMask, not an imposter
+  if (
+    ethereum.isMetaMask &&
+    !(ethereum as EthereumProvider).isPhantom &&
+    !(ethereum as EthereumProvider).isCoinbaseWallet
+  ) {
+    return ethereum;
+  }
+
+  return null;
+}
+
 /**
  * MetaMaskProvider - EVM-only browser wallet
  * The most popular browser extension wallet for Ethereum and EVM chains
@@ -15,23 +66,19 @@ export class MetaMaskProvider extends BaseEVMProvider {
 
   /**
    * Check if MetaMask is installed
-   * @returns True if MetaMask extension is available
+   * @returns True if the genuine MetaMask extension is available
    */
   isInstalled(): boolean {
     if (this.supportedChainTypes.length === 0) return false;
-    if (typeof window === "undefined") return false;
-    return Boolean(window.ethereum?.isMetaMask);
+    return findMetaMaskProvider() !== null;
   }
 
   /**
-   * Get MetaMask EVM provider from window
+   * Get the genuine MetaMask EVM provider, filtering out imposters
+   * @returns MetaMask provider or null
    */
   protected getEVMProvider(): unknown {
-    if (!this.isInstalled()) return null;
-    if (window.ethereum?.isMetaMask) {
-      return window.ethereum;
-    }
-    return null;
+    return findMetaMaskProvider();
   }
 }
 
