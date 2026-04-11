@@ -10,7 +10,7 @@ import type {
   UnifiedAccount,
   WalletCategory,
 } from "@/types/wallet";
-import { PolkadotAdapter } from "../adapters/PolkadotAdapter";
+import { PolkadotAdapter, enablePolkadotExtension } from "../adapters/PolkadotAdapter";
 import { BaseMultiChainProvider, type SecondaryChainAdapter } from "./BaseMultiChainProvider";
 
 /**
@@ -101,8 +101,11 @@ export class SubWalletProvider extends BaseMultiChainProvider {
       throw new Error("SubWallet Polkadot extension not available");
     }
 
-    this.polkadotAdapter = new PolkadotAdapter(extensionName);
-    return await this.polkadotAdapter.connect();
+    this.polkadotAdapter = await enablePolkadotExtension(extensionName, "Give Protocol");
+    if (!this.polkadotAdapter) {
+      throw new Error("Failed to enable SubWallet Polkadot extension");
+    }
+    return this.polkadotAdapter.connect();
   }
 
   /**

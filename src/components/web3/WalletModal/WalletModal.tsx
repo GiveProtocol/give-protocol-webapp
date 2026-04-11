@@ -274,11 +274,12 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   const handleContinue = useCallback(() => {
     if (selectedNetworkId !== null) {
       selectChain(selectedNetworkId);
-      // All current NetworkGrid options are EVM networks
-      setSelectedChainType("evm");
+      // Determine chain type from selected network config
+      const selectedConfig = mainnetChains.find((c) => c.id === selectedNetworkId);
+      setSelectedChainType(selectedConfig?.chainType ?? "evm");
       setStep("wallet");
     }
-  }, [selectedNetworkId, selectChain]);
+  }, [selectedNetworkId, selectChain, mainnetChains]);
 
   const handleBack = useCallback(() => {
     setStep("network");

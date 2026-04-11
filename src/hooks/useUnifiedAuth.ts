@@ -2,9 +2,11 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useAuth as useAuthContext } from '@/contexts/AuthContext';
 import { useWeb3 } from '@/contexts/Web3Context';
 import { supabase } from '@/lib/supabase';
+
 import { ENV } from '@/config/env';
 import { Logger } from '@/utils/logger';
 import { ethers } from 'ethers';
+import type { ChainType, UnifiedWalletProvider } from '@/types/wallet';
 
 interface UserIdentity {
   id: string;
@@ -41,7 +43,10 @@ interface UnifiedAuthState {
 
   signInWithEmail: (_email: string, _password: string) => Promise<void>;
   signUpWithEmail: (_email: string, _password: string, _metadata?: Record<string, unknown>) => Promise<void>;
-  signInWithWallet: (_accountType?: 'donor' | 'charity') => Promise<void>;
+  signInWithWallet: (
+    _accountType?: 'donor' | 'charity',
+    _walletInfo?: { wallet: UnifiedWalletProvider; chainType: ChainType; address: string },
+  ) => Promise<void>;
   linkWallet: () => Promise<void>;
   unlinkWallet: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -185,48 +190,84 @@ export function useUnifiedAuth(): UnifiedAuthState {
     }
   }, []);
 
-  const signInWithWallet = useCallback(async (accountType: 'donor' | 'charity' = 'donor') => {
+  const signInWithWallet = useCallback(async (
+    accountType: 'donor' | 'charity' = 'donor',
+    walletInfo?: { wallet: UnifiedWalletProvider; chainType: ChainType; address: string },
+  ) => {
     try {
       setLoading(true);
       setWalletAuthStep('connecting');
       setError(null);
 
-      if (typeof window !== 'undefined' && !('ethereum' in window)) {
-        throw new Error(
-          'No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.',
-        );
-      }
-
-      if (!web3.provider) {
-        await web3.connect();
-      }
-
-      const provider = web3.provider;
-      if (!provider) {
-        throw new Error('No wallet provider available');
-      }
-
-      setWalletAuthStep('signing');
-      const signer = await (provider as ethers.BrowserProvider).getSigner();
-      const address = await signer.getAddress();
+      let address: string;
+      let signature: string;
+      let chainType: ChainType = 'evm';
       const nonce = generateNonce();
       const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
-      const signature = await signer.signMessage(message);
+
+      if (walletInfo && walletInfo.chainType !== 'evm') {
+        // Non-EVM flow: use the wallet/address passed directly by the caller
+        // (cannot rely on React context state here — it may not have re-rendered yet)
+        address = walletInfo.address;
+        chainType = walletInfo.chainType;
+
+        setWalletAuthStep('signing');
+        signature = await walletInfo.wallet.signMessage(message, chainType);
+      } else {
+        // EVM flow: use ethers provider/signer
+        if (typeof window !== 'undefined' && !('ethereum' in window)) {
+          throw new Error(
+            'No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.',
+          );
+        }
+
+        if (!web3.provider) {
+          await web3.connect();
+        }
+
+        // Use web3.provider if available, otherwise create a BrowserProvider directly
+        // from window.ethereum. This handles the case where multiChain.connect()
+        // already connected the wallet but web3.provider hasn't synced via React state yet.
+        const provider = web3.provider ?? (
+          typeof window !== 'undefined' && window.ethereum
+            ? new ethers.BrowserProvider(window.ethereum)
+            : null
+        );
+        if (!provider) {
+          throw new Error('No wallet provider available');
+        }
+
+        setWalletAuthStep('signing');
+        const signer = await (provider as ethers.BrowserProvider).getSigner();
+        address = await signer.getAddress();
+        signature = await signer.signMessage(message);
+      }
 
       setWalletAuthStep('verifying');
-      // Call the wallet-auth edge function
-      const { data, error: fnError } = await supabase.functions.invoke('wallet-auth', {
-        body: {
+      Logger.info('[wallet-auth] Authenticating', { chainType, address });
+      // Call the wallet-auth edge function directly via fetch to get proper error messages
+      const fnUrl = `${ENV.SUPABASE_URL}/functions/v1/wallet-auth`;
+      const fnResponse = await fetch(fnUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ENV.SUPABASE_ANON_KEY}`,
+        },
+        body: JSON.stringify({
           walletAddress: address,
           signature,
           message,
           nonce,
           accountType,
-        },
+          chainType,
+        }),
       });
 
-      if (fnError || !data?.success) {
-        throw new Error(data?.error ?? fnError?.message ?? 'Wallet authentication failed');
+      const data = await fnResponse.json();
+
+      if (!fnResponse.ok || !data?.success) {
+        console.error('[wallet-auth] Failed response:', JSON.stringify(data));
+        throw new Error(data?.error ?? 'Wallet authentication failed');
       }
 
       setWalletAuthStep('session');
