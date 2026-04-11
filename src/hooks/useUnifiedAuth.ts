@@ -186,33 +186,36 @@ export function useUnifiedAuth(): UnifiedAuthState {
           },
         });
 
-        if (signUpError) {
-          if (
-            signUpError.message?.toLowerCase().includes("already registered") ||
-            signUpError.message?.toLowerCase().includes("already exists")
-          ) {
-            throw new Error(
-              "This email is already registered. Please sign in or use a different email.",
-            );
-          }
-          throw signUpError;
-        }
+  const signInWithWallet = useCallback(async (accountType: 'donor' | 'charity' = 'donor') => {
+    try {
+      setLoading(true);
+      setWalletAuthStep('connecting');
+      setError(null);
 
-        if (data.user) {
-          // Create profile
-          await supabase.from("profiles").insert({
-            user_id: data.user.id,
-            type: "donor",
-            role: "donor",
-          });
-        }
-      } catch (err) {
-        const message =
-          err instanceof Error ? err.message : "Failed to register";
-        setError(message);
-        throw err;
-      } finally {
-        setLoading(false);
+      if (typeof window !== 'undefined' && !('ethereum' in window)) {
+        throw new Error(
+          'No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.',
+        );
+      }
+
+      // Always call connect() to ensure MetaMask is on the user-selected network.
+      // For already-authorised wallets eth_requestAccounts returns immediately
+      // (no popup). connect() also performs the chain switch via
+      // ChainContext.selectedChainId, which handles the case where web3.provider
+      // was already set from initProvider on a different chain (e.g. Base when
+      // the user selected Moonbeam).
+      await web3.connect();
+
+      // Prefer a fresh BrowserProvider wrapping window.ethereum (authoritative
+      // after the chain switch in connect()) over the stale web3.provider
+      // closure snapshot, which may still point to the pre-switch chain.
+      const ethersProvider: ethers.Provider | null =
+        (typeof window !== 'undefined' && window.ethereum
+          ? new ethers.BrowserProvider(window.ethereum)
+          : null) ??
+        web3.provider;
+      if (!ethersProvider) {
+        throw new Error('No wallet provider available');
       }
     },
     [],
@@ -276,25 +279,12 @@ export function useUnifiedAuth(): UnifiedAuthState {
           signature = await signer.signMessage(message);
         }
 
-        setWalletAuthStep("verifying");
-        Logger.info("[wallet-auth] Authenticating", { chainType, address });
-        // Call the wallet-auth edge function directly via fetch to get proper error messages
-        const fnUrl = `${ENV.SUPABASE_URL}/functions/v1/wallet-auth`;
-        const fnResponse = await fetch(fnUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${ENV.SUPABASE_ANON_KEY}`,
-          },
-          body: JSON.stringify({
-            walletAddress: address,
-            signature,
-            message,
-            nonce,
-            accountType,
-            chainType,
-          }),
-        });
+      setWalletAuthStep('signing');
+      const signer = await (ethersProvider as ethers.BrowserProvider).getSigner();
+      const address = await signer.getAddress();
+      const nonce = generateNonce();
+      const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
+      const signature = await signer.signMessage(message);
 
         const data = await fnResponse.json();
 

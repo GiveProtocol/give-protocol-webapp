@@ -290,12 +290,10 @@ async function eraseUser(
     allStepsCompleted.push(...transactionalSteps);
 
     // Step 10: Delete auth.users
-    let authDeleteFailed = false;
     try {
       await deleteAuthUser(target.userId, supabaseUrl, serviceRoleKey);
       allStepsCompleted.push(STEPS.DELETE_AUTH_USER);
     } catch (authErr) {
-      authDeleteFailed = true;
       const authErrMsg = authErr instanceof Error ? authErr.message : String(authErr);
       console.error(`Step 10 auth user deletion failed for ${target.userId}: ${authErrMsg}`);
 

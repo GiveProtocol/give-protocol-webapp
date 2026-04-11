@@ -118,7 +118,7 @@ describe("DonorLogin", () => {
       target: { value: "wrongpassword" },
     });
 
-    await act(async () => {
+    await act(() => {
       fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
     });
 

@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useCallback } from "react";
-import { Link, Navigate, useLocation } from "react-router-dom";
-import { ShieldCheck, Building2, Wallet, Mail, Lock } from "lucide-react";
-import { Logo } from "@/components/Logo";
-import { Button } from "@/components/ui/Button";
-import { FormInput } from "@/components/ui/FormInput";
-import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
-import { ForgotPassword } from "@/components/auth/ForgotPassword";
-import { WalletModal } from "@/components/web3/WalletModal/WalletModal";
-import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
-import type { WalletAuthStep } from "@/hooks/useUnifiedAuth";
-import { useUnifiedWallets } from "@/hooks/useWallet";
-import { useMultiChainContext } from "@/contexts/MultiChainContext";
-import type { UnifiedWalletProvider, ChainType } from "@/types/wallet";
-import { Logger } from "@/utils/logger";
+import React, { useState, useEffect, useCallback } from 'react';
+import { Link, Navigate, useLocation } from 'react-router-dom';
+import { ShieldCheck, Building2, Wallet, Mail, Lock } from 'lucide-react';
+import { Logo } from '@/components/Logo';
+import { Button } from '@/components/ui/Button';
+import { FormInput } from '@/components/ui/FormInput';
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { ForgotPassword } from '@/components/auth/ForgotPassword';
+import { WalletModal } from '@/components/web3/WalletModal/WalletModal';
+import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
+import type { WalletAuthStep } from '@/hooks/useUnifiedAuth';
+import { useUnifiedWallets } from '@/hooks/useWallet';
+import { useMultiChainContext } from '@/contexts/MultiChainContext';
+import type { UnifiedWalletProvider, ChainType } from '@/types/wallet';
+import { Logger } from '@/utils/logger';
 
-type View = "signin" | "forgotPassword";
+type View = 'signin' | 'forgotPassword';
 
 /** Radial gradient atmosphere for dark panels */
 const ATMOSPHERE_STYLE: React.CSSProperties = {
@@ -346,7 +346,39 @@ const AuthRightPanel: React.FC = () => {
 
   const handleWalletButtonClick = useCallback(() => {
     setFormError(null);
+    try {
+      await signInWithEmail(email, password);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Sign in failed';
+      setFormError(msg);
+      Logger.error('Email sign-in failed', { error: msg });
+    }
+  }, [email, password, signInWithEmail]);
+
+  const handleWalletButtonClick = useCallback(() => {
+    setFormError(null);
     setShowWalletModal(true);
+  }, []);
+
+  const handleWalletModalClose = useCallback(() => {
+    setShowWalletModal(false);
+  }, []);
+
+  const handleWalletModalConnect = useCallback(async (wallet: UnifiedWalletProvider, chainType: ChainType) => {
+    try {
+      await multiChain.connect(wallet, chainType);
+      setShowWalletModal(false);
+      await signInWithWallet();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Wallet sign-in failed';
+      setFormError(msg);
+      Logger.error('Wallet sign-in via modal failed', { error: msg });
+      throw err;
+    }
+  }, [multiChain, signInWithWallet]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
   }, []);
 
   const handleWalletModalClose = useCallback(() => {

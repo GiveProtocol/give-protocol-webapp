@@ -76,9 +76,7 @@ function savePersistedState(state: PersistedState): void {
   }
 }
 
-const MultiChainContext = createContext<MultiChainContextType | undefined>(
-  undefined,
-);
+const MultiChainContext = createContext<MultiChainContextType | undefined>();
 
 /**
  * MultiChain Provider Props
@@ -408,7 +406,7 @@ export function useMultiChainSigner() {
   const { wallet, activeAccount, activeChainType } = useMultiChainContext();
 
   const signTransaction = useCallback(
-    async (tx: UnifiedTransactionRequest): Promise<string> => {
+    (tx: UnifiedTransactionRequest): Promise<string> => {
       if (!wallet) {
         throw new Error("No wallet connected");
       }
@@ -418,7 +416,7 @@ export function useMultiChainSigner() {
   );
 
   const signMessage = useCallback(
-    async (message: string | Uint8Array): Promise<string> => {
+    (message: string | Uint8Array): Promise<string> => {
       if (!wallet) {
         throw new Error("No wallet connected");
       }
