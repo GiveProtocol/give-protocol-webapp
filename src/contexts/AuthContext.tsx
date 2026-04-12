@@ -39,7 +39,7 @@ interface AuthContextType extends AuthState {
   sendUsernameReminder: (_email: string) => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined); // skipcq: JS-W1042 — createContext requires a default value argument
 
 const SESSION_REFRESH_INTERVAL = 10 * 60 * 1000; // 10 minutes
 const MAX_RETRY_ATTEMPTS = 3;

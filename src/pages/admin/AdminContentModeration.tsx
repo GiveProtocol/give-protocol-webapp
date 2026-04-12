@@ -300,45 +300,44 @@ function OpportunitiesTable({
   updating: boolean;
 }): React.ReactElement {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Name
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Charity
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Status
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Visibility
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Last Modified
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {opportunities.map((opp) => (
-            <OpportunityRow
-              key={opp.id}
-              item={opp}
-              onAction={onAction}
-              updating={updating}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="w-full text-left">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Name
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Charity
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Status
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Visibility
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Last Modified
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {opportunities.map((opp) => (
+          <OpportunityRow
+            key={opp.id}
+            item={opp}
+            onAction={onAction}
+            updating={updating}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 }
 
+/** Single row in the opportunities moderation table */
 function OpportunityRow({
   item,
   onAction,
@@ -397,45 +396,44 @@ function CausesTable({
   updating: boolean;
 }): React.ReactElement {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Name
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Charity
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Status
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Visibility
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Last Modified
-            </th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {causes.map((cause) => (
-            <CauseRow
-              key={cause.id}
-              item={cause}
-              onAction={onAction}
-              updating={updating}
-            />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="w-full text-left">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Name
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Charity
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Status
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Visibility
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Last Modified
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {causes.map((cause) => (
+          <CauseRow
+            key={cause.id}
+            item={cause}
+            onAction={onAction}
+            updating={updating}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 }
 
+/** Single row in the causes moderation table */
 function CauseRow({
   item,
   onAction,
@@ -475,6 +473,70 @@ function CauseRow({
         />
       </td>
     </tr>
+  );
+}
+
+// ─── Tab content ─────────────────────────────────────────────────────────────
+
+/** Renders the active tab's content: loading spinner, empty state, or data table */
+function TabContent({
+  activeTab,
+  loading,
+  updating,
+  oppResult,
+  causeResult,
+  onOpportunityAction,
+  onCauseAction,
+}: {
+  activeTab: "opportunities" | "causes";
+  loading: boolean;
+  updating: boolean;
+  oppResult: AdminOpportunityListResult;
+  causeResult: AdminCauseListResult;
+  onOpportunityAction: (
+    _item: AdminOpportunityListItem,
+    _action: ModerationAction,
+  ) => void;
+  onCauseAction: (_item: AdminCauseListItem, _action: ModerationAction) => void;
+}): React.ReactElement | null {
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <LoadingSpinner size="md" />
+      </div>
+    );
+  }
+
+  if (activeTab === "opportunities") {
+    if (oppResult.opportunities.length === 0) {
+      return (
+        <p className="text-center py-8 text-gray-500">
+          No opportunities found matching your filters.
+        </p>
+      );
+    }
+    return (
+      <OpportunitiesTable
+        opportunities={oppResult.opportunities}
+        onAction={onOpportunityAction}
+        updating={updating}
+      />
+    );
+  }
+
+  if (causeResult.causes.length === 0) {
+    return (
+      <p className="text-center py-8 text-gray-500">
+        No causes found matching your filters.
+      </p>
+    );
+  }
+  return (
+    <CausesTable
+      causes={causeResult.causes}
+      onAction={onCauseAction}
+      updating={updating}
+    />
   );
 }
 
@@ -737,54 +799,22 @@ const AdminContentModeration: React.FC = () => {
         </button>
       </div>
 
-      <Card className="p-6">
+      <Card className="p-6 overflow-x-auto">
         <FilterBar
           filters={filters}
           onStatusChange={handleStatusChange}
           onSearchChange={handleSearchChange}
         />
 
-        {loading && (
-          <div className="flex justify-center py-8">
-            <LoadingSpinner size="md" />
-          </div>
-        )}
-
-        {!loading &&
-          activeTab === "opportunities" &&
-          oppResult.opportunities.length === 0 && (
-            <p className="text-center py-8 text-gray-500">
-              No opportunities found matching your filters.
-            </p>
-          )}
-
-        {!loading &&
-          activeTab === "causes" &&
-          causeResult.causes.length === 0 && (
-            <p className="text-center py-8 text-gray-500">
-              No causes found matching your filters.
-            </p>
-          )}
-
-        {!loading &&
-          activeTab === "opportunities" &&
-          oppResult.opportunities.length > 0 && (
-            <OpportunitiesTable
-              opportunities={oppResult.opportunities}
-              onAction={handleOpportunityAction}
-              updating={updating}
-            />
-          )}
-
-        {!loading &&
-          activeTab === "causes" &&
-          causeResult.causes.length > 0 && (
-            <CausesTable
-              causes={causeResult.causes}
-              onAction={handleCauseAction}
-              updating={updating}
-            />
-          )}
+        <TabContent
+          activeTab={activeTab}
+          loading={loading}
+          updating={updating}
+          oppResult={oppResult}
+          causeResult={causeResult}
+          onOpportunityAction={handleOpportunityAction}
+          onCauseAction={handleCauseAction}
+        />
 
         <Pagination
           page={currentPage}

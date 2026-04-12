@@ -19,8 +19,8 @@ describe("ForgotCredentials", () => {
     mockResetPassword.mockClear();
     mockSendUsernameReminder.mockClear();
     mockOnBack.mockClear();
-    mockResetPassword.mockResolvedValue(undefined);
-    mockSendUsernameReminder.mockResolvedValue(undefined);
+    mockResetPassword.mockResolvedValue(undefined); // skipcq: JS-W1042 — mockResolvedValue requires an argument
+    mockSendUsernameReminder.mockResolvedValue(undefined); // skipcq: JS-W1042 — mockResolvedValue requires an argument
     mockUseAuth.mockReturnValue({
       resetPassword: mockResetPassword,
       sendUsernameReminder: mockSendUsernameReminder,

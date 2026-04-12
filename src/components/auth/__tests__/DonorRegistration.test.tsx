@@ -106,7 +106,7 @@ describe("DonorRegistration", () => {
   });
 
   it("calls register with correct args on valid submission", async () => {
-    mockRegister.mockResolvedValueOnce(undefined);
+    mockRegister.mockResolvedValueOnce(undefined); // skipcq: JS-W1042 — mockResolvedValueOnce requires an argument
     render(<DonorRegistration />);
     fireEvent.change(screen.getByLabelText(/email/i), {
       target: { value: "donor@example.com" },

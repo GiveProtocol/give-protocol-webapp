@@ -118,7 +118,7 @@ export async function encryptVolunteerApplicationPII(params: {
     encryptPII(params.fullName, 'full_name'),
     encryptPII(params.email, 'email'),
     hmacPII(params.email, 'email'),
-    encryptPhone ? encryptPII(params.phone as string, 'phone') : Promise.resolve(undefined),
+    encryptPhone ? encryptPII(params.phone as string, 'phone') : Promise.resolve(undefined), // skipcq: JS-W1042 — required for Promise<string | undefined> tuple type
   ];
 
   const [full_name_encrypted, email_encrypted, email_hmac, phone_encrypted] =

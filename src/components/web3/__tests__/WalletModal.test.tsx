@@ -8,7 +8,7 @@ import type { UnifiedWalletProvider } from "@/types/wallet";
 // Portal renders into document.body in jsdom
 
 const mockOnClose = jest.fn();
-const mockOnConnect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+const mockOnConnect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined); // skipcq: JS-W1042 — mockResolvedValue requires an argument
 
 const mockWallets: UnifiedWalletProvider[] = [
   {
