@@ -275,6 +275,14 @@ const AdminDashboard: React.FC = () => {
     navigate("/admin/donations");
   }, [navigate]);
 
+  const handleNavigateReports = useCallback(() => {
+    navigate("/admin/reports");
+  }, [navigate]);
+
+  const handleNavigateSettings = useCallback(() => {
+    navigate("/admin/settings");
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -403,6 +411,7 @@ const AdminDashboard: React.FC = () => {
           <QuickActionButton
             title="View Reports"
             description="Generate detailed analytics"
+            onClick={handleNavigateReports}
           />
           <QuickActionButton
             title="Manage Charities"
@@ -412,6 +421,7 @@ const AdminDashboard: React.FC = () => {
           <QuickActionButton
             title="System Settings"
             description="Configure platform parameters"
+            onClick={handleNavigateSettings}
           />
           <QuickActionButton
             title="Manage Impact Metrics"
