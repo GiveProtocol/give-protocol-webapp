@@ -4,6 +4,7 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { useAdminPlatformConfig } from "@/hooks/useAdminPlatformConfig";
+import { useAdminAuditLog } from "@/hooks/useAdminAuditLog";
 import {
   configKeyLabel,
   configValueInputType,
@@ -13,8 +14,64 @@ import type {
   PlatformConfigKey,
   PlatformConfigValue,
 } from "@/types/adminPlatformConfig";
+import type {
+  AdminAuditActionType,
+  AdminAuditEntityType,
+  AdminAuditLogEntry,
+  AdminAuditLogFilters,
+} from "@/types/adminAudit";
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Tab Types ────────────────────────────────────────────────────────────────
+
+type SettingsTab = "platform-config" | "audit-log" | "token-network";
+
+// ─── Category Config ──────────────────────────────────────────────────────────
+
+/** Config keys shown in the Token & Network tab (not Platform Config tab) */
+const TOKEN_NETWORK_KEYS: ReadonlySet<string> = new Set([
+  "supported_tokens",
+  "supported_networks",
+]);
+
+/** Category label for each platform config key */
+const CONFIG_CATEGORY: Record<string, string> = {
+  min_donation_usd: "Donations",
+  validation_window_days: "Donations",
+  max_causes_per_charity: "Charities",
+  max_opportunities_per_charity: "Charities",
+};
+
+/** Display order for config categories */
+const CATEGORY_ORDER = ["Donations", "Charities", "Volunteers"];
+
+// ─── Audit Log Constants ──────────────────────────────────────────────────────
+
+const AUDIT_ACTION_TYPES: AdminAuditActionType[] = [
+  "charity_status_change",
+  "user_status_change",
+  "donation_flag",
+  "donation_flag_resolve",
+  "validation_override",
+  "config_change",
+  "verification_approve",
+  "verification_reject",
+  "charity_suspend",
+  "charity_reinstate",
+  "user_suspend",
+  "user_reinstate",
+  "user_ban",
+];
+
+const AUDIT_ENTITY_TYPES: AdminAuditEntityType[] = [
+  "charity",
+  "user",
+  "donation",
+  "validation_request",
+  "platform_config",
+  "charity_verification",
+];
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Formats a UTC timestamp string as a localised date-time */
 function formatDateTime(iso: string | null): string {
@@ -24,6 +81,24 @@ function formatDateTime(iso: string | null): string {
     timeStyle: "short",
   });
 }
+
+/** Renders a JSON value as a short preview string */
+function formatJsonPreview(val: unknown): string {
+  if (val === null || val === undefined) return "—";
+  const json = JSON.stringify(val);
+  return json.length > 80 ? `${json.slice(0, 80)}…` : json;
+}
+
+/** CSS classes for a tab button */
+function tabClass(active: boolean): string {
+  return `px-6 py-3 text-sm font-medium border-b-2 transition-colors ${
+    active
+      ? "border-emerald-500 text-emerald-600"
+      : "border-transparent text-gray-500 hover:text-gray-700"
+  }`;
+}
+
+// ─── Shared Config Sub-components ─────────────────────────────────────────────
 
 /** Renders a config value for display (truncated JSON for complex types) */
 function ValuePreview({
@@ -195,26 +270,259 @@ function EditConfigModal({
   );
 }
 
-/** Audit history table */
-function AuditTable({
-  auditLog,
-  auditLoading,
+// ─── Tab Bar ──────────────────────────────────────────────────────────────────
+
+function TabBar({
+  activeTab,
+  onTabChange,
 }: {
-  auditLog: ReturnType<typeof useAdminPlatformConfig>["auditLog"];
-  auditLoading: boolean;
+  activeTab: SettingsTab;
+  onTabChange: (_tab: SettingsTab) => void;
 }): React.ReactElement {
-  if (auditLoading) {
+  const handleTabClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const tab = e.currentTarget.dataset.tab as SettingsTab;
+      onTabChange(tab);
+    },
+    [onTabChange],
+  );
+
+  return (
+    <div className="border-b border-gray-200 mb-6">
+      <nav className="flex">
+        <button
+          type="button"
+          data-tab="platform-config"
+          onClick={handleTabClick}
+          className={tabClass(activeTab === "platform-config")}
+        >
+          Platform Config
+        </button>
+        <button
+          type="button"
+          data-tab="audit-log"
+          onClick={handleTabClick}
+          className={tabClass(activeTab === "audit-log")}
+        >
+          Audit Log
+        </button>
+        <button
+          type="button"
+          data-tab="token-network"
+          onClick={handleTabClick}
+          className={tabClass(activeTab === "token-network")}
+        >
+          Token &amp; Network Config
+        </button>
+      </nav>
+    </div>
+  );
+}
+
+// ─── Platform Config Tab ──────────────────────────────────────────────────────
+
+function CategorySection({
+  title,
+  entries,
+  onEdit,
+}: {
+  title: string;
+  entries: PlatformConfigEntry[];
+  onEdit: (_entry: PlatformConfigEntry) => void;
+}): React.ReactElement | null {
+  if (entries.length === 0) return null;
+  return (
+    <div className="mb-6">
+      <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+        {title}
+      </h2>
+      <div className="space-y-3">
+        {entries.map((entry) => (
+          <ConfigCard key={entry.key} entry={entry} onEdit={onEdit} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PlatformConfigTab({
+  configs,
+  loading,
+  onEdit,
+}: {
+  configs: PlatformConfigEntry[];
+  loading: boolean;
+  onEdit: (_entry: PlatformConfigEntry) => void;
+}): React.ReactElement {
+  if (loading) {
     return (
-      <div className="flex justify-center py-6">
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  const tabEntries = configs.filter((e) => !TOKEN_NETWORK_KEYS.has(e.key));
+
+  if (tabEntries.length === 0) {
+    return (
+      <Card className="p-8 text-center">
+        <p className="text-gray-500 text-sm">
+          No platform configuration found. Ensure the platform_config table has
+          been seeded.
+        </p>
+      </Card>
+    );
+  }
+
+  const categorised: Record<string, PlatformConfigEntry[]> = {};
+  const uncategorised: PlatformConfigEntry[] = [];
+  for (const entry of tabEntries) {
+    const cat = CONFIG_CATEGORY[entry.key];
+    if (cat !== undefined) {
+      if (categorised[cat] === undefined) {
+        categorised[cat] = [];
+      }
+      categorised[cat].push(entry);
+    } else {
+      uncategorised.push(entry);
+    }
+  }
+
+  return (
+    <div>
+      {CATEGORY_ORDER.map((cat) => (
+        <CategorySection
+          key={cat}
+          title={cat}
+          entries={categorised[cat] ?? []}
+          onEdit={onEdit}
+        />
+      ))}
+      {uncategorised.length > 0 && (
+        <CategorySection title="Other" entries={uncategorised} onEdit={onEdit} />
+      )}
+    </div>
+  );
+}
+
+// ─── Audit Log Tab ────────────────────────────────────────────────────────────
+
+interface AuditFilterState {
+  actionType: AdminAuditActionType | "";
+  entityType: AdminAuditEntityType | "";
+  dateFrom: string;
+  dateTo: string;
+}
+
+const INITIAL_AUDIT_FILTERS: AuditFilterState = {
+  actionType: "",
+  entityType: "",
+  dateFrom: "",
+  dateTo: "",
+};
+
+function AuditFilterBar({
+  filters,
+  onActionTypeChange,
+  onEntityTypeChange,
+  onDateFromChange,
+  onDateToChange,
+  onApply,
+  loading,
+}: {
+  filters: AuditFilterState;
+  onActionTypeChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onEntityTypeChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onDateFromChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onDateToChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onApply: () => void;
+  loading: boolean;
+}): React.ReactElement {
+  return (
+    <div className="flex flex-wrap gap-3 items-end p-4 bg-gray-50 rounded-lg mb-4">
+      <div className="flex-1 min-w-[180px]">
+        <label className="block text-xs font-medium text-gray-600 mb-1">
+          Action Type
+        </label>
+        <select
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={filters.actionType}
+          onChange={onActionTypeChange}
+        >
+          <option value="">All action types</option>
+          {AUDIT_ACTION_TYPES.map((type) => (
+            <option key={type} value={type}>
+              {type.replaceAll("_", " ")}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="flex-1 min-w-[180px]">
+        <label className="block text-xs font-medium text-gray-600 mb-1">
+          Entity Type
+        </label>
+        <select
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={filters.entityType}
+          onChange={onEntityTypeChange}
+        >
+          <option value="">All entity types</option>
+          {AUDIT_ENTITY_TYPES.map((type) => (
+            <option key={type} value={type}>
+              {type.replaceAll("_", " ")}
+            </option>
+          ))}
+        </select>
+      </div>
+      <div className="min-w-[140px]">
+        <label className="block text-xs font-medium text-gray-600 mb-1">
+          Date From
+        </label>
+        <input
+          type="date"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={filters.dateFrom}
+          onChange={onDateFromChange}
+        />
+      </div>
+      <div className="min-w-[140px]">
+        <label className="block text-xs font-medium text-gray-600 mb-1">
+          Date To
+        </label>
+        <input
+          type="date"
+          className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={filters.dateTo}
+          onChange={onDateToChange}
+        />
+      </div>
+      <Button variant="primary" onClick={onApply} disabled={loading}>
+        {loading ? "Loading…" : "Apply Filters"}
+      </Button>
+    </div>
+  );
+}
+
+function AuditLogTable({
+  entries,
+  loading,
+}: {
+  entries: AdminAuditLogEntry[];
+  loading: boolean;
+}): React.ReactElement {
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
         <LoadingSpinner size="md" />
       </div>
     );
   }
 
-  if (auditLog.length === 0) {
+  if (entries.length === 0) {
     return (
-      <p className="text-sm text-gray-500 py-4">
-        No configuration changes recorded yet.
+      <p className="text-sm text-gray-500 py-6 text-center">
+        No audit log entries found.
       </p>
     );
   }
@@ -224,28 +532,38 @@ function AuditTable({
       <table className="min-w-full text-sm">
         <thead className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
           <tr>
-            <th className="px-4 py-3">Key</th>
-            <th className="px-4 py-3">Old Value</th>
-            <th className="px-4 py-3">New Value</th>
-            <th className="px-4 py-3">Changed By</th>
-            <th className="px-4 py-3">Date</th>
+            <th className="px-4 py-3 whitespace-nowrap">Date</th>
+            <th className="px-4 py-3">Admin</th>
+            <th className="px-4 py-3 whitespace-nowrap">Action</th>
+            <th className="px-4 py-3 whitespace-nowrap">Entity Type</th>
+            <th className="px-4 py-3">Entity ID</th>
+            <th className="px-4 py-3">Old Values</th>
+            <th className="px-4 py-3">New Values</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
-          {auditLog.map((row) => (
+          {entries.map((row) => (
             <tr key={row.id} className="hover:bg-gray-50">
-              <td className="px-4 py-3 font-mono text-xs">{row.configKey}</td>
+              <td className="px-4 py-3 whitespace-nowrap text-gray-500">
+                {formatDateTime(row.createdAt)}
+              </td>
+              <td className="px-4 py-3 font-mono text-xs text-gray-600 max-w-[120px] truncate">
+                {row.adminUserId}
+              </td>
+              <td className="px-4 py-3 text-gray-700 whitespace-nowrap">
+                {row.actionType.replaceAll("_", " ")}
+              </td>
+              <td className="px-4 py-3 text-gray-600 whitespace-nowrap">
+                {row.entityType.replaceAll("_", " ")}
+              </td>
+              <td className="px-4 py-3 font-mono text-xs text-gray-500 max-w-[120px] truncate">
+                {row.entityId}
+              </td>
               <td className="px-4 py-3 font-mono text-xs text-gray-500 max-w-[160px] truncate">
-                {row.oldValue !== null ? JSON.stringify(row.oldValue) : "—"}
+                {formatJsonPreview(row.oldValues)}
               </td>
               <td className="px-4 py-3 font-mono text-xs max-w-[160px] truncate">
-                {row.newValue !== null ? JSON.stringify(row.newValue) : "—"}
-              </td>
-              <td className="px-4 py-3 text-gray-600">
-                {row.adminUserId ?? "—"}
-              </td>
-              <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
-                {formatDateTime(row.createdAt)}
+                {formatJsonPreview(row.newValues)}
               </td>
             </tr>
           ))}
@@ -255,36 +573,207 @@ function AuditTable({
   );
 }
 
+function AuditLogTab({
+  entries,
+  loading,
+  totalCount,
+  totalPages,
+  currentPage,
+  onFetch,
+}: {
+  entries: AdminAuditLogEntry[];
+  loading: boolean;
+  totalCount: number;
+  totalPages: number;
+  currentPage: number;
+  onFetch: (_filters: AdminAuditLogFilters) => Promise<unknown>;
+}): React.ReactElement {
+  const [filters, setFilters] = useState<AuditFilterState>(INITIAL_AUDIT_FILTERS);
+  const [appliedFilters, setAppliedFilters] = useState<AdminAuditLogFilters>({});
+
+  useEffect(() => {
+    void onFetch({});
+  }, [onFetch]);
+
+  const handleActionTypeChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setFilters((prev) => ({
+        ...prev,
+        actionType: e.target.value as AdminAuditActionType | "",
+      }));
+    },
+    [],
+  );
+
+  const handleEntityTypeChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setFilters((prev) => ({
+        ...prev,
+        entityType: e.target.value as AdminAuditEntityType | "",
+      }));
+    },
+    [],
+  );
+
+  const handleDateFromChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFilters((prev) => ({ ...prev, dateFrom: e.target.value }));
+    },
+    [],
+  );
+
+  const handleDateToChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setFilters((prev) => ({ ...prev, dateTo: e.target.value }));
+    },
+    [],
+  );
+
+  const handleApply = useCallback(() => {
+    const newFilters: AdminAuditLogFilters = {
+      actionType: filters.actionType !== "" ? filters.actionType : undefined,
+      entityType: filters.entityType !== "" ? filters.entityType : undefined,
+      dateFrom: filters.dateFrom !== "" ? filters.dateFrom : undefined,
+      dateTo: filters.dateTo !== "" ? filters.dateTo : undefined,
+      page: 1,
+    };
+    setAppliedFilters(newFilters);
+    void onFetch(newFilters);
+  }, [filters, onFetch]);
+
+  const handlePrevPage = useCallback(() => {
+    void onFetch({ ...appliedFilters, page: currentPage - 1 });
+  }, [appliedFilters, currentPage, onFetch]);
+
+  const handleNextPage = useCallback(() => {
+    void onFetch({ ...appliedFilters, page: currentPage + 1 });
+  }, [appliedFilters, currentPage, onFetch]);
+
+  return (
+    <div>
+      <AuditFilterBar
+        filters={filters}
+        onActionTypeChange={handleActionTypeChange}
+        onEntityTypeChange={handleEntityTypeChange}
+        onDateFromChange={handleDateFromChange}
+        onDateToChange={handleDateToChange}
+        onApply={handleApply}
+        loading={loading}
+      />
+      <Card className="overflow-hidden">
+        <AuditLogTable entries={entries} loading={loading} />
+      </Card>
+      {totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 px-1">
+          <span className="text-sm text-gray-500">
+            {totalCount} entries · Page {currentPage} of {totalPages}
+          </span>
+          <div className="flex gap-2">
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handlePrevPage}
+              disabled={currentPage <= 1 || loading}
+            >
+              Previous
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleNextPage}
+              disabled={currentPage >= totalPages || loading}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Token & Network Config Tab ───────────────────────────────────────────────
+
+function TokenNetworkTab({
+  configs,
+  loading,
+  onEdit,
+}: {
+  configs: PlatformConfigEntry[];
+  loading: boolean;
+  onEdit: (_entry: PlatformConfigEntry) => void;
+}): React.ReactElement {
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
+
+  const tokenNetworkEntries = configs.filter((e) =>
+    TOKEN_NETWORK_KEYS.has(e.key),
+  );
+
+  if (tokenNetworkEntries.length === 0) {
+    return (
+      <Card className="p-8 text-center">
+        <p className="text-gray-500 text-sm">
+          No token or network configuration found.
+        </p>
+      </Card>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {tokenNetworkEntries.map((entry) => (
+        <ConfigCard key={entry.key} entry={entry} onEdit={onEdit} />
+      ))}
+    </div>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 /**
- * Admin platform configuration page.
- * Allows administrators to view and edit platform-wide settings stored in
- * the platform_config table, and to review the change audit history.
+ * Admin system settings page.
+ * Three-tab layout: Platform Config (categorised settings), Audit Log
+ * (full admin_audit_log with filters), and Token & Network Config.
  *
  * @function AdminPlatformConfig
- * @returns {JSX.Element} The admin platform settings page
+ * @returns {JSX.Element} The admin system settings page
  */
 export default function AdminPlatformConfig(): React.ReactElement {
   const {
     configs,
     loading,
     saving,
-    auditLog,
-    auditLoading,
     fetchConfig,
     saveConfig,
-    fetchAuditLog,
   } = useAdminPlatformConfig();
 
+  const {
+    entries: auditEntries,
+    loading: auditLoading,
+    totalCount: auditTotalCount,
+    totalPages: auditTotalPages,
+    page: auditPage,
+    fetchAuditLog,
+  } = useAdminAuditLog();
+
+  const [activeTab, setActiveTab] = useState<SettingsTab>("platform-config");
   const [editingEntry, setEditingEntry] = useState<PlatformConfigEntry | null>(
     null,
   );
-  const [showAudit, setShowAudit] = useState(false);
 
   useEffect(() => {
     void fetchConfig();
   }, [fetchConfig]);
+
+  const handleTabChange = useCallback((tab: SettingsTab) => {
+    setActiveTab(tab);
+  }, []);
 
   const handleEdit = useCallback((entry: PlatformConfigEntry) => {
     setEditingEntry(entry);
@@ -304,64 +793,44 @@ export default function AdminPlatformConfig(): React.ReactElement {
     [saveConfig],
   );
 
-  const handleToggleAudit = useCallback(async () => {
-    if (!showAudit) {
-      await fetchAuditLog();
-    }
-    setShowAudit((prev) => !prev);
-  }, [showAudit, fetchAuditLog]);
-
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            Platform Settings
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
-            Manage platform-wide configuration. Changes are logged in the audit
-            history.
-          </p>
-        </div>
-        <Button variant="secondary" onClick={handleToggleAudit}>
-          {showAudit ? "Hide Audit History" : "View Audit History"}
-        </Button>
+    <div className="max-w-5xl mx-auto px-4 py-8">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">System Settings</h1>
+        <p className="text-sm text-gray-500 mt-1">
+          Platform configuration, audit log, and token/network settings.
+        </p>
       </div>
 
-      {/* Audit history panel */}
-      {showAudit && (
-        <Card className="mb-6 overflow-hidden">
-          <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-700">
-              Configuration Change History
-            </h2>
-          </div>
-          <AuditTable auditLog={auditLog} auditLoading={auditLoading} />
-        </Card>
+      <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
+
+      {activeTab === "platform-config" && (
+        <PlatformConfigTab
+          configs={configs}
+          loading={loading}
+          onEdit={handleEdit}
+        />
       )}
 
-      {/* Config entries */}
-      {loading ? (
-        <div className="flex justify-center py-12">
-          <LoadingSpinner size="lg" />
-        </div>
-      ) : configs.length === 0 ? (
-        <Card className="p-8 text-center">
-          <p className="text-gray-500 text-sm">
-            No platform configuration found. Ensure the platform_config table
-            has been seeded.
-          </p>
-        </Card>
-      ) : (
-        <div className="space-y-4">
-          {configs.map((entry) => (
-            <ConfigCard key={entry.key} entry={entry} onEdit={handleEdit} />
-          ))}
-        </div>
+      {activeTab === "audit-log" && (
+        <AuditLogTab
+          entries={auditEntries}
+          loading={auditLoading}
+          totalCount={auditTotalCount}
+          totalPages={auditTotalPages}
+          currentPage={auditPage}
+          onFetch={fetchAuditLog}
+        />
       )}
 
-      {/* Edit modal */}
+      {activeTab === "token-network" && (
+        <TokenNetworkTab
+          configs={configs}
+          loading={loading}
+          onEdit={handleEdit}
+        />
+      )}
+
       {editingEntry !== null && (
         <EditConfigModal
           entry={editingEntry}
