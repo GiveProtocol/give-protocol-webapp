@@ -22,19 +22,25 @@ import type {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Visibility badge pill for a content item's moderation status */
-function VisibilityBadge({ status }: { status: ModerationStatus }): React.ReactElement {
+function VisibilityBadge({
+  status,
+}: {
+  status: ModerationStatus;
+}): React.ReactElement {
   const styles: Record<ModerationStatus, string> = {
     visible: "bg-green-100 text-green-800",
-    hidden:  "bg-red-100 text-red-800",
+    hidden: "bg-red-100 text-red-800",
     flagged: "bg-yellow-100 text-yellow-800",
   };
   const labels: Record<ModerationStatus, string> = {
     visible: "Visible",
-    hidden:  "Hidden",
+    hidden: "Hidden",
     flagged: "Flagged",
   };
   return (
-    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status]}`}>
+    <span
+      className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status]}`}
+    >
       {labels[status]}
     </span>
   );
@@ -50,24 +56,52 @@ function ContentActions({
   onAction: (_action: ModerationAction) => void;
   disabled: boolean;
 }): React.ReactElement {
-  const handleHide    = useCallback(() => onAction("hide"),   [onAction]);
-  const handleUnhide  = useCallback(() => onAction("unhide"), [onAction]);
-  const handleFlag    = useCallback(() => onAction("flag"),   [onAction]);
-  const handleUnflag  = useCallback(() => onAction("unflag"), [onAction]);
+  const handleHide = useCallback(() => onAction("hide"), [onAction]);
+  const handleUnhide = useCallback(() => onAction("unhide"), [onAction]);
+  const handleFlag = useCallback(() => onAction("flag"), [onAction]);
+  const handleUnflag = useCallback(() => onAction("unflag"), [onAction]);
 
   return (
     <div className="flex gap-2 flex-wrap">
       {moderationStatus !== "hidden" && (
-        <Button size="sm" variant="danger" onClick={handleHide} disabled={disabled}>Hide</Button>
+        <Button
+          size="sm"
+          variant="danger"
+          onClick={handleHide}
+          disabled={disabled}
+        >
+          Hide
+        </Button>
       )}
       {moderationStatus === "hidden" && (
-        <Button size="sm" variant="primary" onClick={handleUnhide} disabled={disabled}>Unhide</Button>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={handleUnhide}
+          disabled={disabled}
+        >
+          Unhide
+        </Button>
       )}
       {moderationStatus !== "flagged" && (
-        <Button size="sm" variant="secondary" onClick={handleFlag} disabled={disabled}>Flag for Review</Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={handleFlag}
+          disabled={disabled}
+        >
+          Flag for Review
+        </Button>
       )}
       {moderationStatus === "flagged" && (
-        <Button size="sm" variant="secondary" onClick={handleUnflag} disabled={disabled}>Unflag</Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={handleUnflag}
+          disabled={disabled}
+        >
+          Unflag
+        </Button>
       )}
     </div>
   );
@@ -123,9 +157,25 @@ function Pagination({
   if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-6">
-      <Button size="sm" variant="secondary" onClick={onPrev} disabled={page <= 1}>Previous</Button>
-      <span className="text-sm text-gray-600">Page {page} of {totalPages}</span>
-      <Button size="sm" variant="secondary" onClick={onNext} disabled={page >= totalPages}>Next</Button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={onPrev}
+        disabled={page <= 1}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {totalPages}
+      </span>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={onNext}
+        disabled={page >= totalPages}
+      >
+        Next
+      </Button>
     </div>
   );
 }
@@ -153,36 +203,72 @@ function ActionModal({
   if (!action) return null;
 
   const ACTION_LABELS: Record<ModerationAction, string> = {
-    hide:   "Hide Content",
+    hide: "Hide Content",
     unhide: "Unhide Content",
-    flag:   "Flag for Review",
+    flag: "Flag for Review",
     unflag: "Unflag Content",
   };
 
   const REASON_REQUIRED = action === "hide" || action === "flag";
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={ACTION_LABELS[action]} size="md">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={ACTION_LABELS[action]}
+      size="md"
+    >
       <p className="text-sm text-gray-600 mb-4">
-        {action === "hide"   && <>Are you sure you want to <strong>hide</strong> <em>{title}</em>? Provide a reason below.</>}
-        {action === "unhide" && <>Are you sure you want to <strong>unhide</strong> <em>{title}</em>?</>}
-        {action === "flag"   && <>Are you sure you want to <strong>flag</strong> <em>{title}</em> for review? Provide a reason below.</>}
-        {action === "unflag" && <>Are you sure you want to <strong>unflag</strong> <em>{title}</em>?</>}
+        {action === "hide" && (
+          <>
+            Are you sure you want to <strong>hide</strong> <em>{title}</em>?
+            Provide a reason below.
+          </>
+        )}
+        {action === "unhide" && (
+          <>
+            Are you sure you want to <strong>unhide</strong> <em>{title}</em>?
+          </>
+        )}
+        {action === "flag" && (
+          <>
+            Are you sure you want to <strong>flag</strong> <em>{title}</em> for
+            review? Provide a reason below.
+          </>
+        )}
+        {action === "unflag" && (
+          <>
+            Are you sure you want to <strong>unflag</strong> <em>{title}</em>?
+          </>
+        )}
       </p>
       <textarea
         className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y min-h-[80px]"
-        placeholder={REASON_REQUIRED ? "Reason (required)" : "Reason (optional)"}
+        placeholder={
+          REASON_REQUIRED ? "Reason (required)" : "Reason (optional)"
+        }
         value={reason}
         onChange={onReasonChange}
         aria-label="Reason"
       />
       <div className="flex gap-3 justify-end">
-        <Button variant="secondary" size="sm" onClick={onClose} disabled={confirming}>Cancel</Button>
         <Button
-          variant={action === "hide" || action === "flag" ? "danger" : "primary"}
+          variant="secondary"
+          size="sm"
+          onClick={onClose}
+          disabled={confirming}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant={
+            action === "hide" || action === "flag" ? "danger" : "primary"
+          }
           size="sm"
           onClick={onConfirm}
-          disabled={confirming || (REASON_REQUIRED && reason.trim().length === 0)}
+          disabled={
+            confirming || (REASON_REQUIRED && reason.trim().length === 0)
+          }
         >
           {confirming ? "Saving…" : ACTION_LABELS[action]}
         </Button>
@@ -207,7 +293,10 @@ function OpportunitiesTable({
   updating,
 }: {
   opportunities: AdminOpportunityListItem[];
-  onAction: (_item: AdminOpportunityListItem, _action: ModerationAction) => void;
+  onAction: (
+    _item: AdminOpportunityListItem,
+    _action: ModerationAction,
+  ) => void;
   updating: boolean;
 }): React.ReactElement {
   return (
@@ -215,17 +304,34 @@ function OpportunitiesTable({
       <table className="w-full text-left">
         <thead>
           <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Charity</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Visibility</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Modified</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Name
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Charity
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Status
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Visibility
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Last Modified
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {opportunities.map((opp) => (
-            <OpportunityRow key={opp.id} item={opp} onAction={onAction} updating={updating} />
+            <OpportunityRow
+              key={opp.id}
+              item={opp}
+              onAction={onAction}
+              updating={updating}
+            />
           ))}
         </tbody>
       </table>
@@ -239,7 +345,10 @@ function OpportunityRow({
   updating,
 }: {
   item: AdminOpportunityListItem;
-  onAction: (_item: AdminOpportunityListItem, _action: ModerationAction) => void;
+  onAction: (
+    _item: AdminOpportunityListItem,
+    _action: ModerationAction,
+  ) => void;
   updating: boolean;
 }): React.ReactElement {
   const formattedDate = new Date(item.updatedAt).toLocaleDateString("en-US", {
@@ -248,17 +357,28 @@ function OpportunityRow({
     day: "numeric",
   });
 
-  const handleAction = useCallback((action: ModerationAction) => onAction(item, action), [item, onAction]);
+  const handleAction = useCallback(
+    (action: ModerationAction) => onAction(item, action),
+    [item, onAction],
+  );
 
   return (
     <tr className="border-t border-gray-100 hover:bg-gray-50">
-      <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.title}</td>
+      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+        {item.title}
+      </td>
       <td className="px-4 py-3 text-sm text-gray-500">{item.charityName}</td>
       <td className="px-4 py-3 text-sm text-gray-500">{item.status}</td>
-      <td className="px-4 py-3"><VisibilityBadge status={item.moderationStatus} /></td>
+      <td className="px-4 py-3">
+        <VisibilityBadge status={item.moderationStatus} />
+      </td>
       <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
       <td className="px-4 py-3">
-        <ContentActions moderationStatus={item.moderationStatus} onAction={handleAction} disabled={updating} />
+        <ContentActions
+          moderationStatus={item.moderationStatus}
+          onAction={handleAction}
+          disabled={updating}
+        />
       </td>
     </tr>
   );
@@ -281,17 +401,34 @@ function CausesTable({
       <table className="w-full text-left">
         <thead>
           <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Charity</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Visibility</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Last Modified</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Name
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Charity
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Status
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Visibility
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Last Modified
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {causes.map((cause) => (
-            <CauseRow key={cause.id} item={cause} onAction={onAction} updating={updating} />
+            <CauseRow
+              key={cause.id}
+              item={cause}
+              onAction={onAction}
+              updating={updating}
+            />
           ))}
         </tbody>
       </table>
@@ -314,17 +451,28 @@ function CauseRow({
     day: "numeric",
   });
 
-  const handleAction = useCallback((action: ModerationAction) => onAction(item, action), [item, onAction]);
+  const handleAction = useCallback(
+    (action: ModerationAction) => onAction(item, action),
+    [item, onAction],
+  );
 
   return (
     <tr className="border-t border-gray-100 hover:bg-gray-50">
-      <td className="px-4 py-3 text-sm font-medium text-gray-900">{item.title}</td>
+      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+        {item.title}
+      </td>
       <td className="px-4 py-3 text-sm text-gray-500">{item.charityName}</td>
       <td className="px-4 py-3 text-sm text-gray-500">{item.status}</td>
-      <td className="px-4 py-3"><VisibilityBadge status={item.moderationStatus} /></td>
+      <td className="px-4 py-3">
+        <VisibilityBadge status={item.moderationStatus} />
+      </td>
       <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
       <td className="px-4 py-3">
-        <ContentActions moderationStatus={item.moderationStatus} onAction={handleAction} disabled={updating} />
+        <ContentActions
+          moderationStatus={item.moderationStatus}
+          onAction={handleAction}
+          disabled={updating}
+        />
       </td>
     </tr>
   );
@@ -357,26 +505,36 @@ const INITIAL_CAUSE_RESULT: AdminCauseListResult = {
 const AdminContentModeration: React.FC = () => {
   const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<ActiveTab>("opportunities");
-  const [filters, setFilters] = useState<AdminContentModerationFilters>({ page: 1, limit: 50 });
+  const [filters, setFilters] = useState<AdminContentModerationFilters>({
+    page: 1,
+    limit: 50,
+  });
 
-  const [oppResult, setOppResult] = useState<AdminOpportunityListResult>(INITIAL_OPP_RESULT);
-  const [causeResult, setCauseResult] = useState<AdminCauseListResult>(INITIAL_CAUSE_RESULT);
+  const [oppResult, setOppResult] =
+    useState<AdminOpportunityListResult>(INITIAL_OPP_RESULT);
+  const [causeResult, setCauseResult] =
+    useState<AdminCauseListResult>(INITIAL_CAUSE_RESULT);
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
 
   // Modal state
-  const [pendingAction, setPendingAction] = useState<PendingAction | null>(null);
+  const [pendingAction, setPendingAction] = useState<PendingAction | null>(
+    null,
+  );
   const [reason, setReason] = useState("");
 
-  const fetchOpportunities = useCallback(async (f: AdminContentModerationFilters) => {
-    setLoading(true);
-    try {
-      const data = await listOpportunities(f);
-      setOppResult(data);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const fetchOpportunities = useCallback(
+    async (f: AdminContentModerationFilters) => {
+      setLoading(true);
+      try {
+        const data = await listOpportunities(f);
+        setOppResult(data);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
 
   const fetchCauses = useCallback(async (f: AdminContentModerationFilters) => {
     setLoading(true);
@@ -406,41 +564,74 @@ const AdminContentModeration: React.FC = () => {
     setFilters({ page: 1, limit: 50 });
   }, []);
 
-  const handleOpportunityAction = useCallback((item: AdminOpportunityListItem, action: ModerationAction) => {
-    setPendingAction({ id: item.id, title: item.title, contentType: "opportunity", action });
-    setReason("");
-  }, []);
+  const handleOpportunityAction = useCallback(
+    (item: AdminOpportunityListItem, action: ModerationAction) => {
+      setPendingAction({
+        id: item.id,
+        title: item.title,
+        contentType: "opportunity",
+        action,
+      });
+      setReason("");
+    },
+    [],
+  );
 
-  const handleCauseAction = useCallback((item: AdminCauseListItem, action: ModerationAction) => {
-    setPendingAction({ id: item.id, title: item.title, contentType: "cause", action });
-    setReason("");
-  }, []);
+  const handleCauseAction = useCallback(
+    (item: AdminCauseListItem, action: ModerationAction) => {
+      setPendingAction({
+        id: item.id,
+        title: item.title,
+        contentType: "cause",
+        action,
+      });
+      setReason("");
+    },
+    [],
+  );
 
   const handleCloseModal = useCallback(() => {
     setPendingAction(null);
     setReason("");
   }, []);
 
-  const handleReasonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReason(e.target.value);
-  }, []);
+  const handleReasonChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setReason(e.target.value);
+    },
+    [],
+  );
 
-  const handleStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({
-      ...prev,
-      page: 1,
-      moderationStatus: value !== "" ? (value as ModerationStatus) : undefined,
-    }));
-  }, []);
+  const handleStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        moderationStatus:
+          value !== "" ? (value as ModerationStatus) : undefined,
+      }));
+    },
+    [],
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({ ...prev, page: 1, search: value !== "" ? value : undefined }));
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        search: value !== "" ? value : undefined,
+      }));
+    },
+    [],
+  );
 
   const handlePrevPage = useCallback(() => {
-    setFilters((prev) => ({ ...prev, page: Math.max(1, (prev.page ?? 1) - 1) }));
+    setFilters((prev) => ({
+      ...prev,
+      page: Math.max(1, (prev.page ?? 1) - 1),
+    }));
   }, []);
 
   const handleNextPage = useCallback(() => {
@@ -464,9 +655,9 @@ const AdminContentModeration: React.FC = () => {
       }
 
       const ACTION_SUCCESS: Record<ModerationAction, string> = {
-        hide:   "Content hidden successfully.",
+        hide: "Content hidden successfully.",
         unhide: "Content unhidden successfully.",
-        flag:   "Content flagged for review.",
+        flag: "Content flagged for review.",
         unflag: "Content unflagged.",
       };
       showToast("success", ACTION_SUCCESS[pendingAction.action]);
@@ -480,16 +671,32 @@ const AdminContentModeration: React.FC = () => {
     } finally {
       setUpdating(false);
     }
-  }, [pendingAction, reason, showToast, handleCloseModal, activeTab, filters, fetchOpportunities, fetchCauses]);
+  }, [
+    pendingAction,
+    reason,
+    showToast,
+    handleCloseModal,
+    activeTab,
+    filters,
+    fetchOpportunities,
+    fetchCauses,
+  ]);
 
-  const currentPage = activeTab === "opportunities" ? oppResult.page : causeResult.page;
-  const totalPages  = activeTab === "opportunities" ? oppResult.totalPages : causeResult.totalPages;
-  const totalCount  = activeTab === "opportunities" ? oppResult.totalCount : causeResult.totalCount;
+  const currentPage =
+    activeTab === "opportunities" ? oppResult.page : causeResult.page;
+  const totalPages =
+    activeTab === "opportunities"
+      ? oppResult.totalPages
+      : causeResult.totalPages;
+  const totalCount =
+    activeTab === "opportunities"
+      ? oppResult.totalCount
+      : causeResult.totalCount;
 
-  const showInitialLoader = loading && (
-    (activeTab === "opportunities" && oppResult.opportunities.length === 0) ||
-    (activeTab === "causes" && causeResult.causes.length === 0)
-  );
+  const showInitialLoader =
+    loading &&
+    ((activeTab === "opportunities" && oppResult.opportunities.length === 0) ||
+      (activeTab === "causes" && causeResult.causes.length === 0));
 
   if (showInitialLoader) {
     return (
@@ -531,7 +738,11 @@ const AdminContentModeration: React.FC = () => {
       </div>
 
       <Card className="p-6">
-        <FilterBar filters={filters} onStatusChange={handleStatusChange} onSearchChange={handleSearchChange} />
+        <FilterBar
+          filters={filters}
+          onStatusChange={handleStatusChange}
+          onSearchChange={handleSearchChange}
+        />
 
         {loading && (
           <div className="flex justify-center py-8">
@@ -539,29 +750,41 @@ const AdminContentModeration: React.FC = () => {
           </div>
         )}
 
-        {!loading && activeTab === "opportunities" && oppResult.opportunities.length === 0 && (
-          <p className="text-center py-8 text-gray-500">No opportunities found matching your filters.</p>
-        )}
+        {!loading &&
+          activeTab === "opportunities" &&
+          oppResult.opportunities.length === 0 && (
+            <p className="text-center py-8 text-gray-500">
+              No opportunities found matching your filters.
+            </p>
+          )}
 
-        {!loading && activeTab === "causes" && causeResult.causes.length === 0 && (
-          <p className="text-center py-8 text-gray-500">No causes found matching your filters.</p>
-        )}
+        {!loading &&
+          activeTab === "causes" &&
+          causeResult.causes.length === 0 && (
+            <p className="text-center py-8 text-gray-500">
+              No causes found matching your filters.
+            </p>
+          )}
 
-        {!loading && activeTab === "opportunities" && oppResult.opportunities.length > 0 && (
-          <OpportunitiesTable
-            opportunities={oppResult.opportunities}
-            onAction={handleOpportunityAction}
-            updating={updating}
-          />
-        )}
+        {!loading &&
+          activeTab === "opportunities" &&
+          oppResult.opportunities.length > 0 && (
+            <OpportunitiesTable
+              opportunities={oppResult.opportunities}
+              onAction={handleOpportunityAction}
+              updating={updating}
+            />
+          )}
 
-        {!loading && activeTab === "causes" && causeResult.causes.length > 0 && (
-          <CausesTable
-            causes={causeResult.causes}
-            onAction={handleCauseAction}
-            updating={updating}
-          />
-        )}
+        {!loading &&
+          activeTab === "causes" &&
+          causeResult.causes.length > 0 && (
+            <CausesTable
+              causes={causeResult.causes}
+              onAction={handleCauseAction}
+              updating={updating}
+            />
+          )}
 
         <Pagination
           page={currentPage}

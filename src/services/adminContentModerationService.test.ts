@@ -6,11 +6,18 @@ import {
   moderateContent,
   cascadeCharityModeration,
 } from "./adminContentModerationService";
-import type { AdminOpportunityListRow, AdminCauseListRow } from "@/types/adminContentModeration";
+import type {
+  AdminOpportunityListRow,
+  AdminCauseListRow,
+} from "@/types/adminContentModeration";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
-const makeOpportunityRow = (overrides: Partial<AdminOpportunityListRow> = {}): AdminOpportunityListRow => ({
+const makeOpportunityRow = (
+  overrides: Partial<AdminOpportunityListRow> = {},
+): AdminOpportunityListRow => ({
   id: "opp-uuid-1",
   charity_id: "charity-uuid-1",
   charity_name: "Test Charity",
@@ -24,7 +31,9 @@ const makeOpportunityRow = (overrides: Partial<AdminOpportunityListRow> = {}): A
   ...overrides,
 });
 
-const makeCauseRow = (overrides: Partial<AdminCauseListRow> = {}): AdminCauseListRow => ({
+const makeCauseRow = (
+  overrides: Partial<AdminCauseListRow> = {},
+): AdminCauseListRow => ({
   id: "cause-uuid-1",
   charity_id: "charity-uuid-1",
   charity_name: "Test Charity",
@@ -63,7 +72,12 @@ describe("adminContentModerationService", () => {
     it("should pass filters through to RPC", async () => {
       mockRpc.mockResolvedValue({ data: [], error: null });
 
-      await listOpportunities({ moderationStatus: "flagged", search: "school", page: 2, limit: 25 });
+      await listOpportunities({
+        moderationStatus: "flagged",
+        search: "school",
+        page: 2,
+        limit: 25,
+      });
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_list_opportunities", {
         p_moderation_status: "flagged",
@@ -87,7 +101,10 @@ describe("adminContentModerationService", () => {
     });
 
     it("should return empty result on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const result = await listOpportunities();
 
@@ -125,7 +142,11 @@ describe("adminContentModerationService", () => {
     it("should compute totalCount and totalPages from first row", async () => {
       const rows = [
         makeOpportunityRow({ total_count: 3 }),
-        makeOpportunityRow({ id: "opp-uuid-2", title: "Opp 2", total_count: 3 }),
+        makeOpportunityRow({
+          id: "opp-uuid-2",
+          title: "Opp 2",
+          total_count: 3,
+        }),
       ];
       mockRpc.mockResolvedValue({ data: rows, error: null });
 
@@ -166,7 +187,12 @@ describe("adminContentModerationService", () => {
     it("should pass filters through to RPC", async () => {
       mockRpc.mockResolvedValue({ data: [], error: null });
 
-      await listCauses({ moderationStatus: "hidden", search: "water", page: 2, limit: 20 });
+      await listCauses({
+        moderationStatus: "hidden",
+        search: "water",
+        page: 2,
+        limit: 20,
+      });
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_list_causes", {
         p_moderation_status: "hidden",
@@ -188,7 +214,10 @@ describe("adminContentModerationService", () => {
     });
 
     it("should return empty result on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const result = await listCauses();
 
@@ -204,7 +233,11 @@ describe("adminContentModerationService", () => {
     });
 
     it("should map snake_case row to camelCase AdminCauseListItem", async () => {
-      const row = makeCauseRow({ moderation_status: "flagged", moderation_reason: "Spam content", total_count: 1 });
+      const row = makeCauseRow({
+        moderation_status: "flagged",
+        moderation_reason: "Spam content",
+        total_count: 1,
+      });
       mockRpc.mockResolvedValue({ data: [row], error: null });
 
       const result = await listCauses();
@@ -274,7 +307,11 @@ describe("adminContentModerationService", () => {
     it("should pass null reason when none given", async () => {
       mockRpc.mockResolvedValue({ data: "audit-uuid-1", error: null });
 
-      await moderateContent({ contentType: "opportunity", contentId: "opp-uuid-1", action: "unhide" });
+      await moderateContent({
+        contentType: "opportunity",
+        contentId: "opp-uuid-1",
+        action: "unhide",
+      });
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_moderate_content", {
         p_content_type: "opportunity",
@@ -298,7 +335,10 @@ describe("adminContentModerationService", () => {
     });
 
     it("should return null on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const result = await moderateContent({
         contentType: "cause",
@@ -325,7 +365,11 @@ describe("adminContentModerationService", () => {
       const actions = ["hide", "unhide", "flag", "unflag"] as const;
       for (const action of actions) {
         mockRpc.mockResolvedValue({ data: "audit-uuid-1", error: null });
-        const result = await moderateContent({ contentType: "opportunity", contentId: "opp-uuid-1", action });
+        const result = await moderateContent({
+          contentType: "opportunity",
+          contentId: "opp-uuid-1",
+          action,
+        });
         expect(result).toBe("audit-uuid-1");
         mockRpc.mockReset();
       }
@@ -344,23 +388,32 @@ describe("adminContentModerationService", () => {
         reason: "Charity suspended",
       });
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_cascade_charity_moderation", {
-        p_charity_id: "charity-uuid-1",
-        p_action: "hide",
-        p_reason: "Charity suspended",
-      });
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        "admin_cascade_charity_moderation",
+        {
+          p_charity_id: "charity-uuid-1",
+          p_action: "hide",
+          p_reason: "Charity suspended",
+        },
+      );
     });
 
     it("should pass null reason when none given", async () => {
       mockRpc.mockResolvedValue({ data: 3, error: null });
 
-      await cascadeCharityModeration({ charityId: "charity-uuid-1", action: "unhide" });
-
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_cascade_charity_moderation", {
-        p_charity_id: "charity-uuid-1",
-        p_action: "unhide",
-        p_reason: null,
+      await cascadeCharityModeration({
+        charityId: "charity-uuid-1",
+        action: "unhide",
       });
+
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        "admin_cascade_charity_moderation",
+        {
+          p_charity_id: "charity-uuid-1",
+          p_action: "unhide",
+          p_reason: null,
+        },
+      );
     });
 
     it("should return the affected row count on success", async () => {
@@ -376,7 +429,10 @@ describe("adminContentModerationService", () => {
     });
 
     it("should return null on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const result = await cascadeCharityModeration({
         charityId: "charity-uuid-1",

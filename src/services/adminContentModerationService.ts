@@ -34,7 +34,9 @@ const EMPTY_CAUSE_RESULT: AdminCauseListResult = {
  * @param row - Raw row from admin_list_opportunities RPC
  * @returns Mapped AdminOpportunityListItem
  */
-function mapOpportunityRow(row: AdminOpportunityListRow): AdminOpportunityListItem {
+function mapOpportunityRow(
+  row: AdminOpportunityListRow,
+): AdminOpportunityListItem {
   return {
     id: row.id,
     charityId: row.charity_id,
@@ -213,11 +215,14 @@ export async function cascadeCharityModeration(
   input: AdminCascadeCharityModerationInput,
 ): Promise<number | null> {
   try {
-    const { data, error } = await supabase.rpc("admin_cascade_charity_moderation", {
-      p_charity_id: input.charityId,
-      p_action: input.action,
-      p_reason: input.reason ?? null,
-    });
+    const { data, error } = await supabase.rpc(
+      "admin_cascade_charity_moderation",
+      {
+        p_charity_id: input.charityId,
+        p_action: input.action,
+        p_reason: input.reason ?? null,
+      },
+    );
 
     if (error) {
       Logger.error("Error cascading charity moderation", { error, input });
