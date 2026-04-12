@@ -3,7 +3,9 @@ import { renderHook, act } from "@testing-library/react";
 import { supabase } from "@/lib/supabase";
 import { useAdminPlatformConfig } from "./useAdminPlatformConfig";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
 const makeMockConfigRow = (overrides: Record<string, unknown> = {}) => ({
   key: "min_donation_usd",
@@ -63,7 +65,10 @@ describe("useAdminPlatformConfig", () => {
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminPlatformConfig());
 
@@ -95,13 +100,19 @@ describe("useAdminPlatformConfig", () => {
       // First call: update RPC; second call: list refresh
       mockRpc
         .mockResolvedValueOnce({ data: null, error: null })
-        .mockResolvedValueOnce({ data: [makeMockConfigRow({ value: 5 })], error: null });
+        .mockResolvedValueOnce({
+          data: [makeMockConfigRow({ value: 5 })],
+          error: null,
+        });
 
       const { result } = renderHook(() => useAdminPlatformConfig());
 
       let success: boolean | undefined;
       await act(async () => {
-        success = await result.current.saveConfig({ key: "min_donation_usd", value: 5 });
+        success = await result.current.saveConfig({
+          key: "min_donation_usd",
+          value: 5,
+        });
       });
 
       expect(success).toBe(true);
@@ -114,13 +125,19 @@ describe("useAdminPlatformConfig", () => {
     });
 
     it("should return false when update RPC returns error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Forbidden" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Forbidden" },
+      });
 
       const { result } = renderHook(() => useAdminPlatformConfig());
 
       let success: boolean | undefined;
       await act(async () => {
-        success = await result.current.saveConfig({ key: "max_causes_per_charity", value: 10 });
+        success = await result.current.saveConfig({
+          key: "max_causes_per_charity",
+          value: 10,
+        });
       });
 
       expect(success).toBe(false);
@@ -135,7 +152,10 @@ describe("useAdminPlatformConfig", () => {
       const { result } = renderHook(() => useAdminPlatformConfig());
 
       await act(async () => {
-        await result.current.saveConfig({ key: "validation_window_days", value: 60 });
+        await result.current.saveConfig({
+          key: "validation_window_days",
+          value: 60,
+        });
       });
 
       expect(result.current.saving).toBe(false);
@@ -145,13 +165,21 @@ describe("useAdminPlatformConfig", () => {
       const networks = [8453, 10, 1284];
       mockRpc
         .mockResolvedValueOnce({ data: null, error: null })
-        .mockResolvedValueOnce({ data: [makeMockConfigRow({ key: "supported_networks", value: networks })], error: null });
+        .mockResolvedValueOnce({
+          data: [
+            makeMockConfigRow({ key: "supported_networks", value: networks }),
+          ],
+          error: null,
+        });
 
       const { result } = renderHook(() => useAdminPlatformConfig());
 
       let success: boolean | undefined;
       await act(async () => {
-        success = await result.current.saveConfig({ key: "supported_networks", value: networks });
+        success = await result.current.saveConfig({
+          key: "supported_networks",
+          value: networks,
+        });
       });
 
       expect(success).toBe(true);
@@ -194,7 +222,9 @@ describe("useAdminPlatformConfig", () => {
         await result.current.fetchAuditLog();
       });
 
-      expect(mockRpc).toHaveBeenCalledWith("admin_get_config_audit", { p_limit: 50 });
+      expect(mockRpc).toHaveBeenCalledWith("admin_get_config_audit", {
+        p_limit: 50,
+      });
     });
 
     it("should call admin_get_config_audit with custom limit", async () => {
@@ -206,11 +236,16 @@ describe("useAdminPlatformConfig", () => {
         await result.current.fetchAuditLog(10);
       });
 
-      expect(mockRpc).toHaveBeenCalledWith("admin_get_config_audit", { p_limit: 10 });
+      expect(mockRpc).toHaveBeenCalledWith("admin_get_config_audit", {
+        p_limit: 10,
+      });
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminPlatformConfig());
 

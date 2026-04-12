@@ -435,14 +435,20 @@ describe("adminDonationService", () => {
       const csv = summaryToCsv(rows);
       const lines = csv.split("\n");
 
-      expect(lines[0]).toBe("Group,Payment Method,Total USD,Count,Charity ID,Charity Name");
-      expect(lines[1]).toBe(`"charity-1",crypto,1500.50,10,charity-1,"Clean Water Foundation"`);
-      expect(lines[2]).toBe(`"2026-01",fiat,250.00,5,,""`)
+      expect(lines[0]).toBe(
+        "Group,Payment Method,Total USD,Count,Charity ID,Charity Name",
+      );
+      expect(lines[1]).toBe(
+        `"charity-1",crypto,1500.50,10,charity-1,"Clean Water Foundation"`,
+      );
+      expect(lines[2]).toBe(`"2026-01",fiat,250.00,5,,""`);
     });
 
     it("should return only header row for empty input", () => {
       const csv = summaryToCsv([]);
-      expect(csv).toBe("Group,Payment Method,Total USD,Count,Charity ID,Charity Name");
+      expect(csv).toBe(
+        "Group,Payment Method,Total USD,Count,Charity ID,Charity Name",
+      );
     });
   });
 });

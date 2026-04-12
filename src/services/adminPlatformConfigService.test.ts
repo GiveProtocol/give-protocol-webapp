@@ -142,7 +142,10 @@ describe("adminPlatformConfigService", () => {
       ).mockResolvedValue({ data: null, error: null });
 
       const networks = [8453, 10];
-      const success = await updateConfig({ key: "supported_networks", value: networks });
+      const success = await updateConfig({
+        key: "supported_networks",
+        value: networks,
+      });
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_update_config", {
         p_key: "supported_networks",
@@ -156,7 +159,10 @@ describe("adminPlatformConfigService", () => {
         supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>
       ).mockResolvedValue({ data: null, error: { message: "Forbidden" } });
 
-      const success = await updateConfig({ key: "max_causes_per_charity", value: 10 });
+      const success = await updateConfig({
+        key: "max_causes_per_charity",
+        value: 10,
+      });
 
       expect(success).toBe(false);
     });
@@ -166,7 +172,10 @@ describe("adminPlatformConfigService", () => {
         supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>
       ).mockRejectedValue(new Error("Network failure"));
 
-      const success = await updateConfig({ key: "validation_window_days", value: 60 });
+      const success = await updateConfig({
+        key: "validation_window_days",
+        value: 60,
+      });
 
       expect(success).toBe(false);
     });
@@ -182,7 +191,9 @@ describe("adminPlatformConfigService", () => {
 
       await getConfigAudit();
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_get_config_audit", { p_limit: 50 });
+      expect(supabase.rpc).toHaveBeenCalledWith("admin_get_config_audit", {
+        p_limit: 50,
+      });
     });
 
     it("should call admin_get_config_audit with custom limit", async () => {
@@ -192,7 +203,9 @@ describe("adminPlatformConfigService", () => {
 
       await getConfigAudit(10);
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_get_config_audit", { p_limit: 10 });
+      expect(supabase.rpc).toHaveBeenCalledWith("admin_get_config_audit", {
+        p_limit: 10,
+      });
     });
 
     it("should map snake_case rows to camelCase PlatformConfigAuditEntry", async () => {
@@ -274,15 +287,21 @@ describe("adminPlatformConfigService", () => {
     });
 
     it("should return human-readable label for max_causes_per_charity", () => {
-      expect(configKeyLabel("max_causes_per_charity")).toBe("Max Active Causes per Charity");
+      expect(configKeyLabel("max_causes_per_charity")).toBe(
+        "Max Active Causes per Charity",
+      );
     });
 
     it("should return human-readable label for validation_window_days", () => {
-      expect(configKeyLabel("validation_window_days")).toBe("Validation Window (Days)");
+      expect(configKeyLabel("validation_window_days")).toBe(
+        "Validation Window (Days)",
+      );
     });
 
     it("should return human-readable label for supported_networks", () => {
-      expect(configKeyLabel("supported_networks")).toBe("Supported Networks (JSON)");
+      expect(configKeyLabel("supported_networks")).toBe(
+        "Supported Networks (JSON)",
+      );
     });
   });
 

@@ -89,7 +89,12 @@ export interface AdminResolveFlagInput {
 }
 
 /** Group-by options for admin_donation_summary */
-export type DonationSummaryGroupBy = "charity" | "day" | "week" | "month" | "payment_method";
+export type DonationSummaryGroupBy =
+  | "charity"
+  | "day"
+  | "week"
+  | "month"
+  | "payment_method";
 
 /** Raw database row returned by admin_list_donations RPC (snake_case) */
 export interface AdminDonationListRow {

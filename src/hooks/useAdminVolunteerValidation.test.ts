@@ -3,7 +3,9 @@ import { renderHook, act } from "@testing-library/react";
 import { supabase } from "@/lib/supabase";
 import { useAdminVolunteerValidation } from "./useAdminVolunteerValidation";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
 const makeMockRequestRow = (overrides: Record<string, unknown> = {}) => ({
   id: "req-1",
@@ -60,7 +62,10 @@ describe("useAdminVolunteerValidation", () => {
     });
 
     it("should set stats to null on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminVolunteerValidation());
 
@@ -135,7 +140,10 @@ describe("useAdminVolunteerValidation", () => {
     });
 
     it("should return empty result on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminVolunteerValidation());
 
@@ -156,7 +164,10 @@ describe("useAdminVolunteerValidation", () => {
       // First call: override RPC; second call: list refresh
       mockRpc
         .mockResolvedValueOnce({ data: null, error: null })
-        .mockResolvedValueOnce({ data: [makeMockRequestRow({ status: "approved" })], error: null });
+        .mockResolvedValueOnce({
+          data: [makeMockRequestRow({ status: "approved" })],
+          error: null,
+        });
 
       const { result } = renderHook(() => useAdminVolunteerValidation());
 
@@ -182,7 +193,10 @@ describe("useAdminVolunteerValidation", () => {
     });
 
     it("should return false when override RPC returns error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Not found" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Not found" },
+      });
 
       const { result } = renderHook(() => useAdminVolunteerValidation());
 
@@ -259,7 +273,10 @@ describe("useAdminVolunteerValidation", () => {
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminVolunteerValidation());
 

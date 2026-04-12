@@ -3,7 +3,9 @@ import { renderHook, act } from "@testing-library/react";
 import { supabase } from "@/lib/supabase";
 import { useAdminDonations } from "./useAdminDonations";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
 const makeMockRow = (overrides: Record<string, unknown> = {}) => ({
   id: "don-1",
@@ -68,16 +70,22 @@ describe("useAdminDonations", () => {
         });
       });
 
-      expect(mockRpc).toHaveBeenCalledWith("admin_list_donations", expect.objectContaining({
-        p_payment_method: "fiat",
-        p_flagged: true,
-        p_page: 2,
-        p_limit: 25,
-      }));
+      expect(mockRpc).toHaveBeenCalledWith(
+        "admin_list_donations",
+        expect.objectContaining({
+          p_payment_method: "fiat",
+          p_flagged: true,
+          p_page: 2,
+          p_limit: 25,
+        }),
+      );
     });
 
     it("should return empty result on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminDonations());
 
@@ -125,7 +133,10 @@ describe("useAdminDonations", () => {
     });
 
     it("should return empty summary on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminDonations());
 
@@ -167,7 +178,10 @@ describe("useAdminDonations", () => {
     });
 
     it("should return false when flagDonation fails", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const { result } = renderHook(() => useAdminDonations());
 
@@ -208,13 +222,18 @@ describe("useAdminDonations", () => {
     });
 
     it("should return false when resolveFlag fails", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Not found" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Not found" },
+      });
 
       const { result } = renderHook(() => useAdminDonations());
 
       let success: boolean | undefined;
       await act(async () => {
-        success = await result.current.submitResolveFlag({ flagId: "flag-nonexistent" });
+        success = await result.current.submitResolveFlag({
+          flagId: "flag-nonexistent",
+        });
       });
 
       expect(success).toBe(false);

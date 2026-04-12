@@ -15,7 +15,11 @@ import type {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Colored status badge for validation request status */
-function StatusBadge({ status }: { status: ValidationRequestStatus }): React.ReactElement {
+function StatusBadge({
+  status,
+}: {
+  status: ValidationRequestStatus;
+}): React.ReactElement {
   const styles: Record<ValidationRequestStatus, string> = {
     pending: "bg-yellow-100 text-yellow-800",
     approved: "bg-green-100 text-green-800",
@@ -23,14 +27,20 @@ function StatusBadge({ status }: { status: ValidationRequestStatus }): React.Rea
     expired: "bg-gray-100 text-gray-600",
   };
   return (
-    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status] ?? "bg-gray-100 text-gray-600"}`}>
+    <span
+      className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status] ?? "bg-gray-100 text-gray-600"}`}
+    >
       {status}
     </span>
   );
 }
 
 /** Pipeline stats cards at the top of the page */
-function StatsRow({ stats }: { stats: AdminValidationStats }): React.ReactElement {
+function StatsRow({
+  stats,
+}: {
+  stats: AdminValidationStats;
+}): React.ReactElement {
   const cards = [
     { label: "Pending", value: stats.totalPending, color: "text-yellow-600" },
     { label: "Approved", value: stats.totalApproved, color: "text-green-600" },
@@ -50,15 +60,25 @@ function StatsRow({ stats }: { stats: AdminValidationStats }): React.ReactElemen
 }
 
 /** Secondary stats row: avg response time, expiration rate, rejection rate */
-function RateRow({ stats }: { stats: AdminValidationStats }): React.ReactElement {
+function RateRow({
+  stats,
+}: {
+  stats: AdminValidationStats;
+}): React.ReactElement {
   const expPct = (stats.expirationRate * 100).toFixed(1);
   const rejPct = (stats.rejectionRate * 100).toFixed(1);
   const avgHrs = stats.avgResponseTimeHours.toFixed(1);
   return (
     <div className="flex flex-wrap gap-4 mb-6 text-sm text-gray-600">
-      <span>Avg response time: <strong>{avgHrs}h</strong></span>
-      <span>Expiration rate: <strong>{expPct}%</strong></span>
-      <span>Rejection rate: <strong>{rejPct}%</strong></span>
+      <span>
+        Avg response time: <strong>{avgHrs}h</strong>
+      </span>
+      <span>
+        Expiration rate: <strong>{expPct}%</strong>
+      </span>
+      <span>
+        Rejection rate: <strong>{rejPct}%</strong>
+      </span>
     </div>
   );
 }
@@ -114,13 +134,23 @@ function Pagination({
   if (totalPages <= 1) return <></>;
   return (
     <div className="flex items-center justify-between mt-4">
-      <Button variant="secondary" size="sm" onClick={onPrev} disabled={page <= 1}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onPrev}
+        disabled={page <= 1}
+      >
         Previous
       </Button>
       <span className="text-sm text-gray-500">
         Page {page} of {totalPages}
       </span>
-      <Button variant="secondary" size="sm" onClick={onNext} disabled={page >= totalPages}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onNext}
+        disabled={page >= totalPages}
+      >
         Next
       </Button>
     </div>
@@ -142,13 +172,25 @@ function RequestRow({
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-4 py-3 text-sm text-gray-900 max-w-[180px] truncate">
-        {request.volunteerDisplayName ?? request.volunteerEmail ?? request.volunteerId}
+        {request.volunteerDisplayName ??
+          request.volunteerEmail ??
+          request.volunteerId}
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600">{request.orgName ?? request.orgId}</td>
-      <td className="px-4 py-3 text-sm text-gray-900 text-right">{request.hoursReported}</td>
-      <td className="px-4 py-3 text-sm text-gray-600">{request.activityDate}</td>
-      <td className="px-4 py-3"><StatusBadge status={request.status} /></td>
-      <td className="px-4 py-3 text-sm text-gray-500">{request.createdAt.split("T")[0]}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">
+        {request.orgName ?? request.orgId}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-900 text-right">
+        {request.hoursReported}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-600">
+        {request.activityDate}
+      </td>
+      <td className="px-4 py-3">
+        <StatusBadge status={request.status} />
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-500">
+        {request.createdAt.split("T")[0]}
+      </td>
       <td className="px-4 py-3 text-right">
         {request.status === "pending" && (
           <Button variant="secondary" size="sm" onClick={handleOverride}>
@@ -178,21 +220,38 @@ function SuspiciousTable({
       <table className="min-w-full divide-y divide-gray-200 text-left">
         <thead>
           <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Volunteer</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Organisation</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-right">Hrs/Week</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-right">Total Requests</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+              Volunteer
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+              Organisation
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-right">
+              Hrs/Week
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-right">
+              Total Requests
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-100">
           {patterns.map((p) => (
-            <tr key={`${p.volunteerId}-${p.orgId}`} className="hover:bg-gray-50">
+            <tr
+              key={`${p.volunteerId}-${p.orgId}`}
+              className="hover:bg-gray-50"
+            >
               <td className="px-4 py-3 text-sm text-gray-900">
                 {p.volunteerDisplayName ?? p.volunteerEmail ?? p.volunteerId}
               </td>
-              <td className="px-4 py-3 text-sm text-gray-600">{p.orgName ?? p.orgId}</td>
-              <td className="px-4 py-3 text-sm font-semibold text-red-700 text-right">{p.weeklyHours}</td>
-              <td className="px-4 py-3 text-sm text-gray-700 text-right">{p.totalRequests}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">
+                {p.orgName ?? p.orgId}
+              </td>
+              <td className="px-4 py-3 text-sm font-semibold text-red-700 text-right">
+                {p.weeklyHours}
+              </td>
+              <td className="px-4 py-3 text-sm text-gray-700 text-right">
+                {p.totalRequests}
+              </td>
             </tr>
           ))}
         </tbody>
@@ -210,23 +269,38 @@ interface OverrideModalProps {
   onClose: () => void;
 }
 
-function OverrideModal({ request, overriding, onConfirm, onClose }: OverrideModalProps): React.ReactElement {
-  const [newStatus, setNewStatus] = useState<ValidationRequestStatus>("approved");
+function OverrideModal({
+  request,
+  overriding,
+  onConfirm,
+  onClose,
+}: OverrideModalProps): React.ReactElement {
+  const [newStatus, setNewStatus] =
+    useState<ValidationRequestStatus>("approved");
   const [reason, setReason] = useState("");
 
-  const handleStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setNewStatus(e.target.value as ValidationRequestStatus);
-  }, []);
+  const handleStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setNewStatus(e.target.value as ValidationRequestStatus);
+    },
+    [],
+  );
 
-  const handleReasonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReason(e.target.value);
-  }, []);
+  const handleReasonChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setReason(e.target.value);
+    },
+    [],
+  );
 
   const handleConfirm = useCallback(() => {
     onConfirm(newStatus, reason);
   }, [onConfirm, newStatus, reason]);
 
-  const volunteerLabel = request.volunteerDisplayName ?? request.volunteerEmail ?? request.volunteerId;
+  const volunteerLabel =
+    request.volunteerDisplayName ??
+    request.volunteerEmail ??
+    request.volunteerId;
 
   return (
     <Modal
@@ -249,10 +323,14 @@ function OverrideModal({ request, overriding, onConfirm, onClose }: OverrideModa
     >
       <div className="space-y-4">
         <p className="text-sm text-gray-700">
-          Volunteer: <strong>{volunteerLabel}</strong> — {request.hoursReported}h on {request.activityDate}
+          Volunteer: <strong>{volunteerLabel}</strong> — {request.hoursReported}
+          h on {request.activityDate}
         </p>
         <div>
-          <label htmlFor="override-status" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="override-status"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             New Status
           </label>
           <select
@@ -266,7 +344,10 @@ function OverrideModal({ request, overriding, onConfirm, onClose }: OverrideModa
           </select>
         </div>
         <div>
-          <label htmlFor="override-reason" className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="override-reason"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Reason (required)
           </label>
           <textarea
@@ -310,8 +391,12 @@ export default function AdminVolunteerValidation(): React.ReactElement {
   } = useAdminVolunteerValidation();
 
   const [activeTab, setActiveTab] = useState<TabId>("requests");
-  const [filters, setFilters] = useState<AdminValidationRequestFilters>({ page: 1, limit: 50 });
-  const [selectedRequest, setSelectedRequest] = useState<AdminValidationRequestItem | null>(null);
+  const [filters, setFilters] = useState<AdminValidationRequestFilters>({
+    page: 1,
+    limit: 50,
+  });
+  const [selectedRequest, setSelectedRequest] =
+    useState<AdminValidationRequestItem | null>(null);
 
   // Initial data load
   useEffect(() => {
@@ -389,13 +474,19 @@ export default function AdminVolunteerValidation(): React.ReactElement {
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Volunteer Validation Oversight</h1>
-        <span className="text-sm text-gray-500">{result.totalCount} total requests</span>
+        <h1 className="text-2xl font-bold text-gray-900">
+          Volunteer Validation Oversight
+        </h1>
+        <span className="text-sm text-gray-500">
+          {result.totalCount} total requests
+        </span>
       </div>
 
       {/* Pipeline stats */}
       <Card className="p-6 mb-6">
-        <h2 className="text-base font-semibold text-gray-800 mb-4">Pipeline Statistics</h2>
+        <h2 className="text-base font-semibold text-gray-800 mb-4">
+          Pipeline Statistics
+        </h2>
         {statsLoading && <LoadingSpinner size="sm" />}
         {!statsLoading && stats !== null && (
           <>
@@ -443,25 +534,43 @@ export default function AdminVolunteerValidation(): React.ReactElement {
             </div>
           )}
           {!loading && result.requests.length === 0 && (
-            <p className="text-sm text-gray-500 text-center py-8">No validation requests found.</p>
+            <p className="text-sm text-gray-500 text-center py-8">
+              No validation requests found.
+            </p>
           )}
           {!loading && result.requests.length > 0 && (
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200 text-left">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Volunteer</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Organisation</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-right">Hours</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Activity Date</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
-                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Created</th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                      Volunteer
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                      Organisation
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase text-right">
+                      Hours
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                      Activity Date
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                      Status
+                    </th>
+                    <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase">
+                      Created
+                    </th>
                     <th className="px-4 py-3" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {result.requests.map((req) => (
-                    <RequestRow key={req.id} request={req} onOverride={handleOpenOverride} />
+                    <RequestRow
+                      key={req.id}
+                      request={req}
+                      onOverride={handleOpenOverride}
+                    />
                   ))}
                 </tbody>
               </table>
@@ -480,8 +589,9 @@ export default function AdminVolunteerValidation(): React.ReactElement {
       {activeTab === "patterns" && (
         <Card className="p-6">
           <p className="text-sm text-gray-600 mb-4">
-            Volunteers flagged for reporting more than the configured threshold of hours in a rolling
-            7-day window. These patterns may indicate abuse of the self-reported hours system.
+            Volunteers flagged for reporting more than the configured threshold
+            of hours in a rolling 7-day window. These patterns may indicate
+            abuse of the self-reported hours system.
           </p>
           {patternsLoading && (
             <div className="flex justify-center py-12">

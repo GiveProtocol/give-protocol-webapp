@@ -72,7 +72,9 @@ export async function getConfig(): Promise<PlatformConfigEntry[]> {
  * @param input - key and new value to set
  * @returns true on success, false on failure
  */
-export async function updateConfig(input: AdminUpdateConfigInput): Promise<boolean> {
+export async function updateConfig(
+  input: AdminUpdateConfigInput,
+): Promise<boolean> {
   try {
     const { error } = await supabase.rpc("admin_update_config", {
       p_key: input.key,
@@ -100,7 +102,9 @@ export async function updateConfig(input: AdminUpdateConfigInput): Promise<boole
  * @param limit - Maximum number of audit rows to return (default 50)
  * @returns Array of audit entries, or empty array on failure
  */
-export async function getConfigAudit(limit = 50): Promise<PlatformConfigAuditEntry[]> {
+export async function getConfigAudit(
+  limit = 50,
+): Promise<PlatformConfigAuditEntry[]> {
   try {
     const { data, error } = await supabase.rpc("admin_get_config_audit", {
       p_limit: limit,
@@ -143,7 +147,9 @@ export function configKeyLabel(key: PlatformConfigKey): string {
  * @param value - The current config value
  * @returns "number" | "json"
  */
-export function configValueInputType(value: PlatformConfigValue): "number" | "json" {
+export function configValueInputType(
+  value: PlatformConfigValue,
+): "number" | "json" {
   if (typeof value === "number") return "number";
   return "json";
 }

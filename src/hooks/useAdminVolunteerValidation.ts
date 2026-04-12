@@ -44,10 +44,13 @@ const INITIAL_RESULT: AdminValidationRequestResult = {
 export function useAdminVolunteerValidation() {
   const [stats, setStats] = useState<AdminValidationStats | null>(null);
   const [statsLoading, setStatsLoading] = useState(false);
-  const [result, setResult] = useState<AdminValidationRequestResult>(INITIAL_RESULT);
+  const [result, setResult] =
+    useState<AdminValidationRequestResult>(INITIAL_RESULT);
   const [loading, setLoading] = useState(false);
   const [overriding, setOverriding] = useState(false);
-  const [suspiciousPatterns, setSuspiciousPatterns] = useState<AdminSuspiciousVolunteerPattern[]>([]);
+  const [suspiciousPatterns, setSuspiciousPatterns] = useState<
+    AdminSuspiciousVolunteerPattern[]
+  >([]);
   const [patternsLoading, setPatternsLoading] = useState(false);
   const { showToast } = useToast();
 
@@ -91,7 +94,10 @@ export function useAdminVolunteerValidation() {
         setOverriding(true);
         const success = await overrideValidation(input);
         if (!success) {
-          showToast("error", "Failed to override validation. Please try again.");
+          showToast(
+            "error",
+            "Failed to override validation. Please try again.",
+          );
           return false;
         }
         showToast("success", "Validation status overridden");

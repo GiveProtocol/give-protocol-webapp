@@ -13,13 +13,19 @@ import type {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Badge for payment method (crypto / fiat) */
-function PaymentBadge({ method }: { method: DonationPaymentMethod }): React.ReactElement {
+function PaymentBadge({
+  method,
+}: {
+  method: DonationPaymentMethod;
+}): React.ReactElement {
   const styles: Record<string, string> = {
     crypto: "bg-purple-100 text-purple-800",
-    fiat:   "bg-blue-100 text-blue-800",
+    fiat: "bg-blue-100 text-blue-800",
   };
   return (
-    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[method] ?? "bg-gray-100 text-gray-600"}`}>
+    <span
+      className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[method] ?? "bg-gray-100 text-gray-600"}`}
+    >
       {method}
     </span>
   );
@@ -43,8 +49,8 @@ function FilterBar({
 }: {
   filters: AdminDonationListFilters;
   onPaymentMethodChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onSearchChange:        (_e: React.ChangeEvent<HTMLInputElement>)  => void;
-  onFlaggedChange:       (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onFlaggedChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
 }): React.ReactElement {
   return (
     <div className="flex flex-wrap gap-4 mb-6">
@@ -60,7 +66,13 @@ function FilterBar({
       </select>
       <select
         className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        value={filters.flagged === true ? "true" : filters.flagged === false ? "false" : ""}
+        value={
+          filters.flagged === true
+            ? "true"
+            : filters.flagged === false
+              ? "false"
+              : ""
+        }
         onChange={onFlaggedChange}
         aria-label="Filter by flag status"
       >
@@ -95,11 +107,23 @@ function Pagination({
   if (totalPages <= 1) return <></>;
   return (
     <div className="flex items-center justify-between mt-4">
-      <Button variant="secondary" size="sm" onClick={onPrev} disabled={page <= 1}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onPrev}
+        disabled={page <= 1}
+      >
         Previous
       </Button>
-      <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
-      <Button variant="secondary" size="sm" onClick={onNext} disabled={page >= totalPages}>
+      <span className="text-sm text-gray-500">
+        Page {page} of {totalPages}
+      </span>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onNext}
+        disabled={page >= totalPages}
+      >
         Next
       </Button>
     </div>
@@ -121,13 +145,20 @@ function DonationActions({
   if (donation.isFlagged) {
     return (
       <span className="text-xs text-gray-400 italic">
-        {donation.openFlagCount > 0 ? `${donation.openFlagCount} open flag${donation.openFlagCount > 1 ? "s" : ""}` : "Resolved"}
+        {donation.openFlagCount > 0
+          ? `${donation.openFlagCount} open flag${donation.openFlagCount > 1 ? "s" : ""}`
+          : "Resolved"}
       </span>
     );
   }
 
   return (
-    <Button size="sm" variant="secondary" onClick={handleFlag} disabled={disabled}>
+    <Button
+      size="sm"
+      variant="secondary"
+      onClick={handleFlag}
+      disabled={disabled}
+    >
       Flag
     </Button>
   );
@@ -143,24 +174,29 @@ function DonationRow({
   onFlag: (_donation: AdminDonationListItem) => void;
   flagging: boolean;
 }): React.ReactElement {
-  const formattedDate = new Date(donation.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const formattedDate = new Date(donation.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    },
+  );
 
   const donorLabel =
-    donation.donorDisplayName ?? donation.donorEmail ?? donation.donorUserId ?? "Anonymous";
+    donation.donorDisplayName ??
+    donation.donorEmail ??
+    donation.donorUserId ??
+    "Anonymous";
 
   const txRef = donation.txHash
     ? `${donation.txHash.slice(0, 8)}…`
     : donation.processorId
-    ? donation.processorId
-    : "—";
+      ? donation.processorId
+      : "—";
 
-  const amountUsdLabel = donation.amountUsd !== null
-    ? `$${donation.amountUsd.toFixed(2)}`
-    : "—";
+  const amountUsdLabel =
+    donation.amountUsd !== null ? `$${donation.amountUsd.toFixed(2)}` : "—";
 
   return (
     <tr className="border-t border-gray-100 hover:bg-gray-50">
@@ -179,15 +215,15 @@ function DonationRow({
       <td className="px-4 py-3 text-sm text-gray-700">
         {donation.charityName ?? donation.charityId}
       </td>
-      <td className="px-4 py-3 text-xs text-gray-500 font-mono">
-        {txRef}
-      </td>
+      <td className="px-4 py-3 text-xs text-gray-500 font-mono">{txRef}</td>
       <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
+      <td className="px-4 py-3">{donation.isFlagged && <FlaggedBadge />}</td>
       <td className="px-4 py-3">
-        {donation.isFlagged && <FlaggedBadge />}
-      </td>
-      <td className="px-4 py-3">
-        <DonationActions donation={donation} onFlag={onFlag} disabled={flagging} />
+        <DonationActions
+          donation={donation}
+          onFlag={onFlag}
+          disabled={flagging}
+        />
       </td>
     </tr>
   );
@@ -218,7 +254,8 @@ function FlagModal({
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Flag Donation for Review">
       <p className="text-sm text-gray-600 mb-4">
-        Flag the donation from <span className="font-semibold">{label}</span> for admin review.
+        Flag the donation from <span className="font-semibold">{label}</span>{" "}
+        for admin review.
       </p>
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -233,7 +270,12 @@ function FlagModal({
         />
       </div>
       <div className="flex justify-end gap-3">
-        <Button variant="secondary" size="sm" onClick={onClose} disabled={confirming}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onClose}
+          disabled={confirming}
+        >
           Cancel
         </Button>
         <Button
@@ -268,10 +310,15 @@ const AdminDonationMonitoring: React.FC = () => {
     exportCsv,
   } = useAdminDonations();
 
-  const [filters, setFilters] = useState<AdminDonationListFilters>({ page: 1, limit: 50 });
+  const [filters, setFilters] = useState<AdminDonationListFilters>({
+    page: 1,
+    limit: 50,
+  });
 
   // Flag modal state
-  const [flagTarget, setFlagTarget] = useState<AdminDonationListItem | null>(null);
+  const [flagTarget, setFlagTarget] = useState<AdminDonationListItem | null>(
+    null,
+  );
   const [flagReason, setFlagReason] = useState("");
 
   // Report panel state
@@ -283,31 +330,49 @@ const AdminDonationMonitoring: React.FC = () => {
     fetchDonations(filters);
   }, [fetchDonations, filters]);
 
-  const handlePaymentMethodChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({
-      ...prev,
-      page: 1,
-      paymentMethod: value !== "" ? (value as DonationPaymentMethod) : undefined,
-    }));
-  }, []);
+  const handlePaymentMethodChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        paymentMethod:
+          value !== "" ? (value as DonationPaymentMethod) : undefined,
+      }));
+    },
+    [],
+  );
 
-  const handleFlaggedChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({
-      ...prev,
-      page: 1,
-      flagged: value === "true" ? true : value === "false" ? false : undefined,
-    }));
-  }, []);
+  const handleFlaggedChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        flagged:
+          value === "true" ? true : value === "false" ? false : undefined,
+      }));
+    },
+    [],
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({ ...prev, page: 1, search: value !== "" ? value : undefined }));
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        search: value !== "" ? value : undefined,
+      }));
+    },
+    [],
+  );
 
   const handlePrevPage = useCallback(() => {
-    setFilters((prev) => ({ ...prev, page: Math.max(1, (prev.page ?? 1) - 1) }));
+    setFilters((prev) => ({
+      ...prev,
+      page: Math.max(1, (prev.page ?? 1) - 1),
+    }));
   }, []);
 
   const handleNextPage = useCallback(() => {
@@ -324,9 +389,12 @@ const AdminDonationMonitoring: React.FC = () => {
     setFlagReason("");
   }, []);
 
-  const handleFlagReasonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setFlagReason(e.target.value);
-  }, []);
+  const handleFlagReasonChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setFlagReason(e.target.value);
+    },
+    [],
+  );
 
   const handleConfirmFlag = useCallback(async () => {
     if (!flagTarget) return;
@@ -347,13 +415,19 @@ const AdminDonationMonitoring: React.FC = () => {
     setShowReport((prev) => !prev);
   }, []);
 
-  const handleReportDateFromChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setReportDateFrom(e.target.value);
-  }, []);
+  const handleReportDateFromChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setReportDateFrom(e.target.value);
+    },
+    [],
+  );
 
-  const handleReportDateToChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setReportDateTo(e.target.value);
-  }, []);
+  const handleReportDateToChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setReportDateTo(e.target.value);
+    },
+    [],
+  );
 
   const handleGenerateReport = useCallback(async () => {
     if (!reportDateFrom || !reportDateTo) return;
@@ -365,7 +439,10 @@ const AdminDonationMonitoring: React.FC = () => {
   }, [fetchSummary, reportDateFrom, reportDateTo]);
 
   const handleExportCsv = useCallback(() => {
-    exportCsv(summary, `donation-summary-${reportDateFrom}-to-${reportDateTo}.csv`);
+    exportCsv(
+      summary,
+      `donation-summary-${reportDateFrom}-to-${reportDateTo}.csv`,
+    );
   }, [exportCsv, summary, reportDateFrom, reportDateTo]);
 
   if (loading && result.donations.length === 0) {
@@ -379,9 +456,13 @@ const AdminDonationMonitoring: React.FC = () => {
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold text-gray-900">Donation Monitoring</h1>
+        <h1 className="text-3xl font-bold text-gray-900">
+          Donation Monitoring
+        </h1>
         <div className="flex gap-3">
-          <span className="text-sm text-gray-500 self-center">{result.totalCount} total</span>
+          <span className="text-sm text-gray-500 self-center">
+            {result.totalCount} total
+          </span>
           <Button variant="secondary" size="sm" onClick={handleToggleReport}>
             {showReport ? "Hide Report" : "Generate Report"}
           </Button>
@@ -391,10 +472,14 @@ const AdminDonationMonitoring: React.FC = () => {
       {/* Report / CSV export panel */}
       {showReport && (
         <Card className="p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Donation Summary Report</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Donation Summary Report
+          </h2>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">From</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                From
+              </label>
               <input
                 type="date"
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -403,7 +488,9 @@ const AdminDonationMonitoring: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">To</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                To
+              </label>
               <input
                 type="date"
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -430,21 +517,42 @@ const AdminDonationMonitoring: React.FC = () => {
               <table className="w-full text-left text-sm">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Group</th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Method</th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total (USD)</th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Count</th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Charity</th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Group
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Method
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Total (USD)
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Count
+                    </th>
+                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                      Charity
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   {summary.map((row, idx) => (
-                    <tr key={`${row.groupKey}-${row.paymentMethod}-${idx}`} className="border-t border-gray-100">
-                      <td className="px-4 py-2 font-mono text-xs">{row.groupKey}</td>
-                      <td className="px-4 py-2"><PaymentBadge method={row.paymentMethod} /></td>
-                      <td className="px-4 py-2">${row.totalAmountUsd.toFixed(2)}</td>
+                    <tr
+                      key={`${row.groupKey}-${row.paymentMethod}-${idx}`}
+                      className="border-t border-gray-100"
+                    >
+                      <td className="px-4 py-2 font-mono text-xs">
+                        {row.groupKey}
+                      </td>
+                      <td className="px-4 py-2">
+                        <PaymentBadge method={row.paymentMethod} />
+                      </td>
+                      <td className="px-4 py-2">
+                        ${row.totalAmountUsd.toFixed(2)}
+                      </td>
                       <td className="px-4 py-2">{row.donationCount}</td>
-                      <td className="px-4 py-2 text-gray-600">{row.charityName ?? row.charityId ?? "—"}</td>
+                      <td className="px-4 py-2 text-gray-600">
+                        {row.charityName ?? row.charityId ?? "—"}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -470,7 +578,9 @@ const AdminDonationMonitoring: React.FC = () => {
         )}
 
         {!loading && result.donations.length === 0 && (
-          <p className="text-center py-8 text-gray-500">No donations found matching your filters.</p>
+          <p className="text-center py-8 text-gray-500">
+            No donations found matching your filters.
+          </p>
         )}
 
         {!loading && result.donations.length > 0 && (
@@ -478,14 +588,30 @@ const AdminDonationMonitoring: React.FC = () => {
             <table className="w-full text-left">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Method</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Amount (USD)</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donor</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Charity</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Tx / ID</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Flag</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Method
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Amount (USD)
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Donor
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Charity
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Tx / ID
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Date
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Flag
+                  </th>
+                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>

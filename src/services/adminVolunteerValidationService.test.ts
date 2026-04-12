@@ -109,16 +109,19 @@ describe("adminVolunteerValidationService", () => {
 
       const result = await listValidationRequests();
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_list_validation_requests", {
-        p_status: null,
-        p_org_id: null,
-        p_volunteer_id: null,
-        p_search: null,
-        p_date_from: null,
-        p_date_to: null,
-        p_page: 1,
-        p_limit: 50,
-      });
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        "admin_list_validation_requests",
+        {
+          p_status: null,
+          p_org_id: null,
+          p_volunteer_id: null,
+          p_search: null,
+          p_date_from: null,
+          p_date_to: null,
+          p_page: 1,
+          p_limit: 50,
+        },
+      );
       expect(result.requests).toEqual([]);
       expect(result.totalCount).toBe(0);
     });
@@ -139,16 +142,19 @@ describe("adminVolunteerValidationService", () => {
         limit: 25,
       });
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_list_validation_requests", {
-        p_status: "pending",
-        p_org_id: "org-1",
-        p_volunteer_id: "vol-1",
-        p_search: "John",
-        p_date_from: "2026-01-01T00:00:00Z",
-        p_date_to: "2026-12-31T23:59:59Z",
-        p_page: 2,
-        p_limit: 25,
-      });
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        "admin_list_validation_requests",
+        {
+          p_status: "pending",
+          p_org_id: "org-1",
+          p_volunteer_id: "vol-1",
+          p_search: "John",
+          p_date_from: "2026-01-01T00:00:00Z",
+          p_date_to: "2026-12-31T23:59:59Z",
+          p_page: 2,
+          p_limit: 25,
+        },
+      );
     });
 
     it("should map snake_case rows to camelCase AdminValidationRequestItem", async () => {
@@ -294,7 +300,10 @@ describe("adminVolunteerValidationService", () => {
     it("should return false on RPC error", async () => {
       (
         supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>
-      ).mockResolvedValue({ data: null, error: { message: "Request not found" } });
+      ).mockResolvedValue({
+        data: null,
+        error: { message: "Request not found" },
+      });
 
       const success = await overrideValidation({
         requestId: "req-nonexistent",
@@ -330,7 +339,9 @@ describe("adminVolunteerValidationService", () => {
 
       await getSuspiciousPatterns();
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_suspicious_volunteer_patterns");
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        "admin_suspicious_volunteer_patterns",
+      );
     });
 
     it("should map snake_case rows to camelCase patterns", async () => {

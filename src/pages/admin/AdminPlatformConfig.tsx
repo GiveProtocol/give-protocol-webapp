@@ -4,7 +4,10 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { useAdminPlatformConfig } from "@/hooks/useAdminPlatformConfig";
-import { configKeyLabel, configValueInputType } from "@/services/adminPlatformConfigService";
+import {
+  configKeyLabel,
+  configValueInputType,
+} from "@/services/adminPlatformConfigService";
 import type {
   PlatformConfigEntry,
   PlatformConfigKey,
@@ -23,13 +26,25 @@ function formatDateTime(iso: string | null): string {
 }
 
 /** Renders a config value for display (truncated JSON for complex types) */
-function ValuePreview({ value }: { value: PlatformConfigValue }): React.ReactElement {
-  if (typeof value === "number" || typeof value === "boolean" || typeof value === "string") {
+function ValuePreview({
+  value,
+}: {
+  value: PlatformConfigValue;
+}): React.ReactElement {
+  if (
+    typeof value === "number" ||
+    typeof value === "boolean" ||
+    typeof value === "string"
+  ) {
     return <span className="font-mono text-sm">{String(value)}</span>;
   }
   const json = JSON.stringify(value, null, 2);
   const preview = json.length > 120 ? `${json.slice(0, 120)}…` : json;
-  return <span className="font-mono text-xs text-gray-500 whitespace-pre-wrap">{preview}</span>;
+  return (
+    <span className="font-mono text-xs text-gray-500 whitespace-pre-wrap">
+      {preview}
+    </span>
+  );
 }
 
 /** Single config row card */
@@ -47,7 +62,9 @@ function ConfigCard({
   return (
     <Card className="p-4 flex items-start justify-between gap-4">
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-gray-800">{configKeyLabel(entry.key)}</p>
+        <p className="text-sm font-semibold text-gray-800">
+          {configKeyLabel(entry.key)}
+        </p>
         {entry.description !== null && (
           <p className="text-xs text-gray-500 mt-0.5">{entry.description}</p>
         )}
@@ -61,7 +78,12 @@ function ConfigCard({
           </p>
         )}
       </div>
-      <Button variant="secondary" size="sm" onClick={handleEdit} className="shrink-0">
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={handleEdit}
+        className="shrink-0"
+      >
         Edit
       </Button>
     </Card>
@@ -89,14 +111,20 @@ function EditConfigModal({
   );
   const [jsonError, setJsonError] = useState<string | null>(null);
 
-  const handleNumChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setNumValue(Number(e.target.value));
-  }, []);
+  const handleNumChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setNumValue(Number(e.target.value));
+    },
+    [],
+  );
 
-  const handleJsonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setJsonValue(e.target.value);
-    setJsonError(null);
-  }, []);
+  const handleJsonChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setJsonValue(e.target.value);
+      setJsonError(null);
+    },
+    [],
+  );
 
   const handleSave = useCallback(() => {
     if (inputType === "number") {
@@ -119,7 +147,10 @@ function EditConfigModal({
         )}
         {inputType === "number" ? (
           <div>
-            <label htmlFor="config-num-value" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="config-num-value"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Value
             </label>
             <input
@@ -133,7 +164,10 @@ function EditConfigModal({
           </div>
         ) : (
           <div>
-            <label htmlFor="config-json-value" className="block text-sm font-medium text-gray-700 mb-1">
+            <label
+              htmlFor="config-json-value"
+              className="block text-sm font-medium text-gray-700 mb-1"
+            >
               Value (JSON)
             </label>
             <textarea
@@ -178,7 +212,11 @@ function AuditTable({
   }
 
   if (auditLog.length === 0) {
-    return <p className="text-sm text-gray-500 py-4">No configuration changes recorded yet.</p>;
+    return (
+      <p className="text-sm text-gray-500 py-4">
+        No configuration changes recorded yet.
+      </p>
+    );
   }
 
   return (
@@ -203,7 +241,9 @@ function AuditTable({
               <td className="px-4 py-3 font-mono text-xs max-w-[160px] truncate">
                 {row.newValue !== null ? JSON.stringify(row.newValue) : "—"}
               </td>
-              <td className="px-4 py-3 text-gray-600">{row.adminUserId ?? "—"}</td>
+              <td className="px-4 py-3 text-gray-600">
+                {row.adminUserId ?? "—"}
+              </td>
               <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
                 {formatDateTime(row.createdAt)}
               </td>
@@ -237,7 +277,9 @@ export default function AdminPlatformConfig(): React.ReactElement {
     fetchAuditLog,
   } = useAdminPlatformConfig();
 
-  const [editingEntry, setEditingEntry] = useState<PlatformConfigEntry | null>(null);
+  const [editingEntry, setEditingEntry] = useState<PlatformConfigEntry | null>(
+    null,
+  );
   const [showAudit, setShowAudit] = useState(false);
 
   useEffect(() => {
@@ -274,9 +316,12 @@ export default function AdminPlatformConfig(): React.ReactElement {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Platform Settings</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Platform Settings
+          </h1>
           <p className="text-sm text-gray-500 mt-1">
-            Manage platform-wide configuration. Changes are logged in the audit history.
+            Manage platform-wide configuration. Changes are logged in the audit
+            history.
           </p>
         </div>
         <Button variant="secondary" onClick={handleToggleAudit}>
@@ -288,7 +333,9 @@ export default function AdminPlatformConfig(): React.ReactElement {
       {showAudit && (
         <Card className="mb-6 overflow-hidden">
           <div className="px-4 py-3 border-b border-gray-100">
-            <h2 className="text-sm font-semibold text-gray-700">Configuration Change History</h2>
+            <h2 className="text-sm font-semibold text-gray-700">
+              Configuration Change History
+            </h2>
           </div>
           <AuditTable auditLog={auditLog} auditLoading={auditLoading} />
         </Card>
@@ -302,7 +349,8 @@ export default function AdminPlatformConfig(): React.ReactElement {
       ) : configs.length === 0 ? (
         <Card className="p-8 text-center">
           <p className="text-gray-500 text-sm">
-            No platform configuration found. Ensure the platform_config table has been seeded.
+            No platform configuration found. Ensure the platform_config table
+            has been seeded.
           </p>
         </Card>
       ) : (

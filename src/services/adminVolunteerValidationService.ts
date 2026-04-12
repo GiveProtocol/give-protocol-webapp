@@ -26,7 +26,9 @@ const EMPTY_RESULT: AdminValidationRequestResult = {
  * @param row - Raw row from admin_list_validation_requests RPC
  * @returns Mapped AdminValidationRequestItem
  */
-function mapRequestRow(row: AdminValidationRequestRow): AdminValidationRequestItem {
+function mapRequestRow(
+  row: AdminValidationRequestRow,
+): AdminValidationRequestItem {
   return {
     id: row.id,
     volunteerId: row.volunteer_id,
@@ -64,7 +66,11 @@ export async function getValidationStats(): Promise<AdminValidationStats | null>
 
     const row = data[0] as AdminValidationStatsRow;
     const pendingByOrg = (row.pending_by_org ?? []).map(
-      (o: { org_id: string; org_name: string | null; pending_count: number }) => ({
+      (o: {
+        org_id: string;
+        org_name: string | null;
+        pending_count: number;
+      }) => ({
         orgId: o.org_id,
         orgName: o.org_name,
         pendingCount: Number(o.pending_count),
@@ -102,19 +108,25 @@ export async function listValidationRequests(
   const limit = filters.limit ?? 50;
 
   try {
-    const { data, error } = await supabase.rpc("admin_list_validation_requests", {
-      p_status: filters.status ?? null,
-      p_org_id: filters.orgId ?? null,
-      p_volunteer_id: filters.volunteerId ?? null,
-      p_search: filters.search ?? null,
-      p_date_from: filters.dateFrom ?? null,
-      p_date_to: filters.dateTo ?? null,
-      p_page: page,
-      p_limit: limit,
-    });
+    const { data, error } = await supabase.rpc(
+      "admin_list_validation_requests",
+      {
+        p_status: filters.status ?? null,
+        p_org_id: filters.orgId ?? null,
+        p_volunteer_id: filters.volunteerId ?? null,
+        p_search: filters.search ?? null,
+        p_date_from: filters.dateFrom ?? null,
+        p_date_to: filters.dateTo ?? null,
+        p_page: page,
+        p_limit: limit,
+      },
+    );
 
     if (error) {
-      Logger.error("Error fetching admin validation request list", { error, filters });
+      Logger.error("Error fetching admin validation request list", {
+        error,
+        filters,
+      });
       return EMPTY_RESULT;
     }
 
@@ -179,9 +191,13 @@ export async function overrideValidation(
  * Returns volunteers exceeding configurable weekly hour thresholds. Requires admin JWT claims.
  * @returns Array of suspicious volunteer pattern rows
  */
-export async function getSuspiciousPatterns(): Promise<AdminSuspiciousVolunteerPattern[]> {
+export async function getSuspiciousPatterns(): Promise<
+  AdminSuspiciousVolunteerPattern[]
+> {
   try {
-    const { data, error } = await supabase.rpc("admin_suspicious_volunteer_patterns");
+    const { data, error } = await supabase.rpc(
+      "admin_suspicious_volunteer_patterns",
+    );
 
     if (error) {
       Logger.error("Error fetching suspicious volunteer patterns", { error });

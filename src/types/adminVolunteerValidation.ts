@@ -5,7 +5,11 @@
  * - rejected: validator rejected the hours
  * - expired: no response before deadline
  */
-export type ValidationRequestStatus = "pending" | "approved" | "rejected" | "expired";
+export type ValidationRequestStatus =
+  | "pending"
+  | "approved"
+  | "rejected"
+  | "expired";
 
 /** Aggregated pipeline statistics from admin_validation_stats RPC */
 export interface AdminValidationStats {
@@ -115,7 +119,11 @@ export interface AdminValidationStatsRow {
   avg_response_time_hours: number;
   expiration_rate: number;
   rejection_rate: number;
-  pending_by_org: Array<{ org_id: string; org_name: string | null; pending_count: number }>;
+  pending_by_org: Array<{
+    org_id: string;
+    org_name: string | null;
+    pending_count: number;
+  }>;
 }
 
 /** Raw database row from admin_suspicious_volunteer_patterns RPC (snake_case) */

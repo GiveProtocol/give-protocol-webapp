@@ -124,7 +124,12 @@ export async function getDonationSummary(
     });
 
     if (error) {
-      Logger.error("Error fetching donation summary", { error, dateFrom, dateTo, groupBy });
+      Logger.error("Error fetching donation summary", {
+        error,
+        dateFrom,
+        dateTo,
+        groupBy,
+      });
       return [];
     }
 

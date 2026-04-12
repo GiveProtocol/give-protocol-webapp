@@ -11,7 +11,12 @@ export type PlatformConfigKey =
   | "supported_networks";
 
 /** The JSONB value stored in platform_config — can be any JSON-serialisable type */
-export type PlatformConfigValue = number | string | boolean | Record<string, unknown> | unknown[];
+export type PlatformConfigValue =
+  | number
+  | string
+  | boolean
+  | Record<string, unknown>
+  | unknown[];
 
 /** A single platform configuration entry (camelCase) */
 export interface PlatformConfigEntry {
