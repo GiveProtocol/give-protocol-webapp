@@ -150,6 +150,7 @@ const TAB_LABELS: { id: ReportTab; label: string }[] = [
   { id: "platform-health", label: "Platform Health" },
 ];
 
+/** Tab navigation bar for switching between report types */
 function TabBar({
   active,
   onSelect,
@@ -194,6 +195,7 @@ const PRESETS: { id: DatePreset; label: string }[] = [
   { id: "custom", label: "Custom" },
 ];
 
+/** Date range selector with preset periods and custom date inputs */
 function DateRangeSelector({
   preset,
   customFrom,
@@ -262,6 +264,7 @@ function EmptyState({ message }: { message: string }): React.ReactElement {
   return <p className="text-center py-8 text-gray-500 text-sm">{message}</p>;
 }
 
+/** Pagination controls for paginated report tables */
 function ReportPagination({
   page,
   totalPages,

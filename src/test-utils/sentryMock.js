@@ -22,6 +22,7 @@ export function clearUserContext() {
   // No-op in tests
 }
 
+/** Mock: returns a no-op transaction handle */
 export function trackTransaction(_operation, _data) {
   return {
     finish: () => {

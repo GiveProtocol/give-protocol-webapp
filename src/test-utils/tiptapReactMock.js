@@ -5,6 +5,7 @@ import { jest } from "@jest/globals";
 
 export const useEditor = jest.fn(() => null);
 
+/** Mock EditorContent that renders a placeholder when an editor is provided */
 export const EditorContent = ({ editor, className }) =>
   editor ? (
     <div className={className} data-testid="editor-content">

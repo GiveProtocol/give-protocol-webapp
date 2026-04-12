@@ -109,14 +109,17 @@ export const TESTNET_CHAIN_IDS = [
 
 export const DEFAULT_CHAIN_ID = CHAIN_IDS.BASE;
 
+/** Mock: returns chain config for a given chain ID */
 export function getChainConfig(chainId) {
   return CHAIN_CONFIGS[chainId];
 }
 
+/** Mock: checks whether a chain ID is in the supported config map */
 export function isChainSupported(chainId) {
   return chainId in CHAIN_CONFIGS;
 }
 
+/** Mock: returns available chain configs, optionally including testnets */
 export function getAvailableChains(showTestnets) {
   const mainnetChains = SUPPORTED_CHAIN_IDS.map((id) => CHAIN_CONFIGS[id]);
   if (showTestnets) {
@@ -140,6 +143,7 @@ export const CONTRACT_ADDRESSES = Object.fromEntries(
   ]),
 );
 
+/** Mock: returns a dummy contract address for any contract/chain pair */
 export function getContractAddress(_contractName, _chainId) {
   return DUMMY_ADDRESS;
 }

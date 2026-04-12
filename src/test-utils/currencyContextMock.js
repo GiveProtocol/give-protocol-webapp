@@ -7,4 +7,5 @@ export const useCurrencyContext = jest.fn(() => ({
   isLoading: false,
 }));
 
+/** Mock CurrencyProvider pass-through */
 export const CurrencyProvider = ({ children }) => children;

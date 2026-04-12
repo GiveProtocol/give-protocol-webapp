@@ -69,6 +69,7 @@ export class SecurityManager {
     ];
   }
 
+  /** Returns the singleton SecurityManager instance, creating it if necessary */
   static getInstance(): SecurityManager {
     if (!this.instance) {
       this.instance = new SecurityManager();
@@ -76,6 +77,7 @@ export class SecurityManager {
     return this.instance;
   }
 
+  /** Builds the list of trusted domains from environment config and known service hosts */
   private initializeTrustedDomains(): string[] {
     this.domainInitializationCount++;
     return [
@@ -99,6 +101,7 @@ export class SecurityManager {
     ];
   }
 
+  /** Constructs the Content-Security-Policy and other security headers */
   private initializeSecurityHeaders(): SecurityHeaders {
     const trustedDomainsList = this.trustedDomains.join(" ");
 
@@ -128,6 +131,7 @@ export class SecurityManager {
     };
   }
 
+  /** Initializes CSRF tokens, security headers, and runtime monitoring */
   initialize(): void {
     try {
       // Initialize CSRF token
@@ -141,6 +145,7 @@ export class SecurityManager {
     }
   }
 
+  /** Logs the configured security headers for diagnostic purposes */
   private addSecurityHeaders(): void {
     Object.entries(this.securityHeaders).forEach(([header, value]) => {
       if (typeof document !== "undefined") {
@@ -149,6 +154,7 @@ export class SecurityManager {
     });
   }
 
+  /** Registers error, DOM mutation, and network request monitors */
   private startSecurityMonitoring(): void {
     window.addEventListener("error", this.handleError.bind(this));
     this.monitorDOMManipulation();
@@ -182,6 +188,7 @@ export class SecurityManager {
     }
   }
 
+  /** Observes DOM mutations and removes dangerous elements or attributes */
   private monitorDOMManipulation(): void {
     const observer = new MutationObserver((mutations) => {
       mutations.forEach((mutation) => {

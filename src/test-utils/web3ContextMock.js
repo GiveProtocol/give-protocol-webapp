@@ -16,4 +16,5 @@ export const useWeb3 = jest.fn(() => ({
   switchChain: jest.fn(),
 }));
 
+/** Mock Web3Provider pass-through */
 export const Web3Provider = ({ children }) => children;

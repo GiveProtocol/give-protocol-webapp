@@ -269,6 +269,7 @@ interface OverrideModalProps {
   onClose: () => void;
 }
 
+/** Confirmation modal for admin override of a validation request */
 function OverrideModal({
   request,
   overriding,

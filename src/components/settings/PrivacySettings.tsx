@@ -36,6 +36,7 @@ export const PrivacySettings: React.FC = () => {
   useEffect(() => {
     let cancelled = false;
 
+    /** Fetches any active erasure or export request on mount */
     const loadExistingRequests = async (): Promise<void> => {
       try {
         const [erasureRequest, exportRequest] = await Promise.all([

@@ -62,6 +62,7 @@ export const useChain = jest.fn(() => ({
   getChain: jest.fn((chainId) => MOCK_CHAINS.find((c) => c.id === chainId)),
 }));
 
+/** Mock ChainProvider pass-through */
 export const ChainProvider = ({ children }) => children;
 
 // Re-export CHAIN_IDS and CHAIN_CONFIGS so ChainContext re-exports work

@@ -13,4 +13,5 @@ export const useSettings = jest.fn(() => ({
   currencyOptions: [],
 }));
 
+/** Mock SettingsProvider pass-through */
 export const SettingsProvider = ({ children }) => children;

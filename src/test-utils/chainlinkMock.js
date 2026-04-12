@@ -158,16 +158,19 @@ export const COINGECKO_TO_SYMBOL = {
   polkadot: "DOT",
 };
 
+/** Mock: returns the feed config for a chain + symbol pair */
 export function getChainlinkFeed(chainId, symbol) {
   const chainFeeds = CHAINLINK_FEEDS[chainId];
   if (!chainFeeds) return undefined;
   return chainFeeds[symbol];
 }
 
+/** Mock: checks whether a sequencer feed exists for the given chain */
 export function hasSequencerFeed(chainId) {
   return chainId in SEQUENCER_UPTIME_FEEDS;
 }
 
+/** Mock: returns the sequencer uptime feed address for a chain */
 export function getSequencerFeed(chainId) {
   return SEQUENCER_UPTIME_FEEDS[chainId];
 }

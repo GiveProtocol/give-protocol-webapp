@@ -19,4 +19,5 @@ export const useMultiChainContext = jest.fn(() => ({
   clearError: jest.fn(),
 }));
 
+/** Mock MultiChainProvider pass-through */
 export const MultiChainProvider = ({ children }) => children;

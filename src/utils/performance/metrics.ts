@@ -85,6 +85,7 @@ export class PerformanceMetrics {
     }
   }
 
+  /** Records a named metric value and evicts the oldest entry when at capacity */
   private addMetric(name: string, value: number): void {
     this.metrics.push({
       name,

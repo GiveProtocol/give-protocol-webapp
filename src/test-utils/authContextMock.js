@@ -33,4 +33,5 @@ export const useAuth = jest.fn(() => ({
   sendUsernameReminder: jest.fn(),
 }));
 
+/** Mock AuthProvider pass-through */
 export const AuthProvider = ({ children }) => children;

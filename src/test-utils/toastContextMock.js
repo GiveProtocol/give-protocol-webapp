@@ -5,4 +5,5 @@ import { jest } from "@jest/globals";
 
 export const useToast = jest.fn(() => ({ showToast: jest.fn() }));
 
+/** Mock ToastProvider pass-through */
 export const ToastProvider = ({ children }) => children;
