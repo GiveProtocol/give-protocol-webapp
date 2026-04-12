@@ -192,6 +192,40 @@ function ActionModal({
   );
 }
 
+// ─── Charity table ────────────────────────────────────────────────────────────
+
+/** Charity list table with header and rows */
+function CharityTable({
+  charities,
+  onAction,
+  updating,
+}: {
+  charities: AdminCharityListItem[];
+  onAction: (charity: AdminCharityListItem, action: string) => void;
+  updating: boolean;
+}): React.ReactElement {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="bg-gray-50">
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {charities.map((charity) => (
+            <CharityRow key={charity.id} charity={charity} onAction={onAction} updating={updating} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 // ─── Charity row ──────────────────────────────────────────────────────────────
 
 function CharityRow({
@@ -336,29 +370,7 @@ const AdminCharityManagement: React.FC = () => {
         )}
 
         {!loading && result.charities.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.charities.map((charity) => (
-                  <CharityRow
-                    key={charity.id}
-                    charity={charity}
-                    onAction={handleAction}
-                    updating={updating}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <CharityTable charities={result.charities} onAction={handleAction} updating={updating} />
         )}
 
         <Pagination

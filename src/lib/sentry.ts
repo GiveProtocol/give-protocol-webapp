@@ -1,5 +1,10 @@
 import * as Sentry from "@sentry/react";
 
+/**
+ * Initializes Sentry error tracking for production environments.
+ * Skipped in development. Requires VITE_SENTRY_DSN to be configured.
+ * Enables browser tracing, session replay, and sensitive data filtering.
+ */
 export function initSentry() {
   // Only initialize Sentry in production
   if (!import.meta.env.PROD) {
@@ -80,6 +85,11 @@ export function initSentry() {
 }
 
 // Helper functions for custom tracking
+/**
+ * Captures an error exception in Sentry (production) or logs to console (development).
+ * @param error - The Error object to capture
+ * @param context - Optional key-value metadata to attach to the error report
+ */
 export function trackError(error: Error, context?: Record<string, unknown>) {
   if (import.meta.env.PROD) {
     Sentry.withScope((scope) => {
@@ -173,6 +183,13 @@ export function clearUserContext() {
 }
 
 // Transaction tracking for Web3 operations
+/**
+ * Tracks a Web3 transaction lifecycle in Sentry as a breadcrumb.
+ * Captures failed transactions as exceptions in production.
+ * @param operation - Name of the transaction operation (e.g., "donate", "approve")
+ * @param data - Optional transaction details including hash, amount, token, status
+ * @returns Object with a `finish` method to record final transaction status
+ */
 export function trackTransaction(
   operation: string,
   data?: {
@@ -222,6 +239,12 @@ export function trackTransaction(
 }
 
 // Custom event capture for testing and debugging
+/**
+ * Captures a custom message event in Sentry with an optional breadcrumb and severity level.
+ * @param message - The event message to capture
+ * @param data - Optional key-value data to attach as a breadcrumb
+ * @param level - Severity level: "info" (default), "warning", or "error"
+ */
 export function captureCustomEvent(
   message: string,
   data?: Record<string, unknown>,

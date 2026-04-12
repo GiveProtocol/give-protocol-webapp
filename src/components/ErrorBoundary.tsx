@@ -19,6 +19,10 @@ interface State {
 const MAX_RECOVERY_ATTEMPTS = 3;
 const RECOVERY_COOLDOWN = 5000; // 5 seconds
 
+/**
+ * React error boundary that catches rendering errors and displays a fallback UI.
+ * Supports optional custom fallback content, error callback, and limited auto-recovery attempts.
+ */
 export class ErrorBoundary extends Component<Props, State> {
   private lastRecoveryAttempt = 0;
   private cacheOperationsCount = 0;

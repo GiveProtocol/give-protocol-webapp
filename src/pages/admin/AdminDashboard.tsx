@@ -1,19 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components/ui/Card';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { useAuth } from '@/contexts/AuthContext';
-import { trackEvent } from '@/lib/sentry';
+import React, { useState, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/Card";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useAuth } from "@/contexts/AuthContext";
+import { trackEvent } from "@/lib/sentry";
 import {
   getAdminDashboardStats,
   getAdminRecentActivity,
   getAdminAlerts,
-} from '@/services/adminDashboardService';
+} from "@/services/adminDashboardService";
 import type {
   AdminDashboardStats,
   AdminActivityEvent,
   AdminAlert,
-} from '@/types/adminDashboard';
+} from "@/types/adminDashboard";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -21,9 +21,9 @@ import type {
 
 /** Formats a number as a USD currency string. */
 function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
     maximumFractionDigits: 0,
   }).format(amount);
 }
@@ -43,40 +43,49 @@ function formatRelativeTime(timestamp: string): string {
 /** Returns a display label and colour class for a given activity event type. */
 function getActivityMeta(type: string): { label: string; colourClass: string } {
   switch (type) {
-    case 'donation':
-      return { label: 'Donation', colourClass: 'text-green-700 bg-green-100' };
-    case 'registration':
-      return { label: 'Registration', colourClass: 'text-blue-700 bg-blue-100' };
-    case 'verification':
-      return { label: 'Verification', colourClass: 'text-purple-700 bg-purple-100' };
-    case 'volunteer_hours':
-      return { label: 'Volunteer Hours', colourClass: 'text-orange-700 bg-orange-100' };
+    case "donation":
+      return { label: "Donation", colourClass: "text-green-700 bg-green-100" };
+    case "registration":
+      return {
+        label: "Registration",
+        colourClass: "text-blue-700 bg-blue-100",
+      };
+    case "verification":
+      return {
+        label: "Verification",
+        colourClass: "text-purple-700 bg-purple-100",
+      };
+    case "volunteer_hours":
+      return {
+        label: "Volunteer Hours",
+        colourClass: "text-orange-700 bg-orange-100",
+      };
     default:
-      return { label: 'Activity', colourClass: 'text-gray-700 bg-gray-100' };
+      return { label: "Activity", colourClass: "text-gray-700 bg-gray-100" };
   }
 }
 
 /** Returns colour class for alert severity. */
 function getAlertSeverityClass(severity: string): string {
   switch (severity) {
-    case 'high':
-      return 'border-l-red-500 bg-red-50';
-    case 'medium':
-      return 'border-l-yellow-500 bg-yellow-50';
+    case "high":
+      return "border-l-red-500 bg-red-50";
+    case "medium":
+      return "border-l-yellow-500 bg-yellow-50";
     default:
-      return 'border-l-blue-500 bg-blue-50';
+      return "border-l-blue-500 bg-blue-50";
   }
 }
 
 /** Returns text colour class for alert severity badge. */
 function getAlertBadgeClass(severity: string): string {
   switch (severity) {
-    case 'high':
-      return 'text-red-700 bg-red-100';
-    case 'medium':
-      return 'text-yellow-700 bg-yellow-100';
+    case "high":
+      return "text-red-700 bg-red-100";
+    case "medium":
+      return "text-yellow-700 bg-yellow-100";
     default:
-      return 'text-blue-700 bg-blue-100';
+      return "text-blue-700 bg-blue-100";
   }
 }
 
@@ -106,14 +115,18 @@ function StatCard({
         <div className="mt-3 flex gap-4 text-xs text-gray-500">
           {trend7d !== undefined && (
             <span>
-              <span className="font-semibold text-gray-700">{trend7d.toLocaleString()}</span>
-              {' '}last 7d
+              <span className="font-semibold text-gray-700">
+                {trend7d.toLocaleString()}
+              </span>{" "}
+              last 7d
             </span>
           )}
           {trend30d !== undefined && (
             <span>
-              <span className="font-semibold text-gray-700">{trend30d.toLocaleString()}</span>
-              {' '}last 30d
+              <span className="font-semibold text-gray-700">
+                {trend30d.toLocaleString()}
+              </span>{" "}
+              last 30d
             </span>
           )}
           {trendLabel && <span className="text-gray-400">{trendLabel}</span>}
@@ -138,8 +151,12 @@ function ActivityItem({
         >
           {meta.label}
         </span>
-        <p className="font-medium text-gray-900 mt-1 truncate">{activity.description}</p>
-        <p className="text-sm text-gray-500">{formatRelativeTime(activity.eventTime)}</p>
+        <p className="font-medium text-gray-900 mt-1 truncate">
+          {activity.description}
+        </p>
+        <p className="text-sm text-gray-500">
+          {formatRelativeTime(activity.eventTime)}
+        </p>
       </div>
       {activity.amountUsd != null && (
         <p className="font-semibold text-green-600 text-right ml-4 shrink-0">
@@ -166,7 +183,9 @@ function AlertItem({ alert }: { alert: AdminAlert }): React.ReactElement {
           <p className="text-sm font-semibold text-gray-800">{alert.title}</p>
         </div>
         <p className="text-sm text-gray-600 truncate">{alert.description}</p>
-        <p className="text-xs text-gray-400 mt-1">{formatRelativeTime(alert.createdAt)}</p>
+        <p className="text-xs text-gray-400 mt-1">
+          {formatRelativeTime(alert.createdAt)}
+        </p>
       </div>
     </div>
   );
@@ -183,7 +202,10 @@ function QuickActionButton({
   onClick?: () => void;
 }): React.ReactElement {
   return (
-    <button onClick={onClick} className="p-4 border rounded-lg hover:bg-gray-50 text-left">
+    <button
+      onClick={onClick}
+      className="p-4 border rounded-lg hover:bg-gray-50 text-left"
+    >
       <span className="font-medium block mb-1">{title}</span>
       <span className="text-sm text-gray-500 block">{description}</span>
     </button>
@@ -217,18 +239,17 @@ const AdminDashboard: React.FC = () => {
       ]);
 
       if (!statsData) {
-        throw new Error(
-          'Failed to load dashboard statistics. The get_admin_dashboard_stats RPC function may not exist in Supabase. Check the browser console for details.'
-        );
+        throw new Error("Failed to load dashboard statistics from Supabase.");
       }
 
       setStats(statsData);
       setActivity(activityData.events);
       setAlerts(alertsData);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to load dashboard data.';
+      const msg =
+        err instanceof Error ? err.message : "Failed to load dashboard data.";
       setError(msg);
-      trackEvent('admin_dashboard_error', {
+      trackEvent("admin_dashboard_error", {
         error: msg,
         userId: user?.id,
       });
@@ -239,15 +260,19 @@ const AdminDashboard: React.FC = () => {
 
   useEffect(() => {
     fetchAll();
-    trackEvent('admin_dashboard_viewed', { userId: user?.id });
+    trackEvent("admin_dashboard_viewed", { userId: user?.id });
   }, [user?.id, fetchAll]);
 
   const handleNavigateImpactMetrics = useCallback(() => {
-    navigate('/admin/impact-metrics');
+    navigate("/admin/impact-metrics");
   }, [navigate]);
 
   const handleNavigateCharities = useCallback(() => {
-    navigate('/admin/charities');
+    navigate("/admin/charities");
+  }, [navigate]);
+
+  const handleNavigateDonations = useCallback(() => {
+    navigate("/admin/donations");
   }, [navigate]);
 
   if (loading) {
@@ -262,7 +287,9 @@ const AdminDashboard: React.FC = () => {
     return (
       <div className="flex min-h-screen items-center justify-center">
         <Card className="p-6 text-center">
-          <h2 className="text-xl font-semibold text-red-600 mb-4">Error Loading Dashboard</h2>
+          <h2 className="text-xl font-semibold text-red-600 mb-4">
+            Error Loading Dashboard
+          </h2>
           <p className="text-gray-600 mb-4">{error}</p>
           <button
             onClick={fetchAll}
@@ -301,7 +328,7 @@ const AdminDashboard: React.FC = () => {
             </span>
           </h2>
           {alerts.map((alert) => (
-            <AlertItem key={`${alert.alertType}-${alert.entityId}`} alert={alert} />
+            <AlertItem key={`${alert.alertType}-${alert.entityId}-${alert.createdAt}`} alert={alert} />
           ))}
         </Card>
       )}
@@ -354,7 +381,9 @@ const AdminDashboard: React.FC = () => {
 
       {/* Recent Activity */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Recent Activity</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          Recent Activity
+        </h2>
         {activity.length === 0 ? (
           <p className="text-gray-500 text-sm">No recent activity.</p>
         ) : (
@@ -364,15 +393,32 @@ const AdminDashboard: React.FC = () => {
 
       {/* Quick Actions */}
       <Card className="p-6">
-        <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
+        <h2 className="text-xl font-semibold text-gray-900 mb-4">
+          Quick Actions
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <QuickActionButton title="View Reports" description="Generate detailed analytics" />
-          <QuickActionButton title="Manage Charities" description="Review and approve organizations" onClick={handleNavigateCharities} />
-          <QuickActionButton title="System Settings" description="Configure platform parameters" />
+          <QuickActionButton
+            title="View Reports"
+            description="Generate detailed analytics"
+          />
+          <QuickActionButton
+            title="Manage Charities"
+            description="Review and approve organizations"
+            onClick={handleNavigateCharities}
+          />
+          <QuickActionButton
+            title="System Settings"
+            description="Configure platform parameters"
+          />
           <QuickActionButton
             title="Manage Impact Metrics"
             description="Configure impact calculator data"
             onClick={handleNavigateImpactMetrics}
+          />
+          <QuickActionButton
+            title="Donation Monitoring"
+            description="Monitor, flag, and report on donations"
+            onClick={handleNavigateDonations}
           />
         </div>
       </Card>

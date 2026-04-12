@@ -104,7 +104,7 @@ export function useAdminDonors() {
   );
 
   const suspendDonor = useCallback(
-    async (
+    (
       userId: string,
       reason: string,
       currentFilters?: AdminDonorListFilters,
@@ -120,7 +120,7 @@ export function useAdminDonors() {
   );
 
   const reinstateDonor = useCallback(
-    async (
+    (
       userId: string,
       reason?: string,
       currentFilters?: AdminDonorListFilters,
@@ -136,7 +136,7 @@ export function useAdminDonors() {
   );
 
   const banDonor = useCallback(
-    async (
+    (
       userId: string,
       reason: string,
       currentFilters?: AdminDonorListFilters,

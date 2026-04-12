@@ -1,3 +1,8 @@
+/**
+ * Returns environment variables compatible with both Vite and Node/Jest environments.
+ * Tries import.meta.env first (Vite), then process.env (Node/Jest).
+ * @returns Environment variable map for the current runtime
+ */
 // Environment utility that works in both Vite and test environments
 export const getEnv = () => {
   // Check if we're in a Vite environment via global access
@@ -13,7 +18,9 @@ export const getEnv = () => {
   // For Vite environments where import.meta is available, we'll try to access it
   // This avoids Jest parsing import.meta at compile time by using dynamic property access
   try {
-    const globalImport = globalThis as unknown as { import?: { meta?: { env?: unknown } } };
+    const globalImport = globalThis as unknown as {
+      import?: { meta?: { env?: unknown } };
+    };
     if (globalImport.import?.meta?.env) {
       return globalImport.import.meta.env;
     }

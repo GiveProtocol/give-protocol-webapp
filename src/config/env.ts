@@ -7,6 +7,12 @@ const parseStringArray = (value: string | string[]): string[] => {
   return [];
 };
 
+/**
+ * Gets the value of an environment variable by key.
+ * Uses import.meta.env in Vite runtime and falls back to process.env in Node/test environments.
+ * @param key - The environment variable name
+ * @returns The variable value, or undefined if not set
+ */
 // Helper to get environment variable with fallback to process.env for test environments
 export const getEnv = (key: string): string | undefined => {
   // Check if import.meta.env is available (Vite runtime)
