@@ -328,7 +328,10 @@ const AdminDashboard: React.FC = () => {
             </span>
           </h2>
           {alerts.map((alert) => (
-            <AlertItem key={`${alert.alertType}-${alert.entityId}-${alert.createdAt}`} alert={alert} />
+            <AlertItem
+              key={`${alert.alertType}-${alert.entityId}-${alert.createdAt}`}
+              alert={alert}
+            />
           ))}
         </Card>
       )}
