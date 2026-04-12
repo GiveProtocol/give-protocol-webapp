@@ -277,7 +277,10 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
             isPhantom?: boolean;
             isMetaMask?: boolean;
             providers?: ProviderLike[];
-            request: (args: { method: string; params?: unknown[] }) => Promise<unknown>;
+            request: (args: {
+              method: string;
+              params?: unknown[];
+            }) => Promise<unknown>;
           };
           const ethereum = window.ethereum as ProviderLike;
 
@@ -285,11 +288,13 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
           // providers[] array with a genuine MetaMask entry, skip auto-restore
           // entirely — the user must explicitly choose a wallet.
           let safeProvider: ProviderLike | null = null;
-          if (Array.isArray(ethereum.providers) && ethereum.providers.length > 0) {
+          if (
+            Array.isArray(ethereum.providers) &&
+            ethereum.providers.length > 0
+          ) {
             safeProvider =
-              ethereum.providers.find(
-                (p) => p.isMetaMask && !p.isPhantom,
-              ) ?? null;
+              ethereum.providers.find((p) => p.isMetaMask && !p.isPhantom) ??
+              null;
           } else if (!ethereum.isPhantom) {
             safeProvider = ethereum;
           }
