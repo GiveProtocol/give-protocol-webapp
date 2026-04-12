@@ -60,7 +60,12 @@ export async function getAdminDashboardStats(): Promise<AdminDashboardStats | nu
     const { data, error } = await supabase.rpc("get_admin_dashboard_stats");
 
     if (error) {
-      Logger.error("Error fetching admin dashboard stats", { error });
+      Logger.error("Error fetching admin dashboard stats", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+      });
       return null;
     }
 

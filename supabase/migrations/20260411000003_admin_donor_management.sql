@@ -95,7 +95,7 @@ BEGIN
     FROM profiles p
     JOIN auth.users au ON au.id = p.user_id
     LEFT JOIN user_identities ui ON ui.user_id = p.user_id
-    WHERE p.role = 'donor'
+    WHERE p.type = 'donor'
       AND (p_status      IS NULL OR p.user_status = p_status)
       AND (p_auth_method IS NULL OR COALESCE(ui.primary_auth_method, 'email') = p_auth_method)
       AND (p_date_from   IS NULL OR p.created_at >= p_date_from)

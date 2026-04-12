@@ -217,7 +217,9 @@ const AdminDashboard: React.FC = () => {
       ]);
 
       if (!statsData) {
-        throw new Error('Failed to load dashboard statistics from Supabase.');
+        throw new Error(
+          'Failed to load dashboard statistics. The get_admin_dashboard_stats RPC function may not exist in Supabase. Check the browser console for details.'
+        );
       }
 
       setStats(statsData);
@@ -298,8 +300,8 @@ const AdminDashboard: React.FC = () => {
               ({alerts.length} pending)
             </span>
           </h2>
-          {alerts.map((alert, idx) => (
-            <AlertItem key={`${alert.alertType}-${alert.entityId}-${idx}`} alert={alert} />
+          {alerts.map((alert) => (
+            <AlertItem key={`${alert.alertType}-${alert.entityId}`} alert={alert} />
           ))}
         </Card>
       )}

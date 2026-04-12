@@ -60,14 +60,13 @@ BEGIN
   FROM profiles
   WHERE type ='volunteer';
 
-  -- Crypto donation volume (sum of usd_value from donations table)
-  SELECT COALESCE(SUM(usd_value), 0)
-  INTO v_crypto_volume_usd
-  FROM donations
-  WHERE status = 'confirmed';
-
-  -- Fiat donation volume (sum of amount in USD from fiat_donations)
+  -- Crypto donation volume (sum of amount from donations table)
   SELECT COALESCE(SUM(amount), 0)
+  INTO v_crypto_volume_usd
+  FROM donations;
+
+  -- Fiat donation volume (sum of amount_cents / 100 from fiat_donations)
+  SELECT COALESCE(SUM(amount_cents), 0) / 100
   INTO v_fiat_volume_usd
   FROM fiat_donations
   WHERE status = 'completed';
@@ -78,7 +77,7 @@ BEGIN
   SELECT COUNT(*)
   INTO v_donations_7d
   FROM (
-    SELECT id FROM donations WHERE created_at >= NOW() - INTERVAL '7 days' AND status = 'confirmed'
+    SELECT id FROM donations WHERE created_at >= NOW() - INTERVAL '7 days'
     UNION ALL
     SELECT id FROM fiat_donations WHERE created_at >= NOW() - INTERVAL '7 days' AND status = 'completed'
   ) d;
@@ -87,7 +86,7 @@ BEGIN
   SELECT COUNT(*)
   INTO v_donations_30d
   FROM (
-    SELECT id FROM donations WHERE created_at >= NOW() - INTERVAL '30 days' AND status = 'confirmed'
+    SELECT id FROM donations WHERE created_at >= NOW() - INTERVAL '30 days'
     UNION ALL
     SELECT id FROM fiat_donations WHERE created_at >= NOW() - INTERVAL '30 days' AND status = 'completed'
   ) d;
@@ -179,13 +178,12 @@ BEGIN
       COALESCE(dp.name, du.email, 'Unknown donor')         AS actor_name,
       d.charity_id                                            AS entity_id,
       'donation'::TEXT                                        AS entity_type,
-      d.usd_value                                             AS amount_usd,
+      d.amount                                                AS amount_usd,
       d.created_at                                            AS event_time
     FROM donations d
     LEFT JOIN profiles dp ON dp.id = d.donor_id
     LEFT JOIN auth.users du ON du.id = dp.user_id
     LEFT JOIN profiles cp ON cp.id = d.charity_id
-    WHERE d.status = 'confirmed'
 
     UNION ALL
 
@@ -198,7 +196,7 @@ BEGIN
       COALESCE(dp.name, fdu.email, 'Unknown donor'),
       fd.charity_id,
       'donation'::TEXT,
-      fd.amount,
+      fd.amount_cents::NUMERIC / 100,
       fd.created_at
     FROM fiat_donations fd
     LEFT JOIN profiles dp ON dp.id = fd.donor_id
@@ -252,7 +250,7 @@ BEGIN
       NULL::NUMERIC,
       vh.created_at
     FROM volunteer_hours vh
-    LEFT JOIN profiles vp ON vp.id = vh.volunteer_id
+    LEFT JOIN profiles vp ON vp.user_id = vh.volunteer_id
     LEFT JOIN auth.users vu ON vu.id = vp.user_id
     LEFT JOIN volunteer_opportunities op ON op.id = vh.opportunity_id
   ),
@@ -318,7 +316,7 @@ BEGIN
     'pending_verification'::TEXT    AS alert_type,
     'high'::TEXT                    AS severity,
     'Pending Charity Verification'::TEXT AS title,
-    'Charity awaiting verification: ' || COALESCE(p.name, 'Unknown charity'),
+    ('Charity awaiting verification: ' || COALESCE(p.name, 'Unknown charity'))::TEXT,
     cv.charity_id                   AS entity_id,
     'charity_verification'::TEXT    AS entity_type,
     cv.created_at,
@@ -326,7 +324,6 @@ BEGIN
   FROM charity_verifications cv
   LEFT JOIN profiles p ON p.id = cv.charity_id
   WHERE cv.status = 'pending'
-  ORDER BY cv.created_at ASC
 
   UNION ALL
 
@@ -336,17 +333,16 @@ BEGIN
     'expired_validation'::TEXT,
     'medium'::TEXT,
     'Expired Validation Request'::TEXT,
-    'Validation request expired for volunteer: ' || COALESCE(vp.name, vru.email, 'Unknown'),
+    ('Validation request expired for volunteer: ' || COALESCE(vp.name, vru.email, 'Unknown'))::TEXT,
     vr.id,
     'validation_request'::TEXT,
     vr.created_at,
     COUNT(*) OVER ()
   FROM validation_requests vr
-  LEFT JOIN profiles vp ON vp.id = vr.volunteer_id
+  LEFT JOIN profiles vp ON vp.user_id = vr.volunteer_id
   LEFT JOIN auth.users vru ON vru.id = vp.user_id
   WHERE vr.status = 'pending'
     AND vr.created_at < NOW() - INTERVAL '90 days'
-  ORDER BY vr.created_at ASC
 
   UNION ALL
 
@@ -355,16 +351,17 @@ BEGIN
     'removal_request'::TEXT,
     'high'::TEXT,
     'Pending Removal Request'::TEXT,
-    'Account removal requested by: ' || COALESCE(p.name, rru.email, 'Unknown user'),
+    ('Account removal requested by: ' || COALESCE(rp.name, rru.email, 'Unknown user'))::TEXT,
     rr.user_id,
     'user'::TEXT,
     rr.created_at,
     COUNT(*) OVER ()
   FROM removal_requests rr
-  LEFT JOIN profiles p ON p.id = rr.user_id
-  LEFT JOIN auth.users rru ON rru.id = p.user_id
+  LEFT JOIN profiles rp ON rp.user_id = rr.user_id
+  LEFT JOIN auth.users rru ON rru.id = rp.user_id
   WHERE rr.status = 'pending'
-  ORDER BY rr.created_at ASC;
+
+  ORDER BY created_at ASC;
 
 END;
 $$;

@@ -34,6 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
     };
   }
 
+  /** Derives error state from a caught error to trigger the fallback UI. */
   public static getDerivedStateFromError(error: Error): Partial<State> {
     return {
       hasError: true,
@@ -123,6 +124,7 @@ export class ErrorBoundary extends Component<Props, State> {
     }
   };
 
+  /** Clears all browser caches to aid error recovery. */
   private async clearCache() {
     this.cacheOperationsCount++;
     if ("caches" in window) {
@@ -151,6 +153,7 @@ export class ErrorBoundary extends Component<Props, State> {
     window.location.href = "/";
   };
 
+  /** Renders children or an error fallback UI when an error has been caught. */
   public render() {
     if (this.state.hasError) {
       if (this.props.fallback) {

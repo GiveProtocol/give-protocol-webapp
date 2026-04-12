@@ -45,9 +45,7 @@ interface SettingsContextType {
   currencyOptions: { value: Currency; label: string; symbol: string }[];
 }
 
-const SettingsContext = createContext<SettingsContextType | undefined>(
-  undefined,
-);
+const SettingsContext = createContext<SettingsContextType | undefined>();
 
 const languageOptions: { value: Language; label: string }[] = [
   { value: "en", label: "English" },
@@ -102,6 +100,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
 
   // Hydrate state from localStorage/cookies after mount to avoid SSR mismatch
   useEffect(() => {
+    /** Retrieves a cookie value by name from document.cookie. */
     const getCookie = (name: string): string | null => {
       const value = `; ${document.cookie}`;
       const parts = value.split(`; ${name}=`);
@@ -163,14 +162,17 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [theme]);
 
+  /** Updates the current language setting. */
   const setLanguage = (newLanguage: Language) => {
     setLanguageState(newLanguage);
   };
 
+  /** Updates the current currency setting. */
   const setCurrency = (newCurrency: Currency) => {
     setCurrencyState(newCurrency);
   };
 
+  /** Updates the current theme setting. */
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
   };
