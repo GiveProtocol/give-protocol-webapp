@@ -89,6 +89,7 @@ const AdminPlatformConfig = lazy(
 const AdminContentModeration = lazy(
   () => import("@/pages/admin/AdminContentModeration"),
 );
+const AdminReports = lazy(() => import("@/pages/admin/AdminReports"));
 const _SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
 // Lazy load cause pages
@@ -254,6 +255,18 @@ export function AppRoutes() {
               <RouteTransition>
                 <Suspense fallback={<LoadingFallback />}>
                   <AdminContentModeration />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/reports"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminReports />
                 </Suspense>
               </RouteTransition>
             </ProtectedRoute>
