@@ -86,6 +86,7 @@ export function getChainContractAddresses(
 
   const useLegacyFallback = chainId === 1287;
 
+  /** Resolves a contract address from env vars, falling back to legacy names for Moonbase. */
   const getAddr = (suffix: string): string | undefined => {
     const value = getEnv(`${prefix}_${suffix}_ADDRESS`);
     if (value) return value;
