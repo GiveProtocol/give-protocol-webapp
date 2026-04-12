@@ -99,7 +99,11 @@ export async function getAdminRecentActivity(
     });
 
     if (error) {
-      Logger.error("Error fetching admin recent activity", { error, page, limit });
+      Logger.error("Error fetching admin recent activity", {
+        error,
+        page,
+        limit,
+      });
       return EMPTY_ACTIVITY_RESULT;
     }
 
