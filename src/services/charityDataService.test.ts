@@ -39,23 +39,56 @@ describe("charityDataService", () => {
     };
 
     it("should return the charity record on success", async () => {
-      setMockResult("charity_organizations", { data: mockRecord, error: null });
+      const { supabase } = await import("@/lib/supabase");
+      (supabase.rpc as jest.Mock).mockResolvedValueOnce({
+        data: [mockRecord],
+        error: null,
+      });
 
       const result = await getCharityRecordByEin("123456789");
 
       expect(result).toEqual(mockRecord);
+      expect(supabase.rpc).toHaveBeenCalledWith("get_charity_record_by_ein", {
+        lookup_ein: "123456789",
+      });
     });
 
-    it("should strip hyphens from the EIN before querying", async () => {
-      setMockResult("charity_organizations", { data: mockRecord, error: null });
+    it("should pass hyphenated EIN to RPC for server-side normalization", async () => {
+      const { supabase } = await import("@/lib/supabase");
+      (supabase.rpc as jest.Mock).mockResolvedValueOnce({
+        data: [mockRecord],
+        error: null,
+      });
 
       const result = await getCharityRecordByEin("12-3456789");
 
       expect(result).toEqual(mockRecord);
+      expect(supabase.rpc).toHaveBeenCalledWith("get_charity_record_by_ein", {
+        lookup_ein: "12-3456789",
+      });
+    });
+
+    it("should return null for empty EIN", async () => {
+      const result = await getCharityRecordByEin("");
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null when RPC returns empty array", async () => {
+      const { supabase } = await import("@/lib/supabase");
+      (supabase.rpc as jest.Mock).mockResolvedValueOnce({
+        data: [],
+        error: null,
+      });
+
+      const result = await getCharityRecordByEin("000000000");
+
+      expect(result).toBeNull();
     });
 
     it("should return null when supabase returns an error", async () => {
-      setMockResult("charity_organizations", {
+      const { supabase } = await import("@/lib/supabase");
+      (supabase.rpc as jest.Mock).mockResolvedValueOnce({
         data: null,
         error: { message: "Not found", code: "PGRST116" },
       });
@@ -67,30 +100,24 @@ describe("charityDataService", () => {
 
     it("should return null when an Error exception is thrown", async () => {
       const { supabase } = await import("@/lib/supabase");
-      const originalFrom = supabase.from;
-      supabase.from = jest.fn(() => {
+      (supabase.rpc as jest.Mock).mockImplementationOnce(() => {
         throw new Error("Network error");
       });
 
       const result = await getCharityRecordByEin("123456789");
 
       expect(result).toBeNull();
-
-      supabase.from = originalFrom;
     });
 
     it("should return null when a non-Error exception is thrown", async () => {
       const { supabase } = await import("@/lib/supabase");
-      const originalFrom = supabase.from;
-      supabase.from = jest.fn(() => {
+      (supabase.rpc as jest.Mock).mockImplementationOnce(() => {
         throw "string error";
       });
 
       const result = await getCharityRecordByEin("123456789");
 
       expect(result).toBeNull();
-
-      supabase.from = originalFrom;
     });
   });
 

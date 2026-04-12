@@ -32,32 +32,42 @@ export interface CharityRecord {
 }
 
 /**
- * Fetches a full charity organization record by EIN.
+ * Fetches a full charity organization record by EIN via the
+ * get_charity_record_by_ein RPC (SECURITY DEFINER, bypasses RLS).
+ * Handles both hyphenated (12-3456789) and plain (123456789) EIN formats.
  * @param ein - The EIN or local registration number (with or without hyphen)
  * @returns The charity record or null if not found
  */
 export async function getCharityRecordByEin(
   ein: string,
 ): Promise<CharityRecord | null> {
-  const normalized = ein.replace(/-/g, "");
+  const trimmed = ein?.trim();
+  if (!trimmed) {
+    return null;
+  }
+
   try {
-    const { data, error } = await supabase
-      .from("charity_organizations")
-      .select(
-        "ein, name, ico, street, city, state, zip, group_exemption, subsection, affiliation, classification, ruling, deductibility, foundation, activity, organization, status, ntee_cd, sort_name, is_on_platform, data_source, data_vintage, last_synced_at",
-      )
-      .eq("ein", normalized)
-      .single();
+    const { data, error } = await supabase.rpc("get_charity_record_by_ein", {
+      lookup_ein: trimmed,
+    });
 
     if (error) {
-      Logger.error("Error fetching charity record", { error, ein: normalized });
+      Logger.error("Error fetching charity record", {
+        code: error.code,
+        message: error.message,
+        details: error.details,
+        hint: error.hint,
+        ein: trimmed,
+      });
       return null;
     }
-    return data as CharityRecord;
+
+    const rows = (data || []) as CharityRecord[];
+    return rows[0] || null;
   } catch (error) {
     Logger.error("Charity record fetch failed", {
       error: error instanceof Error ? error.message : String(error),
-      ein: normalized,
+      ein: trimmed,
     });
     return null;
   }
