@@ -23,7 +23,10 @@ export type NetworkType =
   | "moonbeam"
   | "base-sepolia"
   | "optimism-sepolia"
-  | "moonbase";
+  | "moonbase"
+  | "solana-mainnet"
+  | "polkadot"
+  | "kusama";
 
 /**
  * Wallet balance information
@@ -115,6 +118,8 @@ export interface NetworkSelectorProps {
   currentNetwork: NetworkType;
   /** Callback when network is changed */
   onNetworkChange: (_network: NetworkType) => void;
+  /** Override displayed networks (defaults to all NETWORKS) */
+  networks?: NetworkConfig[];
   /** Additional CSS classes */
   className?: string;
   /** Whether selector is disabled */
@@ -133,25 +138,81 @@ export interface NetworkConfig {
   token: string;
   /** Network icon/color for display */
   color: string;
+  /** Chain ecosystem type */
+  chainType: "evm" | "solana" | "polkadot";
 }
 
 /**
  * Available networks configuration
  */
 export const NETWORKS: NetworkConfig[] = [
-  // Mainnets
-  { id: "base", name: "Base", token: "ETH", color: "#0052FF" },
-  { id: "optimism", name: "Optimism", token: "ETH", color: "#FF0420" },
-  { id: "moonbeam", name: "Moonbeam", token: "GLMR", color: "#53CBC8" },
-  // Testnets
-  { id: "base-sepolia", name: "Base Sepolia", token: "ETH", color: "#0052FF" },
+  // EVM Mainnets
+  {
+    id: "base",
+    name: "Base",
+    token: "ETH",
+    color: "#0052FF",
+    chainType: "evm",
+  },
+  {
+    id: "optimism",
+    name: "Optimism",
+    token: "ETH",
+    color: "#FF0420",
+    chainType: "evm",
+  },
+  {
+    id: "moonbeam",
+    name: "Moonbeam",
+    token: "GLMR",
+    color: "#53CBC8",
+    chainType: "evm",
+  },
+  // EVM Testnets
+  {
+    id: "base-sepolia",
+    name: "Base Sepolia",
+    token: "ETH",
+    color: "#0052FF",
+    chainType: "evm",
+  },
   {
     id: "optimism-sepolia",
     name: "OP Sepolia",
     token: "ETH",
     color: "#FF0420",
+    chainType: "evm",
   },
-  { id: "moonbase", name: "Moonbase Alpha", token: "DEV", color: "#53CBC8" },
+  {
+    id: "moonbase",
+    name: "Moonbase Alpha",
+    token: "DEV",
+    color: "#53CBC8",
+    chainType: "evm",
+  },
+  // Solana
+  {
+    id: "solana-mainnet",
+    name: "Solana",
+    token: "SOL",
+    color: "#9945FF",
+    chainType: "solana",
+  },
+  // Polkadot
+  {
+    id: "polkadot",
+    name: "Polkadot",
+    token: "DOT",
+    color: "#E6007A",
+    chainType: "polkadot",
+  },
+  {
+    id: "kusama",
+    name: "Kusama",
+    token: "KSM",
+    color: "#000000",
+    chainType: "polkadot",
+  },
 ];
 
 /**

@@ -31,7 +31,7 @@ DECLARE
   v_registrations_30d BIGINT;
 BEGIN
   -- Admin guard: only users with user_type = 'admin' can call this
-  IF auth.jwt() ->> 'user_type' IS DISTINCT FROM 'admin' THEN
+  IF auth.jwt() -> 'user_metadata' ->> 'type' IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Admin access required' USING ERRCODE = '42501';
   END IF;
 
@@ -39,13 +39,13 @@ BEGIN
   SELECT COUNT(*)
   INTO v_total_donors
   FROM profiles
-  WHERE user_type = 'donor';
+  WHERE type ='donor';
 
   -- Total charities (profiles with user_type = 'charity')
   SELECT COUNT(*)
   INTO v_total_charities
   FROM profiles
-  WHERE user_type = 'charity';
+  WHERE type ='charity';
 
   -- Verified vs pending charities from charity_verifications
   SELECT
@@ -58,7 +58,7 @@ BEGIN
   SELECT COUNT(*)
   INTO v_total_volunteers
   FROM profiles
-  WHERE user_type = 'volunteer';
+  WHERE type ='volunteer';
 
   -- Crypto donation volume (sum of usd_value from donations table)
   SELECT COALESCE(SUM(usd_value), 0)
@@ -163,7 +163,7 @@ DECLARE
   v_offset INT := GREATEST(COALESCE(p_offset, 0), 0);
 BEGIN
   -- Admin guard
-  IF auth.jwt() ->> 'user_type' IS DISTINCT FROM 'admin' THEN
+  IF auth.jwt() -> 'user_metadata' ->> 'type' IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Admin access required' USING ERRCODE = '42501';
   END IF;
 
@@ -173,16 +173,17 @@ BEGIN
     SELECT
       d.id                                                    AS event_id,
       'donation'::TEXT                                        AS event_type,
-      'Crypto donation to ' || COALESCE(cp.full_name, 'charity')
+      'Crypto donation to ' || COALESCE(cp.name, 'charity')
                                                               AS description,
       d.donor_id                                              AS actor_id,
-      COALESCE(dp.full_name, dp.email, 'Unknown donor')      AS actor_name,
+      COALESCE(dp.name, du.email, 'Unknown donor')         AS actor_name,
       d.charity_id                                            AS entity_id,
       'donation'::TEXT                                        AS entity_type,
       d.usd_value                                             AS amount_usd,
       d.created_at                                            AS event_time
     FROM donations d
     LEFT JOIN profiles dp ON dp.id = d.donor_id
+    LEFT JOIN auth.users du ON du.id = dp.user_id
     LEFT JOIN profiles cp ON cp.id = d.charity_id
     WHERE d.status = 'confirmed'
 
@@ -192,15 +193,16 @@ BEGIN
     SELECT
       fd.id,
       'donation'::TEXT,
-      'Fiat donation to ' || COALESCE(cp.full_name, 'charity'),
+      'Fiat donation to ' || COALESCE(cp.name, 'charity'),
       fd.donor_id,
-      COALESCE(dp.full_name, dp.email, 'Unknown donor'),
+      COALESCE(dp.name, fdu.email, 'Unknown donor'),
       fd.charity_id,
       'donation'::TEXT,
       fd.amount,
       fd.created_at
     FROM fiat_donations fd
     LEFT JOIN profiles dp ON dp.id = fd.donor_id
+    LEFT JOIN auth.users fdu ON fdu.id = dp.user_id
     LEFT JOIN profiles cp ON cp.id = fd.charity_id
     WHERE fd.status = 'completed'
 
@@ -210,14 +212,15 @@ BEGIN
     SELECT
       p.id,
       'registration'::TEXT,
-      initcap(p.user_type) || ' registered: ' || COALESCE(p.full_name, p.email, 'Unknown'),
+      initcap(p.type) || ' registered: ' || COALESCE(p.name, pu.email, 'Unknown'),
       p.id,
-      COALESCE(p.full_name, p.email, 'Unknown'),
+      COALESCE(p.name, pu.email, 'Unknown'),
       p.id,
       'user'::TEXT,
       NULL::NUMERIC,
       p.created_at
     FROM profiles p
+    LEFT JOIN auth.users pu ON pu.id = p.user_id
 
     UNION ALL
 
@@ -225,9 +228,9 @@ BEGIN
     SELECT
       cv.id,
       'verification'::TEXT,
-      'Charity verification ' || cv.status || ': ' || COALESCE(cp.full_name, 'charity'),
+      'Charity verification ' || cv.status || ': ' || COALESCE(cp.name, 'charity'),
       cv.charity_id,
-      COALESCE(cp.full_name, 'Unknown charity'),
+      COALESCE(cp.name, 'Unknown charity'),
       cv.charity_id,
       'charity_verification'::TEXT,
       NULL::NUMERIC,
@@ -243,13 +246,14 @@ BEGIN
       'volunteer_hours'::TEXT,
       'Volunteer hours submitted: ' || vh.hours || 'h for ' || COALESCE(op.title, 'opportunity'),
       vh.volunteer_id,
-      COALESCE(vp.full_name, vp.email, 'Unknown volunteer'),
+      COALESCE(vp.name, vu.email, 'Unknown volunteer'),
       vh.opportunity_id,
       'volunteer_hours'::TEXT,
       NULL::NUMERIC,
       vh.created_at
     FROM volunteer_hours vh
     LEFT JOIN profiles vp ON vp.id = vh.volunteer_id
+    LEFT JOIN auth.users vu ON vu.id = vp.user_id
     LEFT JOIN volunteer_opportunities op ON op.id = vh.opportunity_id
   ),
   counted AS (
@@ -303,7 +307,7 @@ SET search_path = public
 AS $$
 BEGIN
   -- Admin guard
-  IF auth.jwt() ->> 'user_type' IS DISTINCT FROM 'admin' THEN
+  IF auth.jwt() -> 'user_metadata' ->> 'type' IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Admin access required' USING ERRCODE = '42501';
   END IF;
 
@@ -314,7 +318,7 @@ BEGIN
     'pending_verification'::TEXT    AS alert_type,
     'high'::TEXT                    AS severity,
     'Pending Charity Verification'::TEXT AS title,
-    'Charity awaiting verification: ' || COALESCE(p.full_name, 'Unknown charity'),
+    'Charity awaiting verification: ' || COALESCE(p.name, 'Unknown charity'),
     cv.charity_id                   AS entity_id,
     'charity_verification'::TEXT    AS entity_type,
     cv.created_at,
@@ -332,13 +336,14 @@ BEGIN
     'expired_validation'::TEXT,
     'medium'::TEXT,
     'Expired Validation Request'::TEXT,
-    'Validation request expired for volunteer: ' || COALESCE(vp.full_name, vp.email, 'Unknown'),
+    'Validation request expired for volunteer: ' || COALESCE(vp.name, vru.email, 'Unknown'),
     vr.id,
     'validation_request'::TEXT,
     vr.created_at,
     COUNT(*) OVER ()
   FROM validation_requests vr
   LEFT JOIN profiles vp ON vp.id = vr.volunteer_id
+  LEFT JOIN auth.users vru ON vru.id = vp.user_id
   WHERE vr.status = 'pending'
     AND vr.created_at < NOW() - INTERVAL '90 days'
   ORDER BY vr.created_at ASC
@@ -350,13 +355,14 @@ BEGIN
     'removal_request'::TEXT,
     'high'::TEXT,
     'Pending Removal Request'::TEXT,
-    'Account removal requested by: ' || COALESCE(p.full_name, p.email, 'Unknown user'),
+    'Account removal requested by: ' || COALESCE(p.name, rru.email, 'Unknown user'),
     rr.user_id,
     'user'::TEXT,
     rr.created_at,
     COUNT(*) OVER ()
   FROM removal_requests rr
   LEFT JOIN profiles p ON p.id = rr.user_id
+  LEFT JOIN auth.users rru ON rru.id = p.user_id
   WHERE rr.status = 'pending'
   ORDER BY rr.created_at ASC;
 

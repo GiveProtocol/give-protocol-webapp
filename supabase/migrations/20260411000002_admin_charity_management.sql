@@ -76,7 +76,7 @@ DECLARE
   v_offset INT;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
@@ -163,7 +163,7 @@ DECLARE
   v_action_type     TEXT;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
@@ -262,7 +262,7 @@ BEGIN
     CREATE POLICY "admin_read_charity_verifications" ON charity_verifications
       FOR SELECT
       USING (
-        auth.jwt() ->> 'user_type' = 'admin'
+        auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
         OR auth.role() = 'service_role'
       );
   END IF;
@@ -280,7 +280,7 @@ BEGIN
     CREATE POLICY "admin_update_charity_verifications" ON charity_verifications
       FOR UPDATE
       USING (
-        auth.jwt() ->> 'user_type' = 'admin'
+        auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
         OR auth.role() = 'service_role'
       );
   END IF;
@@ -298,7 +298,7 @@ BEGIN
     CREATE POLICY "admin_insert_charity_verifications" ON charity_verifications
       FOR INSERT
       WITH CHECK (
-        auth.jwt() ->> 'user_type' = 'admin'
+        auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
         OR auth.role() = 'service_role'
       );
   END IF;

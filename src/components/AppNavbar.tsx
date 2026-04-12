@@ -16,7 +16,9 @@ import { Menu, X, Calendar, LogOut } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
+import { useMultiChainContext } from "@/contexts/MultiChainContext";
 import { DOCS_CONFIG } from "@/config/docs";
+import { NETWORKS } from "./Wallet/types";
 
 // Desktop navigation links component
 const DesktopNavLinks: React.FC<{
@@ -26,7 +28,14 @@ const DesktopNavLinks: React.FC<{
   isAuthenticated: boolean;
   handleDashboardClick: () => void;
   t: (_key: string) => string;
-}> = ({ isLimitedNavPage, isActive, userType, isAuthenticated, handleDashboardClick, t }) => {
+}> = ({
+  isLimitedNavPage,
+  isActive,
+  userType,
+  isAuthenticated,
+  handleDashboardClick,
+  t,
+}) => {
   if (isLimitedNavPage) {
     return (
       <>
@@ -218,7 +227,10 @@ const MobileMenu: React.FC<{
 
   return (
     <nav className="md:hidden" id="mobile-menu" aria-label="Mobile navigation">
-      <div className="px-2 pt-2 pb-3 space-y-1 shadow-lg" style={{ background: 'rgba(6, 78, 59, 0.95)' }}>
+      <div
+        className="px-2 pt-2 pb-3 space-y-1 shadow-lg"
+        style={{ background: "rgba(6, 78, 59, 0.95)" }}
+      >
         {children}
       </div>
     </nav>
@@ -250,9 +262,18 @@ const MobileMenuButton: React.FC<{
 
 // Nav header component to reduce nesting
 const NavHeader: React.FC = () => (
-  <Link to="/" className="flex items-center gap-2.5" aria-label="Give Protocol home">
+  <Link
+    to="/"
+    className="flex items-center gap-2.5"
+    aria-label="Give Protocol home"
+  >
     <Logo className="h-7 w-7" />
-    <span className="font-serif text-white" style={{ fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Give Protocol</span>
+    <span
+      className="font-serif text-white"
+      style={{ fontSize: "1.1rem", letterSpacing: "-0.01em" }}
+    >
+      Give Protocol
+    </span>
   </Link>
 );
 
@@ -265,6 +286,7 @@ const NavActions: React.FC<{
   isConnected: boolean;
   address: string | null;
   network: NetworkType;
+  visibleNetworks: typeof NETWORKS;
   onNetworkChange: (_network: NetworkType) => void;
   onDisconnect: () => void;
   onSignOut: () => void;
@@ -276,6 +298,7 @@ const NavActions: React.FC<{
   isConnected,
   address,
   network,
+  visibleNetworks,
   onNetworkChange,
   onDisconnect,
   onSignOut,
@@ -302,6 +325,7 @@ const NavActions: React.FC<{
             <NetworkSelector
               currentNetwork={network}
               onNetworkChange={onNetworkChange}
+              networks={visibleNetworks}
               className="hidden sm:block"
             />
             <WalletButton
@@ -355,52 +379,125 @@ export const AppNavbar: React.FC = () => {
   const { t } = useTranslation();
   const { userType, logout, user } = useAuth();
   const { isConnected, address, disconnect, chainId, switchChain } = useWeb3();
+  const multiChain = useMultiChainContext();
 
-  // Sync network state with chainId from Web3 context
-  useEffect(() => {
-    const chainIdToNetwork: Record<number, NetworkType> = {
-      // Mainnets
+  // EVM chain ID to NetworkType mapping
+  const chainIdToNetwork: Record<number, NetworkType> = useMemo(
+    () => ({
       8453: "base",
       10: "optimism",
       1284: "moonbeam",
-      // Testnets
       84532: "base-sepolia",
       11155420: "optimism-sepolia",
       1287: "moonbase",
-    };
+    }),
+    [],
+  );
+
+  // Sync network state with chainId from Web3 context (EVM)
+  useEffect(() => {
     const networkType = chainIdToNetwork[chainId ?? 0];
     if (networkType) {
       setNetwork(networkType);
     }
-  }, [chainId]);
+  }, [chainId, chainIdToNetwork]);
+
+  // Sync network state when MultiChainContext switches to non-EVM chain
+  useEffect(() => {
+    if (multiChain.activeChainType === "solana") {
+      setNetwork("solana-mainnet");
+    } else if (multiChain.activeChainType === "polkadot") {
+      const chainName = multiChain.activeAccount?.chainName?.toLowerCase();
+      if (chainName === "kusama") {
+        setNetwork("kusama");
+      } else {
+        setNetwork("polkadot");
+      }
+    }
+  }, [multiChain.activeChainType, multiChain.activeAccount?.chainName]);
+
+  // Filter visible networks based on connected wallet's supported chain types
+  const visibleNetworks = useMemo(() => {
+    const supportedTypes = multiChain.wallet?.supportedChainTypes;
+    if (!supportedTypes || supportedTypes.length === 0) {
+      // No wallet connected or unknown — show only EVM
+      return NETWORKS.filter((n) => n.chainType === "evm");
+    }
+
+    // Map wallet ChainType values to NetworkConfig chainType values
+    const chainTypeMap: Record<string, string> = {
+      evm: "evm",
+      solana: "solana",
+      polkadot: "polkadot",
+    };
+
+    const allowedTypes = new Set(
+      supportedTypes.map((ct) => chainTypeMap[ct] || ct),
+    );
+
+    return NETWORKS.filter((n) => allowedTypes.has(n.chainType));
+  }, [multiChain.wallet?.supportedChainTypes]);
+
+  // EVM NetworkType to chain ID mapping
+  const evmChainIds: Partial<Record<NetworkType, number>> = useMemo(
+    () => ({
+      base: 8453,
+      optimism: 10,
+      moonbeam: 1284,
+      "base-sepolia": 84532,
+      "optimism-sepolia": 11155420,
+      moonbase: 1287,
+    }),
+    [],
+  );
 
   const handleNetworkChange = useCallback(
     async (_network: NetworkType) => {
-      // Map network type to chain ID
-      const chainIds: Record<NetworkType, number> = {
-        // Mainnets
-        base: 8453,
-        optimism: 10,
-        moonbeam: 1284,
-        // Testnets
-        "base-sepolia": 84532,
-        "optimism-sepolia": 11155420,
-        moonbase: 1287,
-      };
+      const networkConfig = NETWORKS.find((n) => n.id === _network);
+      if (!networkConfig) {
+        setNetwork(_network);
+        return;
+      }
 
-      const targetChainId = chainIds[_network];
-      if (targetChainId && isConnected) {
+      if (networkConfig.chainType === "evm") {
+        // EVM switching via Web3Context
+        const targetChainId = evmChainIds[_network];
+        if (targetChainId && isConnected) {
+          try {
+            // Ensure multiChain is on EVM chain type
+            if (multiChain.activeChainType !== "evm") {
+              multiChain.switchChainType("evm");
+            }
+            await switchChain(targetChainId);
+            setNetwork(_network);
+          } catch (err) {
+            console.error("Failed to switch network:", err);
+          }
+        } else {
+          setNetwork(_network);
+        }
+      } else if (networkConfig.chainType === "solana") {
+        // Solana switching via MultiChainContext
         try {
-          await switchChain(targetChainId);
+          multiChain.switchChainType("solana");
           setNetwork(_network);
         } catch (err) {
-          console.error("Failed to switch network:", err);
+          console.error("Failed to switch to Solana:", err);
         }
-      } else {
-        setNetwork(_network);
+      } else if (networkConfig.chainType === "polkadot") {
+        // Polkadot/Kusama switching via MultiChainContext
+        try {
+          multiChain.switchChainType("polkadot");
+          if (multiChain.wallet) {
+            await multiChain.switchChain(_network, "polkadot");
+          }
+          setNetwork(_network);
+        } catch (err) {
+          console.error("Failed to switch to Polkadot network:", err);
+        }
       }
     },
-    [isConnected, switchChain],
+    [isConnected, switchChain, multiChain, evmChainIds],
   );
 
   const handleDisconnect = useCallback(async () => {
@@ -416,18 +513,12 @@ export const AppNavbar: React.FC = () => {
           // Log but don't block - we still want to redirect
           console.warn("Logout failed during disconnect:", logoutError);
         }
-        // Redirect to login page
-        window.location.href = `${window.location.origin}/auth`;
-      } else {
-        // If not logged in, just refresh to clear state
-        window.location.reload();
+        navigate("/auth");
       }
     } catch (err) {
       console.error("Disconnect failed:", err);
-      // Force refresh to clear any stale state
-      window.location.reload();
     }
-  }, [disconnect, logout, user]);
+  }, [disconnect, logout, user, navigate]);
 
   const handleSignOut = useCallback(async () => {
     try {
@@ -440,10 +531,7 @@ export const AppNavbar: React.FC = () => {
 
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(
-    () =>
-      ["/about", "/legal", "/privacy"].includes(
-        location.pathname,
-      ),
+    () => ["/about", "/legal", "/privacy"].includes(location.pathname),
     [location.pathname],
   );
 
@@ -495,16 +583,14 @@ export const AppNavbar: React.FC = () => {
     <nav
       className="relative z-30 border-b shadow-lg"
       style={{
-        background: 'rgba(6, 78, 59, 0.92)',
-        backdropFilter: 'blur(12px)',
-        WebkitBackdropFilter: 'blur(12px)',
-        borderColor: 'rgba(52, 211, 153, 0.15)',
+        background: "rgba(6, 78, 59, 0.92)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        borderColor: "rgba(52, 211, 153, 0.15)",
       }}
       aria-label="Application navigation"
     >
-      <div
-        className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]"
-      >
+      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]">
         <div className="flex items-center">
           <NavHeader />
           <div className="hidden md:ml-6 md:flex md:gap-6">
@@ -526,6 +612,7 @@ export const AppNavbar: React.FC = () => {
           isConnected={isConnected}
           address={address}
           network={network}
+          visibleNetworks={visibleNetworks}
           onNetworkChange={handleNetworkChange}
           onDisconnect={handleDisconnect}
           onSignOut={handleSignOut}

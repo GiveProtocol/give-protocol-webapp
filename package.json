@@ -67,7 +67,8 @@
     "viem": "^2.7.9"
   },
   "overrides": {
-    "axios": "^1.13.5"
+    "axios": "^1.13.5",
+    "@polkadot/util": "^13.5.9"
   },
   "devDependencies": {
     "@babel/core": "^7.28.0",

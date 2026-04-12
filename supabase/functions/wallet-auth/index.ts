@@ -2,13 +2,46 @@
  * Supabase Edge Function for wallet-based authentication
  * @module wallet-auth
  * @description Verifies a wallet signature and returns a Supabase session.
+ * Supports EVM (MetaMask, etc.) and Polkadot (Talisman, SubWallet) wallets.
  * If the wallet is already linked to a user, signs them in.
  * If not, creates a new user + identity record and signs them in.
+ * @version 5 — dynamic Polkadot crypto import
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { ethers } from "https://esm.sh/ethers@6.9.0";
+
+const FUNCTION_VERSION = "v5";
+
+/** Minimal interface for the dynamically-loaded @polkadot/util-crypto module */
+interface PolkadotCryptoModule {
+  signatureVerify: (
+    message: string | Uint8Array,
+    signature: string | Uint8Array,
+    address: string,
+  ) => { isValid: boolean };
+  cryptoWaitReady: () => Promise<boolean>;
+}
+
+// Polkadot crypto is loaded dynamically to avoid crashing the module on Deno Deploy
+let polkadotCrypto: PolkadotCryptoModule | null = null;
+
+/** Lazily initialize Polkadot crypto on first use */
+async function getPolkadotCrypto(): Promise<PolkadotCryptoModule | null> {
+  if (polkadotCrypto) return polkadotCrypto;
+
+  try {
+    const mod = await import("https://esm.sh/@polkadot/util-crypto@12.6.2");
+    await mod.cryptoWaitReady();
+    polkadotCrypto = mod;
+    console.log("Polkadot crypto initialized (lazy)");
+    return polkadotCrypto;
+  } catch (err) {
+    console.error("Failed to load @polkadot/util-crypto:", err);
+    return null;
+  }
+}
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -17,31 +50,134 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+type ChainType = "evm" | "polkadot" | "solana";
+
 interface WalletAuthRequest {
   walletAddress: string;
   signature: string;
   message: string;
   nonce: string;
   accountType?: "donor" | "charity";
+  chainType?: ChainType;
+}
+
+/**
+ * Detect chain type from wallet address format if not explicitly provided
+ * @param address - Wallet address
+ * @returns Detected chain type
+ */
+function detectChainType(address: string): ChainType {
+  if (address.startsWith("0x") && address.length === 42) return "evm";
+  // SS58 addresses (Polkadot/Kusama) are base58, typically 47-48 chars
+  if (/^[1-9A-HJ-NP-Za-km-z]{46,48}$/.test(address)) return "polkadot";
+  return "evm";
 }
 
 /** Type guard for incoming request body */
 function validateRequest(body: unknown): body is WalletAuthRequest {
   if (typeof body !== "object" || body === null) return false;
   const req = body as Record<string, unknown>;
+
   const validAccountType =
     req.accountType === undefined ||
     req.accountType === "donor" ||
     req.accountType === "charity";
-  return (
+
+  const validChainType =
+    req.chainType === undefined ||
+    req.chainType === "evm" ||
+    req.chainType === "polkadot" ||
+    req.chainType === "solana";
+
+  const hasBaseFields =
     typeof req.walletAddress === "string" &&
+    req.walletAddress.length > 0 &&
     typeof req.signature === "string" &&
+    req.signature.length > 0 &&
     typeof req.message === "string" &&
-    typeof req.nonce === "string" &&
-    req.walletAddress.length === 42 &&
-    req.walletAddress.startsWith("0x") &&
-    validAccountType
-  );
+    typeof req.nonce === "string";
+
+  if (!hasBaseFields || !validAccountType || !validChainType) return false;
+
+  // Validate address format based on chain type
+  const chainType =
+    (req.chainType as ChainType) ||
+    detectChainType(req.walletAddress as string);
+
+  if (chainType === "evm") {
+    return (
+      (req.walletAddress as string).length === 42 &&
+      (req.walletAddress as string).startsWith("0x")
+    );
+  }
+
+  // For Polkadot: SS58 base58 addresses (46-48 chars, no 0x prefix)
+  if (chainType === "polkadot") {
+    const addr = req.walletAddress as string;
+    return addr.length >= 46 && addr.length <= 48 && !addr.startsWith("0x");
+  }
+
+  // Other chain types: just check non-empty (already verified above)
+  return true;
+}
+
+/**
+ * Verify an EVM signature using ethers.js
+ * @param message - Original message
+ * @param signature - EVM signature (hex)
+ * @param address - Expected EVM address (0x...)
+ * @returns Whether signature is valid
+ */
+function verifyEVMSignature(
+  message: string,
+  signature: string,
+  address: string,
+): boolean {
+  try {
+    const recoveredAddress = ethers.verifyMessage(message, signature);
+    return recoveredAddress.toLowerCase() === address.toLowerCase();
+  } catch (err) {
+    console.error("EVM signature verification error:", err);
+    return false;
+  }
+}
+
+/**
+ * Verify a Polkadot signature using @polkadot/util-crypto (dynamically loaded)
+ * Handles both raw message and <Bytes>-wrapped message formats
+ * @param message - Original message string
+ * @param signature - Polkadot signature (hex)
+ * @param address - SS58 encoded address
+ * @returns Whether signature is valid
+ */
+async function verifyPolkadotSignature(
+  message: string,
+  signature: string,
+  address: string,
+): Promise<boolean> {
+  const crypto = await getPolkadotCrypto();
+  if (!crypto) {
+    console.error("Polkadot crypto not available");
+    return false;
+  }
+
+  try {
+    // Try verifying the raw message first
+    const result = crypto.signatureVerify(message, signature, address);
+    if (result.isValid) return true;
+
+    // Some wallets wrap signRaw data with <Bytes>...</Bytes>
+    const wrappedMessage = `<Bytes>${message}</Bytes>`;
+    const wrappedResult = crypto.signatureVerify(
+      wrappedMessage,
+      signature,
+      address,
+    );
+    return wrappedResult.isValid;
+  } catch (err) {
+    console.error("Polkadot signature verification error:", err);
+    return false;
+  }
 }
 
 /** Build a JSON response with CORS headers */
@@ -52,33 +188,67 @@ function jsonResponse(body: Record<string, unknown>, status: number): Response {
   });
 }
 
-/** Build an error JSON response with CORS headers */
+/** Build an error JSON response with CORS headers, includes version for debugging */
 function errorResponse(message: string, status: number): Response {
-  return jsonResponse({ success: false, error: message }, status);
+  return jsonResponse(
+    { success: false, error: message, _v: FUNCTION_VERSION },
+    status,
+  );
 }
 
-/** Verify wallet signature and nonce match the claimed address */
-function verifyWalletSignature(body: WalletAuthRequest): string | null {
-  const recoveredAddress = ethers.verifyMessage(body.message, body.signature);
-  if (recoveredAddress.toLowerCase() !== body.walletAddress.toLowerCase()) {
-    return "Signature verification failed";
-  }
+/**
+ * Normalize wallet address for storage.
+ * EVM addresses are lowercased; Polkadot SS58 addresses are case-sensitive.
+ * @param address - Wallet address
+ * @param chainType - Chain type
+ * @returns Normalized address
+ */
+function normalizeAddress(address: string, chainType: ChainType): string {
+  if (chainType === "evm") return address.toLowerCase();
+  return address;
+}
+
+/**
+ * Verify wallet signature based on chain type, delegating to chain-specific verifiers
+ * @param body - The wallet auth request
+ * @param chainType - Detected or provided chain type
+ * @returns Error message string, or null if valid
+ */
+async function verifyWalletSignature(
+  body: WalletAuthRequest,
+  chainType: ChainType,
+): Promise<string | null> {
   if (!body.message.includes(body.nonce)) {
     return "Invalid nonce in message";
   }
-  return null;
+
+  if (chainType === "evm") {
+    const valid = verifyEVMSignature(
+      body.message,
+      body.signature,
+      body.walletAddress,
+    );
+    return valid ? null : "EVM signature verification failed";
+  }
+
+  if (chainType === "polkadot") {
+    const valid = await verifyPolkadotSignature(
+      body.message,
+      body.signature,
+      body.walletAddress,
+    );
+    return valid ? null : "Polkadot signature verification failed";
+  }
+
+  return "Unsupported chain type for signature verification";
 }
 
 /** Verify message timestamp is within 5 minutes to prevent replay attacks */
 function verifyTimestamp(message: string): string | null {
   const timestampMatch = message.match(/Timestamp: (.+)$/m);
-  if (!timestampMatch) {
-    return "Missing timestamp in message";
-  }
+  if (!timestampMatch) return "Missing timestamp in message";
   const messageTime = new Date(timestampMatch[1]).getTime();
-  if (Number.isNaN(messageTime)) {
-    return "Invalid timestamp in message";
-  }
+  if (Number.isNaN(messageTime)) return "Invalid timestamp in message";
   const fiveMinutesMs = 5 * 60 * 1000;
   if (Date.now() - messageTime > fiveMinutesMs) {
     return "Signature has expired. Please sign in again.";
@@ -89,10 +259,10 @@ function verifyTimestamp(message: string): string | null {
 /** Create a new user account, profile, and wallet identity record */
 async function createWalletUser(
   supabase: ReturnType<typeof createClient>,
-  normalizedAddress: string,
+  walletAddress: string,
   accountType: "donor" | "charity",
 ): Promise<{ userId: string } | { error: string }> {
-  const placeholderEmail = `${normalizedAddress}@wallet.giveprotocol.io`;
+  const placeholderEmail = `${walletAddress}@wallet.giveprotocol.io`;
 
   const { data: newUser, error: createError } =
     await supabase.auth.admin.createUser({
@@ -111,26 +281,20 @@ async function createWalletUser(
   const { error: profileError } = await supabase
     .from("profiles")
     .insert({ user_id: userId, type: accountType, role: accountType });
-
-  if (profileError) {
-    console.error("Failed to create profile:", profileError);
-  }
+  if (profileError) console.error("Failed to create profile:", profileError);
 
   const { error: identityError } = await supabase
     .from("user_identities")
     .upsert(
       {
         user_id: userId,
-        wallet_address: normalizedAddress,
+        wallet_address: walletAddress,
         primary_auth_method: "wallet",
         wallet_linked_at: new Date().toISOString(),
       },
       { onConflict: "user_id" },
     );
-
-  if (identityError) {
-    console.error("Failed to create identity:", identityError);
-  }
+  if (identityError) console.error("Failed to create identity:", identityError);
 
   return { userId };
 }
@@ -155,10 +319,7 @@ async function generateSession(
   const url = new URL(linkData.properties.action_link);
   const token = url.searchParams.get("token");
   const tokenType = url.searchParams.get("type") ?? "magiclink";
-
-  if (!token) {
-    return { error: "Failed to generate auth token" };
-  }
+  if (!token) return { error: "Failed to generate auth token" };
 
   const { data: sessionData, error: verifyError } =
     await supabase.auth.verifyOtp({
@@ -203,6 +364,23 @@ serve(async (req: Request) => {
       return errorResponse("Invalid JSON body", 400);
     }
 
+    // Log request shape for debugging (omit signature value for security)
+    const reqShape = body as Record<string, unknown>;
+    console.log(`[${FUNCTION_VERSION}] Request:`, {
+      hasWalletAddress: typeof reqShape.walletAddress === "string",
+      walletAddressLen:
+        typeof reqShape.walletAddress === "string"
+          ? (reqShape.walletAddress as string).length
+          : 0,
+      hasSignature:
+        typeof reqShape.signature === "string" &&
+        (reqShape.signature as string).length > 0,
+      hasMessage: typeof reqShape.message === "string",
+      hasNonce: typeof reqShape.nonce === "string",
+      chainType: reqShape.chainType,
+      accountType: reqShape.accountType,
+    });
+
     if (!validateRequest(body)) {
       return errorResponse(
         "Invalid request. Required: walletAddress, signature, message, nonce",
@@ -210,8 +388,10 @@ serve(async (req: Request) => {
       );
     }
 
+    const chainType = body.chainType ?? detectChainType(body.walletAddress);
+
     // Verify signature and timestamp
-    const sigError = verifyWalletSignature(body);
+    const sigError = await verifyWalletSignature(body, chainType);
     if (sigError) return errorResponse(sigError, 401);
 
     const tsError = verifyTimestamp(body.message);
@@ -227,7 +407,7 @@ serve(async (req: Request) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    const normalizedAddress = body.walletAddress.toLowerCase();
+    const normalizedAddress = normalizeAddress(body.walletAddress, chainType);
 
     // Look up existing wallet identity
     const { data: existingIdentity } = await supabase
@@ -253,7 +433,8 @@ serve(async (req: Request) => {
 
     // Generate session
     const sessionResult = await generateSession(supabase, userId);
-    if ("error" in sessionResult) return errorResponse(sessionResult.error, 500);
+    if ("error" in sessionResult)
+      return errorResponse(sessionResult.error, 500);
 
     return jsonResponse(
       { success: true, session: sessionResult.session, isNewUser },

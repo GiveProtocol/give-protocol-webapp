@@ -20,7 +20,11 @@ type ModalStep = "network" | "wallet";
 const CHAIN_TABS: { type: ChainType; label: string; activeClass: string }[] = [
   { type: "evm", label: "EVM", activeClass: "bg-blue-600 text-white" },
   { type: "solana", label: "Solana", activeClass: "bg-emerald-600 text-white" },
-  { type: "polkadot", label: "Polkadot", activeClass: "bg-pink-600 text-white" },
+  {
+    type: "polkadot",
+    label: "Polkadot",
+    activeClass: "bg-pink-600 text-white",
+  },
 ];
 
 /** Network selection step dialog content. */
@@ -39,7 +43,10 @@ const NetworkDialogContent: React.FC<{
   >
     {/* Header */}
     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200/50">
-      <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900">
+      <h3
+        id="wallet-modal-title"
+        className="text-lg font-semibold text-gray-900"
+      >
         Select Network
       </h3>
       <button
@@ -73,7 +80,10 @@ const NetworkDialogContent: React.FC<{
         Next Step: Connect Wallet
       </button>
       <div className="mt-3 text-center">
-        <a href="/network-selection" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">
+        <a
+          href="/network-selection"
+          className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
+        >
           Learn more about network selection
         </a>
       </div>
@@ -92,7 +102,17 @@ const WalletDialogContent: React.FC<{
   filteredWallets: UnifiedWalletProvider[];
   connectingWallet: string | null;
   onSelectWallet: (_wallet: UnifiedWalletProvider) => void;
-}> = ({ selectedChainType, onChainTabClick, onBack, onClose, isConnecting, error, filteredWallets, connectingWallet, onSelectWallet }) => (
+}> = ({
+  selectedChainType,
+  onChainTabClick,
+  onBack,
+  onClose,
+  isConnecting,
+  error,
+  filteredWallets,
+  connectingWallet,
+  onSelectWallet,
+}) => (
   <dialog
     open
     className="relative w-full max-w-md mx-4 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-700"
@@ -110,7 +130,10 @@ const WalletDialogContent: React.FC<{
         >
           <ArrowLeft className="w-5 h-5" />
         </button>
-        <h3 id="wallet-modal-title" className="text-lg font-semibold text-gray-900 dark:text-white">
+        <h3
+          id="wallet-modal-title"
+          className="text-lg font-semibold text-gray-900 dark:text-white"
+        >
           Connect Wallet
         </h3>
       </div>
@@ -126,7 +149,11 @@ const WalletDialogContent: React.FC<{
     </div>
 
     {/* Chain Type Tabs */}
-    <div className="flex px-6 pt-4 gap-2" role="tablist" aria-label="Chain type">
+    <div
+      className="flex px-6 pt-4 gap-2"
+      role="tablist"
+      aria-label="Chain type"
+    >
       {CHAIN_TABS.map(({ type, label, activeClass }) => (
         <button
           key={type}
@@ -136,9 +163,10 @@ const WalletDialogContent: React.FC<{
           onClick={onChainTabClick}
           className={`
             px-4 py-2 text-sm font-medium rounded-lg transition-colors
-            ${selectedChainType === type
-              ? activeClass
-              : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            ${
+              selectedChainType === type
+                ? activeClass
+                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
             }
           `}
         >
@@ -190,7 +218,10 @@ const WalletDialogContent: React.FC<{
       </a>
       <p className="text-xs text-gray-400 dark:text-gray-500">
         By connecting, you agree to the{" "}
-        <a href="/terms" className="text-emerald-600 dark:text-emerald-400 hover:underline">
+        <a
+          href="/terms"
+          className="text-emerald-600 dark:text-emerald-400 hover:underline"
+        >
           Terms of Service
         </a>
       </p>
@@ -202,7 +233,10 @@ interface WalletModalProps {
   isOpen: boolean;
   onClose: () => void;
   wallets: UnifiedWalletProvider[];
-  onConnect: (_wallet: UnifiedWalletProvider, _chainType: ChainType) => Promise<void>;
+  onConnect: (
+    _wallet: UnifiedWalletProvider,
+    _chainType: ChainType,
+  ) => Promise<void>;
   initialChainType?: ChainType;
 }
 
@@ -224,8 +258,11 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   initialChainType = "evm",
 }) => {
   const [step, setStep] = useState<ModalStep>("network");
-  const [selectedNetworkId, setSelectedNetworkId] = useState<ChainId | null>(null);
-  const [selectedChainType, setSelectedChainType] = useState<ChainType>(initialChainType);
+  const [selectedNetworkId, setSelectedNetworkId] = useState<ChainId | null>(
+    null,
+  );
+  const [selectedChainType, setSelectedChainType] =
+    useState<ChainType>(initialChainType);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectingWallet, setConnectingWallet] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -264,33 +301,42 @@ export const WalletModal: React.FC<WalletModalProps> = ({
     });
   }, [wallets, selectedChainType]);
 
-  const handleNetworkSelect = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const chainIdStr = e.currentTarget.dataset.chainId;
-    if (chainIdStr) {
-      setSelectedNetworkId(Number(chainIdStr) as ChainId);
-    }
-  }, []);
+  const handleNetworkSelect = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const chainIdStr = e.currentTarget.dataset.chainId;
+      if (chainIdStr) {
+        setSelectedNetworkId(Number(chainIdStr) as ChainId);
+      }
+    },
+    [],
+  );
 
   const handleContinue = useCallback(() => {
     if (selectedNetworkId !== null) {
       selectChain(selectedNetworkId);
-      // All current NetworkGrid options are EVM networks
-      setSelectedChainType("evm");
+      // Determine chain type from selected network config
+      const selectedConfig = mainnetChains.find(
+        (c) => c.id === selectedNetworkId,
+      );
+      setSelectedChainType(selectedConfig?.chainType ?? "evm");
       setStep("wallet");
     }
-  }, [selectedNetworkId, selectChain]);
+  }, [selectedNetworkId, selectChain, mainnetChains]);
 
   const handleBack = useCallback(() => {
     setStep("network");
   }, []);
 
-  const handleChainTabClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const chainType = e.currentTarget.dataset.chainType as ChainType;
-    if (chainType) {
-      setSelectedChainType(chainType);
-      setError(null);
-    }
-  }, []);
+  const handleChainTabClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const chainType = e.currentTarget.dataset.chainType as ChainType;
+      if (chainType) {
+        setSelectedChainType(chainType);
+        setError(null);
+      }
+    },
+    [],
+  );
 
   const handleSelectWallet = useCallback(
     async (wallet: UnifiedWalletProvider) => {
@@ -302,9 +348,13 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         await onConnect(wallet, selectedChainType);
         onClose();
       } catch (err) {
-        const message = err instanceof Error ? err.message : "Connection failed";
+        const message =
+          err instanceof Error ? err.message : "Connection failed";
         setError(message);
-        Logger.error("Wallet connection failed in modal", { wallet: wallet.name, error: err });
+        Logger.error("Wallet connection failed in modal", {
+          wallet: wallet.name,
+          error: err,
+        });
       } finally {
         setIsConnecting(false);
         setConnectingWallet(null);

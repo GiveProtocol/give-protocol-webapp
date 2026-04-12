@@ -1,47 +1,65 @@
-import { useState, useCallback, useMemo, useEffect } from 'react';
-import { useAuth as useAuthContext } from '@/contexts/AuthContext';
-import { useWeb3 } from '@/contexts/Web3Context';
-import { supabase } from '@/lib/supabase';
-import { ENV } from '@/config/env';
-import { Logger } from '@/utils/logger';
-import { ethers } from 'ethers';
+import { useState, useCallback, useMemo, useEffect } from "react";
+import { useAuth as useAuthContext } from "@/contexts/AuthContext";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { supabase } from "@/lib/supabase";
+
+import { ENV } from "@/config/env";
+import { Logger } from "@/utils/logger";
+import { ethers } from "ethers";
+import type { ChainType, UnifiedWalletProvider } from "@/types/wallet";
 
 interface UserIdentity {
   id: string;
   user_id: string;
   wallet_address: string | null;
-  primary_auth_method: 'email' | 'wallet';
+  primary_auth_method: "email" | "wallet";
   wallet_linked_at: string | null;
 }
 
 interface UnifiedUser {
   id: string;
   email: string | null;
-  role: 'donor' | 'charity' | 'volunteer' | 'admin';
+  role: "donor" | "charity" | "volunteer" | "admin";
   walletAddress: string | null;
-  authMethod: 'email' | 'wallet';
+  authMethod: "email" | "wallet";
   displayName: string | null;
 }
 
-export type WalletAuthStep = 'connecting' | 'signing' | 'verifying' | 'session' | null;
+export type WalletAuthStep =
+  | "connecting"
+  | "signing"
+  | "verifying"
+  | "session"
+  | null;
 
 interface UnifiedAuthState {
   user: UnifiedUser | null;
   isAuthenticated: boolean;
-  authMethod: 'email' | 'wallet' | null;
+  authMethod: "email" | "wallet" | null;
   email: string | null;
   walletAddress: string | null;
   isWalletConnected: boolean;
   isWalletLinked: boolean;
   chainId: number | null;
-  role: 'donor' | 'charity' | 'volunteer' | 'admin';
+  role: "donor" | "charity" | "volunteer" | "admin";
   loading: boolean;
   walletAuthStep: WalletAuthStep;
   error: string | null;
 
   signInWithEmail: (_email: string, _password: string) => Promise<void>;
-  signUpWithEmail: (_email: string, _password: string, _metadata?: Record<string, unknown>) => Promise<void>;
-  signInWithWallet: (_accountType?: 'donor' | 'charity') => Promise<void>;
+  signUpWithEmail: (
+    _email: string,
+    _password: string,
+    _metadata?: Record<string, unknown>,
+  ) => Promise<void>;
+  signInWithWallet: (
+    _accountType?: "donor" | "charity",
+    _walletInfo?: {
+      wallet: UnifiedWalletProvider;
+      chainType: ChainType;
+      address: string;
+    },
+  ) => Promise<void>;
   linkWallet: () => Promise<void>;
   unlinkWallet: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -51,7 +69,7 @@ interface UnifiedAuthState {
 function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  return Array.from(array, (b) => b.toString(16).padStart(2, '0')).join('');
+  return Array.from(array, (b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 /**
@@ -79,15 +97,17 @@ export function useUnifiedAuth(): UnifiedAuthState {
     /** Loads the user_identities record from Supabase for the current user. */
     const fetchIdentity = async () => {
       const { data, error: fetchError } = await supabase
-        .from('user_identities')
-        .select('*')
-        .eq('user_id', currentUser.id)
+        .from("user_identities")
+        .select("*")
+        .eq("user_id", currentUser.id)
         .single();
 
       if (!cancelled) {
         if (fetchError) {
           // Identity record may not exist yet for existing users
-          Logger.info('No user_identities record found', { userId: currentUser.id });
+          Logger.info("No user_identities record found", {
+            userId: currentUser.id,
+          });
         } else {
           setIdentity(data as UserIdentity);
         }
@@ -95,13 +115,16 @@ export function useUnifiedAuth(): UnifiedAuthState {
     };
 
     fetchIdentity();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [auth.user]);
 
   const isAuthenticated = Boolean(auth.user);
-  const authMethod = identity?.primary_auth_method ?? (auth.user ? 'email' : null);
+  const authMethod =
+    identity?.primary_auth_method ?? (auth.user ? "email" : null);
   const isWalletLinked = Boolean(identity?.wallet_address);
-  const resolvedRole = (auth.userType ?? 'donor') as UnifiedAuthState['role'];
+  const resolvedRole = (auth.userType ?? "donor") as UnifiedAuthState["role"];
 
   const unifiedUser = useMemo<UnifiedUser | null>(() => {
     if (!auth.user) return null;
@@ -110,155 +133,183 @@ export function useUnifiedAuth(): UnifiedAuthState {
       email: auth.user.email ?? null,
       role: resolvedRole,
       walletAddress: identity?.wallet_address ?? null,
-      authMethod: authMethod as 'email' | 'wallet',
+      authMethod: authMethod as "email" | "wallet",
       displayName: (auth.user.user_metadata?.name as string) ?? null,
     };
   }, [auth.user, resolvedRole, identity?.wallet_address, authMethod]);
 
-  const signInWithEmail = useCallback(async (email: string, password: string) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const signInWithEmail = useCallback(
+    async (email: string, password: string) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Use AuthContext login without account type enforcement
-      // Pass 'donor' as the accountType for backward compatibility
-      // but the unified flow doesn't enforce the split
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        throw signInError;
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to sign in';
-      setError(message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const signUpWithEmail = useCallback(async (
-    email: string,
-    password: string,
-    metadata: Record<string, unknown> = {},
-  ) => {
-    try {
-      setLoading(true);
-      setError(null);
-
-      const { data, error: signUpError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: { type: 'donor', ...metadata },
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
-
-      if (signUpError) {
-        if (
-          signUpError.message?.toLowerCase().includes('already registered') ||
-          signUpError.message?.toLowerCase().includes('already exists')
-        ) {
-          throw new Error('This email is already registered. Please sign in or use a different email.');
-        }
-        throw signUpError;
-      }
-
-      if (data.user) {
-        // Create profile
-        await supabase.from('profiles').insert({
-          user_id: data.user.id,
-          type: 'donor',
-          role: 'donor',
+        // Use AuthContext login without account type enforcement
+        // Pass 'donor' as the accountType for backward compatibility
+        // but the unified flow doesn't enforce the split
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+          email,
+          password,
         });
+
+        if (signInError) {
+          throw signInError;
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to sign in";
+        setError(message);
+        throw err;
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to register';
-      setError(message);
-      throw err;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [],
+  );
 
-  const signInWithWallet = useCallback(async (accountType: 'donor' | 'charity' = 'donor') => {
-    try {
-      setLoading(true);
-      setWalletAuthStep('connecting');
-      setError(null);
+  const signUpWithEmail = useCallback(
+    async (
+      email: string,
+      password: string,
+      metadata: Record<string, unknown> = {},
+    ) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      if (typeof window !== 'undefined' && !('ethereum' in window)) {
-        throw new Error(
-          'No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.',
+        const { data, error: signUpError } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { type: "donor", ...metadata },
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (signUpError) {
+          throw signUpError;
+        }
+
+        if (!data.user) {
+          throw new Error("Failed to create account");
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to sign up";
+        setError(message);
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+
+  const signInWithWallet = useCallback(
+    async (
+      accountType: "donor" | "charity" = "donor",
+      walletInfo?: {
+        wallet: UnifiedWalletProvider;
+        chainType: ChainType;
+        address: string;
+      },
+    ) => {
+      try {
+        setLoading(true);
+        setWalletAuthStep("connecting");
+        setError(null);
+
+        let address: string;
+        let signature: string;
+        let chainType: ChainType = "evm";
+        const nonce = generateNonce();
+        const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
+
+        if (walletInfo) {
+          // Use the wallet provider passed by the caller to ensure the correct
+          // extension is used (prevents Phantom from hijacking MetaMask via window.ethereum)
+          address = walletInfo.address;
+          chainType = walletInfo.chainType;
+
+          setWalletAuthStep("signing");
+          signature = await walletInfo.wallet.signMessage(message, chainType);
+        } else {
+          // Legacy fallback: no wallet info passed, use window.ethereum directly
+          if (typeof window !== "undefined" && !("ethereum" in window)) {
+            throw new Error(
+              "No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.",
+            );
+          }
+
+          if (!web3.provider) {
+            await web3.connect();
+          }
+
+          const provider =
+            web3.provider ??
+            (typeof window !== "undefined" && window.ethereum
+              ? new ethers.BrowserProvider(window.ethereum)
+              : null);
+          if (!provider) {
+            throw new Error("No wallet provider available");
+          }
+
+          setWalletAuthStep("signing");
+          const signer = await (provider as ethers.BrowserProvider).getSigner();
+          address = await signer.getAddress();
+          signature = await signer.signMessage(message);
+        }
+
+        setWalletAuthStep("verifying");
+        const fnResponse = await fetch(
+          `${ENV.SUPABASE_URL}/functions/v1/wallet-auth`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${ENV.SUPABASE_ANON_KEY}`,
+              apikey: ENV.SUPABASE_ANON_KEY,
+            },
+            body: JSON.stringify({
+              walletAddress: address,
+              signature,
+              message,
+              nonce,
+              accountType,
+              chainType,
+            }),
+          },
         );
+
+        const data = await fnResponse.json();
+
+        if (!fnResponse.ok || !data?.success) {
+          console.error("[wallet-auth] Failed response:", JSON.stringify(data));
+          throw new Error(data?.error ?? "Wallet authentication failed");
+        }
+
+        setWalletAuthStep("session");
+        // Set the session from the edge function response
+        const { error: sessionError } = await supabase.auth.setSession({
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+        });
+
+        if (sessionError) {
+          throw sessionError;
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Wallet sign-in failed";
+        setError(message);
+        throw err;
+      } finally {
+        setLoading(false);
+        setWalletAuthStep(null);
       }
-
-      // Always call connect() to ensure MetaMask is on the user-selected network.
-      // For already-authorised wallets eth_requestAccounts returns immediately
-      // (no popup). connect() also performs the chain switch via
-      // ChainContext.selectedChainId, which handles the case where web3.provider
-      // was already set from initProvider on a different chain (e.g. Base when
-      // the user selected Moonbeam).
-      await web3.connect();
-
-      // Prefer a fresh BrowserProvider wrapping window.ethereum (authoritative
-      // after the chain switch in connect()) over the stale web3.provider
-      // closure snapshot, which may still point to the pre-switch chain.
-      const ethersProvider: ethers.Provider | null =
-        (typeof window !== 'undefined' && window.ethereum
-          ? new ethers.BrowserProvider(window.ethereum)
-          : null) ??
-        web3.provider;
-      if (!ethersProvider) {
-        throw new Error('No wallet provider available');
-      }
-
-      setWalletAuthStep('signing');
-      const signer = await (ethersProvider as ethers.BrowserProvider).getSigner();
-      const address = await signer.getAddress();
-      const nonce = generateNonce();
-      const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
-      const signature = await signer.signMessage(message);
-
-      setWalletAuthStep('verifying');
-      // Call the wallet-auth edge function
-      const { data, error: fnError } = await supabase.functions.invoke('wallet-auth', {
-        body: {
-          walletAddress: address,
-          signature,
-          message,
-          nonce,
-          accountType,
-        },
-      });
-
-      if (fnError || !data?.success) {
-        throw new Error(data?.error ?? fnError?.message ?? 'Wallet authentication failed');
-      }
-
-      setWalletAuthStep('session');
-      // Set the session from the edge function response
-      const { error: sessionError } = await supabase.auth.setSession({
-        access_token: data.session.access_token,
-        refresh_token: data.session.refresh_token,
-      });
-
-      if (sessionError) {
-        throw sessionError;
-      }
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Wallet sign-in failed';
-      setError(message);
-      throw err;
-    } finally {
-      setLoading(false);
-      setWalletAuthStep(null);
-    }
-  }, [web3.provider, web3.connect]);
+    },
+    [web3.provider, web3.connect],
+  );
 
   const linkWallet = useCallback(async () => {
     try {
@@ -266,7 +317,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
       setError(null);
 
       if (!auth.user) {
-        throw new Error('You must be signed in to link a wallet');
+        throw new Error("You must be signed in to link a wallet");
       }
 
       if (!web3.isConnected) {
@@ -275,26 +326,30 @@ export function useUnifiedAuth(): UnifiedAuthState {
 
       const walletProvider = web3.provider;
       if (!walletProvider) {
-        throw new Error('No wallet provider available');
+        throw new Error("No wallet provider available");
       }
-      const signer = await (walletProvider as ethers.BrowserProvider).getSigner();
+      const signer = await (
+        walletProvider as ethers.BrowserProvider
+      ).getSigner();
       const address = await signer.getAddress();
       const message = `Link wallet to Give Protocol account.\n\nAccount: ${auth.user.email ?? auth.user.id}\nTimestamp: ${new Date().toISOString()}`;
       const signature = await signer.signMessage(message);
 
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
-        throw new Error('No active session');
+        throw new Error("No active session");
       }
 
       const response = await fetch(
         `${ENV.SUPABASE_URL}/functions/v1/link-wallet`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${session.access_token}`,
-            'apikey': ENV.SUPABASE_ANON_KEY,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${session.access_token}`,
+            apikey: ENV.SUPABASE_ANON_KEY,
           },
           body: JSON.stringify({ walletAddress: address, signature, message }),
         },
@@ -303,17 +358,22 @@ export function useUnifiedAuth(): UnifiedAuthState {
       const result = await response.json();
 
       if (!result.success) {
-        throw new Error(result.error ?? 'Failed to link wallet');
+        throw new Error(result.error ?? "Failed to link wallet");
       }
 
       // Refresh identity state
-      setIdentity((prev) => prev ? {
-        ...prev,
-        wallet_address: result.walletAddress,
-        wallet_linked_at: result.linkedAt,
-      } : null);
+      setIdentity((prev) =>
+        prev
+          ? {
+              ...prev,
+              wallet_address: result.walletAddress,
+              wallet_linked_at: result.linkedAt,
+            }
+          : null,
+      );
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to link wallet';
+      const message =
+        err instanceof Error ? err.message : "Failed to link wallet";
       setError(message);
       throw err;
     } finally {
@@ -327,28 +387,33 @@ export function useUnifiedAuth(): UnifiedAuthState {
       setError(null);
 
       if (!auth.user) {
-        throw new Error('You must be signed in to unlink a wallet');
+        throw new Error("You must be signed in to unlink a wallet");
       }
 
       const { error: updateError } = await supabase
-        .from('user_identities')
+        .from("user_identities")
         .update({
           wallet_address: null,
           wallet_linked_at: null,
         })
-        .eq('user_id', auth.user.id);
+        .eq("user_id", auth.user.id);
 
       if (updateError) {
         throw updateError;
       }
 
-      setIdentity((prev) => prev ? {
-        ...prev,
-        wallet_address: null,
-        wallet_linked_at: null,
-      } : null);
+      setIdentity((prev) =>
+        prev
+          ? {
+              ...prev,
+              wallet_address: null,
+              wallet_linked_at: null,
+            }
+          : null,
+      );
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to unlink wallet';
+      const message =
+        err instanceof Error ? err.message : "Failed to unlink wallet";
       setError(message);
       throw err;
     } finally {
@@ -369,7 +434,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
       setIdentity(null);
       window.location.href = `${window.location.origin}/auth`;
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'Failed to sign out';
+      const message = err instanceof Error ? err.message : "Failed to sign out";
       setError(message);
       throw err;
     } finally {
@@ -380,7 +445,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
   return {
     user: unifiedUser,
     isAuthenticated,
-    authMethod: authMethod as 'email' | 'wallet' | null,
+    authMethod: authMethod as "email" | "wallet" | null,
     email: auth.user?.email ?? null,
     walletAddress: identity?.wallet_address ?? web3.address,
     isWalletConnected: web3.isConnected,

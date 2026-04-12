@@ -105,7 +105,7 @@ export class SecurityManager {
     return {
       "Content-Security-Policy": `
         default-src 'self';
-        script-src 'self' 'sha256-3jmXcBtFOTq+jrqutfpt36T0J4Qm1z+aXPli5zNE1Cc=' 'sha256-1A5C0PgHbkU0Dcl68Pe/TR1vV/k5AMjAVNdjxLJHUaE=' 'sha256-sT0ykMJAN6ofGI+ID++kG8erAOJfF/gVN1p9IN2Wc+U=' ${trustedDomainsList};
+        script-src 'self' 'wasm-unsafe-eval' 'sha256-3jmXcBtFOTq+jrqutfpt36T0J4Qm1z+aXPli5zNE1Cc=' 'sha256-1A5C0PgHbkU0Dcl68Pe/TR1vV/k5AMjAVNdjxLJHUaE=' 'sha256-sT0ykMJAN6ofGI+ID++kG8erAOJfF/gVN1p9IN2Wc+U=' ${trustedDomainsList};
         style-src 'self' 'unsafe-inline';
         img-src 'self' data: https: blob:;
         font-src 'self';
@@ -201,6 +201,7 @@ export class SecurityManager {
     });
   }
 
+  /** Validate a DOM element for dangerous tags or inline event handler attributes */
   private validateDOMElement(element: HTMLElement): void {
     const dangerousAttributes = ["onclick", "onerror", "onload", "onmouseover"];
     const dangerousTags = ["script", "object", "embed", "base"];
@@ -225,6 +226,7 @@ export class SecurityManager {
     });
   }
 
+  /** Intercept fetch requests to block calls to untrusted domains */
   private monitorNetworkRequests(): void {
     const originalFetch = window.fetch;
     window.fetch = (
@@ -251,6 +253,7 @@ export class SecurityManager {
     };
   }
 
+  /** Check whether a URL belongs to a trusted domain */
   private isUrlTrusted(url: string): boolean {
     try {
       const urlObj = new URL(url);
@@ -263,6 +266,7 @@ export class SecurityManager {
     }
   }
 
+  /** Log suspicious activity and optionally trigger rate limiting */
   private handleSuspiciousActivity(
     type: string,
     details: Record<string, unknown>,
@@ -278,6 +282,7 @@ export class SecurityManager {
     }
   }
 
+  /** Determine whether a suspicious activity should trigger request blocking */
   private shouldBlockRequest(
     type: string,
     details: Record<string, unknown>,
@@ -304,6 +309,12 @@ export class SecurityManager {
     );
   }
 
+  /**
+   * Sanitize user-provided text input for the given context
+   * @param input - Raw user input string
+   * @param context - Usage context for context-specific sanitization rules
+   * @returns Sanitized string safe for the given context
+   */
   public sanitizeInput(input: string, context: string): string {
     return this.sanitizer.sanitizeText(input, context);
   }

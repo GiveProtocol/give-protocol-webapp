@@ -126,8 +126,8 @@ function Pagination({
   totalPages: number;
   onPrev: () => void;
   onNext: () => void;
-}): React.ReactElement {
-  if (totalPages <= 1) return <></>;
+}): React.ReactElement | null {
+  if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
       <Button variant="secondary" size="sm" onClick={onPrev} disabled={page <= 1}>
@@ -172,8 +172,8 @@ function ActionModal({
   onConfirm: () => void;
   onClose: () => void;
   confirming: boolean;
-}): React.ReactElement {
-  if (!donor) return <></>;
+}): React.ReactElement | null {
+  if (!donor) return null;
   const label = ACTION_LABELS[action] ?? "Confirm Action";
   const requiresReason = ACTION_REQUIRES_REASON[action] ?? false;
   const displayName = donor.displayName ?? donor.email ?? donor.userId;
@@ -249,6 +249,40 @@ function DonorRow({
         <DonorActions donor={donor} onAction={onAction} disabled={updating} />
       </td>
     </tr>
+  );
+}
+
+/** Donor list table with header and rows */
+function DonorTable({
+  donors,
+  onAction,
+  updating,
+}: {
+  donors: AdminDonorListItem[];
+  onAction: (_donor: AdminDonorListItem, _action: string) => void;
+  updating: boolean;
+}): React.ReactElement {
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="bg-gray-50">
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donor</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Auth</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Donated</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donations</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {donors.map((donor) => (
+            <DonorRow key={donor.userId} donor={donor} onAction={onAction} updating={updating} />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -386,31 +420,7 @@ const AdminDonorManagement: React.FC = () => {
         )}
 
         {!loading && result.donors.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donor</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Auth</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Donated</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donations</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.donors.map((donor) => (
-                  <DonorRow
-                    key={donor.userId}
-                    donor={donor}
-                    onAction={handleAction}
-                    updating={updating}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DonorTable donors={result.donors} onAction={handleAction} updating={updating} />
         )}
 
         <Pagination
