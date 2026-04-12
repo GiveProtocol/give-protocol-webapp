@@ -262,14 +262,54 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
         // Ignore storage errors
       }
 
+      // Skip auto-restore on auth pages — the user hasn't chosen a wallet yet,
+      // and calling eth_accounts on window.ethereum can trigger Phantom's popup
+      // when it has hijacked the global provider.
+      if (window.location.pathname.startsWith("/auth")) {
+        return;
+      }
+
       if (typeof window.ethereum !== "undefined") {
         try {
-          // Check if already connected
-          const accounts = await window.ethereum.request({
+          // Find a safe provider to query. Avoid the raw window.ethereum when
+          // Phantom has overridden it, as even eth_accounts can trigger its UI.
+          type ProviderLike = {
+            isPhantom?: boolean;
+            isMetaMask?: boolean;
+            providers?: ProviderLike[];
+            request: (args: {
+              method: string;
+              params?: unknown[];
+            }) => Promise<unknown>;
+          };
+          const ethereum = window.ethereum as ProviderLike;
+
+          // If the top-level provider belongs to Phantom and there is no
+          // providers[] array with a genuine MetaMask entry, skip auto-restore
+          // entirely — the user must explicitly choose a wallet.
+          let safeProvider: ProviderLike | null = null;
+          if (
+            Array.isArray(ethereum.providers) &&
+            ethereum.providers.length > 0
+          ) {
+            safeProvider =
+              ethereum.providers.find((p) => p.isMetaMask && !p.isPhantom) ??
+              null;
+          } else if (!ethereum.isPhantom) {
+            safeProvider = ethereum;
+          }
+
+          if (!safeProvider) {
+            Logger.info("Skipping auto-restore: no safe EVM provider found");
+            return;
+          }
+
+          // Check if already connected (eth_accounts is passive — no popup)
+          const accounts = (await safeProvider.request({
             method: "eth_accounts",
-          });
+          })) as string[];
           if (accounts.length > 0) {
-            const newProvider = new ethers.BrowserProvider(window.ethereum);
+            const newProvider = new ethers.BrowserProvider(safeProvider);
             const newSigner = await newProvider.getSigner();
             const network = await newProvider.getNetwork();
 
