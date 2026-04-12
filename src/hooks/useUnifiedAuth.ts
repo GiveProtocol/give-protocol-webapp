@@ -225,16 +225,16 @@ export function useUnifiedAuth(): UnifiedAuthState {
         const nonce = generateNonce();
         const message = `Sign in to Give Protocol.\n\nNonce: ${nonce}\nTimestamp: ${new Date().toISOString()}`;
 
-        if (walletInfo && walletInfo.chainType !== "evm") {
-          // Non-EVM flow: use the wallet/address passed directly by the caller
-          // (cannot rely on React context state here — it may not have re-rendered yet)
+        if (walletInfo) {
+          // Use the wallet provider passed by the caller to ensure the correct
+          // extension is used (prevents Phantom from hijacking MetaMask via window.ethereum)
           address = walletInfo.address;
           chainType = walletInfo.chainType;
 
           setWalletAuthStep("signing");
           signature = await walletInfo.wallet.signMessage(message, chainType);
         } else {
-          // EVM flow: use ethers provider/signer
+          // Legacy fallback: no wallet info passed, use window.ethereum directly
           if (typeof window !== "undefined" && !("ethereum" in window)) {
             throw new Error(
               "No wallet detected. Please install a browser wallet extension such as MetaMask (https://metamask.io) to continue.",
@@ -267,6 +267,7 @@ export function useUnifiedAuth(): UnifiedAuthState {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
+              Authorization: `Bearer ${ENV.SUPABASE_ANON_KEY}`,
               apikey: ENV.SUPABASE_ANON_KEY,
             },
             body: JSON.stringify({

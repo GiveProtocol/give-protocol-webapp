@@ -359,19 +359,14 @@ const AuthRightPanel: React.FC = () => {
         await multiChain.connect(wallet, chainType);
         setShowWalletModal(false);
 
-        if (chainType !== "evm") {
-          // For non-EVM chains, get the connected account address and pass wallet info
-          // directly to signInWithWallet (React state from multiChain.connect hasn't
-          // re-rendered yet, so context values would be stale)
-          const accounts = await wallet.getAccounts(chainType);
-          const address = accounts[0]?.address;
-          if (!address) {
-            throw new Error("No account found after wallet connection");
-          }
-          await signInWithWallet("donor", { wallet, chainType, address });
-        } else {
-          await signInWithWallet();
+        // Always pass wallet info so signInWithWallet uses the correct provider
+        // (prevents Phantom from intercepting MetaMask requests via window.ethereum)
+        const accounts = await wallet.getAccounts(chainType);
+        const address = accounts[0]?.address;
+        if (!address) {
+          throw new Error("No account found after wallet connection");
         }
+        await signInWithWallet("donor", { wallet, chainType, address });
       } catch (err) {
         const msg =
           err instanceof Error ? err.message : "Wallet sign-in failed";
