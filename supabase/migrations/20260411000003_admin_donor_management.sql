@@ -31,7 +31,7 @@ BEGIN
     CREATE POLICY "admin_read_all_profiles" ON profiles
       FOR SELECT
       USING (
-        auth.jwt() ->> 'user_type' = 'admin'
+        auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
         OR auth.role() = 'service_role'
       );
   END IF;
@@ -73,7 +73,7 @@ DECLARE
   v_offset INT;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
@@ -180,7 +180,7 @@ DECLARE
   v_result JSONB;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
@@ -275,7 +275,7 @@ DECLARE
   v_audit_id    UUID;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
