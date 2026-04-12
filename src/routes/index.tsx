@@ -86,6 +86,9 @@ const AdminVolunteerValidation = lazy(
 const AdminPlatformConfig = lazy(
   () => import("@/pages/admin/AdminPlatformConfig"),
 );
+const AdminContentModeration = lazy(
+  () => import("@/pages/admin/AdminContentModeration"),
+);
 const _SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
 // Lazy load cause pages
@@ -239,6 +242,18 @@ export function AppRoutes() {
               <RouteTransition>
                 <Suspense fallback={<LoadingFallback />}>
                   <AdminPlatformConfig />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/content-moderation"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminContentModeration />
                 </Suspense>
               </RouteTransition>
             </ProtectedRoute>

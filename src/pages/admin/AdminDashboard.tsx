@@ -283,6 +283,10 @@ const AdminDashboard: React.FC = () => {
     navigate("/admin/settings");
   }, [navigate]);
 
+  const handleNavigateContentModeration = useCallback(() => {
+    navigate("/admin/content-moderation");
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -432,6 +436,11 @@ const AdminDashboard: React.FC = () => {
             title="Donation Monitoring"
             description="Monitor, flag, and report on donations"
             onClick={handleNavigateDonations}
+          />
+          <QuickActionButton
+            title="Content Moderation"
+            description="Hide, flag, and review opportunities and causes"
+            onClick={handleNavigateContentModeration}
           />
         </div>
       </Card>
