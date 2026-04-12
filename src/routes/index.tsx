@@ -24,9 +24,7 @@ const EducationForAll = lazy(() => import("@/pages/charities/EducationForAll"));
 const ClimateActionNow = lazy(
   () => import("@/pages/charities/ClimateActionNow"),
 );
-const CharityProfilePage = lazy(
-  () => import("@/pages/CharityProfilePage"),
-);
+const CharityProfilePage = lazy(() => import("@/pages/CharityProfilePage"));
 const ClaimCharity = lazy(() => import("@/pages/ClaimCharity"));
 const EnvironmentPortfolioDetail = lazy(
   () => import("@/pages/portfolio/EnvironmentPortfolioDetail"),
@@ -63,12 +61,31 @@ const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"));
 
 // Admin routes
 const AdminDashboard = lazy(() => import("@/pages/admin/AdminDashboard"));
-const AdminCharityManagement = lazy(() => import("@/pages/admin/AdminCharityManagement"));
-const AdminDonorManagement = lazy(() => import("@/pages/admin/AdminDonorManagement"));
-const CharityRegistration = lazy(() => import("@/pages/admin/CharityRegistration"));
-const CharityDiagnostics = lazy(() => import("@/pages/admin/CharityDiagnostics"));
+const AdminCharityManagement = lazy(
+  () => import("@/pages/admin/AdminCharityManagement"),
+);
+const AdminDonorManagement = lazy(
+  () => import("@/pages/admin/AdminDonorManagement"),
+);
+const AdminDonationMonitoring = lazy(
+  () => import("@/pages/admin/AdminDonationMonitoring"),
+);
+const CharityRegistration = lazy(
+  () => import("@/pages/admin/CharityRegistration"),
+);
+const CharityDiagnostics = lazy(
+  () => import("@/pages/admin/CharityDiagnostics"),
+);
 const TokenManagement = lazy(() => import("@/pages/admin/TokenManagement"));
-const ImpactMetricsAdmin = lazy(() => import("@/pages/admin/ImpactMetricsAdmin"));
+const ImpactMetricsAdmin = lazy(
+  () => import("@/pages/admin/ImpactMetricsAdmin"),
+);
+const AdminVolunteerValidation = lazy(
+  () => import("@/pages/admin/AdminVolunteerValidation"),
+);
+const AdminPlatformConfig = lazy(
+  () => import("@/pages/admin/AdminPlatformConfig"),
+);
 const _SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
 // Lazy load cause pages
@@ -180,12 +197,48 @@ export function AppRoutes() {
           }
         />
         <Route
+          path="/admin/donations"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminDonationMonitoring />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/admin/impact-metrics"
           element={
             <ProtectedRoute requiredRoles={["admin"]}>
               <RouteTransition>
                 <Suspense fallback={<LoadingFallback />}>
                   <ImpactMetricsAdmin />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/volunteer-validation"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminVolunteerValidation />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminPlatformConfig />
                 </Suspense>
               </RouteTransition>
             </ProtectedRoute>
@@ -550,7 +603,10 @@ export function AppRoutes() {
 
         {/* Legacy auth redirects */}
         <Route path="/login" element={<Navigate to="/auth" replace />} />
-        <Route path="/register" element={<Navigate to="/auth/signup" replace />} />
+        <Route
+          path="/register"
+          element={<Navigate to="/auth/signup" replace />}
+        />
         <Route
           path="*"
           element={
