@@ -400,7 +400,11 @@ function PlatformConfigTab({
         />
       ))}
       {uncategorised.length > 0 && (
-        <CategorySection title="Other" entries={uncategorised} onEdit={onEdit} />
+        <CategorySection
+          title="Other"
+          entries={uncategorised}
+          onEdit={onEdit}
+        />
       )}
     </div>
   );
@@ -588,8 +592,12 @@ function AuditLogTab({
   currentPage: number;
   onFetch: (_filters: AdminAuditLogFilters) => Promise<unknown>;
 }): React.ReactElement {
-  const [filters, setFilters] = useState<AuditFilterState>(INITIAL_AUDIT_FILTERS);
-  const [appliedFilters, setAppliedFilters] = useState<AdminAuditLogFilters>({});
+  const [filters, setFilters] = useState<AuditFilterState>(
+    INITIAL_AUDIT_FILTERS,
+  );
+  const [appliedFilters, setAppliedFilters] = useState<AdminAuditLogFilters>(
+    {},
+  );
 
   useEffect(() => {
     void onFetch({});
@@ -745,13 +753,8 @@ function TokenNetworkTab({
  * @returns {JSX.Element} The admin system settings page
  */
 export default function AdminPlatformConfig(): React.ReactElement {
-  const {
-    configs,
-    loading,
-    saving,
-    fetchConfig,
-    saveConfig,
-  } = useAdminPlatformConfig();
+  const { configs, loading, saving, fetchConfig, saveConfig } =
+    useAdminPlatformConfig();
 
   const {
     entries: auditEntries,
