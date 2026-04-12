@@ -15,7 +15,9 @@ import {
 import type { AdminAuditLogEntry } from "@/types/adminAudit";
 import type { AdminDonationSummaryRow } from "@/types/adminDonation";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
 describe("adminReportsService", () => {
   beforeEach(() => {
@@ -28,7 +30,10 @@ describe("adminReportsService", () => {
     it("should call admin_charity_growth_report RPC with correct params", async () => {
       mockRpc.mockResolvedValue({ data: [], error: null });
 
-      await getCharityGrowthReport("2026-01-01T00:00:00Z", "2026-03-31T23:59:59Z");
+      await getCharityGrowthReport(
+        "2026-01-01T00:00:00Z",
+        "2026-03-31T23:59:59Z",
+      );
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_charity_growth_report", {
         p_date_from: "2026-01-01T00:00:00Z",
@@ -51,7 +56,10 @@ describe("adminReportsService", () => {
         error: null,
       });
 
-      const rows = await getCharityGrowthReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getCharityGrowthReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toHaveLength(1);
       expect(rows[0]).toEqual({
@@ -65,9 +73,15 @@ describe("adminReportsService", () => {
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
-      const rows = await getCharityGrowthReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getCharityGrowthReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -75,7 +89,10 @@ describe("adminReportsService", () => {
     it("should return empty array on thrown exception", async () => {
       mockRpc.mockRejectedValue(new Error("Network failure"));
 
-      const rows = await getCharityGrowthReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getCharityGrowthReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -83,7 +100,10 @@ describe("adminReportsService", () => {
     it("should handle null data gracefully", async () => {
       mockRpc.mockResolvedValue({ data: null, error: null });
 
-      const rows = await getCharityGrowthReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getCharityGrowthReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -95,7 +115,10 @@ describe("adminReportsService", () => {
     it("should call admin_donor_activity_report RPC with correct params", async () => {
       mockRpc.mockResolvedValue({ data: [], error: null });
 
-      await getDonorActivityReport("2026-01-01T00:00:00Z", "2026-03-31T23:59:59Z");
+      await getDonorActivityReport(
+        "2026-01-01T00:00:00Z",
+        "2026-03-31T23:59:59Z",
+      );
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_donor_activity_report", {
         p_date_from: "2026-01-01T00:00:00Z",
@@ -118,7 +141,10 @@ describe("adminReportsService", () => {
         error: null,
       });
 
-      const rows = await getDonorActivityReport("2026-01-01T00:00:00Z", "2026-02-28T23:59:59Z");
+      const rows = await getDonorActivityReport(
+        "2026-01-01T00:00:00Z",
+        "2026-02-28T23:59:59Z",
+      );
 
       expect(rows).toHaveLength(1);
       expect(rows[0]).toEqual({
@@ -132,9 +158,15 @@ describe("adminReportsService", () => {
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
-      const rows = await getDonorActivityReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getDonorActivityReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -142,7 +174,10 @@ describe("adminReportsService", () => {
     it("should return empty array on thrown exception", async () => {
       mockRpc.mockRejectedValue(new Error("Network failure"));
 
-      const rows = await getDonorActivityReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getDonorActivityReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -177,7 +212,10 @@ describe("adminReportsService", () => {
         error: null,
       });
 
-      const rows = await getVolunteerReport("2026-03-01T00:00:00Z", "2026-03-31T23:59:59Z");
+      const rows = await getVolunteerReport(
+        "2026-03-01T00:00:00Z",
+        "2026-03-31T23:59:59Z",
+      );
 
       expect(rows).toHaveLength(1);
       expect(rows[0]).toEqual({
@@ -191,9 +229,15 @@ describe("adminReportsService", () => {
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
-      const rows = await getVolunteerReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getVolunteerReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -201,7 +245,10 @@ describe("adminReportsService", () => {
     it("should return empty array on thrown exception", async () => {
       mockRpc.mockRejectedValue(new Error("Network failure"));
 
-      const rows = await getVolunteerReport("2026-01-01T00:00:00Z", "2026-01-31T23:59:59Z");
+      const rows = await getVolunteerReport(
+        "2026-01-01T00:00:00Z",
+        "2026-01-31T23:59:59Z",
+      );
 
       expect(rows).toEqual([]);
     });
@@ -215,9 +262,12 @@ describe("adminReportsService", () => {
 
       await getPlatformHealthSummary("30d");
 
-      expect(supabase.rpc).toHaveBeenCalledWith("admin_platform_health_summary", {
-        p_period: "30d",
-      });
+      expect(supabase.rpc).toHaveBeenCalledWith(
+        "admin_platform_health_summary",
+        {
+          p_period: "30d",
+        },
+      );
     });
 
     it("should map snake_case rows to camelCase", async () => {
@@ -271,7 +321,10 @@ describe("adminReportsService", () => {
     });
 
     it("should return empty array on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const rows = await getPlatformHealthSummary("30d");
 
@@ -292,18 +345,29 @@ describe("adminReportsService", () => {
   describe("charityGrowthToCsv", () => {
     it("should produce correct CSV with header", () => {
       const rows = [
-        { period: "2026-01", newRegistrations: 10, approved: 8, rejected: 1, active: 40, suspended: 0 },
+        {
+          period: "2026-01",
+          newRegistrations: 10,
+          approved: 8,
+          rejected: 1,
+          active: 40,
+          suspended: 0,
+        },
       ];
       const csv = charityGrowthToCsv(rows);
       const lines = csv.split("\n");
 
-      expect(lines[0]).toBe("Period,New Registrations,Approved,Rejected,Active,Suspended");
+      expect(lines[0]).toBe(
+        "Period,New Registrations,Approved,Rejected,Active,Suspended",
+      );
       expect(lines[1]).toBe("2026-01,10,8,1,40,0");
     });
 
     it("should return only header for empty array", () => {
       const csv = charityGrowthToCsv([]);
-      expect(csv).toBe("Period,New Registrations,Approved,Rejected,Active,Suspended");
+      expect(csv).toBe(
+        "Period,New Registrations,Approved,Rejected,Active,Suspended",
+      );
     });
   });
 
@@ -322,7 +386,9 @@ describe("adminReportsService", () => {
       const csv = donorActivityToCsv(rows);
       const lines = csv.split("\n");
 
-      expect(lines[0]).toBe("Period,New Donors,Active Donors,Dormant Donors,Avg Donation USD,Repeat Donor Rate");
+      expect(lines[0]).toBe(
+        "Period,New Donors,Active Donors,Dormant Donors,Avg Donation USD,Repeat Donor Rate",
+      );
       expect(lines[1]).toBe("2026-02,50,100,20,75.50,42.0%");
     });
   });
@@ -342,7 +408,9 @@ describe("adminReportsService", () => {
       const csv = volunteerReportToCsv(rows);
       const lines = csv.split("\n");
 
-      expect(lines[0]).toBe("Period,Hours Submitted,Hours Validated,Hours Rejected,Rejection Rate,Avg Validation Days");
+      expect(lines[0]).toBe(
+        "Period,Hours Submitted,Hours Validated,Hours Rejected,Rejection Rate,Avg Validation Days",
+      );
       expect(lines[1]).toBe("2026-03,200,180,20,10.0%,2.5");
     });
   });
@@ -350,7 +418,13 @@ describe("adminReportsService", () => {
   describe("platformHealthToCsv", () => {
     it("should produce correct CSV handling null trends", () => {
       const rows = [
-        { metric: "total_donations", value: 1500, trend7d: 50, trend30d: null, unit: "count" },
+        {
+          metric: "total_donations",
+          value: 1500,
+          trend7d: 50,
+          trend30d: null,
+          unit: "count",
+        },
       ];
       const csv = platformHealthToCsv(rows);
       const lines = csv.split("\n");
@@ -378,8 +452,12 @@ describe("adminReportsService", () => {
       const csv = auditLogToCsv(entries);
       const lines = csv.split("\n");
 
-      expect(lines[0]).toBe("ID,Admin User ID,Action Type,Entity Type,Entity ID,IP Address,Created At");
-      expect(lines[1]).toBe("audit-1,admin-1,charity_status_change,charity,charity-1,127.0.0.1,2026-04-12T00:00:00Z");
+      expect(lines[0]).toBe(
+        "ID,Admin User ID,Action Type,Entity Type,Entity ID,IP Address,Created At",
+      );
+      expect(lines[1]).toBe(
+        "audit-1,admin-1,charity_status_change,charity,charity-1,127.0.0.1,2026-04-12T00:00:00Z",
+      );
     });
 
     it("should handle null ipAddress", () => {
@@ -418,8 +496,12 @@ describe("adminReportsService", () => {
       const csv = donationSummaryToCsv(rows);
       const lines = csv.split("\n");
 
-      expect(lines[0]).toBe("Group,Payment Method,Total USD,Count,Charity ID,Charity Name");
-      expect(lines[1]).toBe('"2026-01",crypto,1234.56,10,charity-1,"Water Foundation"');
+      expect(lines[0]).toBe(
+        "Group,Payment Method,Total USD,Count,Charity ID,Charity Name",
+      );
+      expect(lines[1]).toBe(
+        '"2026-01",crypto,1234.56,10,charity-1,"Water Foundation"',
+      );
     });
 
     it("should handle null charity fields", () => {

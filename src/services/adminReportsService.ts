@@ -35,7 +35,11 @@ export async function getCharityGrowthReport(
     });
 
     if (error) {
-      Logger.error("Error fetching charity growth report", { error, dateFrom, dateTo });
+      Logger.error("Error fetching charity growth report", {
+        error,
+        dateFrom,
+        dateTo,
+      });
       return [];
     }
 
@@ -76,7 +80,11 @@ export async function getDonorActivityReport(
     });
 
     if (error) {
-      Logger.error("Error fetching donor activity report", { error, dateFrom, dateTo });
+      Logger.error("Error fetching donor activity report", {
+        error,
+        dateFrom,
+        dateTo,
+      });
       return [];
     }
 
@@ -117,7 +125,11 @@ export async function getVolunteerReport(
     });
 
     if (error) {
-      Logger.error("Error fetching volunteer report", { error, dateFrom, dateTo });
+      Logger.error("Error fetching volunteer report", {
+        error,
+        dateFrom,
+        dateTo,
+      });
       return [];
     }
 
@@ -150,9 +162,12 @@ export async function getPlatformHealthSummary(
   period: PlatformHealthPeriod,
 ): Promise<PlatformHealthRow[]> {
   try {
-    const { data, error } = await supabase.rpc("admin_platform_health_summary", {
-      p_period: period,
-    });
+    const { data, error } = await supabase.rpc(
+      "admin_platform_health_summary",
+      {
+        p_period: period,
+      },
+    );
 
     if (error) {
       Logger.error("Error fetching platform health summary", { error, period });
@@ -185,7 +200,14 @@ export async function getPlatformHealthSummary(
 export function charityGrowthToCsv(rows: CharityGrowthRow[]): string {
   const header = "Period,New Registrations,Approved,Rejected,Active,Suspended";
   const lines = rows.map((r) =>
-    [r.period, r.newRegistrations, r.approved, r.rejected, r.active, r.suspended].join(","),
+    [
+      r.period,
+      r.newRegistrations,
+      r.approved,
+      r.rejected,
+      r.active,
+      r.suspended,
+    ].join(","),
   );
   return [header, ...lines].join("\n");
 }
@@ -196,7 +218,8 @@ export function charityGrowthToCsv(rows: CharityGrowthRow[]): string {
  * @returns CSV string with header row
  */
 export function donorActivityToCsv(rows: DonorActivityRow[]): string {
-  const header = "Period,New Donors,Active Donors,Dormant Donors,Avg Donation USD,Repeat Donor Rate";
+  const header =
+    "Period,New Donors,Active Donors,Dormant Donors,Avg Donation USD,Repeat Donor Rate";
   const lines = rows.map((r) =>
     [
       r.period,
@@ -216,7 +239,8 @@ export function donorActivityToCsv(rows: DonorActivityRow[]): string {
  * @returns CSV string with header row
  */
 export function volunteerReportToCsv(rows: VolunteerReportRow[]): string {
-  const header = "Period,Hours Submitted,Hours Validated,Hours Rejected,Rejection Rate,Avg Validation Days";
+  const header =
+    "Period,Hours Submitted,Hours Validated,Hours Rejected,Rejection Rate,Avg Validation Days";
   const lines = rows.map((r) =>
     [
       r.period,
@@ -255,7 +279,8 @@ export function platformHealthToCsv(rows: PlatformHealthRow[]): string {
  * @returns CSV string with header row
  */
 export function auditLogToCsv(entries: AdminAuditLogEntry[]): string {
-  const header = "ID,Admin User ID,Action Type,Entity Type,Entity ID,IP Address,Created At";
+  const header =
+    "ID,Admin User ID,Action Type,Entity Type,Entity ID,IP Address,Created At";
   const lines = entries.map((e) =>
     [
       e.id,

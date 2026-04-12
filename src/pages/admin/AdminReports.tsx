@@ -17,9 +17,20 @@ import {
   donationSummaryToCsv,
   downloadReport,
 } from "@/services/adminReportsService";
-import type { CharityGrowthRow, DonorActivityRow, VolunteerReportRow, PlatformHealthRow } from "@/types/adminReports";
-import type { AdminAuditLogEntry, AdminAuditLogFilters } from "@/types/adminAudit";
-import type { AdminDonationSummaryRow, DonationSummaryGroupBy } from "@/types/adminDonation";
+import type {
+  CharityGrowthRow,
+  DonorActivityRow,
+  VolunteerReportRow,
+  PlatformHealthRow,
+} from "@/types/adminReports";
+import type {
+  AdminAuditLogEntry,
+  AdminAuditLogFilters,
+} from "@/types/adminAudit";
+import type {
+  AdminDonationSummaryRow,
+  DonationSummaryGroupBy,
+} from "@/types/adminDonation";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -45,7 +56,11 @@ interface TabProps extends DateRange {
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 /** Computes ISO date strings for a preset period ending today. */
-function computeDateRange(preset: DatePreset, customFrom: string, customTo: string): DateRange {
+function computeDateRange(
+  preset: DatePreset,
+  customFrom: string,
+  customTo: string,
+): DateRange {
   if (preset === "custom") {
     return {
       dateFrom: customFrom ? `${customFrom}T00:00:00Z` : "",
@@ -100,7 +115,14 @@ function MiniBarChart({
         const y = chartH - barH;
         return (
           <g key={`${d.label}-${i}`}>
-            <rect x={x} y={y} width={barW} height={barH} fill="#10b981" rx={2} />
+            <rect
+              x={x}
+              y={y}
+              width={barW}
+              height={barH}
+              fill="#10b981"
+              rx={2}
+            />
             <text
               x={x + barW / 2}
               y={chartH + 14}
@@ -254,13 +276,23 @@ function ReportPagination({
   if (totalPages <= 1) return <></>;
   return (
     <div className="flex items-center justify-between mt-4">
-      <Button variant="secondary" size="sm" onClick={onPrev} disabled={page <= 1}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onPrev}
+        disabled={page <= 1}
+      >
         Previous
       </Button>
       <span className="text-sm text-gray-500">
         Page {page} of {totalPages}
       </span>
-      <Button variant="secondary" size="sm" onClick={onNext} disabled={page >= totalPages}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onNext}
+        disabled={page >= totalPages}
+      >
         Next
       </Button>
     </div>
@@ -283,9 +315,12 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
     });
   }, [dateFrom, dateTo, groupBy]);
 
-  const handleGroupByChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setGroupBy(e.target.value as DonationSummaryGroupBy);
-  }, []);
+  const handleGroupByChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setGroupBy(e.target.value as DonationSummaryGroupBy);
+    },
+    [],
+  );
 
   const handleExport = useCallback(() => {
     downloadReport(
@@ -343,11 +378,21 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Group</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Method</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total (USD)</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Count</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Charity</th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Group
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Method
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Total (USD)
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Count
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Charity
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -356,11 +401,17 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
                   key={`${row.groupKey}-${row.paymentMethod}-${i}`}
                   className="border-t border-gray-100 hover:bg-gray-50"
                 >
-                  <td className="px-4 py-2 font-mono text-xs">{row.groupKey}</td>
+                  <td className="px-4 py-2 font-mono text-xs">
+                    {row.groupKey}
+                  </td>
                   <td className="px-4 py-2">{row.paymentMethod}</td>
-                  <td className="px-4 py-2 font-medium">${row.totalAmountUsd.toFixed(2)}</td>
+                  <td className="px-4 py-2 font-medium">
+                    ${row.totalAmountUsd.toFixed(2)}
+                  </td>
                   <td className="px-4 py-2">{row.donationCount}</td>
-                  <td className="px-4 py-2 text-gray-600">{row.charityName ?? row.charityId ?? "—"}</td>
+                  <td className="px-4 py-2 text-gray-600">
+                    {row.charityName ?? row.charityId ?? "—"}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -393,7 +444,10 @@ function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
     );
   }, [rows, dateFrom, dateTo]);
 
-  const chartData = rows.map((r) => ({ label: r.period.slice(0, 7), value: r.newRegistrations }));
+  const chartData = rows.map((r) => ({
+    label: r.period.slice(0, 7),
+    value: r.newRegistrations,
+  }));
 
   return (
     <div className="space-y-4">
@@ -425,17 +479,32 @@ function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Period</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">New</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Approved</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rejected</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Active</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Suspended</th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Period
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  New
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Approved
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Rejected
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Active
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Suspended
+                </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.period} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr
+                  key={row.period}
+                  className="border-t border-gray-100 hover:bg-gray-50"
+                >
                   <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
                   <td className="px-4 py-2">{row.newRegistrations}</td>
                   <td className="px-4 py-2 text-green-700">{row.approved}</td>
@@ -474,7 +543,10 @@ function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
     );
   }, [rows, dateFrom, dateTo]);
 
-  const chartData = rows.map((r) => ({ label: r.period.slice(0, 7), value: r.newDonors }));
+  const chartData = rows.map((r) => ({
+    label: r.period.slice(0, 7),
+    value: r.newDonors,
+  }));
 
   return (
     <div className="space-y-4">
@@ -506,23 +578,46 @@ function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Period</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">New Donors</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Active</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Dormant</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Avg Donation</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Repeat Rate</th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Period
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  New Donors
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Active
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Dormant
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Avg Donation
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Repeat Rate
+                </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.period} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr
+                  key={row.period}
+                  className="border-t border-gray-100 hover:bg-gray-50"
+                >
                   <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
                   <td className="px-4 py-2 font-medium">{row.newDonors}</td>
-                  <td className="px-4 py-2 text-green-700">{row.activeDonors}</td>
-                  <td className="px-4 py-2 text-gray-500">{row.dormantDonors}</td>
-                  <td className="px-4 py-2">${row.avgDonationUsd.toFixed(2)}</td>
-                  <td className="px-4 py-2">{(row.repeatDonorRate * 100).toFixed(1)}%</td>
+                  <td className="px-4 py-2 text-green-700">
+                    {row.activeDonors}
+                  </td>
+                  <td className="px-4 py-2 text-gray-500">
+                    {row.dormantDonors}
+                  </td>
+                  <td className="px-4 py-2">
+                    ${row.avgDonationUsd.toFixed(2)}
+                  </td>
+                  <td className="px-4 py-2">
+                    {(row.repeatDonorRate * 100).toFixed(1)}%
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -555,7 +650,10 @@ function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
     );
   }, [rows, dateFrom, dateTo]);
 
-  const chartData = rows.map((r) => ({ label: r.period.slice(0, 7), value: r.hoursValidated }));
+  const chartData = rows.map((r) => ({
+    label: r.period.slice(0, 7),
+    value: r.hoursValidated,
+  }));
 
   return (
     <div className="space-y-4">
@@ -587,23 +685,46 @@ function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Period</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Submitted</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Validated</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rejected</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Rejection Rate</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Avg. Days</th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Period
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Submitted
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Validated
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Rejected
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Rejection Rate
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Avg. Days
+                </th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
-                <tr key={row.period} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr
+                  key={row.period}
+                  className="border-t border-gray-100 hover:bg-gray-50"
+                >
                   <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
                   <td className="px-4 py-2">{row.hoursSubmitted}</td>
-                  <td className="px-4 py-2 text-green-700">{row.hoursValidated}</td>
-                  <td className="px-4 py-2 text-red-700">{row.hoursRejected}</td>
-                  <td className="px-4 py-2">{(row.rejectionRate * 100).toFixed(1)}%</td>
-                  <td className="px-4 py-2">{row.avgValidationDays.toFixed(1)}</td>
+                  <td className="px-4 py-2 text-green-700">
+                    {row.hoursValidated}
+                  </td>
+                  <td className="px-4 py-2 text-red-700">
+                    {row.hoursRejected}
+                  </td>
+                  <td className="px-4 py-2">
+                    {(row.rejectionRate * 100).toFixed(1)}%
+                  </td>
+                  <td className="px-4 py-2">
+                    {row.avgValidationDays.toFixed(1)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -625,7 +746,12 @@ function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
   const fetchPage = useCallback((p: number, from: string, to: string) => {
     if (!from || !to) return;
     setLoading(true);
-    const filters: AdminAuditLogFilters = { dateFrom: from, dateTo: to, page: p, limit: 50 };
+    const filters: AdminAuditLogFilters = {
+      dateFrom: from,
+      dateTo: to,
+      page: p,
+      limit: 50,
+    };
     getAdminAuditLog(filters).then((result) => {
       setEntries(result.entries);
       setTotalPages(result.totalPages);
@@ -681,16 +807,29 @@ function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
           <table className="w-full text-left text-sm">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Date</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Action</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Entity</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Entity ID</th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">Admin</th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Date
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Action
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Entity
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Entity ID
+                </th>
+                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                  Admin
+                </th>
               </tr>
             </thead>
             <tbody>
               {entries.map((entry) => (
-                <tr key={entry.id} className="border-t border-gray-100 hover:bg-gray-50">
+                <tr
+                  key={entry.id}
+                  className="border-t border-gray-100 hover:bg-gray-50"
+                >
                   <td className="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">
                     {fmtDate(entry.createdAt)}
                   </td>
@@ -767,19 +906,26 @@ function PlatformHealthTab({ preset }: TabProps): React.ReactElement {
       {!loading && rows.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {rows.map((row) => (
-            <div key={row.metric} className="bg-gray-50 rounded-lg p-4 border border-gray-200">
+            <div
+              key={row.metric}
+              className="bg-gray-50 rounded-lg p-4 border border-gray-200"
+            >
               <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
                 {row.metric.replaceAll("_", " ")}
               </p>
               <p className="text-2xl font-bold text-gray-900">
                 {row.value.toLocaleString()}{" "}
-                <span className="text-sm font-normal text-gray-500">{row.unit}</span>
+                <span className="text-sm font-normal text-gray-500">
+                  {row.unit}
+                </span>
               </p>
               {(row.trend7d !== null || row.trend30d !== null) && (
                 <p className="text-xs text-gray-400 mt-1">
-                  {row.trend7d !== null && `7d: ${row.trend7d > 0 ? "+" : ""}${row.trend7d}`}
+                  {row.trend7d !== null &&
+                    `7d: ${row.trend7d > 0 ? "+" : ""}${row.trend7d}`}
                   {row.trend7d !== null && row.trend30d !== null && " · "}
-                  {row.trend30d !== null && `30d: ${row.trend30d > 0 ? "+" : ""}${row.trend30d}`}
+                  {row.trend30d !== null &&
+                    `30d: ${row.trend30d > 0 ? "+" : ""}${row.trend30d}`}
                 </p>
               )}
             </div>
@@ -805,7 +951,11 @@ const AdminReports: React.FC = () => {
   const [customFrom, setCustomFrom] = useState("");
   const [customTo, setCustomTo] = useState("");
 
-  const { dateFrom, dateTo } = computeDateRange(datePreset, customFrom, customTo);
+  const { dateFrom, dateTo } = computeDateRange(
+    datePreset,
+    customFrom,
+    customTo,
+  );
 
   const handleTabSelect = useCallback((tab: ReportTab) => {
     setActiveTab(tab);
@@ -815,13 +965,19 @@ const AdminReports: React.FC = () => {
     setDatePreset(p);
   }, []);
 
-  const handleCustomFrom = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomFrom(e.target.value);
-  }, []);
+  const handleCustomFrom = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setCustomFrom(e.target.value);
+    },
+    [],
+  );
 
-  const handleCustomTo = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomTo(e.target.value);
-  }, []);
+  const handleCustomTo = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setCustomTo(e.target.value);
+    },
+    [],
+  );
 
   const tabProps: TabProps = { dateFrom, dateTo, preset: datePreset };
 
