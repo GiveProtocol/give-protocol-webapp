@@ -78,6 +78,7 @@ export class MetaMaskProvider extends BaseEVMProvider {
    * @returns MetaMask provider or null
    */
   protected getEVMProvider(): unknown {
+    if (!this.isInstalled()) return null;
     return findMetaMaskProvider();
   }
 }
