@@ -69,14 +69,14 @@ ALTER TABLE admin_audit_log ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_read_audit_log" ON admin_audit_log
   FOR SELECT
   USING (
-    auth.jwt() ->> 'user_type' = 'admin'
+    auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
     OR auth.role() = 'service_role'
   );
 
 CREATE POLICY "admin_insert_audit_log" ON admin_audit_log
   FOR INSERT
   WITH CHECK (
-    auth.jwt() ->> 'user_type' = 'admin'
+    auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
     OR auth.role() = 'service_role'
   );
 
@@ -106,14 +106,14 @@ ALTER TABLE charity_status_audit ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_read_charity_status_audit" ON charity_status_audit
   FOR SELECT
   USING (
-    auth.jwt() ->> 'user_type' = 'admin'
+    auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
     OR auth.role() = 'service_role'
   );
 
 CREATE POLICY "admin_insert_charity_status_audit" ON charity_status_audit
   FOR INSERT
   WITH CHECK (
-    auth.jwt() ->> 'user_type' = 'admin'
+    auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
     OR auth.role() = 'service_role'
   );
 
@@ -143,14 +143,14 @@ ALTER TABLE user_status_audit ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "admin_read_user_status_audit" ON user_status_audit
   FOR SELECT
   USING (
-    auth.jwt() ->> 'user_type' = 'admin'
+    auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
     OR auth.role() = 'service_role'
   );
 
 CREATE POLICY "admin_insert_user_status_audit" ON user_status_audit
   FOR INSERT
   WITH CHECK (
-    auth.jwt() ->> 'user_type' = 'admin'
+    auth.jwt() -> 'user_metadata' ->> 'type' = 'admin'
     OR auth.role() = 'service_role'
   );
 
@@ -187,7 +187,7 @@ DECLARE
   v_offset INT;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
@@ -249,7 +249,7 @@ DECLARE
   v_audit_id UUID;
 BEGIN
   -- Guard: only admin users can call this function
-  IF (auth.jwt() ->> 'user_type') IS DISTINCT FROM 'admin' THEN
+  IF (auth.jwt() -> 'user_metadata' ->> 'type') IS DISTINCT FROM 'admin' THEN
     RAISE EXCEPTION 'Access denied: admin role required';
   END IF;
 
