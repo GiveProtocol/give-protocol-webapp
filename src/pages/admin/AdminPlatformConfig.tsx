@@ -345,6 +345,7 @@ function CategorySection({
   );
 }
 
+/** Renders the Platform Config tab with categorised config cards. */
 function PlatformConfigTab({
   configs,
   loading,
@@ -426,6 +427,7 @@ const INITIAL_AUDIT_FILTERS: AuditFilterState = {
   dateTo: "",
 };
 
+/** Filter bar for the audit log tab with action type, entity type, and date range. */
 function AuditFilterBar({
   filters,
   onActionTypeChange,
@@ -508,6 +510,7 @@ function AuditFilterBar({
   );
 }
 
+/** Table displaying paginated audit log entries. */
 function AuditLogTable({
   entries,
   loading,
@@ -577,6 +580,7 @@ function AuditLogTable({
   );
 }
 
+/** Audit Log tab with filters, table, and pagination controls. */
 function AuditLogTab({
   entries,
   loading,
@@ -600,7 +604,9 @@ function AuditLogTab({
   );
 
   useEffect(() => {
-    void onFetch({});
+    onFetch({}).catch(() => {
+      // Error handled internally by hook
+    });
   }, [onFetch]);
 
   const handleActionTypeChange = useCallback(
@@ -646,15 +652,21 @@ function AuditLogTab({
       page: 1,
     };
     setAppliedFilters(newFilters);
-    void onFetch(newFilters);
+    onFetch(newFilters).catch(() => {
+      // Error handled internally by hook
+    });
   }, [filters, onFetch]);
 
   const handlePrevPage = useCallback(() => {
-    void onFetch({ ...appliedFilters, page: currentPage - 1 });
+    onFetch({ ...appliedFilters, page: currentPage - 1 }).catch(() => {
+      // Error handled internally by hook
+    });
   }, [appliedFilters, currentPage, onFetch]);
 
   const handleNextPage = useCallback(() => {
-    void onFetch({ ...appliedFilters, page: currentPage + 1 });
+    onFetch({ ...appliedFilters, page: currentPage + 1 }).catch(() => {
+      // Error handled internally by hook
+    });
   }, [appliedFilters, currentPage, onFetch]);
 
   return (
