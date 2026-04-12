@@ -83,6 +83,11 @@ const currencyOptions: { value: Currency; label: string; symbol: string }[] = [
   { value: "PKR", label: "Pakistani Rupee", symbol: "₨" },
 ];
 
+/**
+ * Hook to access user settings context (language, currency, display preferences).
+ * @returns SettingsContextType containing current settings and setter functions
+ * @throws Error if used outside of SettingsProvider
+ */
 // eslint-disable-next-line react-refresh/only-export-components
 export const useSettings = () => {
   const context = useContext(SettingsContext);
