@@ -71,7 +71,7 @@ To manually trigger a workflow:
 ## Monitoring
 
 - **GitHub Actions**: Check the Actions tab for workflow runs
-- **SonarCloud Dashboard**: https://sonarcloud.io/project/overview?id=GiveProtocol_Duration-Give
+- **SonarCloud Dashboard**: https://sonarcloud.io/project/overview?id=GiveProtocol_give-protocol-webapp
 - **Pull Request Checks**: Automated comments and status checks on PRs
 
 ## Troubleshooting

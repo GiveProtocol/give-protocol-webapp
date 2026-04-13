@@ -64,17 +64,11 @@ jobs:
           CYPRESS_INSTALL_BINARY: 0
 
       - name: Run TypeScript compiler check
-        run: npm run build -- --noEmit
-        continue-on-error: true
+        run: npx tsc --noEmit
 
       - name: Run linting
         id: lint
-        run: |
-          npm run lint:report || echo "LINT_FAILED=true" >> $GITHUB_ENV
-          if [ -f eslint-report.json ]; then
-            echo "ESLint report generated successfully"
-          fi
-        continue-on-error: true
+        run: npm run lint
 
       - name: Run tests with coverage
         id: test
@@ -93,15 +87,16 @@ jobs:
           retention-days: 7
 
       - name: SonarCloud Scan
-        if: false  # Temporarily disabled
-        uses: SonarSource/sonarcloud-github-action@master
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarcloud-github-action@v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.qualitygate.wait=true
+            -Dsonar.qualitygate.wait=false
             -Dsonar.verbose=${{ github.event.inputs.debug_enabled == 'true' && 'true' || 'false' }}
+        continue-on-error: true
 
       - name: Generate summary
         if: always()
@@ -109,20 +104,20 @@ jobs:
           echo "## Code Quality Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ steps.lint.outcome }}" == "failure" ] || [ "$LINT_FAILED" == "true" ]; then
-            echo "❌ Linting: Failed" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.lint.outcome }}" == "failure" ]; then
+            echo "Linting: Failed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "✅ Linting: Passed" >> $GITHUB_STEP_SUMMARY
+            echo "Linting: Passed" >> $GITHUB_STEP_SUMMARY
           fi
           
           if [ "${{ steps.test.outcome }}" == "failure" ]; then
-            echo "❌ Tests: Failed" >> $GITHUB_STEP_SUMMARY
+            echo "Tests: Failed (non-blocking until coverage target met)" >> $GITHUB_STEP_SUMMARY
           else
-            echo "✅ Tests: Passed" >> $GITHUB_STEP_SUMMARY
+            echo "Tests: Passed" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "📊 [View full analysis on SonarCloud](https://sonarcloud.io/summary/new_code?id=GiveProtocol_Duration-Give)" >> $GITHUB_STEP_SUMMARY
+          echo "[View full analysis on SonarCloud](https://sonarcloud.io/summary/new_code?id=GiveProtocol_give-protocol-webapp)" >> $GITHUB_STEP_SUMMARY
 
   security-scan:
     name: Security Scan
