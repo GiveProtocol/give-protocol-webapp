@@ -21,6 +21,7 @@ import { UnclaimedProfileBanner } from "@/components/charity/UnclaimedProfileBan
 import { OrgDetailsCard } from "@/components/charity/OrgDetailsCard";
 import { PhotosCard } from "@/components/charity/PhotosCard";
 import { DonateWidget } from "@/components/charity/DonateWidget";
+import { RequestCharityWidget } from "@/components/charity/RequestCharityWidget";
 import { DonationModal } from "@/components/web3/donation/DonationModal";
 import { getCharityProfileByEin } from "@/services/charityProfileService";
 import { getCharityRecordByEin } from "@/services/charityDataService";
@@ -191,6 +192,7 @@ interface ProfileDisplayData {
   rulingYear: string;
   isUnclaimed: boolean;
   isClaimed: boolean;
+  isVerified: boolean;
   nteeCategory: string;
   walletAddress: string | null;
   bannerImageUrl: string | null | undefined;
@@ -218,6 +220,7 @@ function deriveDisplayData(
     isUnclaimed: !profile || profile.status === "unclaimed",
     isClaimed:
       profile?.status === "claimed-pending" || profile?.status === "verified",
+    isVerified: profile?.status === "verified",
     nteeCategory: getNteeCategory(charityRecord?.ntee_cd ?? profile?.ntee_code),
     walletAddress: profile?.wallet_address ?? null,
     bannerImageUrl: (profile as Record<string, unknown>)?.banner_image_url as
@@ -310,6 +313,7 @@ function ProfileHeaderCard({
   nteeCategory,
   profile,
   charityRecord,
+  isUnclaimed,
   onDonate,
   onShare,
   copied,
@@ -321,6 +325,7 @@ function ProfileHeaderCard({
   nteeCategory: string;
   profile: CharityProfile | null;
   charityRecord: CharityRecord | null;
+  isUnclaimed: boolean;
   onDonate: () => void;
   onShare: () => void;
   copied: boolean;
@@ -338,9 +343,11 @@ function ProfileHeaderCard({
           charityRecord={charityRecord}
         />
         <div className="flex items-center gap-2 shrink-0">
-          <Button onClick={onDonate} icon={<Heart className="h-4 w-4" />}>
-            Donate
-          </Button>
+          {!isUnclaimed && (
+            <Button onClick={onDonate} icon={<Heart className="h-4 w-4" />}>
+              Donate
+            </Button>
+          )}
           <button
             type="button"
             onClick={onShare}
@@ -596,6 +603,7 @@ function CharityProfilePage() {
           nteeCategory={display.nteeCategory}
           profile={profile}
           charityRecord={charityRecord}
+          isUnclaimed={display.isUnclaimed}
           onDonate={handleOpenDonate}
           onShare={handleShare}
           copied={copied}
@@ -627,13 +635,21 @@ function CharityProfilePage() {
         </div>
 
         <div className="space-y-4 lg:sticky lg:top-6 lg:self-start">
-          <DonateWidget
-            ein={einDigits}
-            charityName={display.orgName}
-            walletAddress={display.walletAddress}
-            charityId={profile?.id ?? einDigits}
-            mode="sidebar"
-          />
+          {display.isUnclaimed ? (
+            <RequestCharityWidget
+              ein={einDigits}
+              charityName={display.orgName}
+            />
+          ) : (
+            <DonateWidget
+              ein={einDigits}
+              charityName={display.orgName}
+              walletAddress={display.walletAddress}
+              charityId={profile?.id ?? einDigits}
+              mode="sidebar"
+              isVerified={display.isVerified}
+            />
+          )}
 
           {charityRecord && <OrgDetailsCard charityRecord={charityRecord} />}
 
@@ -646,7 +662,7 @@ function CharityProfilePage() {
         </div>
       </div>
 
-      {showDonationModal && (
+      {showDonationModal && !display.isUnclaimed && (
         <DonationModal
           charityName={display.orgName}
           charityAddress={display.walletAddress ?? ""}

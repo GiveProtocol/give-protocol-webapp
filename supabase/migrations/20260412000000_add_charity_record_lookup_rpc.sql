@@ -25,10 +25,7 @@ RETURNS TABLE (
   status           TEXT,
   ntee_cd          TEXT,
   sort_name        TEXT,
-  is_on_platform   BOOLEAN,
-  data_source      TEXT,
-  data_vintage     TEXT,
-  last_synced_at   TIMESTAMPTZ
+  is_on_platform   BOOLEAN
 )
 LANGUAGE plpgsql
 SECURITY DEFINER
@@ -61,10 +58,7 @@ BEGIN
     co.status,
     co.ntee_cd,
     co.sort_name,
-    co.is_on_platform,
-    co.data_source,
-    co.data_vintage,
-    co.last_synced_at
+    co.is_on_platform
   FROM charity_organizations co
   WHERE co.ein = v_normalized
      OR co.ein = lookup_ein

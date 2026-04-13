@@ -13,6 +13,7 @@ interface DonateWidgetProps {
   walletAddress: string | null | undefined;
   charityId: string;
   mode: 'sidebar' | 'modal';
+  isVerified?: boolean;
   onClose?: () => void;
 }
 
@@ -29,6 +30,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
   walletAddress,
   charityId,
   mode,
+  isVerified = false,
   onClose,
 }) => {
   const [tab, setTab] = useState<PaymentTab>('crypto');
@@ -83,31 +85,33 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
 
   const content = useMemo(() => (
     <div className="space-y-4">
-      {/* Crypto / Fiat toggle */}
-      <div className="flex rounded-lg bg-gray-100 p-0.5">
-        <button
-          type="button"
-          onClick={handleTabChange('crypto')}
-          className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
-            tab === 'crypto'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Crypto
-        </button>
-        <button
-          type="button"
-          onClick={handleTabChange('fiat')}
-          className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
-            tab === 'fiat'
-              ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-gray-500 hover:text-gray-700'
-          }`}
-        >
-          Fiat (USD)
-        </button>
-      </div>
+      {/* Crypto / Fiat toggle — hidden for verified charities */}
+      {!isVerified && (
+        <div className="flex rounded-lg bg-gray-100 p-0.5">
+          <button
+            type="button"
+            onClick={handleTabChange('crypto')}
+            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+              tab === 'crypto'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Crypto
+          </button>
+          <button
+            type="button"
+            onClick={handleTabChange('fiat')}
+            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+              tab === 'fiat'
+                ? 'bg-emerald-600 text-white shadow-sm'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Fiat (USD)
+          </button>
+        </div>
+      )}
 
       {/* Amount presets */}
       <div className={`grid ${presetGridClass} gap-2`}>
@@ -174,7 +178,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
           : 'Secure checkout · Helcim (USD) / PayPal (International)'}
       </p>
     </div>
-  ), [tab, amount, customAmount, presetGridClass, isConnected, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);
+  ), [tab, amount, customAmount, presetGridClass, isConnected, isVerified, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);
 
   return (
     <>

@@ -3,6 +3,8 @@ import { setMockResult, resetMockState } from "@/test-utils/supabaseMock";
 import {
   getCharityRecordByEin,
   submitRemovalRequest,
+  submitCharityRequest,
+  hasUserRequestedCharity,
 } from "./charityDataService";
 
 jest.mock("@/utils/logger", () => ({
@@ -171,6 +173,134 @@ describe("charityDataService", () => {
       });
 
       const result = await submitRemovalRequest("123456789", "Reason");
+
+      expect(result).toBe(false);
+
+      supabase.from = originalFrom;
+    });
+  });
+
+  describe("submitCharityRequest", () => {
+    it("should return true on successful insertion", async () => {
+      setMockResult("charity_requests", { data: null, error: null });
+
+      const result = await submitCharityRequest("123456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
+
+    it("should strip hyphens from EIN", async () => {
+      setMockResult("charity_requests", { data: null, error: null });
+
+      const result = await submitCharityRequest("12-3456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
+
+    it("should return false when supabase returns an error", async () => {
+      setMockResult("charity_requests", {
+        data: null,
+        error: { message: "Duplicate", code: "23505" },
+      });
+
+      const result = await submitCharityRequest("123456789", "user-uuid-1");
+
+      expect(result).toBe(false);
+    });
+
+    it("should return false when an Error exception is thrown", async () => {
+      const { supabase } = await import("@/lib/supabase");
+      const originalFrom = supabase.from;
+      supabase.from = jest.fn(() => {
+        throw new Error("Connection refused");
+      });
+
+      const result = await submitCharityRequest("123456789", "user-uuid-1");
+
+      expect(result).toBe(false);
+
+      supabase.from = originalFrom;
+    });
+
+    it("should return false when a non-Error exception is thrown", async () => {
+      const { supabase } = await import("@/lib/supabase");
+      const originalFrom = supabase.from;
+      supabase.from = jest.fn(() => {
+        throw 42;
+      });
+
+      const result = await submitCharityRequest("123456789", "user-uuid-1");
+
+      expect(result).toBe(false);
+
+      supabase.from = originalFrom;
+    });
+  });
+
+  describe("hasUserRequestedCharity", () => {
+    it("should return true when a matching request exists", async () => {
+      setMockResult("charity_requests", {
+        data: [{ id: "req-uuid-1" }],
+        error: null,
+      });
+
+      const result = await hasUserRequestedCharity("123456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
+
+    it("should return false when no matching request exists", async () => {
+      setMockResult("charity_requests", { data: [], error: null });
+
+      const result = await hasUserRequestedCharity("123456789", "user-uuid-1");
+
+      expect(result).toBe(false);
+    });
+
+    it("should strip hyphens from EIN", async () => {
+      setMockResult("charity_requests", {
+        data: [{ id: "req-uuid-1" }],
+        error: null,
+      });
+
+      const result = await hasUserRequestedCharity("12-3456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
+
+    it("should return false when supabase returns an error", async () => {
+      setMockResult("charity_requests", {
+        data: null,
+        error: { message: "Permission denied", code: "42501" },
+      });
+
+      const result = await hasUserRequestedCharity("123456789", "user-uuid-1");
+
+      expect(result).toBe(false);
+    });
+
+    it("should return false when an Error exception is thrown", async () => {
+      const { supabase } = await import("@/lib/supabase");
+      const originalFrom = supabase.from;
+      supabase.from = jest.fn(() => {
+        throw new Error("Network error");
+      });
+
+      const result = await hasUserRequestedCharity("123456789", "user-uuid-1");
+
+      expect(result).toBe(false);
+
+      supabase.from = originalFrom;
+    });
+
+    it("should return false when a non-Error exception is thrown", async () => {
+      const { supabase } = await import("@/lib/supabase");
+      const originalFrom = supabase.from;
+      supabase.from = jest.fn(() => {
+        throw "string error";
+      });
+
+      const result = await hasUserRequestedCharity("123456789", "user-uuid-1");
 
       expect(result).toBe(false);
 

@@ -4,7 +4,7 @@ import { Users, Target, Heart, Shield, Globe, TrendingUp } from 'lucide-react';
 import { StaticPageLayout } from '@/components/layout/StaticPageLayout';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
-/** Mission or vision card with icon, heading, and description. */
+/** Mission card with icon, heading, and description. */
 const InfoCard: React.FC<{ icon: LucideIcon; title: string; children: React.ReactNode }> = ({ icon: Icon, title, children }) => (
   <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200">
     <Icon className="h-8 w-8 text-emerald-600 mb-3" />
@@ -22,102 +22,78 @@ const FeatureHighlight: React.FC<{ icon: LucideIcon; title: string; children: Re
   </div>
 );
 
-/** "What We Do" section with three feature highlights. */
-const WhatWeDoSection: React.FC = () => (
+/** "How We Make a Difference" section with three feature highlights. */
+const HowWeHelpSection: React.FC = () => (
   <ScrollReveal direction="up">
     <section>
-      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">What We Do</h2>
+      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">How We Make a Difference</h2>
       <div className="grid md:grid-cols-3 gap-8">
-        <FeatureHighlight icon={Heart} title="Direct Donations">
-          Enable cryptocurrency donations directly to verified charitable organizations with complete transparency.
+        <FeatureHighlight icon={Heart} title="Direct & Simple Giving">
+          We&apos;ve simplified the path between you and the causes that matter. Whether you&apos;re
+          giving traditional currency or digital assets, your support goes directly to verified
+          organizations.
         </FeatureHighlight>
-        <FeatureHighlight icon={Users} title="Volunteer Connection">
-          Connect volunteers with meaningful opportunities and track verified volunteer hours on the blockchain.
+        <FeatureHighlight icon={Users} title="Making Time Count">
+          Volunteering is the heartbeat of change. We help people find meaningful opportunities
+          and provide a reliable way to celebrate and verify the time they&apos;ve invested in
+          their communities.
         </FeatureHighlight>
-        <FeatureHighlight icon={TrendingUp} title="Portfolio Funds">
-          Support multiple organizations in the same sector through diversified giving portfolios.
+        <FeatureHighlight icon={TrendingUp} title="Collective Impact Funds">
+          Why choose just one? Our curated funds allow you to support an entire sector — like
+          clean water or education — spreading your impact across multiple high-performing
+          organizations at once.
         </FeatureHighlight>
       </div>
     </section>
   </ScrollReveal>
 );
 
-/** "Our Values" section with four value descriptions. */
+/** "What We Stand For" section with four value descriptions. */
 const ValuesSection: React.FC = () => (
   <ScrollReveal direction="up">
     <section className="bg-gray-50 rounded-lg p-8 grid md:grid-cols-2 gap-8">
-      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">Our Values</h2>
+      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center md:col-span-2">What We Stand For</h2>
       <div>
         <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <Shield className="h-6 w-6 text-emerald-600 mr-3" />
-          Transparency
+          Accountability
         </h3>
         <p className="text-gray-600">
-          Every donation and volunteer hour is recorded on the blockchain, providing unprecedented
-          transparency in charitable giving.
+          You shouldn&apos;t have to wonder where your money went. We use modern tools to provide
+          a clear, permanent record of every donation and volunteer hour. When we say your help
+          made a difference, we have the receipts to prove it.
         </p>
       </div>
       <div>
         <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <Target className="h-6 w-6 text-emerald-600 mr-3" />
-          Impact
+          Lasting Change
         </h3>
         <p className="text-gray-600">
-          We focus on measurable outcomes and ensure that every contribution creates meaningful,
-          lasting change in communities worldwide.
+          We aren&apos;t interested in quick fixes. We partner with organizations focused on
+          measurable outcomes, ensuring your generosity creates a ripple effect that lasts for years.
         </p>
       </div>
       <div>
         <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <Users className="h-6 w-6 text-emerald-600 mr-3" />
-          Community
+          Community Power
         </h3>
         <p className="text-gray-600">
-          Building a global community of donors, volunteers, and organizations working together
-          for positive social change.
+          We believe we are stronger together. Give Protocol is a gathering place for donors,
+          volunteers, and non-profits to collaborate, share resources, and solve problems as one.
         </p>
       </div>
       <div>
         <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
           <TrendingUp className="h-6 w-6 text-emerald-600 mr-3" />
-          Innovation
+          Smart Innovation
         </h3>
         <p className="text-gray-600">
-          Leveraging cutting-edge blockchain technology to solve traditional challenges
-          in charitable giving and volunteer coordination.
+          We use the best of today&apos;s technology to solve the oldest problems in charity.
+          By cutting out the middleman and reducing overhead, we make sure more of your gift
+          stays where it&apos;s needed most.
         </p>
-      </div>
-    </section>
-  </ScrollReveal>
-);
-
-/** Technology feature card with title and description. */
-const TechFeatureCard: React.FC<{ title: string; children: React.ReactNode }> = ({ title, children }) => (
-  <div className="bg-white p-6 rounded-lg shadow border border-gray-200">
-    <h4 className="font-semibold text-gray-900 mb-2">{title}</h4>
-    <p className="text-gray-600">{children}</p>
-  </div>
-);
-
-/** "Built on Blockchain" technology section. */
-const TechnologySection: React.FC = () => (
-  <ScrollReveal direction="up">
-    <section>
-      <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Built on Blockchain</h2>
-      <p className="text-lg text-gray-600 mb-8 max-w-3xl mx-auto text-center">
-        Give Protocol is built on the Moonbeam Network, providing the security and transparency
-        of blockchain technology while maintaining accessibility for users and organizations.
-      </p>
-      <div className="grid md:grid-cols-3 gap-6 text-sm max-w-3xl mx-auto">
-        <TechFeatureCard title="Smart Contracts">
-          Automated, transparent execution of donations and volunteer agreements
-        </TechFeatureCard>
-        <TechFeatureCard title="Immutable Records">
-          Permanent, tamper-proof record of all charitable activities
-        </TechFeatureCard>
-        <TechFeatureCard title="Decentralized Governance">
-          Community-driven decision making for platform development
-        </TechFeatureCard>
       </div>
     </section>
   </ScrollReveal>
@@ -128,14 +104,13 @@ const MissionVisionSection: React.FC = () => (
   <section className="grid md:grid-cols-2 gap-8">
     <ScrollReveal direction="left">
       <InfoCard icon={Target} title="Our Mission">
-        To revolutionize charitable giving by leveraging blockchain technology, ensuring transparency,
-        efficiency, and lasting impact for both donors and charitable organizations.
+        To enable sustainable giving for lasting global impact.
       </InfoCard>
     </ScrollReveal>
     <ScrollReveal direction="right" delay={100}>
       <InfoCard icon={Globe} title="Our Vision">
-        A world where every charitable donation creates maximum impact through transparent,
-        efficient, and sustainable giving mechanisms.
+        A world where charitable giving is borderless, and resources are as agile and accountable
+        as the modern world requires.
       </InfoCard>
     </ScrollReveal>
   </section>
@@ -163,18 +138,17 @@ const JoinUsSection: React.FC = () => (
   </ScrollReveal>
 );
 
-/** About page describing the Give Protocol mission, team, and values. */
+/** About page describing the Give Protocol mission, values, and vision. */
 export const About: React.FC = () => {
   return (
     <StaticPageLayout
       title="About Give Protocol"
-      subtitle="Revolutionizing charitable giving through blockchain technology"
+      subtitle="Removing barriers to sustainable charitable giving."
     >
       <div className="space-y-16">
         <MissionVisionSection />
-        <WhatWeDoSection />
+        <HowWeHelpSection />
         <ValuesSection />
-        <TechnologySection />
         <JoinUsSection />
       </div>
     </StaticPageLayout>

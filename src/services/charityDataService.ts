@@ -26,9 +26,6 @@ export interface CharityRecord {
   ntee_cd: string | null;
   sort_name: string | null;
   is_on_platform: boolean;
-  data_source: string | null;
-  data_vintage: string | null;
-  last_synced_at: string | null;
 }
 
 /**
@@ -95,6 +92,69 @@ export async function submitRemovalRequest(
     return true;
   } catch (error) {
     Logger.error("Removal request submission failed", {
+      error: error instanceof Error ? error.message : String(error),
+      ein,
+    });
+    return false;
+  }
+}
+
+/**
+ * Submits a request for an unclaimed charity organization.
+ * Records the user's interest so the platform can prioritize outreach.
+ * @param ein - The EIN of the organization
+ * @param userId - The authenticated user's ID
+ * @returns True if submitted successfully, false on error or duplicate
+ */
+export async function submitCharityRequest(
+  ein: string,
+  userId: string,
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("charity_requests")
+      .insert({ ein: ein.replace(/-/g, ""), user_id: userId });
+
+    if (error) {
+      Logger.error("Error submitting charity request", { error, ein });
+      return false;
+    }
+    return true;
+  } catch (error) {
+    Logger.error("Charity request submission failed", {
+      error: error instanceof Error ? error.message : String(error),
+      ein,
+    });
+    return false;
+  }
+}
+
+/**
+ * Checks whether the current user has already requested a specific charity.
+ * Used to show the "Requested" disabled state on return visits.
+ * @param ein - The EIN of the organization
+ * @param userId - The authenticated user's ID
+ * @returns True if the user has already requested this charity
+ */
+export async function hasUserRequestedCharity(
+  ein: string,
+  userId: string,
+): Promise<boolean> {
+  try {
+    const { data, error } = await supabase
+      .from("charity_requests")
+      .select("id")
+      .eq("ein", ein.replace(/-/g, ""))
+      .eq("user_id", userId)
+      .limit(1);
+
+    if (error) {
+      Logger.error("Error checking charity request", { error, ein });
+      return false;
+    }
+    return Array.isArray(data) && data.length > 0;
+  } catch (error) {
+    Logger.error("Charity request check failed", {
       error: error instanceof Error ? error.message : String(error),
       ein,
     });
