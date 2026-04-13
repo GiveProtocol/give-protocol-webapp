@@ -31,7 +31,7 @@ export const RequestCharityWidget: React.FC<RequestCharityWidgetProps> = ({
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) return undefined;
     let cancelled = false;
 
     hasUserRequestedCharity(ein, user.id).then((already) => {
