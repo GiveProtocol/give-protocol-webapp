@@ -1,10 +1,15 @@
-import { describe, it, expect, beforeEach } from '@jest/globals';
+import { describe, it, expect, beforeEach, jest } from '@jest/globals';
 import { supabase } from '@/lib/supabase';
-import { getCharityProfileByEin, claimCharityProfile } from './charityProfileService';
+import {
+  getCharityProfileByEin,
+  claimCharityProfile,
+  getCharityWalletAddress,
+  updateCharityWalletAddress,
+} from './charityProfileService';
 
 describe('charityProfileService', () => {
   beforeEach(() => {
-    (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockReset();
+    (supabase.rpc as ReturnType<typeof jest.fn>).mockReset();
   });
 
   describe('getCharityProfileByEin', () => {
@@ -29,7 +34,7 @@ describe('charityProfileService', () => {
         nominations_count: 0,
         interested_donors_count: 0,
       };
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockResolvedValue({
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockResolvedValue({
         data: [mockProfile],
         error: null,
       });
@@ -43,7 +48,7 @@ describe('charityProfileService', () => {
     });
 
     it('should return null when RPC returns empty array', async () => {
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockResolvedValue({
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockResolvedValue({
         data: [],
         error: null,
       });
@@ -53,7 +58,7 @@ describe('charityProfileService', () => {
     });
 
     it('should return null when RPC returns null data', async () => {
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockResolvedValue({
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockResolvedValue({
         data: null,
         error: null,
       });
@@ -63,7 +68,7 @@ describe('charityProfileService', () => {
     });
 
     it('should return null on RPC error', async () => {
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockResolvedValue({
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockResolvedValue({
         data: null,
         error: { message: 'RPC failed' },
       });
@@ -73,7 +78,7 @@ describe('charityProfileService', () => {
     });
 
     it('should return null when RPC throws', async () => {
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockRejectedValue(
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockRejectedValue(
         new Error('Network error'),
       );
 
@@ -100,7 +105,7 @@ describe('charityProfileService', () => {
         authorized_signer_email: 'jane@example.com',
         authorized_signer_phone: '5551234567',
       };
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockResolvedValue({
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockResolvedValue({
         data: [mockProfile],
         error: null,
       });
@@ -117,7 +122,7 @@ describe('charityProfileService', () => {
     });
 
     it('should return null on RPC error', async () => {
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockResolvedValue({
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockResolvedValue({
         data: null,
         error: { message: 'Profile not found or already claimed' },
       });
@@ -127,12 +132,138 @@ describe('charityProfileService', () => {
     });
 
     it('should return null when RPC throws', async () => {
-      (supabase.rpc as ReturnType<typeof import('@jest/globals').jest.fn>).mockRejectedValue(
+      (supabase.rpc as ReturnType<typeof jest.fn>).mockRejectedValue(
         new Error('Network error'),
       );
 
       const result = await claimCharityProfile(claimParams);
       expect(result).toBeNull();
+    });
+  });
+
+  describe('getCharityWalletAddress', () => {
+    type JestFn = ReturnType<typeof jest.fn>;
+    let mockFrom: JestFn;
+
+    beforeEach(() => {
+      mockFrom = supabase.from as JestFn;
+      mockFrom.mockReset();
+    });
+
+    it('should return null for empty userId without calling from', async () => {
+      const result = await getCharityWalletAddress('');
+      expect(result).toBeNull();
+      expect(mockFrom).not.toHaveBeenCalled();
+    });
+
+    it('should return wallet address when found', async () => {
+      const mockSingle = jest.fn().mockResolvedValue({
+        data: { wallet_address: '0xabc123' },
+        error: null,
+      });
+      const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
+      const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
+      mockFrom.mockReturnValueOnce({ select: mockSelect });
+
+      const result = await getCharityWalletAddress('user-1');
+
+      expect(result).toBe('0xabc123');
+      expect(mockFrom).toHaveBeenCalledWith('charity_profiles');
+      expect(mockSelect).toHaveBeenCalledWith('wallet_address');
+      expect(mockEq).toHaveBeenCalledWith('claimed_by', 'user-1');
+    });
+
+    it('should return null when wallet_address is null', async () => {
+      const mockSingle = jest.fn().mockResolvedValue({
+        data: { wallet_address: null },
+        error: null,
+      });
+      mockFrom.mockReturnValueOnce({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({ single: mockSingle }),
+        }),
+      });
+
+      const result = await getCharityWalletAddress('user-1');
+      expect(result).toBeNull();
+    });
+
+    it('should return null when no profile found', async () => {
+      const mockSingle = jest.fn().mockResolvedValue({ data: null, error: null });
+      mockFrom.mockReturnValueOnce({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({ single: mockSingle }),
+        }),
+      });
+
+      const result = await getCharityWalletAddress('user-1');
+      expect(result).toBeNull();
+    });
+
+    it('should return null on Supabase error', async () => {
+      const mockSingle = jest.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'DB error' },
+      });
+      mockFrom.mockReturnValueOnce({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({ single: mockSingle }),
+        }),
+      });
+
+      const result = await getCharityWalletAddress('user-1');
+      expect(result).toBeNull();
+    });
+
+    it('should return null when from throws', async () => {
+      mockFrom.mockImplementationOnce(() => {
+        throw new Error('Network error');
+      });
+
+      const result = await getCharityWalletAddress('user-1');
+      expect(result).toBeNull();
+    });
+  });
+
+  describe('updateCharityWalletAddress', () => {
+    type JestFn = ReturnType<typeof jest.fn>;
+    let mockFrom: JestFn;
+
+    beforeEach(() => {
+      mockFrom = supabase.from as JestFn;
+      mockFrom.mockReset();
+    });
+
+    it('should return true and call update with correct params on success', async () => {
+      const mockEq = jest.fn().mockResolvedValue({ error: null });
+      const mockUpdate = jest.fn().mockReturnValue({ eq: mockEq });
+      mockFrom.mockReturnValueOnce({ update: mockUpdate });
+
+      const result = await updateCharityWalletAddress('user-1', '0xabc123');
+
+      expect(result).toBe(true);
+      expect(mockFrom).toHaveBeenCalledWith('charity_profiles');
+      expect(mockUpdate).toHaveBeenCalledWith({ wallet_address: '0xabc123' });
+      expect(mockEq).toHaveBeenCalledWith('claimed_by', 'user-1');
+    });
+
+    it('should return false on Supabase error', async () => {
+      const mockEq = jest.fn().mockResolvedValue({ error: { message: 'Update failed' } });
+      mockFrom.mockReturnValueOnce({
+        update: jest.fn().mockReturnValue({ eq: mockEq }),
+      });
+
+      const result = await updateCharityWalletAddress('user-1', '0xabc123');
+      expect(result).toBe(false);
+    });
+
+    it('should return false when from throws', async () => {
+      mockFrom.mockImplementationOnce(() => {
+        throw new Error('Network error');
+      });
+
+      const result = await updateCharityWalletAddress('user-1', '0xabc123');
+      expect(result).toBe(false);
     });
   });
 });

@@ -43,6 +43,69 @@ export async function claimCharityProfile(
 }
 
 /**
+ * Fetches the wallet address stored on a charity profile for a given user.
+ * Queries charity_profiles by claimed_by (the user who claimed the profile).
+ * @param userId - The authenticated user's ID
+ * @returns The wallet address string, or null if not set or not found
+ */
+export async function getCharityWalletAddress(
+  userId: string,
+): Promise<string | null> {
+  if (!userId) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from('charity_profiles')
+      .select('wallet_address')
+      .eq('claimed_by', userId)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+    const row = data as { wallet_address: string | null };
+    return row.wallet_address;
+  } catch (err) {
+    Logger.error('Charity wallet address fetch failed', {
+      error: err instanceof Error ? err.message : String(err),
+      userId,
+    });
+    return null;
+  }
+}
+
+/**
+ * Stores a receiving wallet address on the charity profile for a given user.
+ * Updates the charity_profiles row where claimed_by matches the user ID.
+ * @param userId - The authenticated user's ID (matched via claimed_by)
+ * @param walletAddress - The blockchain wallet address to persist
+ * @returns True if the update succeeded, false otherwise
+ */
+export async function updateCharityWalletAddress(
+  userId: string,
+  walletAddress: string,
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from('charity_profiles')
+      .update({ wallet_address: walletAddress })
+      .eq('claimed_by', userId);
+
+    if (error) {
+      Logger.error('Error updating charity wallet address', { error, userId });
+      return false;
+    }
+    return true;
+  } catch (err) {
+    Logger.error('Charity wallet update failed', {
+      error: err instanceof Error ? err.message : String(err),
+      userId,
+    });
+    return false;
+  }
+}
+
+/**
  * Fetches or creates a charity profile by EIN via the get_or_create_charity_profile RPC.
  * Returns null if the EIN is empty, not found in IRS records, or on error.
  * @param ein - The Employer Identification Number to look up
