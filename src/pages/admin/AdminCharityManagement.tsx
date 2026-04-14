@@ -35,6 +35,22 @@ function StatusBadge({ status }: { status: AdminCharityVerificationStatus }): Re
   );
 }
 
+/** Wallet address badge for admin charity list */
+function WalletBadge({ address }: { address: string | null }): React.ReactElement {
+  if (address) {
+    return (
+      <span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
+        {`${address.slice(0, 6)}\u2026${address.slice(-4)}`}
+      </span>
+    );
+  }
+  return (
+    <span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-gray-100 text-gray-500">
+      Not set
+    </span>
+  );
+}
+
 /** Action buttons row for a single charity row */
 function CharityActions({
   charity,
@@ -213,6 +229,7 @@ function CharityTable({
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Wallet</th>
             <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
           </tr>
         </thead>
@@ -249,6 +266,7 @@ function CharityRow({
       <td className="px-4 py-3 text-sm text-gray-500">{charity.category ?? "—"}</td>
       <td className="px-4 py-3"><StatusBadge status={charity.verificationStatus} /></td>
       <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
+      <td className="px-4 py-3"><WalletBadge address={charity.walletAddress} /></td>
       <td className="px-4 py-3">
         <CharityActions charity={charity} onAction={onAction} disabled={updating} />
       </td>
