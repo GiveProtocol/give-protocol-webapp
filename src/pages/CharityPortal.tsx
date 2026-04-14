@@ -29,6 +29,7 @@ import { DonationExportModal } from "@/components/contribution/DonationExportMod
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
+import { CharityOnboardingChecklist } from "@/components/charity/CharityOnboardingChecklist";
 
 // Type definitions for Supabase data structures
 interface DonationData {
@@ -853,6 +854,13 @@ export const CharityPortal: React.FC = () => {
     [],
   );
 
+  const handleOnboardingNavigate = useCallback((tab: string) => {
+    const validTabs: TabKey[] = ["transactions", "hours", "applications", "opportunities", "causes", "impact", "organization"];
+    if (validTabs.includes(tab as TabKey)) {
+      setActiveTab(tab as TabKey);
+    }
+  }, []);
+
   if (!user) {
     return <Navigate to="/login?type=charity" />;
   }
@@ -907,6 +915,14 @@ export const CharityPortal: React.FC = () => {
           onRefresh={handleRefresh}
           t={t}
         />
+
+        {/* Onboarding checklist for newly approved charities */}
+        {profile?.id && (
+          <CharityOnboardingChecklist
+            profileId={profile.id}
+            onNavigateTab={handleOnboardingNavigate}
+          />
+        )}
 
         {/* Enhanced Metrics Grid */}
         <StatsCards
