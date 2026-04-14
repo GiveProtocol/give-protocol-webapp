@@ -57,6 +57,8 @@ export const ethers = {
   formatUnits: (value, decimals) => {
     return (Number(value) / Math.pow(10, Number(decimals))).toString();
   },
+  parseEther: (value) => BigInt(Math.round(Number(value) * 1e18)),
+  formatEther: (value) => (Number(value) / 1e18).toString(),
   keccak256: simpleKeccak256,
   toUtf8Bytes,
 };
