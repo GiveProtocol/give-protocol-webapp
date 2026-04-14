@@ -127,6 +127,13 @@ export const Navbar: React.FC = () => {
   ].includes(location.pathname);
 
   return (
+    <>
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-white focus:text-emerald-700 focus:rounded focus:shadow-lg focus:font-medium"
+    >
+      Skip to main content
+    </a>
     <nav className="bg-background-primary border-b border-gray-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
         <Link to="/" className="flex items-center">
@@ -159,6 +166,7 @@ export const Navbar: React.FC = () => {
           className="sm:hidden inline-flex items-center justify-center ml-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
           aria-controls="mobile-menu"
           aria-expanded={isMenuOpen}
+          aria-label="Toggle navigation menu"
           onClick={handleMenuToggle}
         >
           {isMenuOpen ? (
@@ -178,5 +186,6 @@ export const Navbar: React.FC = () => {
         />
       )}
     </nav>
+    </>
   );
 };

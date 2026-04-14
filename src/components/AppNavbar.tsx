@@ -580,6 +580,13 @@ export const AppNavbar: React.FC = () => {
   }, [userType, navigate]);
 
   return (
+    <>
+    <a
+      href="#main-content"
+      className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-white focus:text-emerald-700 focus:rounded focus:shadow-lg focus:font-medium"
+    >
+      Skip to main content
+    </a>
     <nav
       className="relative z-30 border-b shadow-lg"
       style={{
@@ -641,5 +648,6 @@ export const AppNavbar: React.FC = () => {
         )}
       </MobileMenu>
     </nav>
+    </>
   );
 };

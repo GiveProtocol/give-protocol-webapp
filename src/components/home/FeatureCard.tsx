@@ -12,7 +12,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({ Icon, title, descripti
   return (
     <div className="group bg-white/70 dark:bg-white/5 backdrop-blur-lg border border-black/5 dark:border-white/40 p-6 rounded-2xl hover:bg-white/80 dark:hover:bg-white/10 hover:border-emerald-300/30 dark:hover:border-emerald-500/30 transition-all hover:scale-[1.02]">
       <div className="flex justify-center">
-        <Icon className="h-12 w-12 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} />
+        <Icon className="h-12 w-12 text-emerald-600 dark:text-emerald-400" strokeWidth={1.5} aria-hidden="true" />
       </div>
       <h3 className="mt-4 text-xl font-semibold text-gray-900">{title}</h3>
       <p className="mt-2 text-gray-600">{description}</p>

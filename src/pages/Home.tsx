@@ -20,7 +20,7 @@ interface FooterLink {
 
 const features = [
   {
-    icon: <Heart className="w-10 h-10" />,
+    icon: <Heart className="w-10 h-10" aria-hidden="true" />,
     title: "High-Efficiency Giving",
     description:
       "Contribute directly to verified organizations with zero ambiguity. Our automated ledger provides real-time verification, ensuring your support is deployed exactly where it is needed most.",
@@ -28,7 +28,7 @@ const features = [
     badge: null,
   },
   {
-    icon: <TrendingUp className="w-10 h-10" />,
+    icon: <TrendingUp className="w-10 h-10" aria-hidden="true" />,
     title: "Charitable Equity Funds",
     description:
       "Move beyond one-off donations by contributing to smart-managed equity funds. We utilize sophisticated, low-risk digital strategies to turn your principal into a perpetual stream of funding, sustaining charitable missions for generations to come.",
@@ -36,7 +36,7 @@ const features = [
     badge: "Coming Soon",
   },
   {
-    icon: <Users className="w-10 h-10" />,
+    icon: <Users className="w-10 h-10" aria-hidden="true" />,
     title: "Impact Funds",
     description:
       "Pool resources for specific causes. Environmental, education, poverty relief - your donation amplified through collective action.",
@@ -44,7 +44,7 @@ const features = [
     badge: null,
   },
   {
-    icon: <Shield className="w-10 h-10" />,
+    icon: <Shield className="w-10 h-10" aria-hidden="true" />,
     title: "Verified Organizations",
     description:
       "Browse any registered organization, or look for the verified badge. Organizations that opt in to our vetting process earn on-chain verification donors can trust.",
@@ -52,7 +52,7 @@ const features = [
     badge: null,
   },
   {
-    icon: <Zap className="w-10 h-10" />,
+    icon: <Zap className="w-10 h-10" aria-hidden="true" />,
     title: "Blockchain Verified",
     description:
       "Soul-bound tokens recognize volunteer contributions. Skills, hours, and impact - all permanently recorded on-chain.",
@@ -60,7 +60,7 @@ const features = [
     badge: null,
   },
   {
-    icon: <Globe className="w-10 h-10" />,
+    icon: <Globe className="w-10 h-10" aria-hidden="true" />,
     title: "Bridging Modes of Giving",
     description:
       "Whether you are giving in USD or digital assets, our multi-network architecture ensures your contribution moves at the speed of the modern world.",
@@ -115,7 +115,7 @@ function HeroSection({ mousePosition }: { mousePosition: { x: number; y: number 
           className="bg-gradient-to-r from-emerald-500/50 to-teal-500/50 px-8 py-4 rounded-full font-semibold text-lg cursor-not-allowed opacity-60 flex items-center space-x-2"
         >
           <span>Coming Soon</span>
-          <ArrowRight className="w-5 h-5" />
+          <ArrowRight className="w-5 h-5" aria-hidden="true" />
         </button>
         <a
           href="https://docs.giveprotocol.io/"
@@ -158,7 +158,7 @@ function UserRoleColumn({ title, color, items }: { title: string; color: string;
       <ul className="space-y-2 text-gray-300">
         {items.map((item) => (
           <li key={item.label} className="flex items-start">
-            <Check className="w-5 h-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" />
+            <Check className="w-5 h-5 text-green-400 mr-2 mt-0.5 flex-shrink-0" aria-hidden="true" />
             <span>
               {item.label}
               {item.comingSoon && (
@@ -379,7 +379,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-gray-100 overflow-hidden">
+    <main id="main-content" className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-gray-100 overflow-hidden">
       {/* Animated Background Elements - Emerald/Teal Theme */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div
@@ -479,14 +479,14 @@ const Home: React.FC = () => {
         </h2>
         <div className="grid md:grid-cols-2 gap-8">
           <ImpactFundCard
-            icon={<Globe className="w-24 h-24 text-white/80" />}
+            icon={<Globe className="w-24 h-24 text-white/80" aria-hidden="true" />}
             gradient="bg-gradient-to-br from-emerald-500 to-teal-600"
             hoverBorder="hover:border-emerald-500/30"
             title="Environmental Impact Fund"
             description="Supporting reforestation, ocean cleanup, and renewable energy initiatives. Pooled donations directed to verified environmental organizations making measurable impact."
           />
           <ImpactFundCard
-            icon={<Users className="w-24 h-24 text-white/80" />}
+            icon={<Users className="w-24 h-24 text-white/80" aria-hidden="true" />}
             gradient="bg-gradient-to-br from-teal-500 to-cyan-600"
             hoverBorder="hover:border-teal-500/30"
             title="Education Opportunity Fund"
