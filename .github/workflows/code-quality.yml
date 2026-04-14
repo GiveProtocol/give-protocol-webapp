@@ -74,7 +74,6 @@ jobs:
         id: test
         run: |
           npm run test -- --ci --coverage --coverageReporters=json --coverageReporters=lcov --coverageReporters=text-summary
-        continue-on-error: true
 
       - name: Upload coverage reports
         if: always()
@@ -94,9 +93,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         with:
           args: >
-            -Dsonar.qualitygate.wait=false
+            -Dsonar.qualitygate.wait=true
             -Dsonar.verbose=${{ github.event.inputs.debug_enabled == 'true' && 'true' || 'false' }}
-        continue-on-error: true
 
       - name: Generate summary
         if: always()
@@ -111,7 +109,7 @@ jobs:
           fi
           
           if [ "${{ steps.test.outcome }}" == "failure" ]; then
-            echo "Tests: Failed (non-blocking until coverage target met)" >> $GITHUB_STEP_SUMMARY
+            echo "Tests: Failed" >> $GITHUB_STEP_SUMMARY
           else
             echo "Tests: Passed" >> $GITHUB_STEP_SUMMARY
           fi
