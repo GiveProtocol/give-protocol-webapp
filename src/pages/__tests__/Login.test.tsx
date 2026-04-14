@@ -17,9 +17,7 @@ jest.mock("../../components/auth/DonorLogin", () => ({
 }));
 
 jest.mock("../../components/auth/CharityLogin", () => ({
-  CharityLogin: () => (
-    <div data-testid="charity-login">Charity Login Form</div>
-  ),
+  CharityLogin: () => <div data-testid="charity-login">Charity Login Form</div>,
 }));
 
 jest.mock("../../components/auth/ForgotPassword", () => ({
@@ -78,9 +76,7 @@ describe("Login", () => {
 
     it("renders Connect Wallet button", () => {
       renderLogin();
-      expect(
-        screen.getByText("Connect Wallet & Sign In"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Connect Wallet & Sign In")).toBeInTheDocument();
     });
 
     it("renders New Donor Sign Up link", () => {

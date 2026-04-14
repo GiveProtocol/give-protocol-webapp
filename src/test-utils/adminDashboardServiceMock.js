@@ -4,6 +4,12 @@ import { jest } from "@jest/globals";
 
 export const getAdminDashboardStats = jest.fn(() => Promise.resolve(null));
 export const getAdminRecentActivity = jest.fn(() =>
-  Promise.resolve({ events: [], totalCount: 0, page: 1, limit: 50, totalPages: 0 }),
+  Promise.resolve({
+    events: [],
+    totalCount: 0,
+    page: 1,
+    limit: 50,
+    totalPages: 0,
+  }),
 );
 export const getAdminAlerts = jest.fn(() => Promise.resolve([]));

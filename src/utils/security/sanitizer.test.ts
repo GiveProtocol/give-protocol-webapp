@@ -67,9 +67,7 @@ describe("InputSanitizer", () => {
 
     it("removes disallowed attributes from allowed tags", () => {
       // <p> is allowed but onclick is not
-      const result = sanitizer.sanitizeHTML(
-        '<p onclick="evil()">Text</p>',
-      );
+      const result = sanitizer.sanitizeHTML('<p onclick="evil()">Text</p>');
       expect(result).not.toContain("onclick");
     });
 
@@ -205,9 +203,9 @@ describe("InputSanitizer", () => {
 
     describe("url", () => {
       it("accepts valid https URL", () => {
-        expect(
-          sanitizer.validatePattern("https://example.com", "url"),
-        ).toBe(true);
+        expect(sanitizer.validatePattern("https://example.com", "url")).toBe(
+          true,
+        );
       });
 
       it("accepts https URL with path", () => {
@@ -217,9 +215,9 @@ describe("InputSanitizer", () => {
       });
 
       it("rejects http URL (only https allowed)", () => {
-        expect(
-          sanitizer.validatePattern("http://example.com", "url"),
-        ).toBe(false);
+        expect(sanitizer.validatePattern("http://example.com", "url")).toBe(
+          false,
+        );
       });
 
       it("rejects plain text", () => {
@@ -261,7 +259,7 @@ describe("InputSanitizer", () => {
     });
 
     it("sanitizes html fields according to schema", () => {
-      const obj = { content: '<p>Good</p><script>bad()</script>' };
+      const obj = { content: "<p>Good</p><script>bad()</script>" };
       const schema = { content: "html" };
       const result = sanitizer.sanitizeObject(obj, schema);
       expect(result.content).not.toContain("<script>");

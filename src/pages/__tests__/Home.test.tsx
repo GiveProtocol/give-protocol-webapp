@@ -47,9 +47,7 @@ describe("Home", () => {
 
     it("renders Charitable Equity Funds feature", () => {
       renderHome();
-      expect(
-        screen.getByText("Charitable Equity Funds"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Charitable Equity Funds")).toBeInTheDocument();
     });
 
     it("renders Impact Funds feature", () => {
@@ -60,9 +58,7 @@ describe("Home", () => {
 
     it("renders Verified Organizations feature", () => {
       renderHome();
-      expect(
-        screen.getByText("Verified Organizations"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Verified Organizations")).toBeInTheDocument();
     });
 
     it("renders Blockchain Verified feature", () => {
@@ -112,9 +108,7 @@ describe("Home", () => {
 
     it("renders Environmental Impact Fund", () => {
       renderHome();
-      expect(
-        screen.getByText("Environmental Impact Fund"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Environmental Impact Fund")).toBeInTheDocument();
     });
 
     it("renders Education Opportunity Fund", () => {

@@ -20,10 +20,7 @@ beforeAll(() => {
   // crypto.subtle.timingSafeEqual is not part of the standard Web Crypto API
   const subtle = globalThis.crypto.subtle as Record<string, unknown>;
   if (typeof subtle["timingSafeEqual"] !== "function") {
-    subtle["timingSafeEqual"] = (
-      a: ArrayBuffer,
-      b: ArrayBuffer,
-    ): boolean => {
+    subtle["timingSafeEqual"] = (a: ArrayBuffer, b: ArrayBuffer): boolean => {
       const av = new Uint8Array(a);
       const bv = new Uint8Array(b);
       if (av.length !== bv.length) return false;
