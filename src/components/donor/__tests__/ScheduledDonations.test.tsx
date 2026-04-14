@@ -314,7 +314,9 @@ describe("ScheduledDonations", () => {
     });
 
     it("shows wallet-specific guidance on user rejection", async () => {
-      mockCancelSchedule.mockRejectedValue(new Error("user rejected transaction"));
+      mockCancelSchedule.mockRejectedValue(
+        new Error("user rejected transaction"),
+      );
 
       render(<ScheduledDonations />);
 
@@ -341,7 +343,9 @@ describe("ScheduledDonations", () => {
     });
 
     it("shows wallet-specific guidance on User denied rejection", async () => {
-      mockCancelSchedule.mockRejectedValue(new Error("User denied transaction signature"));
+      mockCancelSchedule.mockRejectedValue(
+        new Error("User denied transaction signature"),
+      );
 
       render(<ScheduledDonations />);
 

@@ -1,4 +1,11 @@
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from "@jest/globals";
 import { renderHook, act } from "@testing-library/react";
 import { useScheduledDonation } from "./useScheduledDonation";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -38,9 +45,9 @@ function setupConnectedWallet() {
 
 describe("useScheduledDonation", () => {
   beforeEach(() => {
-    jest.mocked(getContractAddress).mockReturnValue(
-      "0x1234567890123456789012345678901234567890",
-    );
+    jest
+      .mocked(getContractAddress)
+      .mockReturnValue("0x1234567890123456789012345678901234567890");
     jest.mocked(useWeb3).mockReturnValue({
       provider: null,
       signer: null,
@@ -86,7 +93,9 @@ describe("useScheduledDonation", () => {
 
     it("getDonorSchedules returns empty array", async () => {
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -125,7 +134,9 @@ describe("useScheduledDonation", () => {
 
     it("getDonorSchedules returns empty array for dummy contract", async () => {
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -165,7 +176,9 @@ describe("useScheduledDonation", () => {
 
     it("getDonorSchedules returns empty array when contract not deployed", async () => {
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -174,8 +187,10 @@ describe("useScheduledDonation", () => {
   });
 
   describe("with real contract address — createSchedule", () => {
-    const mockApprove = jest.fn<() => Promise<{ wait: () => Promise<object> }>>();
-    const mockCreateSchedule = jest.fn<() => Promise<{ wait: () => Promise<{ hash: string }> }>>();
+    const mockApprove =
+      jest.fn<() => Promise<{ wait: () => Promise<object> }>>();
+    const mockCreateSchedule =
+      jest.fn<() => Promise<{ wait: () => Promise<{ hash: string }> }>>();
 
     beforeEach(() => {
       setupConnectedWallet();
@@ -188,16 +203,22 @@ describe("useScheduledDonation", () => {
       jest.mocked(ethers.Contract).mockImplementation(() => {
         callCount++;
         if (callCount % 2 === 1) {
-          return { createSchedule: mockCreateSchedule } as ReturnType<typeof ethers.Contract>;
+          return { createSchedule: mockCreateSchedule } as ReturnType<
+            typeof ethers.Contract
+          >;
         }
         return { approve: mockApprove } as ReturnType<typeof ethers.Contract>;
       });
     });
 
     it("approves token then creates schedule, returns tx hash", async () => {
-      mockApprove.mockResolvedValue({ wait: jest.fn<() => Promise<object>>().mockResolvedValue({}) });
+      mockApprove.mockResolvedValue({
+        wait: jest.fn<() => Promise<object>>().mockResolvedValue({}),
+      });
       mockCreateSchedule.mockResolvedValue({
-        wait: jest.fn<() => Promise<{ hash: string }>>().mockResolvedValue({ hash: "0xCreatedHash" }),
+        wait: jest
+          .fn<() => Promise<{ hash: string }>>()
+          .mockResolvedValue({ hash: "0xCreatedHash" }),
       });
 
       const { result } = renderHook(() => useScheduledDonation());
@@ -222,7 +243,9 @@ describe("useScheduledDonation", () => {
     });
 
     it("sets error on user rejection during token approval (code 4001)", async () => {
-      const rejectionError = Object.assign(new Error("user rejected"), { code: 4001 });
+      const rejectionError = Object.assign(new Error("user rejected"), {
+        code: 4001,
+      });
       mockApprove.mockRejectedValue(rejectionError);
 
       const { result } = renderHook(() => useScheduledDonation());
@@ -240,8 +263,12 @@ describe("useScheduledDonation", () => {
     });
 
     it("sets error on user rejection during schedule creation", async () => {
-      mockApprove.mockResolvedValue({ wait: jest.fn<() => Promise<object>>().mockResolvedValue({}) });
-      const rejectionError = Object.assign(new Error("user rejected"), { code: 4001 });
+      mockApprove.mockResolvedValue({
+        wait: jest.fn<() => Promise<object>>().mockResolvedValue({}),
+      });
+      const rejectionError = Object.assign(new Error("user rejected"), {
+        code: 4001,
+      });
       mockCreateSchedule.mockRejectedValue(rejectionError);
 
       const { result } = renderHook(() => useScheduledDonation());
@@ -252,7 +279,9 @@ describe("useScheduledDonation", () => {
             tokenAddress: "0xToken",
             totalAmount: "10",
           }),
-        ).rejects.toThrow("Please confirm the transaction in your wallet to schedule");
+        ).rejects.toThrow(
+          "Please confirm the transaction in your wallet to schedule",
+        );
       });
       expect(result.current.error).toContain("Please confirm the transaction");
     });
@@ -275,19 +304,27 @@ describe("useScheduledDonation", () => {
   });
 
   describe("with real contract address — cancelSchedule", () => {
-    const mockCancelScheduleFn = jest.fn<() => Promise<{ wait: () => Promise<{ hash: string }> }>>();
+    const mockCancelScheduleFn =
+      jest.fn<() => Promise<{ wait: () => Promise<{ hash: string }> }>>();
 
     beforeEach(() => {
       setupConnectedWallet();
       jest.mocked(getContractAddress).mockReturnValue(REAL_CONTRACT_ADDRESS);
-      jest.mocked(ethers.Contract).mockImplementation(
-        () => ({ cancelSchedule: mockCancelScheduleFn }) as ReturnType<typeof ethers.Contract>,
-      );
+      jest
+        .mocked(ethers.Contract)
+        .mockImplementation(
+          () =>
+            ({ cancelSchedule: mockCancelScheduleFn }) as ReturnType<
+              typeof ethers.Contract
+            >,
+        );
     });
 
     it("cancels schedule and returns tx hash", async () => {
       mockCancelScheduleFn.mockResolvedValue({
-        wait: jest.fn<() => Promise<{ hash: string }>>().mockResolvedValue({ hash: "0xCancelHash" }),
+        wait: jest
+          .fn<() => Promise<{ hash: string }>>()
+          .mockResolvedValue({ hash: "0xCancelHash" }),
       });
 
       const { result } = renderHook(() => useScheduledDonation());
@@ -302,7 +339,10 @@ describe("useScheduledDonation", () => {
     });
 
     it("throws user-friendly message on wallet rejection (code 4001)", async () => {
-      const rejectionError = Object.assign(new Error("user rejected transaction"), { code: 4001 });
+      const rejectionError = Object.assign(
+        new Error("user rejected transaction"),
+        { code: 4001 },
+      );
       mockCancelScheduleFn.mockRejectedValue(rejectionError);
 
       const { result } = renderHook(() => useScheduledDonation());
@@ -315,7 +355,9 @@ describe("useScheduledDonation", () => {
     });
 
     it("throws user-friendly message on user rejected in message string", async () => {
-      mockCancelScheduleFn.mockRejectedValue(new Error("MetaMask: user rejected"));
+      mockCancelScheduleFn.mockRejectedValue(
+        new Error("MetaMask: user rejected"),
+      );
 
       const { result } = renderHook(() => useScheduledDonation());
       await act(async () => {
@@ -326,7 +368,9 @@ describe("useScheduledDonation", () => {
     });
 
     it("re-throws non-rejection contract errors", async () => {
-      mockCancelScheduleFn.mockRejectedValue(new Error("gas estimation failed"));
+      mockCancelScheduleFn.mockRejectedValue(
+        new Error("gas estimation failed"),
+      );
 
       const { result } = renderHook(() => useScheduledDonation());
       await act(async () => {
@@ -378,7 +422,9 @@ describe("useScheduledDonation", () => {
         });
 
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -408,7 +454,9 @@ describe("useScheduledDonation", () => {
       mockGetDonorSchedulesFn.mockResolvedValue([]);
 
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -421,7 +469,9 @@ describe("useScheduledDonation", () => {
       );
 
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -433,7 +483,9 @@ describe("useScheduledDonation", () => {
       mockGetDonorSchedulesFn.mockRejectedValue(new Error("network timeout"));
 
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -453,7 +505,9 @@ describe("useScheduledDonation", () => {
         .mockReturnValue("0x0000000000000000000000000000000000000000");
 
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
@@ -466,7 +520,9 @@ describe("useScheduledDonation", () => {
         .mockReturnValue("0x3456789012345678901234567890123456789012");
 
       const { result } = renderHook(() => useScheduledDonation());
-      let schedules: Awaited<ReturnType<typeof result.current.getDonorSchedules>>;
+      let schedules: Awaited<
+        ReturnType<typeof result.current.getDonorSchedules>
+      >;
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });

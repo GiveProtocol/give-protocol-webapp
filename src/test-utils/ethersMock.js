@@ -12,7 +12,9 @@ const simpleKeccak256 = (data) => {
   // Accept Uint8Array or hex string; convert to a regular string for hashing
   let str = "";
   if (data instanceof Uint8Array) {
-    str = Array.from(data).map((b) => b.toString(16).padStart(2, "0")).join("");
+    str = Array.from(data)
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
   } else if (typeof data === "string") {
     str = data;
   } else {
@@ -30,7 +32,9 @@ const simpleKeccak256 = (data) => {
   const hex2 = (h2 >>> 0).toString(16).padStart(8, "0");
   const hex3 = ((h1 ^ h2) >>> 0).toString(16).padStart(8, "0");
   const hex4 = (Math.imul(h1, h2) >>> 0).toString(16).padStart(8, "0");
-  const hex5 = (Math.imul(h1 ^ 0xa5a5a5a5, h2 ^ 0x5a5a5a5a) >>> 0).toString(16).padStart(8, "0");
+  const hex5 = (Math.imul(h1 ^ 0xa5a5a5a5, h2 ^ 0x5a5a5a5a) >>> 0)
+    .toString(16)
+    .padStart(8, "0");
   const hex6 = ((h1 + h2) >>> 0).toString(16).padStart(8, "0");
   const hex7 = (Math.imul(h1, 0xdeadbeef) >>> 0).toString(16).padStart(8, "0");
   const hex8 = (Math.imul(h2, 0xcafebabe) >>> 0).toString(16).padStart(8, "0");
