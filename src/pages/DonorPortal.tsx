@@ -8,6 +8,7 @@ import { DonationHistory } from "@/components/donor/DonationHistory";
 import { Transaction } from "@/types/contribution";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
+/** Donor portal dashboard showing donation history, impact stats, and contribution tracking. */
 export const DonorPortal: React.FC = () => {
   const { user, userType } = useAuth();
   const { loading: profileLoading } = useProfile();

@@ -16,8 +16,7 @@ export const validateName = jest.fn(
 );
 export const validateUrl = jest.fn((url) => {
   try {
-    const _parsed = new URL(url);
-    return true;
+    return Boolean(new URL(url));
   } catch {
     return false;
   }
