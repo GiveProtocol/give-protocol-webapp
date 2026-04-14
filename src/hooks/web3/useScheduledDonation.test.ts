@@ -95,11 +95,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
     });
   });
 
@@ -136,11 +136,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
     });
   });
 
@@ -178,11 +178,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
     });
   });
 
@@ -424,13 +424,13 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
 
-      expect(schedules!).toHaveLength(2);
-      expect(schedules![0]).toEqual(
+      expect(schedules).toHaveLength(2);
+      expect(schedules[0]).toEqual(
         expect.objectContaining({
           id: 1,
           charity: "0xCharity1",
@@ -438,7 +438,7 @@ describe("useScheduledDonation", () => {
           monthsRemaining: 5,
         }),
       );
-      expect(schedules![1]).toEqual(
+      expect(schedules[1]).toEqual(
         expect.objectContaining({
           id: 2,
           charity: "0xCharity2",
@@ -456,11 +456,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
     });
 
     it("returns empty array on decode error (contract not deployed)", async () => {
@@ -471,11 +471,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
       expect(result.current.error).toBeNull();
     });
 
@@ -485,11 +485,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
       expect(result.current.error).toBe("network timeout");
     });
   });
@@ -507,11 +507,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
     });
 
     it("returns empty for alternate dummy address", async () => {
@@ -522,11 +522,11 @@ describe("useScheduledDonation", () => {
       const { result } = renderHook(() => useScheduledDonation());
       let schedules: Awaited<
         ReturnType<typeof result.current.getDonorSchedules>
-      >;
+      > = [];
       await act(async () => {
         schedules = await result.current.getDonorSchedules();
       });
-      expect(schedules!).toEqual([]);
+      expect(schedules).toEqual([]);
     });
   });
 });

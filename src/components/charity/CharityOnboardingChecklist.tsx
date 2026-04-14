@@ -223,7 +223,7 @@ export const CharityOnboardingChecklist: React.FC<
 
       {!collapsed && (
         <div className="px-5 pb-5">
-          <ul className="space-y-3" role="list">
+          <ul className="space-y-3">
             {CHECKLIST_ITEMS.map((item) => (
               <ChecklistRow
                 key={item.id}

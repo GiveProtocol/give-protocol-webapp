@@ -14,6 +14,7 @@ interface BannerConfig {
   actionHref?: string;
 }
 
+/** Returns the banner configuration for a given charity verification status, or null if no banner is needed. */
 function getBannerConfig(
   status: CharityVerificationStatus,
   reviewNotes: string | null,

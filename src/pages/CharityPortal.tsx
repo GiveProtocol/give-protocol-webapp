@@ -369,7 +369,7 @@ export const CharityPortal: React.FC = () => {
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [charityWalletAddress, setCharityWalletAddress] = useState<
     string | null | undefined
-  >(undefined);
+  >();
   const [sortConfig, setSortConfig] = useState<{
     key: "date" | "type" | "status" | "organization" | null;
     direction: "asc" | "desc";

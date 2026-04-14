@@ -113,7 +113,7 @@ describe("CharityOnboardingChecklist", () => {
         error: null,
       }),
     );
-    await act(async () => {
+    act(() => {
       renderChecklist();
     });
     expect(screen.queryByText("Getting Started")).not.toBeInTheDocument();
