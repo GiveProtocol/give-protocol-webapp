@@ -1,9 +1,10 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { supabase } from "@/lib/supabase";
-import { listCharities, updateCharityStatus } from "./adminCharityService";
+import { listCharities, updateCharityStatus, notifyCharityStatusChange } from "./adminCharityService";
 import type { AdminCharityListRow } from "@/types/adminCharity";
 
 const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockInvoke = supabase.functions.invoke as ReturnType<typeof import("@jest/globals").jest.fn>;
 
 const makeRow = (overrides: Partial<AdminCharityListRow> = {}): AdminCharityListRow => ({
   id: "charity-uuid-1",
@@ -26,6 +27,8 @@ const makeRow = (overrides: Partial<AdminCharityListRow> = {}): AdminCharityList
 describe("adminCharityService", () => {
   beforeEach(() => {
     mockRpc.mockReset();
+    mockInvoke.mockReset();
+    mockInvoke.mockResolvedValue({ data: null, error: null });
   });
 
   // ─── listCharities ──────────────────────────────────────────────────────────
@@ -209,7 +212,103 @@ describe("adminCharityService", () => {
         const result = await updateCharityStatus({ charityId: "charity-uuid-1", newStatus: status });
         expect(result).toBe("verif-uuid-1");
         mockRpc.mockReset();
+        mockInvoke.mockResolvedValue({ data: null, error: null });
       }
+    });
+
+    it("should invoke charity-status-email edge function on success", async () => {
+      mockRpc.mockResolvedValue({ data: "verif-uuid-1", error: null });
+
+      await updateCharityStatus({
+        charityId: "charity-uuid-1",
+        newStatus: "verified",
+        reason: "All documents verified",
+      });
+
+      // Allow the fire-and-forget promise to settle
+      await Promise.resolve();
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith("charity-status-email", {
+        body: {
+          charityId: "charity-uuid-1",
+          newStatus: "verified",
+          reason: "All documents verified",
+        },
+      });
+    });
+
+    it("should not invoke email edge function when RPC fails", async () => {
+      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+
+      await updateCharityStatus({ charityId: "charity-uuid-1", newStatus: "verified" });
+
+      await Promise.resolve();
+
+      expect(supabase.functions.invoke).not.toHaveBeenCalled();
+    });
+
+    it("should still return verification UUID even if email invocation fails", async () => {
+      mockRpc.mockResolvedValue({ data: "verif-uuid-1", error: null });
+      mockInvoke.mockResolvedValue({ data: null, error: { message: "Email service unavailable" } });
+
+      const result = await updateCharityStatus({
+        charityId: "charity-uuid-1",
+        newStatus: "rejected",
+        reason: "Invalid documents",
+      });
+
+      expect(result).toBe("verif-uuid-1");
+    });
+  });
+
+  // ─── notifyCharityStatusChange ──────────────────────────────────────────────
+
+  describe("notifyCharityStatusChange", () => {
+    it("should invoke charity-status-email with correct body", async () => {
+      await notifyCharityStatusChange({
+        charityId: "charity-uuid-1",
+        newStatus: "suspended",
+        reason: "Policy violation",
+      });
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith("charity-status-email", {
+        body: {
+          charityId: "charity-uuid-1",
+          newStatus: "suspended",
+          reason: "Policy violation",
+        },
+      });
+    });
+
+    it("should pass null reason when none provided", async () => {
+      await notifyCharityStatusChange({
+        charityId: "charity-uuid-1",
+        newStatus: "verified",
+      });
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith("charity-status-email", {
+        body: {
+          charityId: "charity-uuid-1",
+          newStatus: "verified",
+          reason: null,
+        },
+      });
+    });
+
+    it("should not throw when edge function returns an error", async () => {
+      mockInvoke.mockResolvedValue({ data: null, error: { message: "Resend API error" } });
+
+      await expect(
+        notifyCharityStatusChange({ charityId: "charity-uuid-1", newStatus: "rejected", reason: "No docs" }),
+      ).resolves.toBeUndefined();
+    });
+
+    it("should not throw when edge function invocation throws", async () => {
+      mockInvoke.mockRejectedValue(new Error("Network timeout"));
+
+      await expect(
+        notifyCharityStatusChange({ charityId: "charity-uuid-1", newStatus: "suspended", reason: "Fraud" }),
+      ).resolves.toBeUndefined();
     });
   });
 });
