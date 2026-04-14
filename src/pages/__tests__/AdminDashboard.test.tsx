@@ -102,9 +102,10 @@ describe("AdminDashboard", () => {
     it("shows loading spinner before data loads", () => {
       // Keep promises pending so component stays in loading state
       mockGetStats.mockImplementation(
-        () => new Promise(() => {
-          // Never resolves
-        }),
+        () =>
+          new Promise(() => {
+            // Never resolves
+          }),
       );
       renderDashboard();
       expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
@@ -213,9 +214,7 @@ describe("AdminDashboard", () => {
       mockGetStats.mockRejectedValue(new Error("Network error"));
       renderDashboard();
       await waitFor(() => {
-        expect(
-          screen.getByText("Error Loading Dashboard"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Error Loading Dashboard")).toBeInTheDocument();
       });
     });
 
