@@ -251,6 +251,11 @@ export default {
       "<rootDir>/src/test-utils/opportunityFormMock.js",
     "(.*)/components/volunteer/OpportunityForm(\\.tsx?)?$":
       "<rootDir>/src/test-utils/opportunityFormMock.js",
+    // Service mocks
+    "^@/services/adminDashboardService$":
+      "<rootDir>/src/test-utils/adminDashboardServiceMock.js",
+    "(.*)/services/adminDashboardService(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/adminDashboardServiceMock.js",
     // Generic path mapping
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",
