@@ -1,6 +1,6 @@
-import { supabase } from '@/lib/supabase';
-import type { CharityProfile } from '@/types/charityProfile';
-import { Logger } from '@/utils/logger';
+import { supabase } from "@/lib/supabase";
+import type { CharityProfile } from "@/types/charityProfile";
+import { Logger } from "@/utils/logger";
 
 interface ClaimCharityParams {
   ein: string;
@@ -19,7 +19,7 @@ export async function claimCharityProfile(
   params: ClaimCharityParams,
 ): Promise<CharityProfile | null> {
   try {
-    const { data, error } = await supabase.rpc('claim_charity_profile', {
+    const { data, error } = await supabase.rpc("claim_charity_profile", {
       p_ein: params.ein,
       p_signer_name: params.signerName,
       p_signer_email: params.signerEmail,
@@ -27,18 +27,84 @@ export async function claimCharityProfile(
     });
 
     if (error) {
-      Logger.error('Error claiming charity profile', { error, ein: params.ein });
+      Logger.error("Error claiming charity profile", {
+        error,
+        ein: params.ein,
+      });
       return null;
     }
 
     const rows = (data || []) as CharityProfile[];
     return rows[0] || null;
   } catch (error) {
-    Logger.error('Charity profile claim failed', {
+    Logger.error("Charity profile claim failed", {
       error: error instanceof Error ? error.message : String(error),
       ein: params.ein,
     });
     return null;
+  }
+}
+
+/**
+ * Fetches the wallet address stored on a charity profile for a given user.
+ * Queries charity_profiles by claimed_by (the user who claimed the profile).
+ * @param userId - The authenticated user's ID
+ * @returns The wallet address string, or null if not set or not found
+ */
+export async function getCharityWalletAddress(
+  userId: string,
+): Promise<string | null> {
+  if (!userId) return null;
+
+  try {
+    const { data, error } = await supabase
+      .from("charity_profiles")
+      .select("wallet_address")
+      .eq("claimed_by", userId)
+      .single();
+
+    if (error || !data) {
+      return null;
+    }
+    const row = data as { wallet_address: string | null };
+    return row.wallet_address;
+  } catch (err) {
+    Logger.error("Charity wallet address fetch failed", {
+      error: err instanceof Error ? err.message : String(err),
+      userId,
+    });
+    return null;
+  }
+}
+
+/**
+ * Stores a receiving wallet address on the charity profile for a given user.
+ * Updates the charity_profiles row where claimed_by matches the user ID.
+ * @param userId - The authenticated user's ID (matched via claimed_by)
+ * @param walletAddress - The blockchain wallet address to persist
+ * @returns True if the update succeeded, false otherwise
+ */
+export async function updateCharityWalletAddress(
+  userId: string,
+  walletAddress: string,
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("charity_profiles")
+      .update({ wallet_address: walletAddress })
+      .eq("claimed_by", userId);
+
+    if (error) {
+      Logger.error("Error updating charity wallet address", { error, userId });
+      return false;
+    }
+    return true;
+  } catch (err) {
+    Logger.error("Charity wallet update failed", {
+      error: err instanceof Error ? err.message : String(err),
+      userId,
+    });
+    return false;
   }
 }
 
@@ -57,19 +123,22 @@ export async function getCharityProfileByEin(
   }
 
   try {
-    const { data, error } = await supabase.rpc('get_or_create_charity_profile', {
-      lookup_ein: trimmed,
-    });
+    const { data, error } = await supabase.rpc(
+      "get_or_create_charity_profile",
+      {
+        lookup_ein: trimmed,
+      },
+    );
 
     if (error) {
-      Logger.error('Error fetching charity profile', { error, ein: trimmed });
+      Logger.error("Error fetching charity profile", { error, ein: trimmed });
       return null;
     }
 
     const rows = (data || []) as CharityProfile[];
     return rows[0] || null;
   } catch (error) {
-    Logger.error('Charity profile fetch failed', {
+    Logger.error("Charity profile fetch failed", {
       error: error instanceof Error ? error.message : String(error),
       ein: trimmed,
     });

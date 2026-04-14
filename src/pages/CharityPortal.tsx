@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useProfile } from "@/hooks/useProfile";
 import {
   Plus,
@@ -12,6 +13,7 @@ import {
   Clock,
   Settings,
   Target,
+  Wallet,
 } from "lucide-react";
 import {
   ApplicationsTab,
@@ -24,11 +26,18 @@ import {
   TransactionsTab,
 } from "./charity-portal/components";
 import { Button } from "@/components/ui/Button";
-import { Transaction } from "@/types/contribution";
+import type { Transaction } from "@/types/contribution";
 import { DonationExportModal } from "@/components/contribution/DonationExportModal";
+import { WalletLinkModal } from "@/components/wallet/WalletLinkModal";
 import { useTranslation } from "@/hooks/useTranslation";
 import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
+import { CharityOnboardingChecklist } from "@/components/charity/CharityOnboardingChecklist";
+import { VerificationStatusBanner } from "@/components/charity/VerificationStatusBanner";
+import {
+  getCharityWalletAddress,
+  updateCharityWalletAddress,
+} from "@/services/charityProfileService";
 
 // Type definitions for Supabase data structures
 interface DonationData {
@@ -259,7 +268,11 @@ function CharityPortalSkeleton() {
 }
 
 /** Overview header with title, last-updated timestamp, and refresh button. */
-function OverviewHeader({ lastUpdatedText, onRefresh, t }: {
+function OverviewHeader({
+  lastUpdatedText,
+  onRefresh,
+  t,
+}: {
   lastUpdatedText: string;
   onRefresh: () => void;
   t: (_key: string, _fallback?: string) => string;
@@ -288,7 +301,13 @@ function OverviewHeader({ lastUpdatedText, onRefresh, t }: {
 }
 
 /** Header for the charity portal with title and action buttons. */
-function CharityPortalHeader({ displayName, t }: { displayName?: string; t: (_key: string, _fallback?: string) => string }) {
+function CharityPortalHeader({
+  displayName,
+  t,
+}: {
+  displayName?: string;
+  t: (_key: string, _fallback?: string) => string;
+}) {
   return (
     <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
       <div>
@@ -317,12 +336,40 @@ function CharityPortalHeader({ displayName, t }: { displayName?: string; t: (_ke
   );
 }
 
+/** Banner shown when the charity has no receiving wallet configured. */
+function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
+  return (
+    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-center justify-between">
+      <div className="flex items-center gap-3">
+        <Wallet className="h-5 w-5 text-amber-600 shrink-0" />
+        <div>
+          <p className="text-sm font-semibold text-amber-900">
+            Receiving wallet not configured
+          </p>
+          <p className="text-xs text-amber-700">
+            Connect a wallet to receive on-chain donations.
+          </p>
+        </div>
+      </div>
+      <Button variant="secondary" onClick={onOpen}>
+        Set Up Wallet
+      </Button>
+    </div>
+  );
+}
+
 /** Charity management dashboard with tabs for transactions, volunteer hours, applications, opportunities, causes, and organization settings. */
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
+  const userId = user?.id ?? null;
+  const { walletAddress: connectedWalletAddress } = useUnifiedAuth();
   const { profile, loading: profileLoading } = useProfile();
   const [activeTab, setActiveTab] = useState<TabKey>("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showWalletModal, setShowWalletModal] = useState(false);
+  const [charityWalletAddress, setCharityWalletAddress] = useState<
+    string | null | undefined
+  >(undefined);
   const [sortConfig, setSortConfig] = useState<{
     key: "date" | "type" | "status" | "organization" | null;
     direction: "asc" | "desc";
@@ -347,6 +394,12 @@ export const CharityPortal: React.FC = () => {
   const [causes, setCauses] = useState<CharityCause[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Fetch charity wallet address on mount
+  useEffect(() => {
+    if (!userId) return;
+    getCharityWalletAddress(userId).then(setCharityWalletAddress);
+  }, [userId]);
 
   // Helper function to fetch basic statistics data
   const fetchBasicStats = useCallback(
@@ -497,10 +550,13 @@ export const CharityPortal: React.FC = () => {
       return sum + amount;
     }, 0);
 
-    const fiatDonated = data.fiatDonations.reduce((sum, donation) => {
-      const cents = donation?.amount_cents ? Number(donation.amount_cents) : 0;
-      return sum + cents;
-    }, 0) / 100;
+    const fiatDonated =
+      data.fiatDonations.reduce((sum, donation) => {
+        const cents = donation?.amount_cents
+          ? Number(donation.amount_cents)
+          : 0;
+        return sum + cents;
+      }, 0) / 100;
 
     const totalHours = data.hours.reduce((sum, hour) => {
       const hourCount = hour?.hours ? Number(hour.hours) : 0;
@@ -572,7 +628,9 @@ export const CharityPortal: React.FC = () => {
     try {
       const { data: fiatDonations, error: fiatError } = await supabase
         .from("fiat_donations")
-        .select("id, amount_cents, created_at, donor_name, payment_method, disbursement_status, status")
+        .select(
+          "id, amount_cents, created_at, donor_name, payment_method, disbursement_status, status",
+        )
         .eq("charity_id", charityId)
         .order("created_at", { ascending: false });
 
@@ -589,7 +647,10 @@ export const CharityPortal: React.FC = () => {
           cryptoType: "USD",
           fiatValue: fd.amount_cents ? fd.amount_cents / 100 : 0,
           timestamp: fd.created_at || new Date().toISOString(),
-          status: fd.status === "completed" ? "completed" as const : "pending" as const,
+          status:
+            fd.status === "completed"
+              ? ("completed" as const)
+              : ("pending" as const),
           purpose: "Fiat Donation",
           metadata: {
             organization: fd.donor_name || "Anonymous",
@@ -611,7 +672,8 @@ export const CharityPortal: React.FC = () => {
     // Merge and sort by date descending
     const allTransactions = [...cryptoTransactions, ...fiatTransactions];
     allTransactions.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
     return allTransactions;
   }, []);
@@ -827,7 +889,10 @@ export const CharityPortal: React.FC = () => {
     setActiveTab(tab);
   }, []);
 
-  const handleTransactionsTab = useCallback(() => setActiveTab("transactions"), []);
+  const handleTransactionsTab = useCallback(
+    () => setActiveTab("transactions"),
+    [],
+  );
   const handleHoursTab = useCallback(() => setActiveTab("hours"), []);
 
   const handleShowExportModal = useCallback(() => {
@@ -847,11 +912,44 @@ export const CharityPortal: React.FC = () => {
     [],
   );
 
-  // Modal close handler
+  // Modal close handlers
   const handleCloseExportModal = useCallback(
     () => setShowExportModal(false),
     [],
   );
+
+  const handleOpenWalletModal = useCallback(() => setShowWalletModal(true), []);
+  const handleCloseWalletModal = useCallback(
+    () => setShowWalletModal(false),
+    [],
+  );
+
+  const handleWalletLinked = useCallback(async () => {
+    if (connectedWalletAddress && userId) {
+      const success = await updateCharityWalletAddress(
+        userId,
+        connectedWalletAddress,
+      );
+      if (success) {
+        setCharityWalletAddress(connectedWalletAddress);
+      }
+    }
+  }, [connectedWalletAddress, userId]);
+
+  const handleOnboardingNavigate = useCallback((tab: string) => {
+    const validTabs: TabKey[] = [
+      "transactions",
+      "hours",
+      "applications",
+      "opportunities",
+      "causes",
+      "impact",
+      "organization",
+    ];
+    if (validTabs.includes(tab as TabKey)) {
+      setActiveTab(tab as TabKey);
+    }
+  }, []);
 
   if (!user) {
     return <Navigate to="/login?type=charity" />;
@@ -901,12 +999,39 @@ export const CharityPortal: React.FC = () => {
         {/* Page Header */}
         <CharityPortalHeader displayName={profile?.display_name} t={t} />
 
+        {/* Verification status banner for pending/rejected/suspended charities */}
+        {user?.id && <VerificationStatusBanner userId={user.id} />}
+
+        {/* Wallet setup banner when no receiving wallet is configured */}
+        {charityWalletAddress === null && (
+          <CharityWalletBanner onOpen={handleOpenWalletModal} />
+        )}
+
         {/* Stats Row with Last Updated */}
         <OverviewHeader
           lastUpdatedText={lastUpdated ? formatLastUpdated() : ""}
           onRefresh={handleRefresh}
           t={t}
         />
+
+        {/* Wallet indicator when wallet is configured */}
+        {typeof charityWalletAddress === "string" && (
+          <div className="flex items-center gap-2 mb-4 text-xs text-emerald-700">
+            <Wallet className="h-3.5 w-3.5" />
+            <span>
+              Receiving wallet: {charityWalletAddress.slice(0, 6)}&hellip;
+              {charityWalletAddress.slice(-4)}
+            </span>
+          </div>
+        )}
+
+        {/* Onboarding checklist for newly approved charities */}
+        {profile?.id && (
+          <CharityOnboardingChecklist
+            profileId={profile.id}
+            onNavigateTab={handleOnboardingNavigate}
+          />
+        )}
 
         {/* Enhanced Metrics Grid */}
         <StatsCards
@@ -918,13 +1043,50 @@ export const CharityPortal: React.FC = () => {
         {/* Tab Navigation */}
         <CharityTabNav
           tabs={[
-            { key: "transactions", labelKey: "charity.transactions", labelDefault: "Transactions", icon: Receipt },
-            { key: "hours", labelKey: "volunteer.hoursVerification", labelDefault: "Hours", icon: Clock, badge: pendingHoursCount },
-            { key: "applications", labelKey: "charity.applications", labelDefault: "Applications", icon: ClipboardList, badge: pendingApplicationsCount },
-            { key: "opportunities", labelKey: "volunteer.opportunities", labelDefault: "Opportunities", icon: Briefcase },
-            { key: "causes", labelKey: "cause.causes", labelDefault: "Causes", icon: Heart },
-            { key: "impact", labelKey: "impact.profile", labelDefault: "Impact Profile", icon: Target },
-            { key: "organization", labelKey: "organization.settings", labelDefault: "Organization", icon: Settings },
+            {
+              key: "transactions",
+              labelKey: "charity.transactions",
+              labelDefault: "Transactions",
+              icon: Receipt,
+            },
+            {
+              key: "hours",
+              labelKey: "volunteer.hoursVerification",
+              labelDefault: "Hours",
+              icon: Clock,
+              badge: pendingHoursCount,
+            },
+            {
+              key: "applications",
+              labelKey: "charity.applications",
+              labelDefault: "Applications",
+              icon: ClipboardList,
+              badge: pendingApplicationsCount,
+            },
+            {
+              key: "opportunities",
+              labelKey: "volunteer.opportunities",
+              labelDefault: "Opportunities",
+              icon: Briefcase,
+            },
+            {
+              key: "causes",
+              labelKey: "cause.causes",
+              labelDefault: "Causes",
+              icon: Heart,
+            },
+            {
+              key: "impact",
+              labelKey: "impact.profile",
+              labelDefault: "Impact Profile",
+              icon: Target,
+            },
+            {
+              key: "organization",
+              labelKey: "organization.settings",
+              labelDefault: "Organization",
+              icon: Settings,
+            },
           ]}
           activeTab={activeTab}
           onTabChange={handleTabChange}
@@ -976,6 +1138,15 @@ export const CharityPortal: React.FC = () => {
           <DonationExportModal
             donations={transactions}
             onClose={handleCloseExportModal}
+          />
+        )}
+
+        {/* Wallet Link Modal */}
+        {showWalletModal && (
+          <WalletLinkModal
+            isOpen={showWalletModal}
+            onClose={handleCloseWalletModal}
+            onLinked={handleWalletLinked}
           />
         )}
       </div>
