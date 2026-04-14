@@ -251,6 +251,62 @@ export default {
       "<rootDir>/src/test-utils/opportunityFormMock.js",
     "(.*)/components/volunteer/OpportunityForm(\\.tsx?)?$":
       "<rootDir>/src/test-utils/opportunityFormMock.js",
+    // Admin service mocks (only @/ prefixed — relative imports in hooks must NOT be intercepted)
+    "^@/services/adminContentModerationService$":
+      "<rootDir>/src/test-utils/adminContentModerationServiceMock.js",
+    "^@/services/adminReportsService$":
+      "<rootDir>/src/test-utils/adminReportsServiceMock.js",
+    "^@/services/adminDonationService$":
+      "<rootDir>/src/test-utils/adminDonationServiceMock.js",
+    "^@/services/adminAuditService$":
+      "<rootDir>/src/test-utils/adminAuditServiceMock.js",
+    "^@/services/adminPlatformConfigService$":
+      "<rootDir>/src/test-utils/adminPlatformConfigServiceMock.js",
+    // Admin hook mocks (only @/ prefixed)
+    "^@/hooks/useAdminCharities$":
+      "<rootDir>/src/test-utils/useAdminCharitiesMock.js",
+    "^@/hooks/useAdminDonations$":
+      "<rootDir>/src/test-utils/useAdminDonationsMock.js",
+    "^@/hooks/useAdminDonors$":
+      "<rootDir>/src/test-utils/useAdminDonorsMock.js",
+    "^@/hooks/useAdminVolunteerValidation$":
+      "<rootDir>/src/test-utils/useAdminVolunteerValidationMock.js",
+    "^@/hooks/useAdminPlatformConfig$":
+      "<rootDir>/src/test-utils/useAdminPlatformConfigMock.js",
+    "^@/hooks/useAdminAuditLog$":
+      "<rootDir>/src/test-utils/useAdminAuditLogMock.js",
+    "^@/hooks/useGeographicFilterParams$":
+      "<rootDir>/src/test-utils/useGeographicFilterParamsMock.js",
+    // UI component mocks (admin pages)
+    "^@/components/ui/Modal$": "<rootDir>/src/test-utils/modalMock.js",
+    "(.*)/components/ui/Modal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/modalMock.js",
+    "^@/components/ui/ScrollReveal$":
+      "<rootDir>/src/test-utils/scrollRevealMock.js",
+    "(.*)/components/ui/ScrollReveal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/scrollRevealMock.js",
+    // Charity browser component mocks (also matches relative imports from pages)
+    "^@/components/charity/CharityGrid$":
+      "<rootDir>/src/test-utils/charityGridMock.js",
+    "(.*)/components/charity/CharityGrid(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityGridMock.js",
+    "^@/components/charity/CauseGrid$":
+      "<rootDir>/src/test-utils/causeGridMock.js",
+    "(.*)/components/charity/CauseGrid(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/causeGridMock.js",
+    "^@/components/charity/PortfolioGrid$":
+      "<rootDir>/src/test-utils/portfolioGridMock.js",
+    "(.*)/components/charity/PortfolioGrid(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/portfolioGridMock.js",
+    "^@/components/charity/GeographicFilter$":
+      "<rootDir>/src/test-utils/geographicFilterMock.js",
+    "(.*)/components/charity/GeographicFilter(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/geographicFilterMock.js",
+    // Utility mocks (admin/browser)
+    "^@/utils/locationResolver$":
+      "<rootDir>/src/test-utils/locationResolverMock.js",
+    "(.*)/utils/locationResolver(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/locationResolverMock.js",
     // Generic path mapping
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",
