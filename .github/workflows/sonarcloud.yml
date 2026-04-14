@@ -1,19 +1,15 @@
-name: SonarCloud Analysis
+name: SonarCloud Analysis (Deprecated)
 
+# DEPRECATED: SonarCloud scanning is handled by code-quality.yml and build.yml.
+# This workflow is kept for reference only. Remove after Phase 2 of GIV-103.
 on:
-  push:
-    branches:
-      - main
-      - develop
-  pull_request:
-    types: [opened, synchronize, reopened]
-  workflow_dispatch: # Allows manual triggering
+  workflow_dispatch:
 
 jobs:
   sonarcloud:
     name: SonarCloud Analysis
     runs-on: ubuntu-latest
-    if: false  # Workflow disabled - requires SONAR_TOKEN setup
+    if: false  # Deprecated — see code-quality.yml
     permissions:
       contents: read
     
@@ -87,5 +83,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '✅ SonarCloud analysis completed! Check the results in the [SonarCloud dashboard](https://sonarcloud.io/summary/new_code?id=GiveProtocol_Duration-Give&pullRequest=' + context.issue.number + ').'
+              body: '✅ SonarCloud analysis completed! Check the results in the [SonarCloud dashboard](https://sonarcloud.io/summary/new_code?id=GiveProtocol_give-protocol-webapp&pullRequest=' + context.issue.number + ').'
             })

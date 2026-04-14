@@ -37,7 +37,7 @@ enabled = true
 # Issue-specific configurations
 [[issue_overrides]]
 issue_id = "JS-0415"
-enabled = false
+enabled = true
 
 [[issue_overrides]]
 issue_id = "JS-0105"
