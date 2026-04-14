@@ -143,10 +143,9 @@ export const CONTRACT_ADDRESSES = Object.fromEntries(
   ]),
 );
 
-/** Mock: returns a dummy contract address for any contract/chain pair */
-export function getContractAddress(_contractName, _chainId) {
-  return DUMMY_ADDRESS;
-}
+/** Mock: returns a dummy contract address for any contract/chain pair. Exported as jest.fn() so tests can override per-test. */
+import { jest } from "@jest/globals";
+export const getContractAddress = jest.fn().mockReturnValue(DUMMY_ADDRESS);
 
 // Re-export network constants (used by some tests)
 export const SUPPORTED_NETWORKS = {

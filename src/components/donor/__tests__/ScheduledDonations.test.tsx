@@ -296,5 +296,104 @@ describe("ScheduledDonations", () => {
         ).not.toBeInTheDocument();
       });
     });
+
+    it("displays correct refund amount in cancel modal", async () => {
+      render(<ScheduledDonations />);
+
+      await waitFor(() => {
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
+      });
+
+      // Open modal for first schedule (100 USDC/month * 10 months remaining = 1000.00)
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
+        expect(screen.getByText("1000.00 USDC")).toBeInTheDocument();
+      });
+    });
+
+    it("shows wallet-specific guidance on user rejection", async () => {
+      mockCancelSchedule.mockRejectedValue(
+        new Error("user rejected transaction"),
+      );
+
+      render(<ScheduledDonations />);
+
+      await waitFor(() => {
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
+      });
+
+      const modalConfirmButtons = screen.getAllByText("Cancel Schedule");
+      fireEvent.click(modalConfirmButtons[modalConfirmButtons.length - 1]);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            "Transaction was rejected. Please confirm the transaction in your wallet to cancel the schedule.",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("shows wallet-specific guidance on User denied rejection", async () => {
+      mockCancelSchedule.mockRejectedValue(
+        new Error("User denied transaction signature"),
+      );
+
+      render(<ScheduledDonations />);
+
+      await waitFor(() => {
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
+      });
+
+      const modalConfirmButtons = screen.getAllByText("Cancel Schedule");
+      fireEvent.click(modalConfirmButtons[modalConfirmButtons.length - 1]);
+
+      await waitFor(() => {
+        expect(
+          screen.getByText(
+            "Transaction was rejected. Please confirm the transaction in your wallet to cancel the schedule.",
+          ),
+        ).toBeInTheDocument();
+      });
+    });
+
+    it("refetches schedule list after successful cancellation", async () => {
+      mockCancelSchedule.mockResolvedValue("0xtxhash");
+
+      render(<ScheduledDonations />);
+
+      await waitFor(() => {
+        expect(screen.getByText("1000 USDC")).toBeInTheDocument();
+      });
+
+      fireEvent.click(screen.getAllByText("Cancel Schedule")[0]);
+
+      await waitFor(() => {
+        expect(screen.getByText("Confirm Cancellation")).toBeInTheDocument();
+      });
+
+      const modalConfirmButtons = screen.getAllByText("Cancel Schedule");
+      fireEvent.click(modalConfirmButtons[modalConfirmButtons.length - 1]);
+
+      await waitFor(() => {
+        expect(mockCancelSchedule).toHaveBeenCalledWith(1);
+        // getDonorSchedules should be called twice: once on mount, once after cancel
+        expect(mockGetDonorSchedules).toHaveBeenCalledTimes(2);
+      });
+    });
   });
 });

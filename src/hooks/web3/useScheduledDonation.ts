@@ -1,8 +1,9 @@
-// TEMPORARY MOCK OVERRIDE - REMOVE FOR PRODUCTION
-// This file overrides the useScheduledDonation hook to return mock data for testing
-
 import { useState, useCallback } from "react";
+import { ethers } from "ethers";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { getContractAddress } from "@/config/contracts";
 import { Logger } from "@/utils/logger";
+import CharityScheduledDistributionABI from "@/contracts/CharityScheduledDistribution.sol/CharityScheduledDistribution.json";
 
 interface ScheduleParams {
   charityAddress: string;
@@ -13,9 +14,7 @@ interface ScheduleParams {
 interface DonorSchedule {
   id: number;
   charity: string;
-  charityName?: string;
   token: string;
-  tokenSymbol?: string;
   totalAmount: string;
   amountPerMonth: string;
   monthsRemaining: number;
@@ -23,95 +22,343 @@ interface DonorSchedule {
   active: boolean;
 }
 
-// Mock data for testing
-const MOCK_SCHEDULES: DonorSchedule[] = [
-  {
-    id: 1,
-    charity: "0x1234567890123456789012345678901234567890",
-    charityName: "Clean Water Initiative",
-    token: "0xAcc15dC74880C9944775448304B263D191c6077F",
-    tokenSymbol: "WGLMR",
-    totalAmount: "120.0",
-    amountPerMonth: "10.0",
-    monthsRemaining: 8,
-    nextDistribution: "2025-08-31T00:58:09.389Z",
-    active: true,
-  },
-  {
-    id: 2,
-    charity: "0x2345678901234567890123456789012345678901",
-    charityName: "Education for All Foundation",
-    token: "0x818ec0A7Fe18Ff94269904fCED6AE3DaE6d6dC0b",
-    tokenSymbol: "USDC",
-    totalAmount: "360.0",
-    amountPerMonth: "30.0",
-    monthsRemaining: 5,
-    nextDistribution: "2025-09-08T00:58:09.389Z",
-    active: true,
-  },
-];
+interface ContractError extends Error {
+  code?: number;
+  message: string;
+  reason?: string;
+  data?: unknown;
+}
 
 /**
- * Hook for managing scheduled charitable donations on the blockchain
- * @returns Object containing functions to create, cancel, and retrieve scheduled donations
+ * Scheduled donation hook for managing recurring charity donations on blockchain
+ * @function useScheduledDonation
+ * @description Manages scheduled donation functionality including creating, canceling, and retrieving donation schedules.
+ * Integrates with CharityScheduledDistribution smart contract, handles token approvals, user transaction rejections,
+ * and provides comprehensive error handling with development mode detection.
+ * @returns {Object} Scheduled donation management utilities and state
+ * @returns {Function} returns.createSchedule - Create new donation schedule: (params: ScheduleParams) => Promise<string>
+ * @returns {Function} returns.cancelSchedule - Cancel existing schedule: (scheduleId: number) => Promise<string>
+ * @returns {Function} returns.getDonorSchedules - Get all donor's schedules: () => Promise<DonorSchedule[]>
+ * @returns {boolean} returns.loading - Loading state for all schedule operations
+ * @returns {string | null} returns.error - Error message or null if no error
+ * @example
+ * ```tsx
+ * const {
+ *   createSchedule,
+ *   cancelSchedule,
+ *   getDonorSchedules,
+ *   loading,
+ *   error
+ * } = useScheduledDonation();
+ *
+ * const handleCreateSchedule = async () => {
+ *   try {
+ *     const txHash = await createSchedule({
+ *       charityAddress: '0x123...',
+ *       tokenAddress: '0xabc...',
+ *       totalAmount: '100'
+ *     });
+ *     console.log('Schedule created:', txHash);
+ *   } catch (error) {
+ *     // Error handling included in hook
+ *   }
+ * };
+ *
+ * useEffect(() => {
+ *   const loadSchedules = async () => {
+ *     const schedules = await getDonorSchedules();
+ *     setUserSchedules(schedules);
+ *   };
+ *   loadSchedules();
+ * }, [getDonorSchedules]);
+ * ```
  */
 export function useScheduledDonation() {
+  const { provider, address } = useWeb3();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const createSchedule = useCallback(
     async ({ charityAddress, tokenAddress, totalAmount }: ScheduleParams) => {
+      if (!provider || !address) {
+        throw new Error("Wallet not connected");
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get the distribution contract address
+        let distributionAddress: string;
+        try {
+          distributionAddress = getContractAddress("DISTRIBUTION");
+        } catch (err) {
+          throw new Error(
+            "Distribution contract not deployed. Please check with the development team.",
+          );
+        }
+
+        // Check if we're using the dummy development address
+        if (
+          distributionAddress === "0x1234567890123456789012345678901234567890"
+        ) {
+          throw new Error(
+            "Scheduled donations are not available in development mode.",
+          );
+        }
+
+        // Create contract instance
+        const signer = await provider.getSigner();
+        const distributionContract = new ethers.Contract(
+          distributionAddress,
+          CharityScheduledDistributionABI.abi,
+          signer,
+        );
+
+        // First, approve the token transfer
+        const tokenContract = new ethers.Contract(
+          tokenAddress,
+          ["function approve(address spender, uint256 amount) returns (bool)"],
+          signer,
+        );
+
+        const parsedAmount = ethers.parseEther(totalAmount);
+
+        try {
+          const approveTx = await tokenContract.approve(
+            distributionAddress,
+            parsedAmount,
+          );
+          await approveTx.wait();
+        } catch (approveError: unknown) {
+          const contractError = approveError as ContractError;
+          // Check if user rejected the transaction
+          if (
+            contractError.code === 4001 ||
+            contractError.message?.includes("user rejected")
+          ) {
+            throw new Error(
+              "Transaction was rejected. Please approve the transaction in your wallet to continue.",
+            );
+          }
+          throw contractError;
+        }
+
+        // Create the scheduled donation
+        try {
+          const tx = await distributionContract.createSchedule(
+            charityAddress,
+            tokenAddress,
+            parsedAmount,
+          );
+
+          const receipt = await tx.wait();
+
+          Logger.info("Scheduled donation created", {
+            charity: charityAddress,
+            amount: totalAmount,
+            token: tokenAddress,
+            txHash: receipt.hash,
+          });
+
+          return receipt.hash;
+        } catch (txError: unknown) {
+          const contractError = txError as ContractError;
+          // Check if user rejected the transaction
+          if (
+            contractError.code === 4001 ||
+            contractError.message?.includes("user rejected")
+          ) {
+            throw new Error(
+              "Transaction was rejected. Please confirm the transaction in your wallet to schedule your donation.",
+            );
+          }
+          throw contractError;
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Failed to schedule donation";
+        setError(message);
+        Logger.error("Scheduled donation failed", { error: err });
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [provider, address],
+  );
+
+  const cancelSchedule = useCallback(
+    async (scheduleId: number) => {
+      if (!provider || !address) {
+        throw new Error("Wallet not connected");
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+
+        // Get the distribution contract address
+        let distributionAddress: string;
+        try {
+          distributionAddress = getContractAddress("DISTRIBUTION");
+        } catch (err) {
+          throw new Error(
+            "Distribution contract not deployed. Please check with the development team.",
+          );
+        }
+
+        // Check if we're using the dummy development address
+        if (
+          distributionAddress === "0x1234567890123456789012345678901234567890"
+        ) {
+          throw new Error(
+            "Scheduled donations are not available in development mode.",
+          );
+        }
+
+        // Create contract instance
+        const signer = await provider.getSigner();
+        const distributionContract = new ethers.Contract(
+          distributionAddress,
+          CharityScheduledDistributionABI.abi,
+          signer,
+        );
+
+        // Cancel the schedule
+        try {
+          const tx = await distributionContract.cancelSchedule(scheduleId);
+          const receipt = await tx.wait();
+
+          Logger.info("Scheduled donation cancelled", {
+            scheduleId,
+            txHash: receipt.hash,
+          });
+
+          return receipt.hash;
+        } catch (txError: unknown) {
+          const contractError = txError as ContractError;
+          // Check if user rejected the transaction
+          if (
+            contractError.code === 4001 ||
+            contractError.message?.includes("user rejected")
+          ) {
+            throw new Error(
+              "Transaction was rejected. Please confirm the transaction in your wallet to cancel your donation schedule.",
+            );
+          }
+          throw contractError;
+        }
+      } catch (err) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Failed to cancel scheduled donation";
+        setError(message);
+        Logger.error("Schedule cancellation failed", { error: err });
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [provider, address],
+  );
+
+  const getDonorSchedules = useCallback(async (): Promise<DonorSchedule[]> => {
+    if (!provider || !address) {
+      return [];
+    }
+
+    try {
       setLoading(true);
       setError(null);
 
-      // Simulate network delay
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // Get the distribution contract address
+      let distributionAddress: string;
+      try {
+        distributionAddress = getContractAddress("DISTRIBUTION");
+      } catch (err) {
+        Logger.warn(
+          "Distribution contract not deployed, returning empty schedules",
+        );
+        return [];
+      }
 
+      // Check if we're using a dummy or zero address
+      const zeroAddress = "0x0000000000000000000000000000000000000000";
+      const dummyAddresses = [
+        "0x1234567890123456789012345678901234567890",
+        "0x3456789012345678901234567890123456789012",
+        zeroAddress,
+      ];
+
+      if (
+        dummyAddresses.includes(distributionAddress) ||
+        distributionAddress === zeroAddress
+      ) {
+        Logger.warn(
+          "Using invalid contract address, returning empty schedules",
+        );
+        return [];
+      }
+
+      // Create contract instance
+      const distributionContract = new ethers.Contract(
+        distributionAddress,
+        CharityScheduledDistributionABI.abi,
+        provider,
+      );
+
+      // Get schedule IDs for the donor
+      let scheduleIds: bigint[];
+      try {
+        scheduleIds = await distributionContract.getDonorSchedules(address);
+      } catch (contractError) {
+        // Handle specific decode error
+        if (
+          contractError instanceof Error &&
+          contractError.message.includes("could not decode result data")
+        ) {
+          Logger.warn(
+            "Contract returned empty data, likely not deployed or invalid address",
+          );
+          return [];
+        }
+        throw contractError;
+      }
+
+      // Get details for each schedule
+      const schedules: DonorSchedule[] = await Promise.all(
+        scheduleIds.map(async (id: bigint) => {
+          const schedule = await distributionContract.donationSchedules(id);
+          return {
+            id: Number(id),
+            charity: schedule.charity,
+            token: schedule.token,
+            totalAmount: ethers.formatEther(schedule.totalAmount),
+            amountPerMonth: ethers.formatEther(schedule.amountPerMonth),
+            monthsRemaining: Number(schedule.monthsRemaining),
+            nextDistribution: new Date(
+              Number(schedule.nextDistributionTimestamp) * 1000,
+            ),
+            active: schedule.active,
+          };
+        }),
+      );
+
+      return schedules;
+    } catch (err) {
+      const message =
+        err instanceof Error
+          ? err.message
+          : "Failed to get scheduled donations";
+      setError(message);
+      Logger.error("Get schedules failed", { error: err });
+      return [];
+    } finally {
       setLoading(false);
-      Logger.info("Mock schedule created", {
-        charityAddress,
-        tokenAddress,
-        totalAmount,
-      });
-
-      // Return mock transaction hash
-      return "0x123456789abcdef...";
-    },
-    [],
-  );
-
-  const cancelSchedule = useCallback(async (scheduleId: number) => {
-    setLoading(true);
-    setError(null);
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-
-    setLoading(false);
-    Logger.info("Mock schedule cancelled", { scheduleId });
-
-    // Return mock transaction hash
-    return "0xabcdef123456789...";
-  }, []);
-
-  const getDonorSchedules = useCallback(async (): Promise<DonorSchedule[]> => {
-    setLoading(true);
-    setError(null);
-
-    // Simulate network delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    setLoading(false);
-    Logger.info("Retrieved mock scheduled donations", {
-      count: MOCK_SCHEDULES.length,
-    });
-
-    // Convert date strings to Date objects
-    return MOCK_SCHEDULES.map((schedule) => ({
-      ...schedule,
-      nextDistribution: new Date(schedule.nextDistribution),
-    }));
-  }, []);
+    }
+  }, [provider, address]);
 
   return {
     createSchedule,
