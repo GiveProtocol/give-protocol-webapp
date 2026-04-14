@@ -1,6 +1,12 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, waitFor, fireEvent, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from "@testing-library/react";
 import { CharityOnboardingChecklist } from "../CharityOnboardingChecklist";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { supabase } from "@/lib/supabase";
@@ -74,7 +80,9 @@ describe("CharityOnboardingChecklist", () => {
       expect(
         screen.getByText("Complete organization profile"),
       ).toBeInTheDocument();
-      expect(screen.getByText("Upload logo or banner image")).toBeInTheDocument();
+      expect(
+        screen.getByText("Upload logo or banner image"),
+      ).toBeInTheDocument();
       expect(
         screen.getByText("Connect wallet for receiving donations"),
       ).toBeInTheDocument();
@@ -177,9 +185,7 @@ describe("CharityOnboardingChecklist", () => {
     fireEvent.click(
       screen.getByRole("button", { name: /collapse checklist/i }),
     );
-    fireEvent.click(
-      screen.getByRole("button", { name: /expand checklist/i }),
-    );
+    fireEvent.click(screen.getByRole("button", { name: /expand checklist/i }));
     expect(
       screen.getByText("Complete organization profile"),
     ).toBeInTheDocument();

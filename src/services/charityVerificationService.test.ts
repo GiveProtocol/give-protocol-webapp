@@ -2,7 +2,9 @@ import { describe, it, expect, beforeEach } from "@jest/globals";
 import { supabase } from "@/lib/supabase";
 import { getCharityVerificationStatus } from "./charityVerificationService";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
 describe("charityVerificationService", () => {
   beforeEach(() => {
@@ -39,7 +41,9 @@ describe("charityVerificationService", () => {
 
     it("should return reviewNotes when present", async () => {
       mockRpc.mockResolvedValue({
-        data: [{ status: "rejected", review_notes: "Incomplete documentation" }],
+        data: [
+          { status: "rejected", review_notes: "Incomplete documentation" },
+        ],
         error: null,
       });
 
