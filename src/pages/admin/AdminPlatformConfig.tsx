@@ -926,11 +926,7 @@ function SystemHealthTab(): React.ReactElement {
       });
   }, []);
 
-  const dbStatus = loading
-    ? "unknown"
-    : stats !== null
-      ? "ok"
-      : "warn";
+  const dbStatus = loading ? "unknown" : stats !== null ? "ok" : "warn";
 
   const pendingStatus =
     stats !== null && stats.pendingCharities > 0 ? "warn" : "ok";

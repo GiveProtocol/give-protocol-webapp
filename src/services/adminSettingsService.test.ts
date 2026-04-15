@@ -59,16 +59,29 @@ describe("adminSettingsService", () => {
 
     it("should handle multiple admin users", async () => {
       const mockRows = [
-        makeMockAdminUserRow({ user_id: "admin-1", email: "admin1@example.com" }),
-        makeMockAdminUserRow({ user_id: "admin-2", email: "admin2@example.com" }),
-        makeMockAdminUserRow({ user_id: "admin-3", email: "admin3@example.com" }),
+        makeMockAdminUserRow({
+          user_id: "admin-1",
+          email: "admin1@example.com",
+        }),
+        makeMockAdminUserRow({
+          user_id: "admin-2",
+          email: "admin2@example.com",
+        }),
+        makeMockAdminUserRow({
+          user_id: "admin-3",
+          email: "admin3@example.com",
+        }),
       ];
       mockRpc.mockResolvedValue({ data: mockRows, error: null });
 
       const result = await listAdminUsers();
 
       expect(result).toHaveLength(3);
-      expect(result.map((u) => u.userId)).toEqual(["admin-1", "admin-2", "admin-3"]);
+      expect(result.map((u) => u.userId)).toEqual([
+        "admin-1",
+        "admin-2",
+        "admin-3",
+      ]);
     });
 
     it("should return empty array on RPC error", async () => {
