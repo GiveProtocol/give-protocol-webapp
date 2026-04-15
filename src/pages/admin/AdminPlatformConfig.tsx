@@ -9,6 +9,8 @@ import {
   configKeyLabel,
   configValueInputType,
 } from "@/services/adminPlatformConfigService";
+import { getAdminDashboardStats } from "@/services/adminDashboardService";
+import { listAdminUsers } from "@/services/adminSettingsService";
 import type {
   PlatformConfigEntry,
   PlatformConfigKey,
@@ -20,10 +22,17 @@ import type {
   AdminAuditLogEntry,
   AdminAuditLogFilters,
 } from "@/types/adminAudit";
+import type { AdminDashboardStats } from "@/types/adminDashboard";
+import type { AdminUserEntry } from "@/services/adminSettingsService";
 
 // ─── Tab Types ────────────────────────────────────────────────────────────────
 
-type SettingsTab = "platform-config" | "audit-log" | "token-network";
+type SettingsTab =
+  | "platform-config"
+  | "audit-log"
+  | "token-network"
+  | "admin-users"
+  | "system-health";
 
 // ─── Category Config ──────────────────────────────────────────────────────────
 
@@ -313,6 +322,22 @@ function TabBar({
           className={tabClass(activeTab === "token-network")}
         >
           Token &amp; Network Config
+        </button>
+        <button
+          type="button"
+          data-tab="admin-users"
+          onClick={handleTabClick}
+          className={tabClass(activeTab === "admin-users")}
+        >
+          Admin Users
+        </button>
+        <button
+          type="button"
+          data-tab="system-health"
+          onClick={handleTabClick}
+          className={tabClass(activeTab === "system-health")}
+        >
+          System Health
         </button>
       </nav>
     </div>
@@ -754,12 +779,241 @@ function TokenNetworkTab({
   );
 }
 
+// ─── Admin Users Tab (UR-S7) ──────────────────────────────────────────────────
+
+function AdminUsersTable({
+  users,
+  loading,
+}: {
+  users: AdminUserEntry[];
+  loading: boolean;
+}): React.ReactElement {
+  if (loading) {
+    return (
+      <div className="flex justify-center py-8">
+        <LoadingSpinner size="md" />
+      </div>
+    );
+  }
+
+  if (users.length === 0) {
+    return (
+      <p className="text-sm text-gray-500 py-6 text-center">
+        No admin users found.
+      </p>
+    );
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="min-w-full text-sm">
+        <thead className="bg-gray-50 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
+          <tr>
+            <th className="px-4 py-3">Display Name</th>
+            <th className="px-4 py-3">Email</th>
+            <th className="px-4 py-3">User ID</th>
+            <th className="px-4 py-3 whitespace-nowrap">Joined</th>
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-100">
+          {users.map((user) => (
+            <tr key={user.userId} className="hover:bg-gray-50">
+              <td className="px-4 py-3 font-medium text-gray-800">
+                {user.displayName ?? "—"}
+              </td>
+              <td className="px-4 py-3 text-gray-600">{user.email ?? "—"}</td>
+              <td className="px-4 py-3 font-mono text-xs text-gray-500 max-w-[160px] truncate">
+                {user.userId}
+              </td>
+              <td className="px-4 py-3 text-gray-500 whitespace-nowrap">
+                {formatDateTime(user.joinedAt)}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** Admin User Directory tab — read-only list of platform administrators. */
+function AdminUsersTab(): React.ReactElement {
+  const [users, setUsers] = useState<AdminUserEntry[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setLoading(true);
+    listAdminUsers()
+      .then((data) => {
+        setUsers(data);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  return (
+    <div>
+      <p className="text-sm text-gray-500 mb-4">
+        Read-only directory of platform administrator accounts.
+      </p>
+      <Card className="overflow-hidden">
+        <AdminUsersTable users={users} loading={loading} />
+      </Card>
+    </div>
+  );
+}
+
+// ─── System Health Tab (UR-S8) ────────────────────────────────────────────────
+
+function HealthIndicator({
+  label,
+  status,
+  detail,
+}: {
+  label: string;
+  status: "ok" | "warn" | "unknown";
+  detail: string;
+}): React.ReactElement {
+  const dot =
+    status === "ok"
+      ? "bg-emerald-500"
+      : status === "warn"
+        ? "bg-amber-500"
+        : "bg-gray-400";
+
+  return (
+    <div className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0">
+      <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${dot}`} />
+      <span className="text-sm font-medium text-gray-700 w-40 shrink-0">
+        {label}
+      </span>
+      <span className="text-sm text-gray-500">{detail}</span>
+    </div>
+  );
+}
+
+function StatCard({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}): React.ReactElement {
+  return (
+    <Card className="p-4">
+      <p className="text-xs text-gray-500 mb-1">{label}</p>
+      <p className="text-2xl font-bold text-gray-900">{value}</p>
+    </Card>
+  );
+}
+
+/** System Health tab — platform health indicators and key metrics. */
+function SystemHealthTab(): React.ReactElement {
+  const [stats, setStats] = useState<AdminDashboardStats | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [fetchedAt, setFetchedAt] = useState<Date | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    getAdminDashboardStats()
+      .then((data) => {
+        setStats(data);
+        setFetchedAt(new Date());
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  const dbStatus = loading
+    ? "unknown"
+    : stats !== null
+      ? "ok"
+      : "warn";
+
+  const pendingStatus =
+    stats !== null && stats.pendingCharities > 0 ? "warn" : "ok";
+
+  return (
+    <div className="space-y-6">
+      <Card className="px-4 py-2">
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 pt-3 pb-2">
+          Service Status
+        </h2>
+        {loading ? (
+          <div className="flex justify-center py-4">
+            <LoadingSpinner size="sm" />
+          </div>
+        ) : (
+          <div>
+            <HealthIndicator
+              label="Database"
+              status={dbStatus}
+              detail={
+                stats !== null
+                  ? `Connected · checked ${fetchedAt !== null ? fetchedAt.toLocaleTimeString() : "—"}`
+                  : "Unable to reach database"
+              }
+            />
+            <HealthIndicator
+              label="Platform Config"
+              status={dbStatus}
+              detail={stats !== null ? "Config RPC responding" : "Unavailable"}
+            />
+            <HealthIndicator
+              label="Pending Verifications"
+              status={pendingStatus}
+              detail={
+                stats !== null
+                  ? `${String(stats.pendingCharities)} pending`
+                  : "Unknown"
+              }
+            />
+          </div>
+        )}
+      </Card>
+
+      {stats !== null && (
+        <div>
+          <h2 className="text-xs font-semibold uppercase tracking-widest text-gray-400 mb-3">
+            Platform Metrics
+          </h2>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+            <StatCard label="Total Donors" value={stats.totalDonors} />
+            <StatCard label="Charities" value={stats.totalCharities} />
+            <StatCard
+              label="Verified Charities"
+              value={stats.verifiedCharities}
+            />
+            <StatCard label="Volunteers" value={stats.totalVolunteers} />
+          </div>
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 mt-4">
+            <StatCard
+              label="7-Day Donations"
+              value={stats.trends.donations7d}
+            />
+            <StatCard
+              label="30-Day Donations"
+              value={stats.trends.donations30d}
+            />
+            <StatCard
+              label="Total Volume (USD)"
+              value={`$${stats.totalVolumeUsd.toLocaleString()}`}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 /**
  * Admin system settings page.
- * Three-tab layout: Platform Config (categorised settings), Audit Log
- * (full admin_audit_log with filters), and Token & Network Config.
+ * Five-tab layout: Platform Config, Audit Log, Token & Network Config,
+ * Admin Users directory, and System Health indicators.
  *
  * @function AdminPlatformConfig
  * @returns {JSX.Element} The admin system settings page
@@ -845,6 +1099,10 @@ export default function AdminPlatformConfig(): React.ReactElement {
           onEdit={handleEdit}
         />
       )}
+
+      {activeTab === "admin-users" && <AdminUsersTab />}
+
+      {activeTab === "system-health" && <SystemHealthTab />}
 
       {editingEntry !== null && (
         <EditConfigModal
