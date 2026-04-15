@@ -72,8 +72,8 @@ function validateOrganization(
 ): { organization?: string; organizationName?: string } {
   const errors: { organization?: string; organizationName?: string } = {};
 
-  if (orgMode === "verified" && !formData.organizationId) {
-    errors.organization = "Please select an organization";
+  if (orgMode === "verified" && !formData.charityOrgId) {
+    errors.organization = "Please select an organization from the registry";
   }
 
   if (orgMode === "other" && !formData.organizationName?.trim()) {

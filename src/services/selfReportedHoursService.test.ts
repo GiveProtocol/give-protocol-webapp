@@ -907,4 +907,85 @@ describe("selfReportedHoursService", () => {
       ).resolves.not.toThrow();
     });
   });
+
+  describe('charityOrgId support (GIV-119)', () => {
+    const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const activityDate = yesterday.toISOString().split('T')[0];
+    const description =
+      'This is a test description that meets the minimum character requirement for validation purposes.';
+
+    it('should pass charity_org_id to the DB when provided', async () => {
+      const mockRecord = {
+        id: 'record-1',
+        volunteer_id: 'user-1',
+        activity_date: activityDate,
+        hours: 2,
+        activity_type: 'direct_service',
+        description,
+        organization_name: 'American Red Cross',
+        charity_org_id: 'co-uuid-1',
+        validation_status: 'unvalidated',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setMockAuthUser({ id: 'user-1', email: 'test@example.com' });
+      setMockResult('self_reported_hours', { data: mockRecord, error: null });
+
+      const result = await createSelfReportedHours('user-1', {
+        activityDate,
+        hours: 2,
+        activityType: ActivityType.DIRECT_SERVICE,
+        description,
+        organizationName: 'American Red Cross',
+        charityOrgId: 'co-uuid-1',
+      });
+
+      expect(result.charityOrgId).toBe('co-uuid-1');
+    });
+
+    it('should map charity_org_id from DB row', async () => {
+      const mockRecord = {
+        id: 'record-2',
+        volunteer_id: 'user-1',
+        activity_date: activityDate,
+        hours: 3,
+        activity_type: 'direct_service',
+        description,
+        organization_name: 'Habitat for Humanity',
+        charity_org_id: 'co-uuid-2',
+        validation_status: 'unvalidated',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setMockAuthUser({ id: 'user-1', email: 'test@example.com' });
+      setMockResult('self_reported_hours', { data: [mockRecord], error: null });
+
+      const results = await getVolunteerSelfReportedHours('user-1');
+
+      expect(results).toHaveLength(1);
+      expect(results[0].charityOrgId).toBe('co-uuid-2');
+    });
+
+    it('should leave charityOrgId undefined when not present in DB row', async () => {
+      const mockRecord = {
+        id: 'record-3',
+        volunteer_id: 'user-1',
+        activity_date: activityDate,
+        hours: 1,
+        activity_type: 'direct_service',
+        description,
+        organization_name: 'Some Org',
+        charity_org_id: null,
+        validation_status: 'unvalidated',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
+      setMockAuthUser({ id: 'user-1', email: 'test@example.com' });
+      setMockResult('self_reported_hours', { data: [mockRecord], error: null });
+
+      const results = await getVolunteerSelfReportedHours('user-1');
+
+      expect(results[0].charityOrgId).toBeUndefined();
+    });
+  });
 });

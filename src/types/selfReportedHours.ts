@@ -111,6 +111,7 @@ export interface SelfReportedHours {
 
   // Organization - Either verified org (organizationId) or free-text (organizationName)
   organizationId?: UUID;
+  charityOrgId?: UUID;
   organizationName?: string;
   organizationContactEmail?: string;
 
@@ -166,6 +167,7 @@ export interface SelfReportedHoursInput {
   description: string;
   location?: string;
   organizationId?: UUID;
+  charityOrgId?: UUID;
   organizationName?: string;
   organizationContactEmail?: string;
 }
@@ -223,6 +225,7 @@ export interface VolunteerHoursStats {
 export interface SelfReportedHoursFilters {
   status?: ValidationStatus;
   organizationId?: UUID;
+  charityOrgId?: UUID;
   activityType?: ActivityType;
   dateFrom?: string;
   dateTo?: string;

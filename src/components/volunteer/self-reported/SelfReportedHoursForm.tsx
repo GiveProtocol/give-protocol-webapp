@@ -16,7 +16,8 @@ import {
   calculateDaysUntilExpiration,
   isValidationExpired,
 } from "@/types/selfReportedHours";
-import { OrganizationAutocomplete } from "./OrganizationAutocomplete";
+import { CharityOrgAutocomplete } from "./CharityOrgAutocomplete";
+import type { CharityOrganization } from "@/types/charityOrganization";
 import { DateHoursLocationRow } from "./DateHoursLocationRow";
 import { validateSelfReportedHoursForm, isFormValid } from "./validation";
 import { AlertTriangle, Building2, ChevronDown, Check } from "lucide-react";
@@ -136,7 +137,7 @@ interface OrganizationSelectorProps {
   organizationContactEmail: string;
   errors: Record<string, string>;
   onModeChange: (_mode: OrgMode) => void;
-  onOrgSelect: (_org: { id: string; name: string } | null) => void;
+  onOrgSelect: (_org: CharityOrganization | null) => void;
   onInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -184,7 +185,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
             checked={orgMode === "verified"}
             onChange={handleVerifiedClick}
             className="sr-only"
-          /><span>Platform Organization</span>
+          /><span>Search Registry</span>
         </label>
         <label
           className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 cursor-pointer ${
@@ -205,7 +206,7 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
       </div>
 
       {orgMode === "verified" ? (
-        <OrganizationAutocomplete
+        <CharityOrgAutocomplete
           onSelect={onOrgSelect}
           error={errors.organization}
         />
@@ -329,12 +330,13 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
     description: initialData?.description || "",
     location: initialData?.location || "",
     organizationId: initialData?.organizationId,
+    charityOrgId: initialData?.charityOrgId,
     organizationName: initialData?.organizationName,
     organizationContactEmail: initialData?.organizationContactEmail,
   });
 
   const [orgMode, setOrgMode] = useState<OrgMode>(
-    initialData?.organizationId ? "verified" : "other",
+    (initialData?.organizationId || initialData?.charityOrgId) ? "verified" : "other",
   );
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitting, setSubmitting] = useState(false);
@@ -401,19 +403,29 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
   }, []);
 
   const handleOrganizationSelect = useCallback(
-    (org: { id: string; name: string } | null) => {
+    (org: CharityOrganization | null) => {
       if (org) {
         setFormData((prev) => ({
           ...prev,
-          organizationId: org.id,
-          organizationName: undefined,
+          charityOrgId: org.id,
+          // When the registry org is also a platform account, use its profile UUID
+          // for the validation flow; organizationName must be null per DB constraint.
+          // When not on platform, store the display name in organizationName.
+          organizationId: org.is_on_platform && org.platform_charity_id
+            ? org.platform_charity_id
+            : undefined,
+          organizationName: org.is_on_platform && org.platform_charity_id
+            ? undefined
+            : org.name,
           organizationContactEmail: undefined,
         }));
         setSelectedOrgName(org.name);
       } else {
         setFormData((prev) => ({
           ...prev,
+          charityOrgId: undefined,
           organizationId: undefined,
+          organizationName: undefined,
         }));
         setSelectedOrgName(null);
       }
@@ -431,6 +443,7 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
     setOrgMode(mode);
     setFormData((prev) => ({
       ...prev,
+      charityOrgId: undefined,
       organizationId: undefined,
       organizationName: mode === "other" ? "" : undefined,
       organizationContactEmail: undefined,
@@ -559,7 +572,7 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
         <ValidationPreview
           orgMode={orgMode}
           hasOrganization={
-            Boolean(formData.organizationId) || Boolean(selectedOrgName)
+            Boolean(formData.charityOrgId) || Boolean(selectedOrgName)
           }
           selectedOrgName={selectedOrgName}
           isExpired={daysInfo.isExpired}

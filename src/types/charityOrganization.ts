@@ -1,5 +1,6 @@
 /** Represents a row returned by the search_charity_organizations RPC function. */
 export interface CharityOrganization {
+  id: string;
   ein: string;
   name: string;
   city: string | null;
