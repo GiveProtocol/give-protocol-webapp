@@ -31,7 +31,8 @@ function mapCharityRow(row: AdminCharityListRow): AdminCharityListItem {
     logoUrl: row.logo_url,
     mission: row.mission,
     verificationId: row.verification_id,
-    verificationStatus: row.verification_status as AdminCharityVerificationStatus,
+    verificationStatus:
+      row.verification_status as AdminCharityVerificationStatus,
     reviewNotes: row.review_notes,
     reviewedAt: row.reviewed_at,
     walletAddress: row.wallet_address,
@@ -145,7 +146,10 @@ export async function notifyCharityStatusChange(
     });
 
     if (error) {
-      Logger.error("Charity status email notification failed", { error, charityId: input.charityId });
+      Logger.error("Charity status email notification failed", {
+        error,
+        charityId: input.charityId,
+      });
     }
   } catch (error) {
     Logger.error("Charity status email invocation threw", {
