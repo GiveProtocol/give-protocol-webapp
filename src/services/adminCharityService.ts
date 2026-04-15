@@ -113,6 +113,9 @@ export async function updateCharityStatus(
       return null;
     }
 
+    // Fire-and-forget: notify the charity by email. Failure must not block the status update.
+    void notifyCharityStatusChange(input);
+
     return data as string;
   } catch (error) {
     Logger.error("Charity status update failed", {
@@ -120,5 +123,34 @@ export async function updateCharityStatus(
       input,
     });
     return null;
+  }
+}
+
+/**
+ * Invokes the charity-status-email edge function to notify a charity of their
+ * new verification status. Called fire-and-forget after a successful status update.
+ * Errors are logged but never propagated to the caller.
+ * @param input - charityId, newStatus, and optional reason
+ */
+export async function notifyCharityStatusChange(
+  input: AdminCharityStatusUpdateInput,
+): Promise<void> {
+  try {
+    const { error } = await supabase.functions.invoke("charity-status-email", {
+      body: {
+        charityId: input.charityId,
+        newStatus: input.newStatus,
+        reason: input.reason ?? null,
+      },
+    });
+
+    if (error) {
+      Logger.error("Charity status email notification failed", { error, charityId: input.charityId });
+    }
+  } catch (error) {
+    Logger.error("Charity status email invocation threw", {
+      error: error instanceof Error ? error.message : String(error),
+      charityId: input.charityId,
+    });
   }
 }
