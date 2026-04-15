@@ -4,7 +4,6 @@ import {
   render,
   screen,
   fireEvent,
-  act,
   waitFor,
 } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
@@ -73,19 +72,23 @@ jest.mock("@/utils/security/rateLimiter", () => ({
   },
 }));
 
+const ChainProviders = ({ children }: { children: React.ReactNode }) => (
+  <ChainProvider>
+    <MultiChainProvider>
+      <Web3Provider>{children}</Web3Provider>
+    </MultiChainProvider>
+  </ChainProvider>
+);
+
 const renderCharityLogin = () => {
   return render(
     <MemoryRouter>
       <ToastProvider>
-        <ChainProvider>
-          <MultiChainProvider>
-            <Web3Provider>
-              <AuthProvider>
-                <CharityLogin />
-              </AuthProvider>
-            </Web3Provider>
-          </MultiChainProvider>
-        </ChainProvider>
+        <ChainProviders>
+          <AuthProvider>
+            <CharityLogin />
+          </AuthProvider>
+        </ChainProviders>
       </ToastProvider>
     </MemoryRouter>,
   );
@@ -116,9 +119,7 @@ describe("CharityLogin", () => {
   it("wallet button click triggers sign-in attempt", async () => {
     renderCharityLogin();
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
 
     // In the test environment there is no wallet extension installed, so the
     // sign-in attempt immediately surfaces an error alert. This confirms the
@@ -131,9 +132,7 @@ describe("CharityLogin", () => {
   it("shows error message when wallet sign-in fails", async () => {
     renderCharityLogin();
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: /connect wallet/i }));
 
     await waitFor(() => {
       expect(screen.getByRole("alert")).toBeInTheDocument();
@@ -170,9 +169,7 @@ describe("CharityLogin", () => {
       target: { value: "password123" },
     });
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
 
     await waitFor(() => {
       // Multiple alerts and text matches may be present (inline error + toast).

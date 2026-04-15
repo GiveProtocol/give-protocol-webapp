@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { Navigate, Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
@@ -394,11 +394,20 @@ export const CharityPortal: React.FC = () => {
   const [causes, setCauses] = useState<CharityCause[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // Fetch charity wallet address on mount
   useEffect(() => {
     if (!userId) return;
-    getCharityWalletAddress(userId).then(setCharityWalletAddress);
+    getCharityWalletAddress(userId).then((addr) => {
+      if (isMountedRef.current) setCharityWalletAddress(addr);
+    });
   }, [userId]);
 
   // Helper function to fetch basic statistics data
@@ -811,6 +820,7 @@ export const CharityPortal: React.FC = () => {
 
       // Fetch basic statistics data
       const basicData = await fetchBasicStats(profile.id);
+      if (!isMountedRef.current) return;
       const stats = calculateStats(basicData);
       setCharityStats(stats);
 
@@ -829,6 +839,7 @@ export const CharityPortal: React.FC = () => {
         fetchCauses(profile.id),
       ]);
 
+      if (!isMountedRef.current) return;
       setTransactions(formattedTransactions);
       setPendingApplications(applicationsList);
       setPendingHours(formattedHours);
@@ -837,6 +848,7 @@ export const CharityPortal: React.FC = () => {
 
       Logger.info("Successfully fetched all charity data");
     } catch (err) {
+      if (!isMountedRef.current) return;
       const errorMessage = err instanceof Error ? err.message : String(err);
       const errorStack = err instanceof Error ? err.stack : "";
 
@@ -848,7 +860,9 @@ export const CharityPortal: React.FC = () => {
 
       setError("Failed to load charity data. Please try again.");
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, [
     profile?.id,

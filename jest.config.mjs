@@ -225,6 +225,10 @@ export default {
     "^@/hooks/useCountries$": "<rootDir>/src/test-utils/useCountriesMock.js",
     "(.*)/hooks/useCountries(\\.tsx?)?$":
       "<rootDir>/src/test-utils/useCountriesMock.js",
+    "^@/hooks/useCharityOrganizationSearch$":
+      "<rootDir>/src/test-utils/useCharityOrganizationSearchMock.js",
+    "(.*)/hooks/useCharityOrganizationSearch(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useCharityOrganizationSearchMock.js",
     // Validation utility mock
     "^@/utils/validation$": "<rootDir>/src/test-utils/validationMock.js",
     "(.*)/utils/validation(\\.tsx?)?$":

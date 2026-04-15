@@ -5,7 +5,6 @@ import {
   screen,
   waitFor,
   fireEvent,
-  act,
 } from "@testing-library/react";
 import { CharityOnboardingChecklist } from "../CharityOnboardingChecklist";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -113,10 +112,10 @@ describe("CharityOnboardingChecklist", () => {
         error: null,
       }),
     );
-    act(() => {
-      renderChecklist();
+    renderChecklist();
+    await waitFor(() => {
+      expect(screen.queryByText("Getting Started")).not.toBeInTheDocument();
     });
-    expect(screen.queryByText("Getting Started")).not.toBeInTheDocument();
   });
 
   it("shows correct completion count from persisted completed items", async () => {

@@ -81,6 +81,8 @@ export const CharityOnboardingChecklist: React.FC<
 
   // Load persisted state from profiles.meta
   useEffect(() => {
+    let isMounted = true;
+
     /** Fetches onboarding state from profiles.meta in Supabase. */
     const loadState = async () => {
       try {
@@ -89,6 +91,8 @@ export const CharityOnboardingChecklist: React.FC<
           .select("meta")
           .eq("id", profileId)
           .single();
+
+        if (!isMounted) return;
 
         if (error) {
           Logger.warn("Could not load onboarding state", { error, profileId });
@@ -110,11 +114,17 @@ export const CharityOnboardingChecklist: React.FC<
           profileId,
         });
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     loadState();
+
+    return () => {
+      isMounted = false;
+    };
   }, [profileId]);
 
   // Auto-mark wallet connected when Web3 connects

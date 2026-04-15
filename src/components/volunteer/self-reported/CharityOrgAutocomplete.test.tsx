@@ -3,11 +3,7 @@ import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { render, screen, fireEvent, act } from "@testing-library/react";
 import type { CharityOrganization } from "@/types/charityOrganization";
 
-// Mock the useCharityOrganizationSearch hook
-jest.mock("@/hooks/useCharityOrganizationSearch", () => ({
-  useCharityOrganizationSearch: jest.fn(),
-}));
-
+// useCharityOrganizationSearch is mocked via moduleNameMapper (ESM-compatible)
 import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSearch";
 import { CharityOrgAutocomplete } from "./CharityOrgAutocomplete";
 

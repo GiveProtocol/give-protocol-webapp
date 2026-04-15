@@ -67,9 +67,11 @@ describe("WalletAliasSettings", () => {
     fireEvent.click(screen.getByText("Set Wallet Alias"));
     const input = screen.getByRole("textbox");
     if (value) fireEvent.change(input, { target: { value } });
-    // Submit form via Save Alias button
+    // Submit form via Save Alias button; drain microtasks so async
+    // handleSubmit state updates stay inside the act() boundary.
     await act(async () => {
       fireEvent.click(screen.getByText(/save alias/i));
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
     });
   };
 
@@ -179,9 +181,7 @@ describe("WalletAliasSettings", () => {
       render(<WalletAliasSettings />);
       fireEvent.click(screen.getByText("Set Wallet Alias"));
       // Submit without entering text
-      await act(async () => {
-        fireEvent.click(screen.getByText(/save alias/i));
-      });
+      fireEvent.click(screen.getByText(/save alias/i));
 
       await waitFor(() => {
         expect(screen.getByText("Alias cannot be empty")).toBeInTheDocument();

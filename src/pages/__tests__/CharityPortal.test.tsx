@@ -1,6 +1,6 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, act } from "@testing-library/react";
 import { CharityPortal } from "../CharityPortal";
 import {
   createMockAuth,
@@ -201,7 +201,7 @@ describe("CharityPortal", () => {
       });
     });
 
-    it("shows loading skeleton when profile is loading", () => {
+    it("shows loading skeleton when profile is loading", async () => {
       mockUseProfile.mockReturnValue(
         createMockProfile({
           profile: null,
@@ -216,12 +216,15 @@ describe("CharityPortal", () => {
         }),
       );
 
-      renderWithRouter();
+      await act(async () => {
+        renderWithRouter();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
       // Component shows skeleton loaders (animated divs), not LoadingSpinner
       expect(screen.queryByText("Test Charity")).not.toBeInTheDocument();
     });
 
-    it("handles missing profile gracefully", () => {
+    it("handles missing profile gracefully", async () => {
       mockUseProfile.mockReturnValue(
         createMockProfile({
           profile: null,
@@ -231,7 +234,10 @@ describe("CharityPortal", () => {
 
       // When profile is null, fetchCharityData returns early without
       // setting loading=false, so the skeleton loader stays visible
-      renderWithRouter();
+      await act(async () => {
+        renderWithRouter();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
       expect(screen.queryByText("Test Charity")).not.toBeInTheDocument();
     });
   });
@@ -255,7 +261,7 @@ describe("CharityPortal", () => {
   });
 
   describe("Error Handling", () => {
-    it("handles auth errors gracefully", () => {
+    it("handles auth errors gracefully", async () => {
       mockUseAuth.mockReturnValue(
         createMockAuth({
           user: null,
@@ -265,10 +271,13 @@ describe("CharityPortal", () => {
         }),
       );
 
-      expect(() => renderWithRouter()).not.toThrow();
+      await act(async () => {
+        renderWithRouter();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
     });
 
-    it("handles profile fetch errors", () => {
+    it("handles profile fetch errors", async () => {
       mockUseProfile.mockReturnValue(
         createMockProfile({
           profile: null,
@@ -277,12 +286,15 @@ describe("CharityPortal", () => {
         }),
       );
 
-      expect(() => renderWithRouter()).not.toThrow();
+      await act(async () => {
+        renderWithRouter();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
     });
   });
 
   describe("User Type Restrictions", () => {
-    it("handles non-charity user access", () => {
+    it("handles non-charity user access", async () => {
       mockUseAuth.mockReturnValue(
         createMockAuth({
           user: { ...mockCharityUser, user_metadata: { user_type: "donor" } },
@@ -291,7 +303,10 @@ describe("CharityPortal", () => {
         }),
       );
 
-      expect(() => renderWithRouter()).not.toThrow();
+      await act(async () => {
+        renderWithRouter();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
     });
   });
 
@@ -314,7 +329,7 @@ describe("CharityPortal", () => {
       });
     });
 
-    it("handles different language settings", () => {
+    it("handles different language settings", async () => {
       mockUseTranslation.mockReturnValue(
         createMockTranslation({
           t: jest.fn((key: string) => `es_${key}`),
@@ -322,7 +337,10 @@ describe("CharityPortal", () => {
         }),
       );
 
-      expect(() => renderWithRouter()).not.toThrow();
+      await act(async () => {
+        renderWithRouter();
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
     });
   });
 });
