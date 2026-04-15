@@ -1,66 +1,8 @@
 import {
-  VolunteerOpportunityStatus,
-  VolunteerApplicationStatus,
-  VolunteerHoursStatus,
   CommitmentType,
   OpportunityType,
   WorkLanguage,
 } from "../volunteer";
-
-describe("VolunteerOpportunityStatus", () => {
-  it("has all expected status values", () => {
-    expect(VolunteerOpportunityStatus._ACTIVE).toBe("active");
-    expect(VolunteerOpportunityStatus._COMPLETED).toBe("completed");
-    expect(VolunteerOpportunityStatus._CANCELLED).toBe("cancelled");
-  });
-
-  it("contains exactly 3 status values", () => {
-    const statusValues = Object.values(VolunteerOpportunityStatus);
-    expect(statusValues).toHaveLength(3);
-  });
-
-  it("has unique status values", () => {
-    const statusValues = Object.values(VolunteerOpportunityStatus);
-    const uniqueValues = new Set(statusValues);
-    expect(uniqueValues.size).toBe(statusValues.length);
-  });
-});
-
-describe("VolunteerApplicationStatus", () => {
-  it("has all expected status values", () => {
-    expect(VolunteerApplicationStatus._PENDING).toBe("pending");
-    expect(VolunteerApplicationStatus._APPROVED).toBe("approved");
-    expect(VolunteerApplicationStatus._REJECTED).toBe("rejected");
-  });
-
-  it("contains exactly 3 status values", () => {
-    const statusValues = Object.values(VolunteerApplicationStatus);
-    expect(statusValues).toHaveLength(3);
-  });
-
-  it("covers standard application workflow", () => {
-    const statusValues = Object.values(VolunteerApplicationStatus);
-    expect(statusValues).toContain("pending");
-    expect(statusValues).toContain("approved");
-    expect(statusValues).toContain("rejected");
-  });
-});
-
-describe("VolunteerHoursStatus", () => {
-  it("has all expected status values", () => {
-    expect(VolunteerHoursStatus._PENDING).toBe("pending");
-    expect(VolunteerHoursStatus._APPROVED).toBe("approved");
-    expect(VolunteerHoursStatus._REJECTED).toBe("rejected");
-  });
-
-  it("mirrors application status structure", () => {
-    const hoursStatusValues = Object.values(VolunteerHoursStatus);
-    const applicationStatusValues = Object.values(VolunteerApplicationStatus);
-    expect(hoursStatusValues.sort((a, b) => a.localeCompare(b))).toEqual(
-      applicationStatusValues.sort((a, b) => a.localeCompare(b)),
-    );
-  });
-});
 
 describe("CommitmentType", () => {
   it("has all expected commitment types", () => {
@@ -155,9 +97,6 @@ describe("WorkLanguage", () => {
 describe("Volunteer enum consistency", () => {
   it("maintains consistent naming pattern for unused enums", () => {
     const allEnums = [
-      VolunteerOpportunityStatus,
-      VolunteerApplicationStatus,
-      VolunteerHoursStatus,
       CommitmentType,
       OpportunityType,
     ];
@@ -175,9 +114,6 @@ describe("Volunteer enum consistency", () => {
 
   it("uses lowercase string values with underscores or hyphens", () => {
     const allEnums = [
-      VolunteerOpportunityStatus,
-      VolunteerApplicationStatus,
-      VolunteerHoursStatus,
       CommitmentType,
       OpportunityType,
       WorkLanguage,
@@ -197,27 +133,6 @@ describe("Volunteer enum consistency", () => {
   });
 
   describe("individual enum coverage", () => {
-    it("covers all VolunteerOpportunityStatus values", () => {
-      const values = Object.values(VolunteerOpportunityStatus);
-      expect(values).toContain("active");
-      expect(values).toContain("completed");
-      expect(values).toContain("cancelled");
-    });
-
-    it("covers all VolunteerApplicationStatus values", () => {
-      const values = Object.values(VolunteerApplicationStatus);
-      expect(values).toContain("pending");
-      expect(values).toContain("approved");
-      expect(values).toContain("rejected");
-    });
-
-    it("covers all VolunteerHoursStatus values", () => {
-      const values = Object.values(VolunteerHoursStatus);
-      expect(values).toContain("pending");
-      expect(values).toContain("approved");
-      expect(values).toContain("rejected");
-    });
-
     it("covers all CommitmentType values", () => {
       const values = Object.values(CommitmentType);
       expect(values).toContain("one-time");

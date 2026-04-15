@@ -1,14 +1,6 @@
 import { Timestamp, UUID } from "./common";
 import { TokenAmount } from "./blockchain";
 
-export enum CharityStatus {
-  _PENDING = "pending", // Prefixed with _ as currently unused
-  _ACTIVE = "active", // Prefixed with _ as currently unused
-  _PAUSED = "paused", // Prefixed with _ as currently unused
-  _COMPLETED = "completed", // Prefixed with _ as currently unused
-  _ARCHIVED = "archived", // Prefixed with _ as currently unused
-}
-
 export enum CharityCategory {
   _EDUCATION = "education", // Prefixed with _ as currently unused
   _HEALTHCARE = "healthcare", // Prefixed with _ as currently unused
@@ -25,7 +17,7 @@ export interface CharityBase {
   name: string;
   description: string;
   category: CharityCategory;
-  status: CharityStatus;
+  status: string;
   walletAddress: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;

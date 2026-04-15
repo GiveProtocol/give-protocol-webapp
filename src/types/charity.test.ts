@@ -1,6 +1,5 @@
 import { describe, it, expect } from '@jest/globals';
 import {
-  CharityStatus,
   CharityCategory,
   MAX_CAUSES_PER_CHARITY,
   MAX_OPPORTUNITIES_PER_CHARITY,
@@ -9,16 +8,6 @@ import {
 } from './charity';
 
 describe('charity types', () => {
-  describe('CharityStatus enum', () => {
-    it('should have correct values', () => {
-      expect(CharityStatus._PENDING).toBe('pending');
-      expect(CharityStatus._ACTIVE).toBe('active');
-      expect(CharityStatus._PAUSED).toBe('paused');
-      expect(CharityStatus._COMPLETED).toBe('completed');
-      expect(CharityStatus._ARCHIVED).toBe('archived');
-    });
-  });
-
   describe('CharityCategory enum', () => {
     it('should have correct values', () => {
       expect(CharityCategory._EDUCATION).toBe('education');

@@ -2,24 +2,6 @@ import { UUID, Timestamp } from './common';
 
 /* eslint-disable no-unused-vars */
 
-export enum VolunteerOpportunityStatus {
-  _ACTIVE = 'active', // Prefixed with _ as currently unused
-  _COMPLETED = 'completed', // Prefixed with _ as currently unused
-  _CANCELLED = 'cancelled' // Prefixed with _ as currently unused
-}
-
-export enum VolunteerApplicationStatus {
-  _PENDING = 'pending', // Prefixed with _ as currently unused
-  _APPROVED = 'approved', // Prefixed with _ as currently unused
-  _REJECTED = 'rejected' // Prefixed with _ as currently unused
-}
-
-export enum VolunteerHoursStatus {
-  _PENDING = 'pending', // Prefixed with _ as currently unused
-  _APPROVED = 'approved', // Prefixed with _ as currently unused
-  _REJECTED = 'rejected' // Prefixed with _ as currently unused
-}
-
 export enum CommitmentType {
   _ONE_TIME = 'one-time', // Prefixed with _ as currently unused
   _SHORT_TERM = 'short-term', // Prefixed with _ as currently unused
@@ -57,7 +39,7 @@ export interface VolunteerOpportunity {
   commitment: CommitmentType;
   location: string;
   type: OpportunityType;
-  status: VolunteerOpportunityStatus;
+  status: string;
   workLanguage: WorkLanguage;
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -85,7 +67,7 @@ export interface VolunteerApplication {
     contact: string;
   }[];
   workSamples?: string[];
-  status: VolunteerApplicationStatus;
+  status: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   acceptanceHash?: string; // Hash created when application is accepted
@@ -99,7 +81,7 @@ export interface VolunteerHours {
   hours: number;
   description?: string;
   datePerformed: string;
-  status: VolunteerHoursStatus;
+  status: string;
   createdAt: Timestamp;
   approvedAt?: Timestamp;
   approvedBy?: UUID;
