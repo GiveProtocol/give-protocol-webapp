@@ -21,6 +21,7 @@ const SettingsOptionButton: React.FC<{
   <button
     data-value={dataValue}
     onClick={onClick}
+    aria-pressed={isSelected}
     className={cn(
       "flex items-center justify-between px-3 py-2 text-sm rounded-md",
       isSelected
@@ -70,6 +71,15 @@ export const SettingsMenu: React.FC = () => {
   const { setSelectedCurrency } = useCurrencyContext();
   const { t } = useTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Focus first option when dropdown opens (WCAG 2.4.3)
+  useEffect(() => {
+    if (!isOpen) return;
+    const firstButton = panelRef.current?.querySelector<HTMLButtonElement>("button");
+    firstButton?.focus();
+  }, [isOpen]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -95,12 +105,13 @@ export const SettingsMenu: React.FC = () => {
   // Close menu when pressing Escape
   useEffect(() => {
     /**
-     * Handles the Escape key press event to close the settings menu.
+     * Handles the Escape key press event to close the settings menu and return focus to the trigger button.
      * @param event KeyboardEvent triggered by the key press.
      */
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsOpen(false);
+        triggerButtonRef.current?.focus();
       }
     };
 
@@ -180,6 +191,7 @@ export const SettingsMenu: React.FC = () => {
   return (
     <div className="relative" ref={menuRef}>
       <button
+        ref={triggerButtonRef}
         onClick={toggleMenu}
         className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
         aria-expanded={isOpen}
@@ -190,7 +202,7 @@ export const SettingsMenu: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div ref={panelRef} className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
           <div className="py-2 px-4 border-b border-gray-100">
             <h3 className="text-sm font-medium text-gray-900">
               {t("settings.title")}

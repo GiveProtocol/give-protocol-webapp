@@ -113,6 +113,7 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
   const [copied, setCopied] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const wasDropdownOpenRef = useRef(false);
   const navigate = useNavigate();
 
   // Fetch real wallet balance using hook
@@ -183,6 +184,22 @@ export const WalletButton: React.FC<WalletButtonProps> = ({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
+  }, [isDropdownOpen]);
+
+  // Manage focus when dropdown opens/closes (WCAG 2.4.3)
+  useEffect(() => {
+    if (isDropdownOpen) {
+      // Focus first focusable item in the portal-rendered dropdown
+      const menu = document.querySelector<HTMLElement>("[data-wallet-menu]");
+      const firstFocusable = menu?.querySelector<HTMLElement>(
+        "button:not([disabled])",
+      );
+      firstFocusable?.focus();
+    } else if (wasDropdownOpenRef.current) {
+      // Return focus to trigger button when dropdown closes
+      buttonRef.current?.focus();
+    }
+    wasDropdownOpenRef.current = isDropdownOpen;
   }, [isDropdownOpen]);
 
   const handleToggleDropdown = useCallback(() => {

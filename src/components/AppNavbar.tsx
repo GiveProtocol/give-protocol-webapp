@@ -556,12 +556,23 @@ export const AppNavbar: React.FC = () => {
     setIsMenuOpen(false);
   }, [location.pathname]);
 
-  // Close mobile menu on Escape key
+  // Focus first menu item when mobile menu opens (WCAG 2.4.3)
   useEffect(() => {
-    /** Closes the mobile menu when the Escape key is pressed. */
+    if (!isMenuOpen) return;
+    const mobileMenu = document.getElementById("mobile-menu");
+    const firstFocusable = mobileMenu?.querySelector<HTMLElement>(
+      "a[href], button:not([disabled])",
+    );
+    firstFocusable?.focus();
+  }, [isMenuOpen]);
+
+  // Close mobile menu on Escape key and return focus to toggle button
+  useEffect(() => {
+    /** Closes the mobile menu when the Escape key is pressed and returns focus to the menu button. */
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setIsMenuOpen(false);
+        menuButtonRef.current?.focus();
       }
     };
     document.addEventListener("keydown", handleKeyDown);
