@@ -104,9 +104,13 @@ describe("OpportunityManagement", () => {
     });
   });
 
-  it("shows loading state", () => {
+  it("shows loading state", async () => {
     render(<OpportunityManagement />);
     expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    // Wait for the async fetchOpportunities effect to settle
+    await waitFor(() => {
+      expect(screen.getByText("Beach Cleanup")).toBeInTheDocument();
+    });
   });
 
   it("shows empty state when no opportunities", async () => {
