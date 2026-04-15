@@ -31,11 +31,19 @@ function FooterResources() {
       </h3>
       <ul className="space-y-2">
         <li>
+          <Link
+            to="/faq"
+            className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
+          >
+            FAQ
+          </Link>
+        </li>
+        <li>
           <a
             href={DOCS_CONFIG.url}
             className="text-sm text-white/90 hover:text-white focus:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-white rounded px-1 -mx-1 transition-colors inline-block"
           >
-            Documentation & FAQ
+            Documentation
           </a>
         </li>
         <li>

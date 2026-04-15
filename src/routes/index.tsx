@@ -57,6 +57,7 @@ const ScheduledDonationsPage = lazy(
   () => import("@/pages/donor/ScheduledDonationsPage"),
 );
 const Documentation = lazy(() => import("@/pages/Documentation"));
+const FAQ = lazy(() => import("@/pages/FAQ"));
 const DashboardSettings = lazy(() => import("@/pages/DashboardSettings"));
 
 // Admin routes
@@ -587,6 +588,16 @@ export function AppRoutes() {
             <RouteTransition>
               <Suspense fallback={<LoadingFallback />}>
                 <About />
+              </Suspense>
+            </RouteTransition>
+          }
+        />
+        <Route
+          path="/faq"
+          element={
+            <RouteTransition>
+              <Suspense fallback={<LoadingFallback />}>
+                <FAQ />
               </Suspense>
             </RouteTransition>
           }
