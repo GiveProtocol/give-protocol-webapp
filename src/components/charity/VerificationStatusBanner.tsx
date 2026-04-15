@@ -26,8 +26,7 @@ function getBannerConfig(
         Icon: Clock,
         iconColor: "text-blue-600",
         title: "Application Under Review",
-        body:
-          "Your charity application is being reviewed by our team. This typically takes 3–5 business days. We will email you when a decision is made.",
+        body: "Your charity application is being reviewed by our team. This typically takes 3–5 business days. We will email you when a decision is made.",
       };
     case "rejected":
       return {
@@ -137,9 +136,7 @@ export const VerificationSuccessBanner: React.FC = () => (
   >
     <CheckCircle className="h-5 w-5 mt-0.5 flex-shrink-0 text-emerald-600" />
     <div>
-      <p className="text-sm font-semibold text-gray-900">
-        Charity Verified
-      </p>
+      <p className="text-sm font-semibold text-gray-900">Charity Verified</p>
       <p className="text-sm text-gray-700 mt-0.5">
         Your organization is verified and donors can now support your causes.
       </p>

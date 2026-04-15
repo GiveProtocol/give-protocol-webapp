@@ -13,30 +13,40 @@ import type {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Status badge pill for a charity's verification status */
-function StatusBadge({ status }: { status: AdminCharityVerificationStatus }): React.ReactElement {
+function StatusBadge({
+  status,
+}: {
+  status: AdminCharityVerificationStatus;
+}): React.ReactElement {
   const styles: Record<string, string> = {
-    pending:   "bg-yellow-100 text-yellow-800",
-    verified:  "bg-green-100 text-green-800",
-    approved:  "bg-green-100 text-green-800",
-    rejected:  "bg-red-100 text-red-800",
+    pending: "bg-yellow-100 text-yellow-800",
+    verified: "bg-green-100 text-green-800",
+    approved: "bg-green-100 text-green-800",
+    rejected: "bg-red-100 text-red-800",
     suspended: "bg-gray-100 text-gray-700",
   };
   const labels: Record<string, string> = {
-    pending:   "Pending",
-    verified:  "Verified",
-    approved:  "Approved",
-    rejected:  "Rejected",
+    pending: "Pending",
+    verified: "Verified",
+    approved: "Approved",
+    rejected: "Rejected",
     suspended: "Suspended",
   };
   return (
-    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status] ?? "bg-gray-100 text-gray-600"}`}>
+    <span
+      className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status] ?? "bg-gray-100 text-gray-600"}`}
+    >
       {labels[status] ?? status}
     </span>
   );
 }
 
 /** Wallet address badge for admin charity list */
-function WalletBadge({ address }: { address: string | null }): React.ReactElement {
+function WalletBadge({
+  address,
+}: {
+  address: string | null;
+}): React.ReactElement {
   if (address) {
     return (
       <span className="inline-block px-2 py-0.5 text-xs font-semibold rounded-full bg-emerald-100 text-emerald-800">
@@ -63,27 +73,74 @@ function CharityActions({
 }): React.ReactElement {
   const { verificationStatus: s } = charity;
 
-  const handleApprove = useCallback(() => onAction(charity, "approve"), [charity, onAction]);
-  const handleReject  = useCallback(() => onAction(charity, "reject"),  [charity, onAction]);
-  const handleSuspend = useCallback(() => onAction(charity, "suspend"), [charity, onAction]);
-  const handleReinstate = useCallback(() => onAction(charity, "reinstate"), [charity, onAction]);
+  const handleApprove = useCallback(
+    () => onAction(charity, "approve"),
+    [charity, onAction],
+  );
+  const handleReject = useCallback(
+    () => onAction(charity, "reject"),
+    [charity, onAction],
+  );
+  const handleSuspend = useCallback(
+    () => onAction(charity, "suspend"),
+    [charity, onAction],
+  );
+  const handleReinstate = useCallback(
+    () => onAction(charity, "reinstate"),
+    [charity, onAction],
+  );
 
   return (
     <div className="flex gap-2 flex-wrap">
-      {(s === "pending") && (
+      {s === "pending" && (
         <>
-          <Button size="sm" variant="primary" onClick={handleApprove} disabled={disabled}>Approve</Button>
-          <Button size="sm" variant="danger"  onClick={handleReject}  disabled={disabled}>Reject</Button>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={handleApprove}
+            disabled={disabled}
+          >
+            Approve
+          </Button>
+          <Button
+            size="sm"
+            variant="danger"
+            onClick={handleReject}
+            disabled={disabled}
+          >
+            Reject
+          </Button>
         </>
       )}
       {(s === "verified" || s === "approved") && (
-        <Button size="sm" variant="secondary" onClick={handleSuspend} disabled={disabled}>Suspend</Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={handleSuspend}
+          disabled={disabled}
+        >
+          Suspend
+        </Button>
       )}
       {s === "suspended" && (
-        <Button size="sm" variant="primary" onClick={handleReinstate} disabled={disabled}>Reinstate</Button>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={handleReinstate}
+          disabled={disabled}
+        >
+          Reinstate
+        </Button>
       )}
       {s === "rejected" && (
-        <Button size="sm" variant="primary" onClick={handleApprove} disabled={disabled}>Approve</Button>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={handleApprove}
+          disabled={disabled}
+        >
+          Approve
+        </Button>
       )}
     </div>
   );
@@ -140,9 +197,25 @@ function Pagination({
   if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-6">
-      <Button size="sm" variant="secondary" onClick={onPrev} disabled={page <= 1}>Previous</Button>
-      <span className="text-sm text-gray-600">Page {page} of {totalPages}</span>
-      <Button size="sm" variant="secondary" onClick={onNext} disabled={page >= totalPages}>Next</Button>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={onPrev}
+        disabled={page <= 1}
+      >
+        Previous
+      </Button>
+      <span className="text-sm text-gray-600">
+        Page {page} of {totalPages}
+      </span>
+      <Button
+        size="sm"
+        variant="secondary"
+        onClick={onNext}
+        disabled={page >= totalPages}
+      >
+        Next
+      </Button>
     </div>
   );
 }
@@ -170,36 +243,74 @@ function ActionModal({
   if (!charity) return null;
 
   const ACTION_LABELS: Record<string, string> = {
-    approve:   "Approve Charity",
-    reject:    "Reject Charity",
-    suspend:   "Suspend Charity",
+    approve: "Approve Charity",
+    reject: "Reject Charity",
+    suspend: "Suspend Charity",
     reinstate: "Reinstate Charity",
   };
 
   const REASON_REQUIRED = action === "reject" || action === "suspend";
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={ACTION_LABELS[action] ?? "Confirm Action"} size="md">
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={ACTION_LABELS[action] ?? "Confirm Action"}
+      size="md"
+    >
       <p className="text-sm text-gray-600 mb-4">
-        {action === "approve"   && <>Are you sure you want to <strong>approve</strong> <em>{charity.name}</em>?</>}
-        {action === "reject"    && <>Are you sure you want to <strong>reject</strong> <em>{charity.name}</em>? Provide a reason below.</>}
-        {action === "suspend"   && <>Are you sure you want to <strong>suspend</strong> <em>{charity.name}</em>? Provide a reason below.</>}
-        {action === "reinstate" && <>Are you sure you want to <strong>reinstate</strong> <em>{charity.name}</em>?</>}
+        {action === "approve" && (
+          <>
+            Are you sure you want to <strong>approve</strong>{" "}
+            <em>{charity.name}</em>?
+          </>
+        )}
+        {action === "reject" && (
+          <>
+            Are you sure you want to <strong>reject</strong>{" "}
+            <em>{charity.name}</em>? Provide a reason below.
+          </>
+        )}
+        {action === "suspend" && (
+          <>
+            Are you sure you want to <strong>suspend</strong>{" "}
+            <em>{charity.name}</em>? Provide a reason below.
+          </>
+        )}
+        {action === "reinstate" && (
+          <>
+            Are you sure you want to <strong>reinstate</strong>{" "}
+            <em>{charity.name}</em>?
+          </>
+        )}
       </p>
       <textarea
         className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mb-4 focus:outline-none focus:ring-2 focus:ring-emerald-500 resize-y min-h-[80px]"
-        placeholder={REASON_REQUIRED ? "Reason (required)" : "Reason (optional)"}
+        placeholder={
+          REASON_REQUIRED ? "Reason (required)" : "Reason (optional)"
+        }
         value={reason}
         onChange={onReasonChange}
         aria-label="Reason"
       />
       <div className="flex gap-3 justify-end">
-        <Button variant="secondary" size="sm" onClick={onClose} disabled={confirming}>Cancel</Button>
         <Button
-          variant={action === "reject" || action === "suspend" ? "danger" : "primary"}
+          variant="secondary"
+          size="sm"
+          onClick={onClose}
+          disabled={confirming}
+        >
+          Cancel
+        </Button>
+        <Button
+          variant={
+            action === "reject" || action === "suspend" ? "danger" : "primary"
+          }
           size="sm"
           onClick={onConfirm}
-          disabled={confirming || (REASON_REQUIRED && reason.trim().length === 0)}
+          disabled={
+            confirming || (REASON_REQUIRED && reason.trim().length === 0)
+          }
         >
           {confirming ? "Saving…" : (ACTION_LABELS[action] ?? "Confirm")}
         </Button>
@@ -225,17 +336,34 @@ function CharityTable({
       <table className="w-full text-left">
         <thead>
           <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Name</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Category</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Wallet</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Name
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Category
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Status
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Joined
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Wallet
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Actions
+            </th>
           </tr>
         </thead>
         <tbody>
           {charities.map((charity) => (
-            <CharityRow key={charity.id} charity={charity} onAction={onAction} updating={updating} />
+            <CharityRow
+              key={charity.id}
+              charity={charity}
+              onAction={onAction}
+              updating={updating}
+            />
           ))}
         </tbody>
       </table>
@@ -254,21 +382,36 @@ function CharityRow({
   onAction: (charity: AdminCharityListItem, action: string) => void;
   updating: boolean;
 }): React.ReactElement {
-  const formattedDate = new Date(charity.createdAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const formattedDate = new Date(charity.createdAt).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    },
+  );
 
   return (
     <tr className="border-t border-gray-100 hover:bg-gray-50">
-      <td className="px-4 py-3 text-sm font-medium text-gray-900">{charity.name}</td>
-      <td className="px-4 py-3 text-sm text-gray-500">{charity.category ?? "—"}</td>
-      <td className="px-4 py-3"><StatusBadge status={charity.verificationStatus} /></td>
-      <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
-      <td className="px-4 py-3"><WalletBadge address={charity.walletAddress} /></td>
+      <td className="px-4 py-3 text-sm font-medium text-gray-900">
+        {charity.name}
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-500">
+        {charity.category ?? "—"}
+      </td>
       <td className="px-4 py-3">
-        <CharityActions charity={charity} onAction={onAction} disabled={updating} />
+        <StatusBadge status={charity.verificationStatus} />
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
+      <td className="px-4 py-3">
+        <WalletBadge address={charity.walletAddress} />
+      </td>
+      <td className="px-4 py-3">
+        <CharityActions
+          charity={charity}
+          onAction={onAction}
+          disabled={updating}
+        />
       </td>
     </tr>
   );
@@ -281,11 +424,24 @@ function CharityRow({
  * and approve/reject/suspend/reinstate actions backed by the admin audit trail.
  */
 const AdminCharityManagement: React.FC = () => {
-  const { result, loading, updating, fetchCharities, approveCharity, rejectCharity, suspendCharity, reinstateCharity } = useAdminCharities();
-  const [filters, setFilters] = useState<AdminCharityListFilters>({ page: 1, limit: 50 });
+  const {
+    result,
+    loading,
+    updating,
+    fetchCharities,
+    approveCharity,
+    rejectCharity,
+    suspendCharity,
+    reinstateCharity,
+  } = useAdminCharities();
+  const [filters, setFilters] = useState<AdminCharityListFilters>({
+    page: 1,
+    limit: 50,
+  });
 
   // Modal state
-  const [actionCharity, setActionCharity] = useState<AdminCharityListItem | null>(null);
+  const [actionCharity, setActionCharity] =
+    useState<AdminCharityListItem | null>(null);
   const [currentAction, setCurrentAction] = useState("");
   const [reason, setReason] = useState("");
 
@@ -293,11 +449,14 @@ const AdminCharityManagement: React.FC = () => {
     fetchCharities(filters);
   }, [fetchCharities, filters]);
 
-  const handleAction = useCallback((charity: AdminCharityListItem, action: string) => {
-    setActionCharity(charity);
-    setCurrentAction(action);
-    setReason("");
-  }, []);
+  const handleAction = useCallback(
+    (charity: AdminCharityListItem, action: string) => {
+      setActionCharity(charity);
+      setCurrentAction(action);
+      setReason("");
+    },
+    [],
+  );
 
   const handleCloseModal = useCallback(() => {
     setActionCharity(null);
@@ -305,26 +464,43 @@ const AdminCharityManagement: React.FC = () => {
     setReason("");
   }, []);
 
-  const handleReasonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReason(e.target.value);
-  }, []);
+  const handleReasonChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setReason(e.target.value);
+    },
+    [],
+  );
 
-  const handleStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({
-      ...prev,
-      page: 1,
-      status: value !== "" ? (value as AdminCharityVerificationStatus) : undefined,
-    }));
-  }, []);
+  const handleStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        status:
+          value !== "" ? (value as AdminCharityVerificationStatus) : undefined,
+      }));
+    },
+    [],
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({ ...prev, page: 1, search: value !== "" ? value : undefined }));
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        search: value !== "" ? value : undefined,
+      }));
+    },
+    [],
+  );
 
   const handlePrevPage = useCallback(() => {
-    setFilters((prev) => ({ ...prev, page: Math.max(1, (prev.page ?? 1) - 1) }));
+    setFilters((prev) => ({
+      ...prev,
+      page: Math.max(1, (prev.page ?? 1) - 1),
+    }));
   }, []);
 
   const handleNextPage = useCallback(() => {
@@ -357,7 +533,17 @@ const AdminCharityManagement: React.FC = () => {
     if (success) {
       handleCloseModal();
     }
-  }, [actionCharity, currentAction, reason, filters, approveCharity, rejectCharity, suspendCharity, reinstateCharity, handleCloseModal]);
+  }, [
+    actionCharity,
+    currentAction,
+    reason,
+    filters,
+    approveCharity,
+    rejectCharity,
+    suspendCharity,
+    reinstateCharity,
+    handleCloseModal,
+  ]);
 
   if (loading && result.charities.length === 0) {
     return (
@@ -375,7 +561,11 @@ const AdminCharityManagement: React.FC = () => {
       </div>
 
       <Card className="p-6">
-        <FilterBar filters={filters} onStatusChange={handleStatusChange} onSearchChange={handleSearchChange} />
+        <FilterBar
+          filters={filters}
+          onStatusChange={handleStatusChange}
+          onSearchChange={handleSearchChange}
+        />
 
         {loading && (
           <div className="flex justify-center py-8">
@@ -384,11 +574,17 @@ const AdminCharityManagement: React.FC = () => {
         )}
 
         {!loading && result.charities.length === 0 && (
-          <p className="text-center py-8 text-gray-500">No charities found matching your filters.</p>
+          <p className="text-center py-8 text-gray-500">
+            No charities found matching your filters.
+          </p>
         )}
 
         {!loading && result.charities.length > 0 && (
-          <CharityTable charities={result.charities} onAction={handleAction} updating={updating} />
+          <CharityTable
+            charities={result.charities}
+            onAction={handleAction}
+            updating={updating}
+          />
         )}
 
         <Pagination

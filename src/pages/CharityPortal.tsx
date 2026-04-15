@@ -268,7 +268,11 @@ function CharityPortalSkeleton() {
 }
 
 /** Overview header with title, last-updated timestamp, and refresh button. */
-function OverviewHeader({ lastUpdatedText, onRefresh, t }: {
+function OverviewHeader({
+  lastUpdatedText,
+  onRefresh,
+  t,
+}: {
   lastUpdatedText: string;
   onRefresh: () => void;
   t: (_key: string, _fallback?: string) => string;
@@ -297,7 +301,13 @@ function OverviewHeader({ lastUpdatedText, onRefresh, t }: {
 }
 
 /** Header for the charity portal with title and action buttons. */
-function CharityPortalHeader({ displayName, t }: { displayName?: string; t: (_key: string, _fallback?: string) => string }) {
+function CharityPortalHeader({
+  displayName,
+  t,
+}: {
+  displayName?: string;
+  t: (_key: string, _fallback?: string) => string;
+}) {
   return (
     <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
       <div>
@@ -333,11 +343,17 @@ function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
       <div className="flex items-center gap-3">
         <Wallet className="h-5 w-5 text-amber-600 shrink-0" />
         <div>
-          <p className="text-sm font-semibold text-amber-900">Receiving wallet not configured</p>
-          <p className="text-xs text-amber-700">Connect a wallet to receive on-chain donations.</p>
+          <p className="text-sm font-semibold text-amber-900">
+            Receiving wallet not configured
+          </p>
+          <p className="text-xs text-amber-700">
+            Connect a wallet to receive on-chain donations.
+          </p>
         </div>
       </div>
-      <Button variant="secondary" onClick={onOpen}>Set Up Wallet</Button>
+      <Button variant="secondary" onClick={onOpen}>
+        Set Up Wallet
+      </Button>
     </div>
   );
 }
@@ -351,7 +367,9 @@ export const CharityPortal: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabKey>("transactions");
   const [showExportModal, setShowExportModal] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
-  const [charityWalletAddress, setCharityWalletAddress] = useState<string | null | undefined>(undefined);
+  const [charityWalletAddress, setCharityWalletAddress] = useState<
+    string | null | undefined
+  >(undefined);
   const [sortConfig, setSortConfig] = useState<{
     key: "date" | "type" | "status" | "organization" | null;
     direction: "asc" | "desc";
@@ -532,10 +550,13 @@ export const CharityPortal: React.FC = () => {
       return sum + amount;
     }, 0);
 
-    const fiatDonated = data.fiatDonations.reduce((sum, donation) => {
-      const cents = donation?.amount_cents ? Number(donation.amount_cents) : 0;
-      return sum + cents;
-    }, 0) / 100;
+    const fiatDonated =
+      data.fiatDonations.reduce((sum, donation) => {
+        const cents = donation?.amount_cents
+          ? Number(donation.amount_cents)
+          : 0;
+        return sum + cents;
+      }, 0) / 100;
 
     const totalHours = data.hours.reduce((sum, hour) => {
       const hourCount = hour?.hours ? Number(hour.hours) : 0;
@@ -607,7 +628,9 @@ export const CharityPortal: React.FC = () => {
     try {
       const { data: fiatDonations, error: fiatError } = await supabase
         .from("fiat_donations")
-        .select("id, amount_cents, created_at, donor_name, payment_method, disbursement_status, status")
+        .select(
+          "id, amount_cents, created_at, donor_name, payment_method, disbursement_status, status",
+        )
         .eq("charity_id", charityId)
         .order("created_at", { ascending: false });
 
@@ -624,7 +647,10 @@ export const CharityPortal: React.FC = () => {
           cryptoType: "USD",
           fiatValue: fd.amount_cents ? fd.amount_cents / 100 : 0,
           timestamp: fd.created_at || new Date().toISOString(),
-          status: fd.status === "completed" ? "completed" as const : "pending" as const,
+          status:
+            fd.status === "completed"
+              ? ("completed" as const)
+              : ("pending" as const),
           purpose: "Fiat Donation",
           metadata: {
             organization: fd.donor_name || "Anonymous",
@@ -646,7 +672,8 @@ export const CharityPortal: React.FC = () => {
     // Merge and sort by date descending
     const allTransactions = [...cryptoTransactions, ...fiatTransactions];
     allTransactions.sort(
-      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
+      (a, b) =>
+        new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime(),
     );
     return allTransactions;
   }, []);
@@ -862,7 +889,10 @@ export const CharityPortal: React.FC = () => {
     setActiveTab(tab);
   }, []);
 
-  const handleTransactionsTab = useCallback(() => setActiveTab("transactions"), []);
+  const handleTransactionsTab = useCallback(
+    () => setActiveTab("transactions"),
+    [],
+  );
   const handleHoursTab = useCallback(() => setActiveTab("hours"), []);
 
   const handleShowExportModal = useCallback(() => {
@@ -889,11 +919,17 @@ export const CharityPortal: React.FC = () => {
   );
 
   const handleOpenWalletModal = useCallback(() => setShowWalletModal(true), []);
-  const handleCloseWalletModal = useCallback(() => setShowWalletModal(false), []);
+  const handleCloseWalletModal = useCallback(
+    () => setShowWalletModal(false),
+    [],
+  );
 
   const handleWalletLinked = useCallback(async () => {
     if (connectedWalletAddress && userId) {
-      const success = await updateCharityWalletAddress(userId, connectedWalletAddress);
+      const success = await updateCharityWalletAddress(
+        userId,
+        connectedWalletAddress,
+      );
       if (success) {
         setCharityWalletAddress(connectedWalletAddress);
       }
@@ -901,7 +937,15 @@ export const CharityPortal: React.FC = () => {
   }, [connectedWalletAddress, userId]);
 
   const handleOnboardingNavigate = useCallback((tab: string) => {
-    const validTabs: TabKey[] = ["transactions", "hours", "applications", "opportunities", "causes", "impact", "organization"];
+    const validTabs: TabKey[] = [
+      "transactions",
+      "hours",
+      "applications",
+      "opportunities",
+      "causes",
+      "impact",
+      "organization",
+    ];
     if (validTabs.includes(tab as TabKey)) {
       setActiveTab(tab as TabKey);
     }
@@ -975,7 +1019,8 @@ export const CharityPortal: React.FC = () => {
           <div className="flex items-center gap-2 mb-4 text-xs text-emerald-700">
             <Wallet className="h-3.5 w-3.5" />
             <span>
-              Receiving wallet: {charityWalletAddress.slice(0, 6)}&hellip;{charityWalletAddress.slice(-4)}
+              Receiving wallet: {charityWalletAddress.slice(0, 6)}&hellip;
+              {charityWalletAddress.slice(-4)}
             </span>
           </div>
         )}
@@ -998,13 +1043,50 @@ export const CharityPortal: React.FC = () => {
         {/* Tab Navigation */}
         <CharityTabNav
           tabs={[
-            { key: "transactions", labelKey: "charity.transactions", labelDefault: "Transactions", icon: Receipt },
-            { key: "hours", labelKey: "volunteer.hoursVerification", labelDefault: "Hours", icon: Clock, badge: pendingHoursCount },
-            { key: "applications", labelKey: "charity.applications", labelDefault: "Applications", icon: ClipboardList, badge: pendingApplicationsCount },
-            { key: "opportunities", labelKey: "volunteer.opportunities", labelDefault: "Opportunities", icon: Briefcase },
-            { key: "causes", labelKey: "cause.causes", labelDefault: "Causes", icon: Heart },
-            { key: "impact", labelKey: "impact.profile", labelDefault: "Impact Profile", icon: Target },
-            { key: "organization", labelKey: "organization.settings", labelDefault: "Organization", icon: Settings },
+            {
+              key: "transactions",
+              labelKey: "charity.transactions",
+              labelDefault: "Transactions",
+              icon: Receipt,
+            },
+            {
+              key: "hours",
+              labelKey: "volunteer.hoursVerification",
+              labelDefault: "Hours",
+              icon: Clock,
+              badge: pendingHoursCount,
+            },
+            {
+              key: "applications",
+              labelKey: "charity.applications",
+              labelDefault: "Applications",
+              icon: ClipboardList,
+              badge: pendingApplicationsCount,
+            },
+            {
+              key: "opportunities",
+              labelKey: "volunteer.opportunities",
+              labelDefault: "Opportunities",
+              icon: Briefcase,
+            },
+            {
+              key: "causes",
+              labelKey: "cause.causes",
+              labelDefault: "Causes",
+              icon: Heart,
+            },
+            {
+              key: "impact",
+              labelKey: "impact.profile",
+              labelDefault: "Impact Profile",
+              icon: Target,
+            },
+            {
+              key: "organization",
+              labelKey: "organization.settings",
+              labelDefault: "Organization",
+              icon: Settings,
+            },
           ]}
           activeTab={activeTab}
           onTabChange={handleTabChange}

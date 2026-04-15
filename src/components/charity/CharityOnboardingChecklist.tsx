@@ -21,7 +21,8 @@ const CHECKLIST_ITEMS: ChecklistItemDef[] = [
   {
     id: "complete_profile",
     label: "Complete organization profile",
-    description: "Add your organization name, description, address, and contact info.",
+    description:
+      "Add your organization name, description, address, and contact info.",
     actionLabel: "Go to Organization",
     actionTab: "organization",
   },
@@ -35,17 +36,20 @@ const CHECKLIST_ITEMS: ChecklistItemDef[] = [
   {
     id: "connect_wallet",
     label: "Connect wallet for receiving donations",
-    description: "Link a crypto wallet so donors can send funds directly to you.",
+    description:
+      "Link a crypto wallet so donors can send funds directly to you.",
   },
   {
     id: "bank_details",
     label: "Set up bank details for fiat off-ramp",
-    description: "Optional: configure banking info if you want to accept card donations.",
+    description:
+      "Optional: configure banking info if you want to accept card donations.",
   },
   {
     id: "accept_terms",
     label: "Review and accept terms of service",
-    description: "Read and confirm the Give Protocol charity terms and conditions.",
+    description:
+      "Read and confirm the Give Protocol charity terms and conditions.",
   },
 ];
 
@@ -66,10 +70,9 @@ interface CharityOnboardingChecklistProps {
  * @param props.onNavigateTab - Optional callback to navigate to a portal tab
  * @returns The onboarding checklist panel, or null when dismissed/complete
  */
-export const CharityOnboardingChecklist: React.FC<CharityOnboardingChecklistProps> = ({
-  profileId,
-  onNavigateTab,
-}) => {
+export const CharityOnboardingChecklist: React.FC<
+  CharityOnboardingChecklistProps
+> = ({ profileId, onNavigateTab }) => {
   const { isConnected } = useWeb3();
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [dismissed, setDismissed] = useState(false);
@@ -102,7 +105,10 @@ export const CharityOnboardingChecklist: React.FC<CharityOnboardingChecklistProp
           setCompletedItems(new Set(checklist.completedItems));
         }
       } catch (err) {
-        Logger.warn("Exception loading onboarding state", { error: err, profileId });
+        Logger.warn("Exception loading onboarding state", {
+          error: err,
+          profileId,
+        });
       } finally {
         setLoading(false);
       }
@@ -136,7 +142,8 @@ export const CharityOnboardingChecklist: React.FC<CharityOnboardingChecklistProp
           return;
         }
 
-        const currentMeta = (currentData?.meta as Record<string, unknown>) || {};
+        const currentMeta =
+          (currentData?.meta as Record<string, unknown>) || {};
         const updatedMeta = {
           ...currentMeta,
           [META_KEY]: {
@@ -157,7 +164,10 @@ export const CharityOnboardingChecklist: React.FC<CharityOnboardingChecklistProp
           });
         }
       } catch (err) {
-        Logger.warn("Exception persisting onboarding state", { error: err, profileId });
+        Logger.warn("Exception persisting onboarding state", {
+          error: err,
+          profileId,
+        });
       }
     },
     [profileId],
@@ -342,7 +352,9 @@ function ChecklistRow({
         )}
       </button>
       <div className="flex-1 min-w-0">
-        <p className={`text-sm font-medium ${completed ? "line-through text-gray-400" : "text-gray-800"}`}>
+        <p
+          className={`text-sm font-medium ${completed ? "line-through text-gray-400" : "text-gray-800"}`}
+        >
           {item.label}
         </p>
         {!completed && (
