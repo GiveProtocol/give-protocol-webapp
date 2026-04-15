@@ -1,12 +1,22 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { supabase } from "@/lib/supabase";
-import { listCharities, updateCharityStatus, notifyCharityStatusChange } from "./adminCharityService";
+import {
+  listCharities,
+  updateCharityStatus,
+  notifyCharityStatusChange,
+} from "./adminCharityService";
 import type { AdminCharityListRow } from "@/types/adminCharity";
 
-const mockRpc = supabase.rpc as ReturnType<typeof import("@jest/globals").jest.fn>;
-const mockInvoke = supabase.functions.invoke as ReturnType<typeof import("@jest/globals").jest.fn>;
+const mockRpc = supabase.rpc as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
+const mockInvoke = supabase.functions.invoke as ReturnType<
+  typeof import("@jest/globals").jest.fn
+>;
 
-const makeRow = (overrides: Partial<AdminCharityListRow> = {}): AdminCharityListRow => ({
+const makeRow = (
+  overrides: Partial<AdminCharityListRow> = {},
+): AdminCharityListRow => ({
   id: "charity-uuid-1",
   user_id: "user-uuid-1",
   name: "Test Charity",
@@ -51,7 +61,12 @@ describe("adminCharityService", () => {
     it("should pass status and search filters through to RPC", async () => {
       mockRpc.mockResolvedValue({ data: [], error: null });
 
-      await listCharities({ status: "pending", search: "water", page: 2, limit: 25 });
+      await listCharities({
+        status: "pending",
+        search: "water",
+        page: 2,
+        limit: 25,
+      });
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_list_charities", {
         p_status: "pending",
@@ -75,7 +90,10 @@ describe("adminCharityService", () => {
     });
 
     it("should return empty result on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const result = await listCharities();
 
@@ -160,7 +178,10 @@ describe("adminCharityService", () => {
     it("should pass null reason when none given", async () => {
       mockRpc.mockResolvedValue({ data: "verif-uuid-1", error: null });
 
-      await updateCharityStatus({ charityId: "charity-uuid-1", newStatus: "pending" });
+      await updateCharityStatus({
+        charityId: "charity-uuid-1",
+        newStatus: "pending",
+      });
 
       expect(supabase.rpc).toHaveBeenCalledWith("admin_update_charity_status", {
         p_charity_id: "charity-uuid-1",
@@ -182,7 +203,10 @@ describe("adminCharityService", () => {
     });
 
     it("should return null on RPC error", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
       const result = await updateCharityStatus({
         charityId: "charity-uuid-1",
@@ -206,10 +230,19 @@ describe("adminCharityService", () => {
     });
 
     it("should support all valid status values", async () => {
-      const statuses = ["pending", "verified", "approved", "rejected", "suspended"] as const;
+      const statuses = [
+        "pending",
+        "verified",
+        "approved",
+        "rejected",
+        "suspended",
+      ] as const;
       for (const status of statuses) {
         mockRpc.mockResolvedValue({ data: "verif-uuid-1", error: null });
-        const result = await updateCharityStatus({ charityId: "charity-uuid-1", newStatus: status });
+        const result = await updateCharityStatus({
+          charityId: "charity-uuid-1",
+          newStatus: status,
+        });
         expect(result).toBe("verif-uuid-1");
         mockRpc.mockReset();
         mockInvoke.mockResolvedValue({ data: null, error: null });
@@ -228,19 +261,28 @@ describe("adminCharityService", () => {
       // Allow the fire-and-forget promise to settle
       await Promise.resolve();
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith("charity-status-email", {
-        body: {
-          charityId: "charity-uuid-1",
-          newStatus: "verified",
-          reason: "All documents verified",
+      expect(supabase.functions.invoke).toHaveBeenCalledWith(
+        "charity-status-email",
+        {
+          body: {
+            charityId: "charity-uuid-1",
+            newStatus: "verified",
+            reason: "All documents verified",
+          },
         },
-      });
+      );
     });
 
     it("should not invoke email edge function when RPC fails", async () => {
-      mockRpc.mockResolvedValue({ data: null, error: { message: "Access denied" } });
+      mockRpc.mockResolvedValue({
+        data: null,
+        error: { message: "Access denied" },
+      });
 
-      await updateCharityStatus({ charityId: "charity-uuid-1", newStatus: "verified" });
+      await updateCharityStatus({
+        charityId: "charity-uuid-1",
+        newStatus: "verified",
+      });
 
       await Promise.resolve();
 
@@ -249,7 +291,10 @@ describe("adminCharityService", () => {
 
     it("should still return verification UUID even if email invocation fails", async () => {
       mockRpc.mockResolvedValue({ data: "verif-uuid-1", error: null });
-      mockInvoke.mockResolvedValue({ data: null, error: { message: "Email service unavailable" } });
+      mockInvoke.mockResolvedValue({
+        data: null,
+        error: { message: "Email service unavailable" },
+      });
 
       const result = await updateCharityStatus({
         charityId: "charity-uuid-1",
@@ -271,13 +316,16 @@ describe("adminCharityService", () => {
         reason: "Policy violation",
       });
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith("charity-status-email", {
-        body: {
-          charityId: "charity-uuid-1",
-          newStatus: "suspended",
-          reason: "Policy violation",
+      expect(supabase.functions.invoke).toHaveBeenCalledWith(
+        "charity-status-email",
+        {
+          body: {
+            charityId: "charity-uuid-1",
+            newStatus: "suspended",
+            reason: "Policy violation",
+          },
         },
-      });
+      );
     });
 
     it("should pass null reason when none provided", async () => {
@@ -286,20 +334,30 @@ describe("adminCharityService", () => {
         newStatus: "verified",
       });
 
-      expect(supabase.functions.invoke).toHaveBeenCalledWith("charity-status-email", {
-        body: {
-          charityId: "charity-uuid-1",
-          newStatus: "verified",
-          reason: null,
+      expect(supabase.functions.invoke).toHaveBeenCalledWith(
+        "charity-status-email",
+        {
+          body: {
+            charityId: "charity-uuid-1",
+            newStatus: "verified",
+            reason: null,
+          },
         },
-      });
+      );
     });
 
     it("should not throw when edge function returns an error", async () => {
-      mockInvoke.mockResolvedValue({ data: null, error: { message: "Resend API error" } });
+      mockInvoke.mockResolvedValue({
+        data: null,
+        error: { message: "Resend API error" },
+      });
 
       await expect(
-        notifyCharityStatusChange({ charityId: "charity-uuid-1", newStatus: "rejected", reason: "No docs" }),
+        notifyCharityStatusChange({
+          charityId: "charity-uuid-1",
+          newStatus: "rejected",
+          reason: "No docs",
+        }),
       ).resolves.toBeUndefined();
     });
 
@@ -307,7 +365,11 @@ describe("adminCharityService", () => {
       mockInvoke.mockRejectedValue(new Error("Network timeout"));
 
       await expect(
-        notifyCharityStatusChange({ charityId: "charity-uuid-1", newStatus: "suspended", reason: "Fraud" }),
+        notifyCharityStatusChange({
+          charityId: "charity-uuid-1",
+          newStatus: "suspended",
+          reason: "Fraud",
+        }),
       ).resolves.toBeUndefined();
     });
   });

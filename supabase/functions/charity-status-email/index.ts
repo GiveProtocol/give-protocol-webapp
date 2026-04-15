@@ -161,13 +161,19 @@ serve(async (req: Request) => {
   const resendApiKey = Deno.env.get("RESEND_API_KEY");
 
   if (!supabaseUrl || !supabaseServiceKey) {
-    return jsonResponse({ success: false, error: "Server configuration error" }, 503);
+    return jsonResponse(
+      { success: false, error: "Server configuration error" },
+      503,
+    );
   }
 
   // If Resend is not configured, skip gracefully (email not yet set up)
   if (!resendApiKey) {
     console.warn("RESEND_API_KEY not configured — skipping email notification");
-    return jsonResponse({ success: true, skipped: true, reason: "resend_not_configured" }, 200);
+    return jsonResponse(
+      { success: true, skipped: true, reason: "resend_not_configured" },
+      200,
+    );
   }
 
   // Verify the caller is authenticated
@@ -189,7 +195,10 @@ serve(async (req: Request) => {
     typeof reqObj.newStatus !== "string"
   ) {
     return jsonResponse(
-      { success: false, error: "Missing required fields: charityId, newStatus" },
+      {
+        success: false,
+        error: "Missing required fields: charityId, newStatus",
+      },
       400,
     );
   }
@@ -206,7 +215,8 @@ serve(async (req: Request) => {
 
   // Verify caller has admin role
   const callerToken = authHeader.replace("Bearer ", "");
-  const { data: callerData, error: callerError } = await supabase.auth.getUser(callerToken);
+  const { data: callerData, error: callerError } =
+    await supabase.auth.getUser(callerToken);
   if (callerError || !callerData.user) {
     return jsonResponse({ success: false, error: "Unauthorized" }, 401);
   }
@@ -215,7 +225,10 @@ serve(async (req: Request) => {
     (callerData.user.app_metadata?.role as string | undefined) ??
     (callerData.user.user_metadata?.role as string | undefined);
   if (callerRole !== "admin") {
-    return jsonResponse({ success: false, error: "Forbidden: admin access required" }, 403);
+    return jsonResponse(
+      { success: false, error: "Forbidden: admin access required" },
+      403,
+    );
   }
 
   // Fetch charity name and user_id from profiles
@@ -233,8 +246,13 @@ serve(async (req: Request) => {
   const profile = profileData as CharityProfile;
 
   if (!profile.user_id) {
-    console.warn(`Charity ${request.charityId} has no user_id — cannot send email`);
-    return jsonResponse({ success: true, skipped: true, reason: "no_user_id" }, 200);
+    console.warn(
+      `Charity ${request.charityId} has no user_id — cannot send email`,
+    );
+    return jsonResponse(
+      { success: true, skipped: true, reason: "no_user_id" },
+      200,
+    );
   }
 
   // Fetch contact email from auth.users
@@ -243,15 +261,23 @@ serve(async (req: Request) => {
 
   if (userError || !userData.user?.email) {
     console.error("Failed to fetch charity user email:", userError);
-    return jsonResponse({ success: false, error: "Could not retrieve charity contact email" }, 500);
+    return jsonResponse(
+      { success: false, error: "Could not retrieve charity contact email" },
+      500,
+    );
   }
 
   const charityEmail = userData.user.email;
 
   // Skip wallet-only placeholder emails (no real inbox behind them)
   if (charityEmail.endsWith("@wallet.giveprotocol.io")) {
-    console.warn(`Charity ${request.charityId} uses wallet placeholder email — skipping`);
-    return jsonResponse({ success: true, skipped: true, reason: "wallet_placeholder_email" }, 200);
+    console.warn(
+      `Charity ${request.charityId} uses wallet placeholder email — skipping`,
+    );
+    return jsonResponse(
+      { success: true, skipped: true, reason: "wallet_placeholder_email" },
+      200,
+    );
   }
 
   const actionDate = new Date().toLocaleDateString("en-US", {
@@ -285,7 +311,10 @@ serve(async (req: Request) => {
   if (!sendResponse.ok) {
     const errText = await sendResponse.text();
     console.error(`Resend API error ${sendResponse.status}:`, errText);
-    return jsonResponse({ success: false, error: "Email delivery failed" }, 500);
+    return jsonResponse(
+      { success: false, error: "Email delivery failed" },
+      500,
+    );
   }
 
   const sendResult = (await sendResponse.json()) as Record<string, unknown>;
