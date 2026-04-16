@@ -893,6 +893,7 @@ function HealthIndicator({
   );
 }
 
+/** Compact card displaying a single labelled metric value. */
 function StatCard({
   label,
   value,

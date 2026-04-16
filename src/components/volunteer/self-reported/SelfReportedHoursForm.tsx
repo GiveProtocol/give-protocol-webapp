@@ -38,7 +38,9 @@ const INPUT_BASE_CLASSES =
 const INPUT_WITH_ICON_CLASSES = `${INPUT_BASE_CLASSES} pl-10 pr-4`;
 
 /**
- * Activity type dropdown sub-component
+ * Dropdown selector for choosing an activity type.
+ * @param props - Dropdown state and callbacks
+ * @returns Activity type dropdown element
  */
 interface ActivityTypeDropdownProps {
   value: ActivityType;
@@ -129,7 +131,9 @@ const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
 };
 
 /**
- * Organization selection sub-component
+ * Segmented control for selecting an organization from the registry or entering manually.
+ * @param props - Organization mode, field values, and callbacks
+ * @returns Organization selector element
  */
 interface OrganizationSelectorProps {
   orgMode: OrgMode;
@@ -265,7 +269,9 @@ const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
 };
 
 /**
- * Validation status preview sub-component
+ * Displays a contextual banner indicating the validation status of the entry.
+ * @param props - Current org mode, selection state, and expiration flag
+ * @returns Validation preview banner or null
  */
 interface ValidationPreviewProps {
   orgMode: OrgMode;
@@ -346,6 +352,7 @@ export const SelfReportedHoursForm: React.FC<SelfReportedHoursFormProps> = ({
 
   // Close dropdown when clicking outside
   useEffect(() => {
+    /** Closes the activity-type dropdown when the user clicks outside it. */
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&

@@ -37,6 +37,7 @@ export const CharityOrgAutocomplete: React.FC<CharityOrgAutocompleteProps> = ({
 
   // Close dropdown on outside click
   useEffect(() => {
+    /** Closes the autocomplete dropdown when the user clicks outside the wrapper. */
     const handleClickOutside = (event: MouseEvent) => {
       if (
         wrapperRef.current &&
@@ -98,6 +99,7 @@ export const CharityOrgAutocomplete: React.FC<CharityOrgAutocompleteProps> = ({
     if (e.key === "Escape") setIsOpen(false);
   }, []);
 
+  /** Builds a "City, State" label from an organization record, or null if empty. */
   const locationLabel = (org: CharityOrganization): string | null => {
     const parts = [org.city, org.state].filter(Boolean);
     return parts.length ? parts.join(", ") : null;
