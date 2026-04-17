@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { ScheduledDonations } from "../ScheduledDonations";
 import { useScheduledDonation } from "@/hooks/web3/useScheduledDonation";
 import { useToast } from "@/contexts/ToastContext";
@@ -71,9 +71,14 @@ describe("ScheduledDonations", () => {
       });
     });
 
-    it("shows loading spinner initially", () => {
+    it("shows loading spinner initially", async () => {
       render(<ScheduledDonations />);
       expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+
+      // Drain async fetchSchedules to avoid act() warning
+      await act(async () => {
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
     });
 
     it("fetches and displays scheduled donations", async () => {
@@ -203,7 +208,7 @@ describe("ScheduledDonations", () => {
   });
 
   describe("loading states", () => {
-    it("shows loading state when fetching schedules", () => {
+    it("shows loading state when fetching schedules", async () => {
       (useScheduledDonation as jest.Mock).mockReturnValue({
         getDonorSchedules: mockGetDonorSchedules,
         cancelSchedule: mockCancelSchedule,
@@ -214,6 +219,11 @@ describe("ScheduledDonations", () => {
       render(<ScheduledDonations />);
 
       expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+
+      // Drain async fetchSchedules to avoid act() warning
+      await act(async () => {
+        await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
     });
 
     it("hides loading state after data loads", async () => {

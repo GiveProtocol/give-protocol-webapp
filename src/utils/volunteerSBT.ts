@@ -1,7 +1,7 @@
 import { ethers } from "ethers";
 import { supabase } from "@/lib/supabase";
 import { SelfReportedHours, ValidationStatus } from "@/types/selfReportedHours";
-import { Logger } from "./logger";
+import { Logger } from "@/utils/logger";
 import { SecureRandom } from "@/utils/security/index";
 
 /**

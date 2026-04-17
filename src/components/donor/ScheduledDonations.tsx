@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useScheduledDonation } from "@/hooks/web3/useScheduledDonation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -205,16 +205,23 @@ export const ScheduledDonations: React.FC = () => {
   const [isCancelModalOpen, setIsCancelModalOpen] = useState(false);
   const [cancelError, setCancelError] = useState<string | null>(null);
   const { showToast } = useToast();
+  const isMountedRef = useRef(true);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const fetchSchedules = useCallback(async () => {
     try {
       setLoadingSchedules(true);
       const donorSchedules = await getDonorSchedules();
-      setSchedules(donorSchedules);
+      if (isMountedRef.current) setSchedules(donorSchedules);
     } catch (err) {
-      Logger.error("Failed to fetch scheduled donations:", err);
+      if (isMountedRef.current) Logger.error("Failed to fetch scheduled donations:", err);
     } finally {
-      setLoadingSchedules(false);
+      if (isMountedRef.current) setLoadingSchedules(false);
     }
   }, [getDonorSchedules]);
 

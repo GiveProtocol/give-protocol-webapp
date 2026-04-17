@@ -1,4 +1,4 @@
-import { Logger } from "./logger";
+import { Logger } from "@/utils/logger";
 
 /**
  * Performance monitoring utility for tracking operation durations and identifying slow operations.

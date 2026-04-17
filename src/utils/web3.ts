@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import { Logger } from "@/utils/logger";
 
 /**
  * Formats a blockchain balance for display, converting from wei/smallest unit to readable format

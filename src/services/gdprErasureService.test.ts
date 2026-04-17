@@ -480,8 +480,15 @@ describe('writeDeletionAuditLog (Step 11)', () => {
       error: { message: 'constraint violation' },
     });
 
+    // Suppress expected console.error from the error-handling path
+    const spy = jest.spyOn(console, 'error').mockImplementation(() => {
+      // Intentionally empty — expected error log
+    });
+
     // Should not throw even on failure
     await expect(writeDeletionAuditLog(target, [], [], supabase)).resolves.toBeUndefined();
+    expect(spy).toHaveBeenCalled();
+    spy.mockRestore();
   });
 });
 

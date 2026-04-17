@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import { Logger } from "@/utils/logger";
 
 /**
  * Security manager for handling OAuth state validation and CSRF protection

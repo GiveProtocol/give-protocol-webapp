@@ -1,4 +1,4 @@
-import { Logger } from './logger';
+import { Logger } from "@/utils/logger";
 
 /**
  * Centralised error handling utility for the Give Protocol application.

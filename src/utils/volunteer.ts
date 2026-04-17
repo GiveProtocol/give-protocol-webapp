@@ -5,7 +5,7 @@ import {
   VolunteerHours,
   VolunteerVerification,
 } from "@/types/volunteer";
-import { Logger } from "./logger";
+import { Logger } from "@/utils/logger";
 import { SecureRandom } from "@/utils/security/index";
 
 // ABI for the VolunteerVerification contract

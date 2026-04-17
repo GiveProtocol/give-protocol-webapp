@@ -27,15 +27,7 @@ jest.mock("@/lib/supabase", () => ({
   },
 }));
 
-// Mock logger
-jest.mock("@/utils/logger", () => ({
-  Logger: {
-    info: jest.fn(),
-    error: jest.fn(),
-    warn: jest.fn(),
-    debug: jest.fn(),
-  },
-}));
+// Logger is mocked via moduleNameMapper (ESM-compatible)
 
 // Mock SecureRandom
 jest.mock("@/utils/security/index", () => ({
