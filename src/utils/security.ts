@@ -14,6 +14,7 @@ export class SecurityManager {
     setInterval(() => this.cleanupExpiredStates(), 60 * 1000);
   }
 
+  /** Returns the singleton SecurityManager instance, creating it on first call. */
   static getInstance(): SecurityManager {
     if (!SecurityManager.instance) {
       SecurityManager.instance = new SecurityManager();
@@ -21,12 +22,14 @@ export class SecurityManager {
     return SecurityManager.instance;
   }
 
+  /** Generates a random OAuth state token and stores it with the current timestamp. */
   generateOAuthState(): string {
     const state = crypto.randomUUID();
     this.oauthStates.set(state, Date.now());
     return state;
   }
 
+  /** Validates and consumes an OAuth state token, returning false if missing or expired. */
   validateOAuthState(state: string): boolean {
     const timestamp = this.oauthStates.get(state);
     if (!timestamp) return false;
@@ -44,6 +47,7 @@ export class SecurityManager {
     return isValid;
   }
 
+  /** Removes OAuth state entries that have exceeded the timeout window. */
   private cleanupExpiredStates(): void {
     const now = Date.now();
     for (const [state, timestamp] of this.oauthStates.entries()) {

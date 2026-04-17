@@ -8,6 +8,9 @@ export const Button = ({
   type,
   variant: _variant,
   size: _size,
+  fullWidth: _fullWidth,
+  icon: _icon,
+  iconPosition: _iconPosition,
   ...props
 }) => (
   <button
