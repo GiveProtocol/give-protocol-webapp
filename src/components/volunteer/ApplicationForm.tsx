@@ -89,8 +89,13 @@ const AvailabilitySection: React.FC<{
     </p>
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
       {[
-        "Monday", "Tuesday", "Wednesday", "Thursday",
-        "Friday", "Saturday", "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
       ].map((day) => (
         <label key={day} className="flex items-center space-x-2">
           <input

@@ -128,7 +128,9 @@ function TransactionMobileCard({
             {formatDate(transaction.timestamp, true)}
           </p>
         </div>
-        <span className={`px-2.5 py-1 text-xs leading-5 font-semibold rounded-full ${statusClass}`}>
+        <span
+          className={`px-2.5 py-1 text-xs leading-5 font-semibold rounded-full ${statusClass}`}
+        >
           {t(`status.${transaction.status}`, statusLabel)}
         </span>
       </div>

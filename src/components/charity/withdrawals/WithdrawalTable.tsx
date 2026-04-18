@@ -1,17 +1,21 @@
-import React from 'react';
-import { WithdrawalRequest } from '../../../types/charity';
-import { WithdrawalStatus } from './WithdrawalStatus';
-import { formatCurrency } from '../../../utils/money';
-import { formatDate } from '../../../utils/date';
+import React from "react";
+import { WithdrawalRequest } from "../../../types/charity";
+import { WithdrawalStatus } from "./WithdrawalStatus";
+import { formatCurrency } from "../../../utils/money";
+import { formatDate } from "../../../utils/date";
 
 interface WithdrawalTableProps {
   withdrawals: WithdrawalRequest[];
 }
 
-const WithdrawalMobileCard: React.FC<{ withdrawal: WithdrawalRequest }> = ({ withdrawal }) => (
+const WithdrawalMobileCard: React.FC<{ withdrawal: WithdrawalRequest }> = ({
+  withdrawal,
+}) => (
   <div className="p-4 space-y-1">
     <div className="flex justify-between items-center">
-      <span className="text-sm font-medium text-gray-900">{formatCurrency(withdrawal.amount)}</span>
+      <span className="text-sm font-medium text-gray-900">
+        {formatCurrency(withdrawal.amount)}
+      </span>
       <WithdrawalStatus status={withdrawal.status} />
     </div>
     <p className="text-xs text-gray-500">{formatDate(withdrawal.created_at)}</p>
