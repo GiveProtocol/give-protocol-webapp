@@ -38,13 +38,28 @@ interface WithdrawalTableProps {
 }
 
 /**
+ * Mobile card for a single withdrawal record.
+ * @param withdrawal - The withdrawal data to display
+ */
+const WithdrawalMobileCard: React.FC<WithdrawalRowProps> = ({ withdrawal }) => (
+  <div className="p-4 space-y-1">
+    <div className="flex justify-between items-center">
+      <span className="text-sm font-medium text-gray-900">{formatCurrency(withdrawal.amount)}</span>
+      <WithdrawalStatus status={withdrawal.status} />
+    </div>
+    <p className="text-xs text-gray-500">{formatDate(withdrawal.created_at)}</p>
+  </div>
+);
+
+/**
  * Table component displaying a list of withdrawal records
  * @param withdrawals - Array of withdrawal data to display in the table
  */
 const WithdrawalTable: React.FC<WithdrawalTableProps> = ({ withdrawals }) => (
-  <table className="min-w-full divide-y divide-gray-200">
-    <thead>
-      <tr>
+  <>
+    <table className="hidden sm:table min-w-full divide-y divide-gray-200">
+      <thead>
+        <tr>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
           <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -56,6 +71,12 @@ const WithdrawalTable: React.FC<WithdrawalTableProps> = ({ withdrawals }) => (
         ))}
       </tbody>
     </table>
+    <div className="sm:hidden divide-y divide-gray-200">
+      {withdrawals?.map((withdrawal) => (
+        <WithdrawalMobileCard key={withdrawal.id} withdrawal={withdrawal} />
+      ))}
+    </div>
+  </>
 );
 
 /** Displays a table of charity withdrawal records with date, amount, and status. */
