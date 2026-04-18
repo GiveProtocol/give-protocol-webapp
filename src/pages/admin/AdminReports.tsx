@@ -95,7 +95,7 @@ function MiniBarChart({
 }: {
   data: { label: string; value: number }[];
 }): React.ReactElement {
-  if (data.length === 0) return <></>;
+  if (data.length === 0) return null;
   const max = Math.max(...data.map((d) => d.value), 1);
   const barW = 36;
   const gap = 6;
@@ -213,8 +213,8 @@ function DateRangeSelector({
 }): React.ReactElement {
   const handlePresetClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
-      const p = e.currentTarget.dataset.preset as DatePreset;
-      onPreset(p);
+      const preset = e.currentTarget.dataset.preset as DatePreset;
+      onPreset(preset);
     },
     [onPreset],
   );
@@ -276,7 +276,7 @@ function ReportPagination({
   onPrev: () => void;
   onNext: () => void;
 }): React.ReactElement {
-  if (totalPages <= 1) return <></>;
+  if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
       <Button
@@ -341,8 +341,9 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <label className="text-sm text-gray-600">Group by:</label>
+          <label htmlFor="group-by-select" className="text-sm text-gray-600">Group by:</label>
           <select
+            id="group-by-select"
             className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             value={groupBy}
             onChange={handleGroupByChange}
@@ -377,8 +378,7 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
       )}
 
       {!loading && rows.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm overflow-x-auto">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -418,8 +418,7 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </table>
       )}
     </div>
   );
@@ -478,8 +477,7 @@ function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
       )}
 
       {!loading && rows.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm overflow-x-auto">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -517,8 +515,7 @@ function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </table>
       )}
     </div>
   );
@@ -577,8 +574,7 @@ function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
       )}
 
       {!loading && rows.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm overflow-x-auto">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -624,8 +620,7 @@ function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </table>
       )}
     </div>
   );
@@ -684,8 +679,7 @@ function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
       )}
 
       {!loading && rows.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm overflow-x-auto">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -731,8 +725,7 @@ function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </table>
       )}
     </div>
   );
@@ -806,8 +799,7 @@ function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
       )}
 
       {!loading && entries.length > 0 && (
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+        <table className="w-full text-left text-sm overflow-x-auto">
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
@@ -853,8 +845,7 @@ function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
                 </tr>
               ))}
             </tbody>
-          </table>
-        </div>
+        </table>
       )}
 
       <ReportPagination
