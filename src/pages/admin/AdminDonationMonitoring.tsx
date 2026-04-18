@@ -258,10 +258,11 @@ function FlagModal({
         for admin review.
       </p>
       <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="flag-reason" className="block text-sm font-medium text-gray-700 mb-1">
           Reason <span className="text-red-500">*</span>
         </label>
         <textarea
+          id="flag-reason"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           rows={3}
           value={reason}
@@ -477,10 +478,11 @@ const AdminDonationMonitoring: React.FC = () => {
           </h2>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="report-date-from" className="block text-sm font-medium text-gray-700 mb-1">
                 From
               </label>
               <input
+                id="report-date-from"
                 type="date"
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 value={reportDateFrom}
@@ -488,10 +490,11 @@ const AdminDonationMonitoring: React.FC = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="report-date-to" className="block text-sm font-medium text-gray-700 mb-1">
                 To
               </label>
               <input
+                id="report-date-to"
                 type="date"
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
                 value={reportDateTo}

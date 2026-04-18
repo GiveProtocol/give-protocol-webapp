@@ -473,10 +473,11 @@ function AuditFilterBar({
   return (
     <div className="flex flex-wrap gap-3 items-end p-4 bg-gray-50 rounded-lg mb-4">
       <div className="flex-1 min-w-[180px]">
-        <label className="block text-xs font-medium text-gray-600 mb-1">
+        <label htmlFor="audit-action-type" className="block text-xs font-medium text-gray-600 mb-1">
           Action Type
         </label>
         <select
+          id="audit-action-type"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={filters.actionType}
           onChange={onActionTypeChange}
@@ -490,10 +491,11 @@ function AuditFilterBar({
         </select>
       </div>
       <div className="flex-1 min-w-[180px]">
-        <label className="block text-xs font-medium text-gray-600 mb-1">
+        <label htmlFor="audit-entity-type" className="block text-xs font-medium text-gray-600 mb-1">
           Entity Type
         </label>
         <select
+          id="audit-entity-type"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={filters.entityType}
           onChange={onEntityTypeChange}
@@ -507,10 +509,11 @@ function AuditFilterBar({
         </select>
       </div>
       <div className="min-w-[140px]">
-        <label className="block text-xs font-medium text-gray-600 mb-1">
+        <label htmlFor="audit-date-from" className="block text-xs font-medium text-gray-600 mb-1">
           Date From
         </label>
         <input
+          id="audit-date-from"
           type="date"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={filters.dateFrom}
@@ -518,10 +521,11 @@ function AuditFilterBar({
         />
       </div>
       <div className="min-w-[140px]">
-        <label className="block text-xs font-medium text-gray-600 mb-1">
+        <label htmlFor="audit-date-to" className="block text-xs font-medium text-gray-600 mb-1">
           Date To
         </label>
         <input
+          id="audit-date-to"
           type="date"
           className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
           value={filters.dateTo}
