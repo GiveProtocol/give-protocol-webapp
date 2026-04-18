@@ -159,7 +159,17 @@ interface FormFieldProps {
 }
 
 /** Labeled input field with validation error display. */
-const FormField: React.FC<FormFieldProps> = ({ id, label, required, type = "text", value, onChange, className, placeholder, error }) => (
+const FormField: React.FC<FormFieldProps> = ({
+  id,
+  label,
+  required,
+  type = "text",
+  value,
+  onChange,
+  className,
+  placeholder,
+  error,
+}) => (
   <div>
     <label
       htmlFor={id}
@@ -176,11 +186,7 @@ const FormField: React.FC<FormFieldProps> = ({ id, label, required, type = "text
       placeholder={placeholder}
       required={required}
     />
-    {error && (
-      <p className="text-sm text-red-600 mt-1">
-        {error}
-      </p>
-    )}
+    {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
   </div>
 );
 
@@ -197,7 +203,17 @@ interface FormSelectFieldProps {
 }
 
 /** Labeled select field with validation error display. */
-const FormSelectField: React.FC<FormSelectFieldProps> = ({ id, label, required, value, onChange, className, children, error, colSpan }) => (
+const FormSelectField: React.FC<FormSelectFieldProps> = ({
+  id,
+  label,
+  required,
+  value,
+  onChange,
+  className,
+  children,
+  error,
+  colSpan,
+}) => (
   <div className={colSpan ? "md:col-span-2" : undefined}>
     <label
       htmlFor={id}
@@ -214,11 +230,7 @@ const FormSelectField: React.FC<FormSelectFieldProps> = ({ id, label, required, 
     >
       {children}
     </select>
-    {error && (
-      <p className="text-sm text-red-600 mt-1">
-        {error}
-      </p>
-    )}
+    {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
   </div>
 );
 
@@ -230,32 +242,29 @@ const ConsentExplanation: React.FC = () => (
     </p>
     <ol className="list-decimal pl-6 space-y-2 text-gray-700 dark:text-gray-300 text-sm">
       <li>
-        My personal information will be processed for the purposes
-        of evaluating my volunteer application, managing volunteer
-        assignments, and related activities.
+        My personal information will be processed for the purposes of evaluating
+        my volunteer application, managing volunteer assignments, and related
+        activities.
       </li>
       <li>
-        GIVE PROTOCOL may collect various categories of my personal
-        information, including identity information, contact
-        details, background information, availability, references,
-        and where relevant and permitted by law, certain special
-        categories of data.
+        GIVE PROTOCOL may collect various categories of my personal information,
+        including identity information, contact details, background information,
+        availability, references, and where relevant and permitted by law,
+        certain special categories of data.
       </li>
       <li>
-        My personal information may be shared with authorized
-        personnel within the charity organization offering the
-        volunteer opportunity, service providers, and third parties
-        as outlined in the Privacy Notice.
+        My personal information may be shared with authorized personnel within
+        the charity organization offering the volunteer opportunity, service
+        providers, and third parties as outlined in the Privacy Notice.
       </li>
       <li>
-        My personal information may be transferred internationally
-        with appropriate safeguards in place.
+        My personal information may be transferred internationally with
+        appropriate safeguards in place.
       </li>
       <li>
-        I have certain rights regarding my personal information,
-        which vary depending on my location, including the rights to
-        access, rectify, delete, restrict processing, data
-        portability, and object to processing.
+        I have certain rights regarding my personal information, which vary
+        depending on my location, including the rights to access, rectify,
+        delete, restrict processing, data portability, and object to processing.
       </li>
       <li>
         I can withdraw my consent at any time by contacting{" "}
@@ -265,10 +274,9 @@ const ConsentExplanation: React.FC = () => (
         >
           legal@giveprotocol.io <Mail className="w-3 h-3" />
         </a>
-        {", "}though this will not affect the lawfulness of
-        processing based on my consent before withdrawal.
-        Withdrawing consent may impact the organization&apos;s
-        ability to consider my volunteer application.
+        {", "}though this will not affect the lawfulness of processing based on
+        my consent before withdrawal. Withdrawing consent may impact the
+        organization&apos;s ability to consider my volunteer application.
       </li>
     </ol>
   </div>
@@ -276,11 +284,16 @@ const ConsentExplanation: React.FC = () => (
 
 interface ConsentPanelProps {
   formData: FormData;
-  onCheckboxChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onCheckboxChange: (
+    _field: keyof FormData,
+  ) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 /** Consent panel with explanation, specific consents, and acknowledgment checkboxes. */
-const ConsentPanel: React.FC<ConsentPanelProps> = ({ formData, onCheckboxChange }) => (
+const ConsentPanel: React.FC<ConsentPanelProps> = ({
+  formData,
+  onCheckboxChange,
+}) => (
   <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-6 border-l-4 border-emerald-600">
     <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-4">
       Volunteer Application Consent
@@ -288,10 +301,10 @@ const ConsentPanel: React.FC<ConsentPanelProps> = ({ formData, onCheckboxChange 
 
     <div className="mb-4 text-gray-700 dark:text-gray-300 leading-relaxed">
       <p>
-        By completing and submitting this form, I consent to GIVE
-        PROTOCOL collecting, processing, and storing my personal
-        information as described in the Volunteer Application Privacy
-        Notice, which I have read and understood.
+        By completing and submitting this form, I consent to GIVE PROTOCOL
+        collecting, processing, and storing my personal information as described
+        in the Volunteer Application Privacy Notice, which I have read and
+        understood.
       </p>
     </div>
 
@@ -302,8 +315,7 @@ const ConsentPanel: React.FC<ConsentPanelProps> = ({ formData, onCheckboxChange 
         SPECIFIC CONSENTS
       </p>
       <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">
-        Please review and indicate your consent to each of the
-        following:
+        Please review and indicate your consent to each of the following:
       </p>
       <div className="space-y-3">
         <ConsentCheckbox
@@ -351,10 +363,22 @@ const ConsentPanel: React.FC<ConsentPanelProps> = ({ formData, onCheckboxChange 
 const PersonalInfoSection: React.FC<{
   formData: FormData;
   validationErrors: Record<string, string>;
-  handleFieldChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleFieldChange: (
+    _field: keyof FormData,
+  ) => (
+    _e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
   inputClasses: string;
   selectClasses: string;
-}> = ({ formData, validationErrors, handleFieldChange, inputClasses, selectClasses }) => (
+}> = ({
+  formData,
+  validationErrors,
+  handleFieldChange,
+  inputClasses,
+  selectClasses,
+}) => (
   <section className="mb-8">
     <SectionHeader number={1} title="Personal Information" />
     <div className="grid md:grid-cols-2 gap-x-4 gap-y-6">
@@ -467,14 +491,25 @@ const PersonalInfoSection: React.FC<{
 /** Tag-style skill input field with removable skill pills. */
 const SkillInputField: React.FC<{
   skills: string[];
-  createRemoveSkillHandler: (_index: number) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  createRemoveSkillHandler: (
+    _index: number,
+  ) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
   currentSkillInput: string;
   handleSkillInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSkillInputKeyDown: (_e: React.KeyboardEvent<HTMLInputElement>) => void;
   showSkillPlaceholder: boolean;
   tagInputRef: React.RefObject<HTMLInputElement>;
   error?: string;
-}> = ({ skills, createRemoveSkillHandler, currentSkillInput, handleSkillInputChange, handleSkillInputKeyDown, showSkillPlaceholder, tagInputRef, error }) => (
+}> = ({
+  skills,
+  createRemoveSkillHandler,
+  currentSkillInput,
+  handleSkillInputChange,
+  handleSkillInputKeyDown,
+  showSkillPlaceholder,
+  tagInputRef,
+  error,
+}) => (
   <div className="mb-4">
     <label
       htmlFor="skillInput"
@@ -506,11 +541,7 @@ const SkillInputField: React.FC<{
         }
       />
     </div>
-    {error && (
-      <p className="text-sm text-red-600 mt-1">
-        {error}
-      </p>
-    )}
+    {error && <p className="text-sm text-red-600 mt-1">{error}</p>}
   </div>
 );
 
@@ -518,15 +549,34 @@ const SkillInputField: React.FC<{
 const SkillsAndInterestsSection: React.FC<{
   formData: FormData;
   validationErrors: Record<string, string>;
-  handleFieldChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
+  handleFieldChange: (
+    _field: keyof FormData,
+  ) => (
+    _e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
   handleSkillInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSkillInputKeyDown: (_e: React.KeyboardEvent<HTMLInputElement>) => void;
-  createRemoveSkillHandler: (_index: number) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  createRemoveSkillHandler: (
+    _index: number,
+  ) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
   currentSkillInput: string;
   showSkillPlaceholder: boolean;
   tagInputRef: React.RefObject<HTMLInputElement>;
   textareaClasses: string;
-}> = ({ formData, validationErrors, handleFieldChange, handleSkillInputChange, handleSkillInputKeyDown, createRemoveSkillHandler, currentSkillInput, showSkillPlaceholder, tagInputRef, textareaClasses }) => (
+}> = ({
+  formData,
+  validationErrors,
+  handleFieldChange,
+  handleSkillInputChange,
+  handleSkillInputKeyDown,
+  createRemoveSkillHandler,
+  currentSkillInput,
+  showSkillPlaceholder,
+  tagInputRef,
+  textareaClasses,
+}) => (
   <section className="mb-8 mt-8">
     <SectionHeader number={2} title="Skills & Interests" />
 
@@ -543,8 +593,7 @@ const SkillsAndInterestsSection: React.FC<{
 
     <fieldset className="mb-4">
       <legend className="block text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
-        Commitment Level{" "}
-        <span className="text-red-500 text-base">*</span>
+        Commitment Level <span className="text-red-500 text-base">*</span>
       </legend>
       <div className="grid md:grid-cols-3 gap-3">
         <CommitmentOption
@@ -603,7 +652,9 @@ const SkillsAndInterestsSection: React.FC<{
 const ConsentAndAgreementSection: React.FC<{
   formData: FormData;
   validationErrors: Record<string, string>;
-  handleCheckboxChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleCheckboxChange: (
+    _field: keyof FormData,
+  ) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }> = ({ formData, validationErrors, handleCheckboxChange }) => (
   <section className="mb-8 mt-8">
     <SectionHeader number={3} title="Consent & Agreement" />
@@ -630,10 +681,10 @@ const FormFooter: React.FC<{ loading: boolean }> = ({ loading }) => (
       {loading ? "Submitting..." : "Submit Volunteer Application"}
     </Button>
     <p className="mt-4 text-center text-xs text-gray-500 dark:text-gray-400">
-      By submitting this application, you acknowledge that you have
-      read and understood Give Protocol&apos;s privacy policy and
-      volunteer guidelines. Your data will be processed in accordance
-      with applicable data protection regulations.
+      By submitting this application, you acknowledge that you have read and
+      understood Give Protocol&apos;s privacy policy and volunteer guidelines.
+      Your data will be processed in accordance with applicable data protection
+      regulations.
     </p>
   </div>
 );
@@ -642,11 +693,21 @@ interface ApplicationDialogProps {
   handleSubmit: (_e: React.FormEvent) => void;
   formData: FormData;
   validationErrors: Record<string, string>;
-  handleFieldChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => void;
-  handleCheckboxChange: (_field: keyof FormData) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleFieldChange: (
+    _field: keyof FormData,
+  ) => (
+    _e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
+  ) => void;
+  handleCheckboxChange: (
+    _field: keyof FormData,
+  ) => (_e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSkillInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSkillInputKeyDown: (_e: React.KeyboardEvent<HTMLInputElement>) => void;
-  createRemoveSkillHandler: (_index: number) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
+  createRemoveSkillHandler: (
+    _index: number,
+  ) => (_e: React.MouseEvent<HTMLButtonElement>) => void;
   currentSkillInput: string;
   showSkillPlaceholder: boolean;
   tagInputRef: React.RefObject<HTMLInputElement>;
@@ -658,12 +719,24 @@ interface ApplicationDialogProps {
 
 /** Dialog containing the volunteer application form with personal info, skills, and consent sections. */
 const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
-  handleSubmit, formData, validationErrors, handleFieldChange, handleCheckboxChange,
-  handleSkillInputChange, handleSkillInputKeyDown, createRemoveSkillHandler,
-  currentSkillInput, showSkillPlaceholder, tagInputRef, inputClasses, textareaClasses, selectClasses, loading,
+  handleSubmit,
+  formData,
+  validationErrors,
+  handleFieldChange,
+  handleCheckboxChange,
+  handleSkillInputChange,
+  handleSkillInputKeyDown,
+  createRemoveSkillHandler,
+  currentSkillInput,
+  showSkillPlaceholder,
+  tagInputRef,
+  inputClasses,
+  textareaClasses,
+  selectClasses,
+  loading,
 }) => (
   <dialog
-    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0 transition-all duration-300 ease-out animate-in fade-in zoom-in-95"
+    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-[95%] max-h-[90dvh] overflow-hidden z-50 p-0 m-0 transition-all duration-300 ease-out animate-in fade-in zoom-in-95"
     style={{ boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)" }}
     open
     aria-modal="true"
@@ -674,10 +747,7 @@ const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
         className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/10 to-transparent"
         aria-hidden="true"
       />
-      <h1
-        id="modal-title"
-        className="relative z-10 text-3xl font-light mb-2"
-      >
+      <h1 id="modal-title" className="relative z-10 text-3xl font-light mb-2">
         Volunteer Opportunity Application
       </h1>
       <p className="relative z-10 text-lg opacity-90 pb-2">

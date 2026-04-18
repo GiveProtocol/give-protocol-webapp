@@ -97,6 +97,69 @@ function TransactionTableHeader({
   );
 }
 
+/** Mobile card for a single transaction record. */
+function TransactionMobileCard({
+  transaction,
+  t,
+}: {
+  transaction: Transaction;
+  t: (_key: string, _fallback?: string) => string;
+}): React.ReactElement {
+  const organization =
+    transaction.metadata?.organization ||
+    transaction.metadata?.donor ||
+    t("donor.anonymous", "Anonymous");
+  const statusClass =
+    STATUS_CLASSES[transaction.status] || "bg-red-100 text-red-800";
+  const statusLabel =
+    transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1);
+
+  return (
+    <div className="p-4 space-y-2">
+      <div className="flex justify-between items-start">
+        <div>
+          <p className="text-sm font-medium text-gray-900">
+            {t(
+              `contribution.type.${transaction.purpose.toLowerCase().replace(" ", "")}`,
+              transaction.purpose,
+            )}
+          </p>
+          <p className="text-xs text-gray-500">
+            {formatDate(transaction.timestamp, true)}
+          </p>
+        </div>
+        <span
+          className={`px-2.5 py-1 text-xs leading-5 font-semibold rounded-full ${statusClass}`}
+        >
+          {t(`status.${transaction.status}`, statusLabel)}
+        </span>
+      </div>
+      <div className="flex justify-between text-sm">
+        <span className="text-gray-900">
+          {transaction.amount} {transaction.cryptoType}
+        </span>
+        <span className="text-gray-500">
+          <CurrencyDisplay amount={transaction.fiatValue || 0} />
+        </span>
+      </div>
+      <p className="text-xs text-gray-500">{organization}</p>
+      {transaction.hash && (
+        <a
+          href={`https://moonscan.io/tx/${transaction.hash}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs text-emerald-600 hover:text-emerald-900 flex items-center gap-1"
+        >
+          <span className="truncate max-w-[160px]">
+            {transaction.hash.substring(0, 20)}...
+          </span>
+          <ExternalLink className="h-3 w-3 flex-shrink-0" />
+        </a>
+      )}
+    </div>
+  );
+}
+
 /** Single transaction row with formatted date, status badge, and verification link. */
 function TransactionRow({
   transaction,
@@ -291,7 +354,7 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
           {t("contributions.export")}
         </Button>
       </div>
-      <div className="overflow-x-auto">
+      <div className="hidden sm:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200">
           <TransactionTableHeader
             getSortIcon={getSortIcon}
@@ -311,6 +374,15 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
             ))}
           </tbody>
         </table>
+      </div>
+      <div className="sm:hidden divide-y divide-gray-200">
+        {sortedTransactions.map((transaction) => (
+          <TransactionMobileCard
+            key={transaction.id}
+            transaction={transaction}
+            t={t}
+          />
+        ))}
       </div>
     </div>
   );

@@ -7,7 +7,9 @@ describe("ProtocolStats", () => {
 
     // Check for stat labels
     expect(screen.getByText("Blockchain Networks Served")).toBeInTheDocument();
-    expect(screen.getByText("Charitable Sectors Benefitted")).toBeInTheDocument();
+    expect(
+      screen.getByText("Charitable Sectors Benefitted"),
+    ).toBeInTheDocument();
   });
 
   it("displays the blockchain networks count", () => {
@@ -26,8 +28,10 @@ describe("ProtocolStats", () => {
     render(<ProtocolStats />);
 
     // Check that the container has the grid layout
-    const container = screen.getByText("Blockchain Networks Served").closest(".grid");
-    expect(container).toHaveClass("grid-cols-2", "gap-8");
+    const container = screen
+      .getByText("Blockchain Networks Served")
+      .closest(".grid");
+    expect(container).toHaveClass("grid-cols-1", "sm:grid-cols-2", "gap-8");
   });
 
   it("renders stat value elements for each stat", () => {

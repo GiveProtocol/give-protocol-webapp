@@ -106,9 +106,13 @@ const ConsentCheckbox: React.FC<ConsentCheckboxProps> = ({
 /** Dialog body containing consent checkboxes, acknowledgments, and action buttons. */
 const ConsentDialog: React.FC<{
   essentialProcessing: boolean;
-  onEssentialProcessingChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onEssentialProcessingChange: (
+    _e: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
   internationalTransfers: boolean;
-  onInternationalTransfersChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInternationalTransfersChange: (
+    _e: React.ChangeEvent<HTMLInputElement>,
+  ) => void;
   ageConfirmation: boolean;
   onAgeConfirmationChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   privacyNotice: boolean;
@@ -118,14 +122,21 @@ const ConsentDialog: React.FC<{
   onAccept: () => void;
   onDecline: () => void;
 }> = ({
-  essentialProcessing, onEssentialProcessingChange,
-  internationalTransfers, onInternationalTransfersChange,
-  ageConfirmation, onAgeConfirmationChange,
-  privacyNotice, onPrivacyNoticeChange,
-  validationError, isSubmitDisabled, onAccept, onDecline,
+  essentialProcessing,
+  onEssentialProcessingChange,
+  internationalTransfers,
+  onInternationalTransfersChange,
+  ageConfirmation,
+  onAgeConfirmationChange,
+  privacyNotice,
+  onPrivacyNoticeChange,
+  validationError,
+  isSubmitDisabled,
+  onAccept,
+  onDecline,
 }) => (
   <dialog
-    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0"
+    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90dvh] overflow-hidden z-50 p-0 m-0"
     open
     aria-modal="true"
     aria-labelledby="consent-modal-title"
@@ -137,9 +148,9 @@ const ConsentDialog: React.FC<{
       </h2>
       <p className="mb-6 text-gray-700 leading-relaxed">
         By completing and submitting this form, I consent to GIVE PROTOCOL
-        collecting, processing, and storing my personal information as
-        described in the Volunteer Application Privacy Notice, which I have
-        read and understood.
+        collecting, processing, and storing my personal information as described
+        in the Volunteer Application Privacy Notice, which I have read and
+        understood.
       </p>
       <p className="font-semibold text-gray-900 mb-3">I understand that:</p>
       <ConsentUnderstandingList />
@@ -213,10 +224,10 @@ const ConsentDialog: React.FC<{
       </div>
 
       <p className="mt-6 text-center text-sm text-gray-500">
-        By submitting this application, you acknowledge that you have read
-        and understood Give Protocol&apos;s privacy policy and volunteer
-        guidelines. Your data will be processed in accordance with
-        applicable data protection regulations.
+        By submitting this application, you acknowledge that you have read and
+        understood Give Protocol&apos;s privacy policy and volunteer guidelines.
+        Your data will be processed in accordance with applicable data
+        protection regulations.
       </p>
     </article>
   </dialog>

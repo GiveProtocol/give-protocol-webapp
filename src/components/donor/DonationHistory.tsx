@@ -21,8 +21,51 @@ const getStatusStyles = (status: string): string => {
   return "bg-red-100 text-red-800";
 };
 
+/** Mobile card for a single donation record. */
+const DonationMobileCard: React.FC<{ donation: Transaction }> = ({
+  donation,
+}) => (
+  <div className="p-4 space-y-2">
+    <div className="flex justify-between items-start">
+      <div>
+        <p className="text-sm font-medium text-gray-900">
+          {donation.metadata?.organization || "Unknown"}
+        </p>
+        <p className="text-xs text-gray-500">
+          {formatDate(donation.timestamp, true)}
+        </p>
+      </div>
+      <span
+        className={`px-2 text-xs leading-5 font-semibold rounded-full ${getStatusStyles(donation.status)}`}
+      >
+        {donation.status.charAt(0).toUpperCase() + donation.status.slice(1)}
+      </span>
+    </div>
+    <div className="flex justify-between text-sm">
+      <span className="text-gray-900">
+        {donation.amount} {donation.cryptoType || "GLMR"}
+      </span>
+      <span className="text-gray-500">
+        {donation.fiatValue ? formatCurrency(donation.fiatValue) : "N/A"}
+      </span>
+    </div>
+    {donation.hash && (
+      <a
+        href={`https://moonscan.io/tx/${donation.hash}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-xs text-emerald-600 hover:text-emerald-900 block truncate"
+      >
+        {donation.hash.substring(0, 20)}...
+      </a>
+    )}
+  </div>
+);
+
 /** Table displaying donation records with date, charity, amounts, tx hash, and status. */
-const DonationTable: React.FC<{ donations: Transaction[] }> = ({ donations }) => (
+const DonationTable: React.FC<{ donations: Transaction[] }> = ({
+  donations,
+}) => (
   <table className="min-w-full divide-y divide-gray-200">
     <thead>
       <tr>
@@ -59,9 +102,7 @@ const DonationTable: React.FC<{ donations: Transaction[] }> = ({ donations }) =>
             {donation.amount} {donation.cryptoType || "GLMR"}
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-            {donation.fiatValue
-              ? formatCurrency(donation.fiatValue)
-              : "N/A"}
+            {donation.fiatValue ? formatCurrency(donation.fiatValue) : "N/A"}
           </td>
           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
             {donation.hash ? (
@@ -180,8 +221,13 @@ export const DonationHistory: React.FC<DonationHistoryProps> = ({
         onTimeFilterChange={handleTimeFilterChange}
         onShowExportModal={handleShowExportModal}
       />
-      <div className="overflow-x-auto">
+      <div className="hidden sm:block overflow-x-auto">
         <DonationTable donations={filteredDonations} />
+      </div>
+      <div className="sm:hidden divide-y divide-gray-200">
+        {filteredDonations.map((donation) => (
+          <DonationMobileCard key={donation.id} donation={donation} />
+        ))}
       </div>
 
       {/* Export Modal */}
