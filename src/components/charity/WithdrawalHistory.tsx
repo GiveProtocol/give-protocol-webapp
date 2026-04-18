@@ -60,17 +60,11 @@ const WithdrawalMobileCard: React.FC<WithdrawalRowProps> = ({ withdrawal }) => (
 const WithdrawalTable: React.FC<WithdrawalTableProps> = ({ withdrawals }) => (
   <>
     <table className="hidden sm:table min-w-full divide-y divide-gray-200">
-      <thead>
+      <thead className="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
         <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Date
-          </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Amount
-          </th>
-          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-            Status
-          </th>
+          <th className="px-6 py-3">Date</th>
+          <th className="px-6 py-3">Amount</th>
+          <th className="px-6 py-3">Status</th>
         </tr>
       </thead>
       <tbody className="divide-y divide-gray-200">
