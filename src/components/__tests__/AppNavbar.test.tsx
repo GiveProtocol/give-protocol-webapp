@@ -1,8 +1,9 @@
 import React from "react";
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import { useWeb3 } from "@/contexts/Web3Context";
 import { AppNavbar } from "../AppNavbar";
 
 // Logo, SettingsMenu, ConnectButton, ClientOnly, Wallet components,
@@ -15,6 +16,7 @@ import { AppNavbar } from "../AppNavbar";
 // wallet: null) are sufficient for AppNavbar rendering tests.
 
 const mockUseAuth = jest.mocked(useAuth);
+const mockUseWeb3 = jest.mocked(useWeb3);
 
 interface MockAuthUser {
   id: string;
@@ -59,10 +61,25 @@ const renderNavbar = (initialRoute = "/browse") =>
     </MemoryRouter>,
   );
 
+// Default useWeb3 state (wallet not connected)
+const defaultWeb3State = {
+  provider: null,
+  signer: null,
+  address: null,
+  chainId: 1287,
+  isConnected: false,
+  isConnecting: false,
+  error: null,
+  connect: jest.fn(),
+  disconnect: jest.fn(),
+  switchChain: jest.fn(),
+};
+
 describe("AppNavbar", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockUseAuth.mockReturnValue(createAuthMock());
+    mockUseWeb3.mockReturnValue({ ...defaultWeb3State });
   });
 
   describe("Brand and logo", () => {
@@ -236,6 +253,209 @@ describe("AppNavbar", () => {
       expect(
         screen.getByLabelText("Application navigation"),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Connected wallet UI", () => {
+    beforeEach(() => {
+      mockUseWeb3.mockReturnValue({
+        provider: null,
+        signer: null,
+        address: "0x1234567890abcdef1234567890abcdef12345678",
+        chainId: 8453,
+        isConnected: true,
+        isConnecting: false,
+        error: null,
+        connect: jest.fn(),
+        disconnect: jest.fn(),
+        switchChain: jest.fn(),
+      });
+      mockUseAuth.mockReturnValue(
+        createAuthMock({
+          user: { id: "user-1", email: "test@example.com" },
+          userType: "donor",
+        }),
+      );
+    });
+
+    it("renders wallet menu button when wallet is connected", () => {
+      renderNavbar();
+      expect(screen.getByLabelText("Wallet menu")).toBeInTheDocument();
+    });
+
+    it("displays formatted wallet address when connected", () => {
+      renderNavbar();
+      expect(screen.getByText("Main Wallet")).toBeInTheDocument();
+    });
+
+    it("does not render Sign In link when wallet is connected", () => {
+      renderNavbar();
+      expect(screen.queryByText("Sign In")).not.toBeInTheDocument();
+    });
+
+    it("does not render ConnectButton when wallet is connected", () => {
+      renderNavbar();
+      expect(screen.queryByTestId("connect-button")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("handleDisconnect", () => {
+    it("calls disconnect and logout when disconnect is triggered", async () => {
+      const mockDisconnect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+      const mockLogout = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+
+      mockUseWeb3.mockReturnValue({
+        provider: null,
+        signer: null,
+        address: "0x1234567890abcdef1234567890abcdef12345678",
+        chainId: 8453,
+        isConnected: true,
+        isConnecting: false,
+        error: null,
+        connect: jest.fn(),
+        disconnect: mockDisconnect,
+        switchChain: jest.fn(),
+      });
+      mockUseAuth.mockReturnValue(
+        createAuthMock({
+          user: { id: "user-1", email: "test@example.com" },
+          userType: "donor",
+          logout: mockLogout,
+        }),
+      );
+
+      renderNavbar();
+
+      // Open wallet dropdown
+      fireEvent.click(screen.getByLabelText("Wallet menu"));
+
+      // Click Disconnect in the dropdown
+      await act(async () => {
+        fireEvent.click(screen.getByText("Disconnect"));
+      });
+
+      await waitFor(() => {
+        expect(mockDisconnect).toHaveBeenCalled();
+        expect(mockLogout).toHaveBeenCalled();
+      });
+    });
+
+    it("calls disconnect without logout when no user is logged in", async () => {
+      const mockDisconnect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+
+      mockUseWeb3.mockReturnValue({
+        provider: null,
+        signer: null,
+        address: "0x1234567890abcdef1234567890abcdef12345678",
+        chainId: 8453,
+        isConnected: true,
+        isConnecting: false,
+        error: null,
+        connect: jest.fn(),
+        disconnect: mockDisconnect,
+        switchChain: jest.fn(),
+      });
+      mockUseAuth.mockReturnValue(createAuthMock());
+
+      renderNavbar();
+
+      // Open wallet dropdown
+      fireEvent.click(screen.getByLabelText("Wallet menu"));
+
+      // Click Disconnect in the dropdown
+      await act(async () => {
+        fireEvent.click(screen.getByText("Disconnect"));
+      });
+
+      await waitFor(() => {
+        expect(mockDisconnect).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("handleSignOut", () => {
+    it("calls logout when Sign Out is clicked", async () => {
+      const mockLogout = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+
+      mockUseAuth.mockReturnValue(
+        createAuthMock({
+          user: { id: "user-1", email: "test@example.com" },
+          userType: "donor",
+          logout: mockLogout,
+        }),
+      );
+
+      renderNavbar();
+      const signOutButton = screen.getByLabelText("Sign out");
+
+      await act(async () => {
+        fireEvent.click(signOutButton);
+      });
+
+      await waitFor(() => {
+        expect(mockLogout).toHaveBeenCalled();
+      });
+    });
+
+    it("does not throw when logout rejects", async () => {
+      const mockLogout = jest
+        .fn<() => Promise<void>>()
+        .mockRejectedValue(new Error("Logout failed"));
+
+      mockUseAuth.mockReturnValue(
+        createAuthMock({
+          user: { id: "user-1", email: "test@example.com" },
+          userType: "donor",
+          logout: mockLogout,
+        }),
+      );
+
+      renderNavbar();
+      const signOutButton = screen.getByLabelText("Sign out");
+
+      await act(async () => {
+        fireEvent.click(signOutButton);
+      });
+
+      await waitFor(() => {
+        expect(mockLogout).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("Mobile Sign Out button", () => {
+    it("renders Sign Out in mobile menu when authenticated and not connected", () => {
+      mockUseAuth.mockReturnValue(
+        createAuthMock({
+          user: { id: "user-1", email: "test@example.com" },
+          userType: "donor",
+        }),
+      );
+      renderNavbar();
+
+      // Open mobile menu
+      fireEvent.click(screen.getByLabelText("Open menu"));
+
+      // Mobile menu should be visible
+      const mobileMenu = document.getElementById("mobile-menu");
+      expect(mobileMenu).toBeInTheDocument();
+
+      // Find Sign Out text within the mobile menu
+      // The button contains a LogOut icon SVG + "Sign Out" text
+      const signOutElements = screen.getAllByText(/Sign Out/);
+      expect(signOutElements.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  describe("Escape key closes mobile menu", () => {
+    it("closes mobile menu when Escape key is pressed", () => {
+      renderNavbar();
+      const menuButton = screen.getByLabelText("Open menu");
+      fireEvent.click(menuButton);
+      expect(document.getElementById("mobile-menu")).toBeInTheDocument();
+
+      fireEvent.keyDown(document, { key: "Escape" });
+      expect(document.getElementById("mobile-menu")).not.toBeInTheDocument();
     });
   });
 });

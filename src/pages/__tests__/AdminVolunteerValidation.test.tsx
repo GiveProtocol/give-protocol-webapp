@@ -1,6 +1,6 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { useAdminVolunteerValidation } from "@/hooks/useAdminVolunteerValidation";
 import AdminVolunteerValidation from "../admin/AdminVolunteerValidation";
@@ -295,6 +295,115 @@ describe("AdminVolunteerValidation", () => {
       expect(
         screen.getByText("No statistics available."),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Filter by status", () => {
+    it("calls fetchRequests with updated filter when status changes", async () => {
+      renderComponent();
+      const statusSelect = screen.getByLabelText("Filter by status");
+      fireEvent.change(statusSelect, { target: { value: "approved" } });
+      await waitFor(() => {
+        expect(mockFetchRequests).toHaveBeenCalledWith(
+          expect.objectContaining({ status: "approved", page: 1 }),
+        );
+      });
+    });
+  });
+
+  describe("Search input", () => {
+    it("calls fetchRequests when search input changes", async () => {
+      renderComponent();
+      const searchInput = screen.getByLabelText("Search validation requests");
+      fireEvent.change(searchInput, { target: { value: "Alice" } });
+      await waitFor(() => {
+        expect(mockFetchRequests).toHaveBeenCalledWith(
+          expect.objectContaining({ search: "Alice", page: 1 }),
+        );
+      });
+    });
+  });
+
+  describe("Pagination", () => {
+    it("renders pagination and handles next click", async () => {
+      mockUseAdminVolunteerValidation.mockReturnValue(
+        createHookReturn({
+          result: {
+            requests: [mockRequest],
+            totalCount: 100,
+            page: 1,
+            limit: 50,
+            totalPages: 2,
+          },
+        }),
+      );
+      renderComponent();
+      expect(screen.getByText("Page 1 of 2")).toBeInTheDocument();
+
+      fireEvent.click(screen.getByRole("button", { name: "Next" }));
+      await waitFor(() => {
+        expect(mockFetchRequests).toHaveBeenCalledWith(
+          expect.objectContaining({ page: 2 }),
+        );
+      });
+    });
+
+    it("handles previous page click", async () => {
+      mockUseAdminVolunteerValidation.mockReturnValue(
+        createHookReturn({
+          result: {
+            requests: [mockRequest],
+            totalCount: 100,
+            page: 2,
+            limit: 50,
+            totalPages: 3,
+          },
+        }),
+      );
+      renderComponent();
+
+      fireEvent.click(screen.getByRole("button", { name: "Previous" }));
+      await waitFor(() => {
+        expect(mockFetchRequests).toHaveBeenCalledWith(
+          expect.objectContaining({ page: 1 }),
+        );
+      });
+    });
+  });
+
+  describe("Confirm override", () => {
+    it("submits override with status and reason when Confirm Override is clicked", async () => {
+      mockSubmitOverride.mockResolvedValue(true);
+      renderComponent();
+
+      fireEvent.click(screen.getByText("Override"));
+      expect(
+        screen.getByText("Override Validation Request"),
+      ).toBeInTheDocument();
+
+      const statusSelect = document.getElementById(
+        "override-status",
+      ) as HTMLSelectElement;
+      fireEvent.change(statusSelect, { target: { value: "rejected" } });
+
+      const reasonTextarea = document.getElementById(
+        "override-reason",
+      ) as HTMLTextAreaElement;
+      fireEvent.change(reasonTextarea, {
+        target: { value: "Hours look inflated" },
+      });
+
+      fireEvent.click(screen.getByRole("button", { name: "Confirm Override" }));
+      await waitFor(() => {
+        expect(mockSubmitOverride).toHaveBeenCalledWith(
+          {
+            requestId: "req-1",
+            newStatus: "rejected",
+            reason: "Hours look inflated",
+          },
+          expect.objectContaining({ page: 1, limit: 50 }),
+        );
+      });
     });
   });
 });

@@ -1,8 +1,15 @@
 import React from "react";
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
+import { __walletModalRef } from "@/components/web3/WalletModal/WalletModal";
 import Auth from "../Auth";
 
 // useUnifiedWallets and useMultiChainContext use defaults from their moduleNameMapper mocks
@@ -246,6 +253,112 @@ describe("Auth", () => {
 
       fireEvent.click(screen.getByLabelText("Close modal"));
       expect(screen.queryByTestId("wallet-modal")).not.toBeInTheDocument();
+    });
+
+    it("calls signInWithWallet on successful wallet modal connect", async () => {
+      const mockGetAccounts = jest
+        .fn<() => Promise<Array<{ address: string }>>>()
+        .mockResolvedValue([{ address: "0xABC123" }]);
+      const mockWallet = {
+        name: "TestWallet",
+        icon: "test",
+        category: "browser",
+        supportedChainTypes: ["evm"],
+        isInstalled: () => true,
+        getAccounts: mockGetAccounts,
+      };
+      const mockSignInWithWallet = jest
+        .fn<() => Promise<void>>()
+        .mockResolvedValue(undefined);
+      mockUseUnifiedAuth.mockReturnValue({
+        ...defaultAuthState,
+        signInWithWallet: mockSignInWithWallet,
+      });
+
+      renderAuth();
+      fireEvent.click(screen.getByText("Connect Wallet"));
+
+      // Invoke the onConnect callback captured by the WalletModal mock
+      const onConnect = __walletModalRef.onConnect as (
+        w: typeof mockWallet,
+        c: string,
+      ) => Promise<void>;
+      expect(onConnect).toBeTruthy();
+      await act(async () => {
+        await onConnect(mockWallet, "evm");
+      });
+
+      expect(mockSignInWithWallet).toHaveBeenCalledWith("donor", {
+        wallet: mockWallet,
+        chainType: "evm",
+        address: "0xABC123",
+      });
+    });
+
+    it("shows error when wallet returns no address after connect", async () => {
+      const mockGetAccounts = jest
+        .fn<() => Promise<Array<{ address: string }>>>()
+        .mockResolvedValue([]);
+      const mockWallet = {
+        name: "EmptyWallet",
+        icon: "test",
+        category: "browser",
+        supportedChainTypes: ["evm"],
+        isInstalled: () => true,
+        getAccounts: mockGetAccounts,
+      };
+      mockUseUnifiedAuth.mockReturnValue({ ...defaultAuthState });
+
+      renderAuth();
+      fireEvent.click(screen.getByText("Connect Wallet"));
+
+      const onConnect = __walletModalRef.onConnect as (
+        w: typeof mockWallet,
+        c: string,
+      ) => Promise<void>;
+      expect(onConnect).toBeTruthy();
+      await act(async () => {
+        await expect(onConnect(mockWallet, "evm")).rejects.toThrow(
+          "No account found after wallet connection",
+        );
+      });
+
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(
+        screen.getByText("No account found after wallet connection"),
+      ).toBeInTheDocument();
+    });
+
+    it("shows error when wallet connect throws a generic error", async () => {
+      const mockGetAccounts = jest
+        .fn<() => Promise<Array<{ address: string }>>>()
+        .mockRejectedValue(new Error("Connection rejected"));
+      const mockWallet = {
+        name: "FailWallet",
+        icon: "test",
+        category: "browser",
+        supportedChainTypes: ["evm"],
+        isInstalled: () => true,
+        getAccounts: mockGetAccounts,
+      };
+      mockUseUnifiedAuth.mockReturnValue({ ...defaultAuthState });
+
+      renderAuth();
+      fireEvent.click(screen.getByText("Connect Wallet"));
+
+      const onConnect = __walletModalRef.onConnect as (
+        w: typeof mockWallet,
+        c: string,
+      ) => Promise<void>;
+      expect(onConnect).toBeTruthy();
+      await act(async () => {
+        await expect(onConnect(mockWallet, "evm")).rejects.toThrow(
+          "Connection rejected",
+        );
+      });
+
+      expect(screen.getByRole("alert")).toBeInTheDocument();
+      expect(screen.getByText("Connection rejected")).toBeInTheDocument();
     });
   });
 

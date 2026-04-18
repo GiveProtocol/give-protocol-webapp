@@ -1,7 +1,14 @@
 // Mock for Wallet barrel export (WalletButton, NetworkSelector, NETWORKS, types)
 
-export const WalletButton = ({ address }) => (
-  <div data-testid="wallet-button">{address}</div>
+export const WalletButton = ({ address, onDisconnect }) => (
+  <div data-testid="wallet-button">
+    {address}
+    {onDisconnect && (
+      <button type="button" onClick={onDisconnect} data-testid="disconnect-button">
+        Disconnect
+      </button>
+    )}
+  </div>
 );
 
 export const WalletDropdown = () => (
