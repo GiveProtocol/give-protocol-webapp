@@ -11,10 +11,12 @@ export const WalletButton = ({ address, onDisconnect }) => (
   </div>
 );
 
+/** @returns {React.ReactElement} Mock WalletDropdown */
 export const WalletDropdown = () => (
   <div data-testid="wallet-dropdown">Wallet Dropdown</div>
 );
 
+/** @returns {React.ReactElement} Mock NetworkSelector */
 export const NetworkSelector = () => (
   <div data-testid="network-selector">Network Selector</div>
 );
@@ -24,7 +26,9 @@ export const NETWORKS = [
   { id: "moonbase", name: "Moonbase Alpha", token: "DEV", color: "#53CBC8", chainType: "evm" },
 ];
 
+/** @param {string} addr - Wallet address to format */
 export const formatAddress = (addr) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+/** @returns {string} Mock gradient string */
 export const getAddressGradient = () => "linear-gradient(135deg, #667eea 0%, #764ba2 100%)";
 export const getExplorerUrl = () => "#";
 export const formatBalance = (bal) => bal;

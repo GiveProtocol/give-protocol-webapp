@@ -332,7 +332,7 @@ describe("AdminDonationMonitoring", () => {
 
   describe("Report generation", () => {
     it("calls fetchSummary when Generate is clicked with dates", async () => {
-      mockFetchSummary.mockResolvedValue(undefined);
+      mockFetchSummary.mockImplementation(() => Promise.resolve());
       const { container } = render(
         <MemoryRouter>
           <AdminDonationMonitoring />

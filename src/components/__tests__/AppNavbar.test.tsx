@@ -301,8 +301,8 @@ describe("AppNavbar", () => {
 
   describe("handleDisconnect", () => {
     it("calls disconnect and logout when disconnect is triggered", async () => {
-      const mockDisconnect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
-      const mockLogout = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+      const mockDisconnect = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
+      const mockLogout = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
 
       mockUseWeb3.mockReturnValue({
         provider: null,
@@ -330,7 +330,7 @@ describe("AppNavbar", () => {
       fireEvent.click(screen.getByLabelText("Wallet menu"));
 
       // Click Disconnect in the dropdown
-      await act(async () => {
+      await act(() => {
         fireEvent.click(screen.getByText("Disconnect"));
       });
 
@@ -341,7 +341,7 @@ describe("AppNavbar", () => {
     });
 
     it("calls disconnect without logout when no user is logged in", async () => {
-      const mockDisconnect = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+      const mockDisconnect = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
 
       mockUseWeb3.mockReturnValue({
         provider: null,
@@ -363,7 +363,7 @@ describe("AppNavbar", () => {
       fireEvent.click(screen.getByLabelText("Wallet menu"));
 
       // Click Disconnect in the dropdown
-      await act(async () => {
+      await act(() => {
         fireEvent.click(screen.getByText("Disconnect"));
       });
 
@@ -375,7 +375,7 @@ describe("AppNavbar", () => {
 
   describe("handleSignOut", () => {
     it("calls logout when Sign Out is clicked", async () => {
-      const mockLogout = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+      const mockLogout = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
 
       mockUseAuth.mockReturnValue(
         createAuthMock({
@@ -388,7 +388,7 @@ describe("AppNavbar", () => {
       renderNavbar();
       const signOutButton = screen.getByLabelText("Sign out");
 
-      await act(async () => {
+      await act(() => {
         fireEvent.click(signOutButton);
       });
 
@@ -413,7 +413,7 @@ describe("AppNavbar", () => {
       renderNavbar();
       const signOutButton = screen.getByLabelText("Sign out");
 
-      await act(async () => {
+      await act(() => {
         fireEvent.click(signOutButton);
       });
 

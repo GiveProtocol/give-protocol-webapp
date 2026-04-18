@@ -113,7 +113,7 @@ describe("Auth", () => {
     });
 
     it("calls signInWithEmail on form submit", async () => {
-      const mockSignIn = jest.fn<() => Promise<void>>().mockResolvedValue(undefined);
+      const mockSignIn = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
       mockUseUnifiedAuth.mockReturnValue({
         ...defaultAuthState,
         signInWithEmail: mockSignIn,
@@ -269,7 +269,7 @@ describe("Auth", () => {
       };
       const mockSignInWithWallet = jest
         .fn<() => Promise<void>>()
-        .mockResolvedValue(undefined);
+        .mockImplementation(() => Promise.resolve());
       mockUseUnifiedAuth.mockReturnValue({
         ...defaultAuthState,
         signInWithWallet: mockSignInWithWallet,
