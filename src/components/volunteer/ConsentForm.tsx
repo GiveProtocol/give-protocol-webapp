@@ -125,7 +125,7 @@ const ConsentDialog: React.FC<{
   validationError, isSubmitDisabled, onAccept, onDecline,
 }) => (
   <dialog
-    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0"
+    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-2xl shadow-2xl max-w-4xl w-[95%] max-h-[90dvh] overflow-hidden z-50 p-0 m-0"
     open
     aria-modal="true"
     aria-labelledby="consent-modal-title"

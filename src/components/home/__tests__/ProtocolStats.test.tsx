@@ -27,7 +27,7 @@ describe("ProtocolStats", () => {
 
     // Check that the container has the grid layout
     const container = screen.getByText("Blockchain Networks Served").closest(".grid");
-    expect(container).toHaveClass("grid-cols-2", "gap-8");
+    expect(container).toHaveClass("grid-cols-1", "sm:grid-cols-2", "gap-8");
   });
 
   it("renders stat value elements for each stat", () => {

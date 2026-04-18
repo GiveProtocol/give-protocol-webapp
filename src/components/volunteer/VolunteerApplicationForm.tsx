@@ -663,7 +663,7 @@ const ApplicationDialog: React.FC<ApplicationDialogProps> = ({
   currentSkillInput, showSkillPlaceholder, tagInputRef, inputClasses, textareaClasses, selectClasses, loading,
 }) => (
   <dialog
-    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-[95%] max-h-[90vh] overflow-hidden z-50 p-0 m-0 transition-all duration-300 ease-out animate-in fade-in zoom-in-95"
+    className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 rounded-2xl max-w-4xl w-[95%] max-h-[90dvh] overflow-hidden z-50 p-0 m-0 transition-all duration-300 ease-out animate-in fade-in zoom-in-95"
     style={{ boxShadow: "0 25px 50px rgba(0, 0, 0, 0.25)" }}
     open
     aria-modal="true"
