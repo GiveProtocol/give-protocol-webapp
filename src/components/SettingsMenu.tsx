@@ -21,6 +21,7 @@ const SettingsOptionButton: React.FC<{
   <button
     data-value={dataValue}
     onClick={onClick}
+    aria-pressed={isSelected}
     className={cn(
       "flex items-center justify-between px-3 py-2 text-sm rounded-md",
       isSelected
@@ -40,14 +41,12 @@ const SettingsSection: React.FC<{
   children: React.ReactNode;
   hasBorder?: boolean;
 }> = ({ icon, title, children, hasBorder = true }) => (
-  <div className={`py-3 px-4 ${hasBorder ? 'border-b border-gray-100' : ''}`}>
+  <div className={`py-3 px-4 ${hasBorder ? "border-b border-gray-100" : ""}`}>
     <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
       {icon}
       {title}
     </h4>
-    <div className="grid grid-cols-2 gap-2 mt-2">
-      {children}
-    </div>
+    <div className="grid grid-cols-2 gap-2 mt-2">{children}</div>
   </div>
 );
 
@@ -70,6 +69,16 @@ export const SettingsMenu: React.FC = () => {
   const { setSelectedCurrency } = useCurrencyContext();
   const { t } = useTranslation();
   const menuRef = useRef<HTMLDivElement>(null);
+  const triggerButtonRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Focus first option when dropdown opens (WCAG 2.4.3)
+  useEffect(() => {
+    if (!isOpen) return;
+    const firstButton =
+      panelRef.current?.querySelector<HTMLButtonElement>("button");
+    firstButton?.focus();
+  }, [isOpen]);
 
   // Close menu when clicking outside
   useEffect(() => {
@@ -95,12 +104,13 @@ export const SettingsMenu: React.FC = () => {
   // Close menu when pressing Escape
   useEffect(() => {
     /**
-     * Handles the Escape key press event to close the settings menu.
+     * Handles the Escape key press event to close the settings menu and return focus to the trigger button.
      * @param event KeyboardEvent triggered by the key press.
      */
     const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         setIsOpen(false);
+        triggerButtonRef.current?.focus();
       }
     };
 
@@ -180,6 +190,7 @@ export const SettingsMenu: React.FC = () => {
   return (
     <div className="relative" ref={menuRef}>
       <button
+        ref={triggerButtonRef}
         onClick={toggleMenu}
         className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
         aria-expanded={isOpen}
@@ -190,7 +201,10 @@ export const SettingsMenu: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div
+          ref={panelRef}
+          className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+        >
           <div className="py-2 px-4 border-b border-gray-100">
             <h3 className="text-sm font-medium text-gray-900">
               {t("settings.title")}
@@ -199,16 +213,30 @@ export const SettingsMenu: React.FC = () => {
 
           {/* Theme Selection */}
           <SettingsSection
-            icon={theme === "dark" ? <Moon className="h-4 w-4 text-gray-500 mr-2" /> : <Sun className="h-4 w-4 text-gray-500 mr-2" />}
+            icon={
+              theme === "dark" ? (
+                <Moon className="h-4 w-4 text-gray-500 mr-2" />
+              ) : (
+                <Sun className="h-4 w-4 text-gray-500 mr-2" />
+              )
+            }
             title={t("settings.theme", "Theme")}
           >
-            <SettingsOptionButton dataValue="light" onClick={handleThemeClick} isSelected={theme === "light"}>
+            <SettingsOptionButton
+              dataValue="light"
+              onClick={handleThemeClick}
+              isSelected={theme === "light"}
+            >
               <span className="flex items-center">
                 <Sun className="h-4 w-4 mr-2" />
                 {t("settings.light", "Light")}
               </span>
             </SettingsOptionButton>
-            <SettingsOptionButton dataValue="dark" onClick={handleThemeClick} isSelected={theme === "dark"}>
+            <SettingsOptionButton
+              dataValue="dark"
+              onClick={handleThemeClick}
+              isSelected={theme === "dark"}
+            >
               <span className="flex items-center">
                 <Moon className="h-4 w-4 mr-2" />
                 {t("settings.dark", "Dark")}
@@ -217,19 +245,38 @@ export const SettingsMenu: React.FC = () => {
           </SettingsSection>
 
           {/* Language Selection */}
-          <SettingsSection icon={<Globe className="h-4 w-4 text-gray-500 mr-2" />} title={t("settings.language")}>
+          <SettingsSection
+            icon={<Globe className="h-4 w-4 text-gray-500 mr-2" />}
+            title={t("settings.language")}
+          >
             {languageOptions.map((option) => (
-              <SettingsOptionButton key={option.value} dataValue={option.value} onClick={handleLanguageClick} isSelected={language === option.value}>
+              <SettingsOptionButton
+                key={option.value}
+                dataValue={option.value}
+                onClick={handleLanguageClick}
+                isSelected={language === option.value}
+              >
                 <span>{option.label}</span>
               </SettingsOptionButton>
             ))}
           </SettingsSection>
 
           {/* Currency Selection */}
-          <SettingsSection icon={<DollarSign className="h-4 w-4 text-gray-500 mr-2" />} title={t("settings.currency")} hasBorder={false}>
+          <SettingsSection
+            icon={<DollarSign className="h-4 w-4 text-gray-500 mr-2" />}
+            title={t("settings.currency")}
+            hasBorder={false}
+          >
             {currencyOptions.map((option) => (
-              <SettingsOptionButton key={option.value} dataValue={option.value} onClick={handleCurrencyClick} isSelected={currency === option.value}>
-                <span>{option.symbol} {option.value}</span>
+              <SettingsOptionButton
+                key={option.value}
+                dataValue={option.value}
+                onClick={handleCurrencyClick}
+                isSelected={currency === option.value}
+              >
+                <span>
+                  {option.symbol} {option.value}
+                </span>
               </SettingsOptionButton>
             ))}
           </SettingsSection>
