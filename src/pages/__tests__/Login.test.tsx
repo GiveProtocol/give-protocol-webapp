@@ -24,7 +24,7 @@ jest.mock("../../components/auth/ForgotPassword", () => ({
   ForgotPassword: ({ onBack }: { onBack: () => void }) => (
     <div data-testid="forgot-password">
       <button onClick={onBack}>Back</button>
-      Forgot Password
+      Reset Password
     </div>
   ),
 }));
