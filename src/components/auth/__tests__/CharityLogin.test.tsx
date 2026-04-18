@@ -14,11 +14,11 @@ import { ChainProvider } from "@/contexts/ChainContext";
 import { MultiChainProvider } from "@/contexts/MultiChainContext";
 import { Web3Provider } from "@/contexts/Web3Context";
 import { supabase } from "@/lib/supabase";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 
-// Note: jest.mock for "@/hooks/useAuth", "@/contexts/AuthContext",
-// "@/contexts/Web3Context", and "@/hooks/useUnifiedAuth" does not reliably
-// intercept ESM imports in this Jest 30 + ts-jest setup. We use real providers
-// with mocked leaf dependencies and supabase mock overrides instead.
+// useUnifiedAuth is mocked via moduleNameMapper. Configure the mock's
+// signInWithWallet to reject by default (simulating no wallet detected).
+const mockUseUnifiedAuth = jest.mocked(useUnifiedAuth);
 
 const mockNavigate = jest.fn();
 
@@ -97,6 +97,26 @@ const renderCharityLogin = () => {
 describe("CharityLogin", () => {
   beforeEach(() => {
     mockNavigate.mockClear();
+    mockUseUnifiedAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
+      authMethod: null,
+      email: null,
+      walletAddress: null,
+      isWalletConnected: false,
+      isWalletLinked: false,
+      chainId: null,
+      role: "donor",
+      loading: false,
+      walletAuthStep: null,
+      error: null,
+      signInWithEmail: jest.fn(),
+      signUpWithEmail: jest.fn(),
+      signInWithWallet: jest.fn().mockRejectedValue(new Error("No wallet detected. Please install a browser wallet.")),
+      linkWallet: jest.fn(),
+      unlinkWallet: jest.fn(),
+      signOut: jest.fn(),
+    });
   });
 
   it("renders login form", () => {

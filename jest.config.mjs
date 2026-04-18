@@ -231,7 +231,7 @@ export default {
       "<rootDir>/src/test-utils/leaderboardExportMock.js",
     // Layout sub-component mocks (also match relative imports e.g. "./Logo")
     "(.*)/Logo(\\.tsx?)?$": "<rootDir>/src/test-utils/logoMock.js",
-    "(.*)/SettingsMenu(\\.tsx?)?$":
+    "^\\./SettingsMenu(\\.tsx?)?$":
       "<rootDir>/src/test-utils/settingsMenuMock.js",
     // Broader context patterns for relative imports within context files
     "(.*)/ToastContext(\\.tsx?)?$":
@@ -402,6 +402,46 @@ export default {
       "<rootDir>/src/test-utils/staticPageLayoutMock.js",
     "(.*)/components/layout/StaticPageLayout(\\.tsx?)?$":
       "<rootDir>/src/test-utils/staticPageLayoutMock.js",
+    // useWalletBalance hook mock
+    "^@/hooks/useWalletBalance$":
+      "<rootDir>/src/test-utils/useWalletBalanceMock.js",
+    "(.*)/hooks/useWalletBalance(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useWalletBalanceMock.js",
+    // useUnifiedAuth hook mock — only match @/ alias imports so hook unit tests
+    // that use relative imports still get the real implementation.
+    "^@/hooks/useUnifiedAuth$":
+      "<rootDir>/src/test-utils/useUnifiedAuthMock.js",
+    // FormInput component mock
+    "^@/components/ui/FormInput$":
+      "<rootDir>/src/test-utils/formInputMock.js",
+    "(.*)/components/ui/FormInput(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/formInputMock.js",
+    // Auth component mocks (ForgotPassword, DonorRegistration, CharityVettingForm, etc.)
+    "^@/components/auth/ForgotPassword$":
+      "<rootDir>/src/test-utils/forgotPasswordMock.js",
+    "(.*)/components/auth/ForgotPassword(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/forgotPasswordMock.js",
+    "^@/components/auth/DonorRegistration$":
+      "<rootDir>/src/test-utils/donorRegistrationMock.js",
+    "(.*)/components/auth/DonorRegistration(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donorRegistrationMock.js",
+    "^@/components/auth/CharityVettingForm$":
+      "<rootDir>/src/test-utils/charityVettingFormMock.js",
+    "(.*)/components/auth/CharityVettingForm(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityVettingFormMock.js",
+    "^@/components/auth/CharityOrganizationSearch$":
+      "<rootDir>/src/test-utils/charityOrganizationSearchMock.js",
+    "(.*)/components/auth/CharityOrganizationSearch(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityOrganizationSearchMock.js",
+    "^@/components/auth/CharityClaimForm$":
+      "<rootDir>/src/test-utils/charityClaimFormMock.js",
+    "(.*)/components/auth/CharityClaimForm(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityClaimFormMock.js",
+    // Self-reported hours hook mock
+    "^@/hooks/useSelfReportedHours$":
+      "<rootDir>/src/test-utils/useSelfReportedHoursMock.js",
+    "(.*)/hooks/useSelfReportedHours(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useSelfReportedHoursMock.js",
     // Generic path mapping
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",
