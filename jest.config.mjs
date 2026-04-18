@@ -184,6 +184,9 @@ export default {
     "^@tiptap/extension-link$":
       "<rootDir>/src/test-utils/tiptapExtensionLinkMock.js",
     // Additional component mocks
+    "^@/components/ui/Modal$": "<rootDir>/src/test-utils/modalMock.js",
+    "(.*)/components/ui/Modal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/modalMock.js",
     "^@/components/ui/Card$": "<rootDir>/src/test-utils/cardMock.js",
     "(.*)/components/ui/Card(\\.tsx?)?$":
       "<rootDir>/src/test-utils/cardMock.js",
@@ -191,6 +194,41 @@ export default {
       "<rootDir>/src/test-utils/walletModalMock.js",
     "(.*)/WalletModal/WalletModal(\\.tsx?)?$":
       "<rootDir>/src/test-utils/walletModalMock.js",
+    // ConnectButton mock (relative import from AppNavbar)
+    "(.*)/web3/ConnectButton(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/connectButtonMock.js",
+    // ClientOnly mock (relative import from AppNavbar)
+    "(.*)/ClientOnly(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/clientOnlyMock.js",
+    // Wallet barrel mock (relative import from AppNavbar: ./Wallet)
+    "(.*)/components/Wallet(/index)?(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/walletComponentsMock.js",
+    "(.*)/components/Wallet/types(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/walletComponentsMock.js",
+    // Tabs UI component mock
+    "^@/components/ui/Tabs$": "<rootDir>/src/test-utils/tabsMock.js",
+    "(.*)/components/ui/Tabs(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/tabsMock.js",
+    // GlobalStats component mock
+    "^@/components/contribution/GlobalStats$":
+      "<rootDir>/src/test-utils/globalStatsMock.js",
+    "(.*)/contribution/GlobalStats(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/globalStatsMock.js",
+    // RegionFilter component mock
+    "^@/components/contribution/RegionFilter$":
+      "<rootDir>/src/test-utils/regionFilterMock.js",
+    "(.*)/contribution/RegionFilter(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/regionFilterMock.js",
+    // TimeRangeFilter component mock
+    "^@/components/contribution/TimeRangeFilter$":
+      "<rootDir>/src/test-utils/timeRangeFilterMock.js",
+    "(.*)/contribution/TimeRangeFilter(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/timeRangeFilterMock.js",
+    // leaderboardExport utility mock
+    "^@/utils/leaderboardExport$":
+      "<rootDir>/src/test-utils/leaderboardExportMock.js",
+    "(.*)/utils/leaderboardExport(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/leaderboardExportMock.js",
     // Layout sub-component mocks (also match relative imports e.g. "./Logo")
     "(.*)/Logo(\\.tsx?)?$": "<rootDir>/src/test-utils/logoMock.js",
     "(.*)/SettingsMenu(\\.tsx?)?$":
@@ -255,11 +293,115 @@ export default {
       "<rootDir>/src/test-utils/opportunityFormMock.js",
     "(.*)/components/volunteer/OpportunityForm(\\.tsx?)?$":
       "<rootDir>/src/test-utils/opportunityFormMock.js",
-    // Service mocks
+    // Hook mocks (admin) — only match @/ alias imports so hook unit tests
+    // that use relative imports still get the real implementation.
+    "^@/hooks/useAdminImpactMetrics$":
+      "<rootDir>/src/test-utils/useAdminImpactMetricsMock.js",
+    "^@/hooks/useAdminCharities$":
+      "<rootDir>/src/test-utils/useAdminCharitiesMock.js",
+    "^@/hooks/useAdminDonations$":
+      "<rootDir>/src/test-utils/useAdminDonationsMock.js",
+    "^@/hooks/useAdminDonors$":
+      "<rootDir>/src/test-utils/useAdminDonorsMock.js",
+    "^@/hooks/useAdminVolunteerValidation$":
+      "<rootDir>/src/test-utils/useAdminVolunteerValidationMock.js",
+    "^@/hooks/useAdminPlatformConfig$":
+      "<rootDir>/src/test-utils/useAdminPlatformConfigMock.js",
+    "^@/hooks/useAdminAuditLog$":
+      "<rootDir>/src/test-utils/useAdminAuditLogMock.js",
+    "^@/hooks/usePortfolioFunds$":
+      "<rootDir>/src/test-utils/usePortfolioFundsMock.js",
+    "^@/hooks/web3/usePortfolioFunds$":
+      "<rootDir>/src/test-utils/usePortfolioFundsMock.js",
+    "(.*)/hooks/web3/usePortfolioFunds(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/usePortfolioFundsMock.js",
+    // Service mocks (admin) — only match @/ alias imports so service unit
+    // tests that use relative imports still get the real implementation.
     "^@/services/adminDashboardService$":
       "<rootDir>/src/test-utils/adminDashboardServiceMock.js",
-    "(.*)/services/adminDashboardService(\\.tsx?)?$":
-      "<rootDir>/src/test-utils/adminDashboardServiceMock.js",
+    "^@/services/adminContentModerationService$":
+      "<rootDir>/src/test-utils/adminContentModerationServiceMock.js",
+    "^@/services/adminReportsService$":
+      "<rootDir>/src/test-utils/adminReportsServiceMock.js",
+    "^@/services/adminDonationService$":
+      "<rootDir>/src/test-utils/adminDonationServiceMock.js",
+    "^@/services/adminAuditService$":
+      "<rootDir>/src/test-utils/adminAuditServiceMock.js",
+    "^@/services/adminPlatformConfigService$":
+      "<rootDir>/src/test-utils/adminPlatformConfigServiceMock.js",
+    "^@/services/adminSettingsService$":
+      "<rootDir>/src/test-utils/adminSettingsServiceMock.js",
+    "^@/services/privacyRequestService$":
+      "<rootDir>/src/test-utils/privacyRequestServiceMock.js",
+    "^@/services/charityDataService$":
+      "<rootDir>/src/test-utils/charityDataServiceMock.js",
+    "^@/services/charityProfileService$":
+      "<rootDir>/src/test-utils/charityProfileServiceMock.js",
+    "^@/services/charityVerificationService$":
+      "<rootDir>/src/test-utils/charityVerificationServiceMock.js",
+    // Charity component mocks
+    "^@/components/charity/CharityPageTemplate$":
+      "<rootDir>/src/test-utils/charityPageTemplateMock.js",
+    "(.*)/components/charity/CharityPageTemplate(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityPageTemplateMock.js",
+    "^@/components/charity/CharityHeroBanner$":
+      "<rootDir>/src/test-utils/charityHeroBannerMock.js",
+    "(.*)/components/charity/CharityHeroBanner(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityHeroBannerMock.js",
+    "^@/components/charity/UnclaimedProfileBanner$":
+      "<rootDir>/src/test-utils/unclaimedProfileBannerMock.js",
+    "(.*)/components/charity/UnclaimedProfileBanner(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/unclaimedProfileBannerMock.js",
+    "^@/components/charity/OrgDetailsCard$":
+      "<rootDir>/src/test-utils/orgDetailsCardMock.js",
+    "(.*)/components/charity/OrgDetailsCard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/orgDetailsCardMock.js",
+    "^@/components/charity/PhotosCard$":
+      "<rootDir>/src/test-utils/photosCardMock.js",
+    "(.*)/components/charity/PhotosCard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/photosCardMock.js",
+    "^@/components/charity/DonateWidget$":
+      "<rootDir>/src/test-utils/donateWidgetMock.js",
+    "(.*)/components/charity/DonateWidget(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donateWidgetMock.js",
+    "^@/components/charity/RequestCharityWidget$":
+      "<rootDir>/src/test-utils/requestCharityWidgetMock.js",
+    "(.*)/components/charity/RequestCharityWidget(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/requestCharityWidgetMock.js",
+    // Donation modal mock
+    "^@/components/web3/donation/DonationModal$":
+      "<rootDir>/src/test-utils/donationModalMock.js",
+    "(.*)/components/web3/donation/DonationModal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/donationModalMock.js",
+    // UI component mocks (Skeleton, ScrollReveal)
+    "^@/components/ui/Skeleton$":
+      "<rootDir>/src/test-utils/skeletonMock.js",
+    "(.*)/components/ui/Skeleton(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/skeletonMock.js",
+    "^@/components/ui/ScrollReveal$":
+      "<rootDir>/src/test-utils/scrollRevealMock.js",
+    "(.*)/components/ui/ScrollReveal(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/scrollRevealMock.js",
+    // Donor component mocks
+    "^@/components/donor/DonorStats$":
+      "<rootDir>/src/test-utils/donorStatsMock.js",
+    "^@/components/donor/DonationHistory$":
+      "<rootDir>/src/test-utils/donationHistoryMock.js",
+    // Volunteer application form mock
+    "^@/components/volunteer/VolunteerApplicationForm$":
+      "<rootDir>/src/test-utils/volunteerApplicationFormMock.js",
+    "(.*)/components/volunteer/VolunteerApplicationForm(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/volunteerApplicationFormMock.js",
+    // Hook mocks (donor)
+    "^@/hooks/useDonorData$":
+      "<rootDir>/src/test-utils/useDonorDataMock.js",
+    "(.*)/hooks/useDonorData(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/useDonorDataMock.js",
+    // Layout sub-component mocks
+    "^@/components/layout/StaticPageLayout$":
+      "<rootDir>/src/test-utils/staticPageLayoutMock.js",
+    "(.*)/components/layout/StaticPageLayout(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/staticPageLayoutMock.js",
     // Generic path mapping
     "^@/(.*)$": "<rootDir>/src/$1",
     "\\.(css|less|scss|sass)$": "<rootDir>/src/test-utils/styleMock.js",
