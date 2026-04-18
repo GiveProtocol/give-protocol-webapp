@@ -41,14 +41,12 @@ const SettingsSection: React.FC<{
   children: React.ReactNode;
   hasBorder?: boolean;
 }> = ({ icon, title, children, hasBorder = true }) => (
-  <div className={`py-3 px-4 ${hasBorder ? 'border-b border-gray-100' : ''}`}>
+  <div className={`py-3 px-4 ${hasBorder ? "border-b border-gray-100" : ""}`}>
     <h4 className="flex items-center mb-2 text-sm font-medium text-gray-700">
       {icon}
       {title}
     </h4>
-    <div className="grid grid-cols-2 gap-2 mt-2">
-      {children}
-    </div>
+    <div className="grid grid-cols-2 gap-2 mt-2">{children}</div>
   </div>
 );
 
@@ -77,7 +75,8 @@ export const SettingsMenu: React.FC = () => {
   // Focus first option when dropdown opens (WCAG 2.4.3)
   useEffect(() => {
     if (!isOpen) return;
-    const firstButton = panelRef.current?.querySelector<HTMLButtonElement>("button");
+    const firstButton =
+      panelRef.current?.querySelector<HTMLButtonElement>("button");
     firstButton?.focus();
   }, [isOpen]);
 
@@ -202,7 +201,10 @@ export const SettingsMenu: React.FC = () => {
       </button>
 
       {isOpen && (
-        <div ref={panelRef} className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+        <div
+          ref={panelRef}
+          className="absolute right-0 mt-2 w-72 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
+        >
           <div className="py-2 px-4 border-b border-gray-100">
             <h3 className="text-sm font-medium text-gray-900">
               {t("settings.title")}
@@ -211,16 +213,30 @@ export const SettingsMenu: React.FC = () => {
 
           {/* Theme Selection */}
           <SettingsSection
-            icon={theme === "dark" ? <Moon className="h-4 w-4 text-gray-500 mr-2" /> : <Sun className="h-4 w-4 text-gray-500 mr-2" />}
+            icon={
+              theme === "dark" ? (
+                <Moon className="h-4 w-4 text-gray-500 mr-2" />
+              ) : (
+                <Sun className="h-4 w-4 text-gray-500 mr-2" />
+              )
+            }
             title={t("settings.theme", "Theme")}
           >
-            <SettingsOptionButton dataValue="light" onClick={handleThemeClick} isSelected={theme === "light"}>
+            <SettingsOptionButton
+              dataValue="light"
+              onClick={handleThemeClick}
+              isSelected={theme === "light"}
+            >
               <span className="flex items-center">
                 <Sun className="h-4 w-4 mr-2" />
                 {t("settings.light", "Light")}
               </span>
             </SettingsOptionButton>
-            <SettingsOptionButton dataValue="dark" onClick={handleThemeClick} isSelected={theme === "dark"}>
+            <SettingsOptionButton
+              dataValue="dark"
+              onClick={handleThemeClick}
+              isSelected={theme === "dark"}
+            >
               <span className="flex items-center">
                 <Moon className="h-4 w-4 mr-2" />
                 {t("settings.dark", "Dark")}
@@ -229,19 +245,38 @@ export const SettingsMenu: React.FC = () => {
           </SettingsSection>
 
           {/* Language Selection */}
-          <SettingsSection icon={<Globe className="h-4 w-4 text-gray-500 mr-2" />} title={t("settings.language")}>
+          <SettingsSection
+            icon={<Globe className="h-4 w-4 text-gray-500 mr-2" />}
+            title={t("settings.language")}
+          >
             {languageOptions.map((option) => (
-              <SettingsOptionButton key={option.value} dataValue={option.value} onClick={handleLanguageClick} isSelected={language === option.value}>
+              <SettingsOptionButton
+                key={option.value}
+                dataValue={option.value}
+                onClick={handleLanguageClick}
+                isSelected={language === option.value}
+              >
                 <span>{option.label}</span>
               </SettingsOptionButton>
             ))}
           </SettingsSection>
 
           {/* Currency Selection */}
-          <SettingsSection icon={<DollarSign className="h-4 w-4 text-gray-500 mr-2" />} title={t("settings.currency")} hasBorder={false}>
+          <SettingsSection
+            icon={<DollarSign className="h-4 w-4 text-gray-500 mr-2" />}
+            title={t("settings.currency")}
+            hasBorder={false}
+          >
             {currencyOptions.map((option) => (
-              <SettingsOptionButton key={option.value} dataValue={option.value} onClick={handleCurrencyClick} isSelected={currency === option.value}>
-                <span>{option.symbol} {option.value}</span>
+              <SettingsOptionButton
+                key={option.value}
+                dataValue={option.value}
+                onClick={handleCurrencyClick}
+                isSelected={currency === option.value}
+              >
+                <span>
+                  {option.symbol} {option.value}
+                </span>
               </SettingsOptionButton>
             ))}
           </SettingsSection>
