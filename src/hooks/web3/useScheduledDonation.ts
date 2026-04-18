@@ -92,7 +92,7 @@ export function useScheduledDonation() {
         let distributionAddress: string;
         try {
           distributionAddress = getContractAddress("DISTRIBUTION");
-        } catch (err) {
+        } catch (_err) {
           throw new Error(
             "Distribution contract not deployed. Please check with the development team.",
           );
@@ -202,7 +202,7 @@ export function useScheduledDonation() {
         let distributionAddress: string;
         try {
           distributionAddress = getContractAddress("DISTRIBUTION");
-        } catch (err) {
+        } catch (_err) {
           throw new Error(
             "Distribution contract not deployed. Please check with the development team.",
           );
@@ -277,7 +277,7 @@ export function useScheduledDonation() {
       let distributionAddress: string;
       try {
         distributionAddress = getContractAddress("DISTRIBUTION");
-      } catch (err) {
+      } catch (_err) {
         Logger.warn(
           "Distribution contract not deployed, returning empty schedules",
         );

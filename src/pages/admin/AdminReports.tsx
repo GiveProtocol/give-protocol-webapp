@@ -114,7 +114,7 @@ function MiniBarChart({
         const x = i * (barW + gap);
         const y = chartH - barH;
         return (
-          <g key={`${d.label}-${i}`}>
+          <g key={`${d.label}-${d.value}`}>
             <rect
               x={x}
               y={y}
@@ -399,9 +399,9 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, i) => (
+              {rows.map((row) => (
                 <tr
-                  key={`${row.groupKey}-${row.paymentMethod}-${i}`}
+                  key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
                   className="border-t border-gray-100 hover:bg-gray-50"
                 >
                   <td className="px-4 py-2 font-mono text-xs">

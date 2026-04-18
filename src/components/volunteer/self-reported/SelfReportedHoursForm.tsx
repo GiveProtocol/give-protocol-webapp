@@ -50,6 +50,7 @@ interface ActivityTypeDropdownProps {
   dropdownRef: React.RefObject<HTMLDivElement>;
 }
 
+/** @param {ActivityTypeDropdownProps} props - Dropdown for selecting volunteer activity type */
 const ActivityTypeDropdown: React.FC<ActivityTypeDropdownProps> = ({
   value,
   isOpen,
@@ -145,6 +146,7 @@ interface OrganizationSelectorProps {
   onInputChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+/** @param {OrganizationSelectorProps} props - Selector for choosing or entering an organization */
 const OrganizationSelector: React.FC<OrganizationSelectorProps> = ({
   orgMode,
   organizationName,
@@ -280,6 +282,7 @@ interface ValidationPreviewProps {
   isExpired: boolean;
 }
 
+/** @param {ValidationPreviewProps} props - Preview of validation requirements and status */
 const ValidationPreview: React.FC<ValidationPreviewProps> = ({
   orgMode,
   hasOrganization,

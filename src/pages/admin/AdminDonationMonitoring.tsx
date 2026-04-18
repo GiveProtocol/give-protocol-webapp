@@ -535,9 +535,9 @@ const AdminDonationMonitoring: React.FC = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {summary.map((row, idx) => (
+                  {summary.map((row) => (
                     <tr
-                      key={`${row.groupKey}-${row.paymentMethod}-${idx}`}
+                      key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
                       className="border-t border-gray-100"
                     >
                       <td className="px-4 py-2 font-mono text-xs">
