@@ -237,6 +237,14 @@ describe("ChainlinkPriceFeedService", () => {
       expect(results.size).toBe(1);
       expect(results.get("DOT")?.price).toBe(7.5);
     });
+
+    it("should catch unexpected errors thrown by getPrice", async () => {
+      jest.spyOn(service, "getPrice").mockRejectedValueOnce(new Error("unexpected"));
+
+      const results = await service.getPrices(CHAIN_IDS.MOONBEAM, ["GLMR"]);
+
+      expect(results.size).toBe(0);
+    });
   });
 
   describe("getPriceByCoingeckoId", () => {
@@ -285,6 +293,17 @@ describe("ChainlinkPriceFeedService", () => {
 
     it("should handle errors for individual tokens gracefully", async () => {
       mockFns.latestRoundData.mockRejectedValueOnce(new Error("RPC error"));
+
+      const results = await service.getPricesByCoingeckoIds(CHAIN_IDS.MOONBEAM, [
+        "moonbeam",
+      ]);
+      expect(Object.keys(results)).toHaveLength(0);
+    });
+
+    it("should catch unexpected errors thrown by getPriceByCoingeckoId", async () => {
+      jest
+        .spyOn(service, "getPriceByCoingeckoId")
+        .mockRejectedValueOnce(new Error("unexpected"));
 
       const results = await service.getPricesByCoingeckoIds(CHAIN_IDS.MOONBEAM, [
         "moonbeam",
