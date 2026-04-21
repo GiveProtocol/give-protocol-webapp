@@ -59,10 +59,19 @@ const CHAIN_RPC_ENV_VARS: Record<ChainId, string> = {
   [CHAIN_IDS.MOONBASE]: "VITE_MOONBASE_RPC_URL",
 };
 
+/** Public CORS-enabled RPC endpoints — used when env var is absent (e.g. Netlify static hosting) */
+const CHAIN_PUBLIC_RPC_URLS: Record<ChainId, string> = {
+  [CHAIN_IDS.BASE]: "https://mainnet.base.org",
+  [CHAIN_IDS.OPTIMISM]: "https://mainnet.optimism.io",
+  [CHAIN_IDS.MOONBEAM]: "https://rpc.api.moonbeam.network",
+  [CHAIN_IDS.BASE_SEPOLIA]: "https://sepolia.base.org",
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "https://sepolia.optimism.io",
+  [CHAIN_IDS.MOONBASE]: "https://rpc.api.moonbase.moonbeam.network",
+};
+
 /**
  * Get the RPC URL for a chain.
- * Prefers VITE_*_RPC_URL env vars (e.g. Alchemy/Infura with CORS support).
- * Falls back to the server-side proxy at /api/rpc/<chain> which avoids CORS.
+ * Priority: VITE_*_RPC_URL env var → public CORS-enabled endpoint → server-side proxy (dev only).
  */
 function getRpcUrl(chainId: ChainId): string {
   const envVar = CHAIN_RPC_ENV_VARS[chainId];
@@ -71,8 +80,15 @@ function getRpcUrl(chainId: ChainId): string {
     if (envValue) return envValue;
   }
 
-  // Fall back to server-side RPC proxy (absolute URL required by ethers)
-  const origin = typeof window !== "undefined" ? window.location.origin : "http://localhost:5173";
+  // Fall back to public CORS-enabled endpoints (works in browser / Netlify static hosting)
+  const publicUrl = CHAIN_PUBLIC_RPC_URLS[chainId];
+  if (publicUrl) return publicUrl;
+
+  // Last resort: server-side proxy (development only — not available on Netlify)
+  const origin =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "http://localhost:5173";
   const proxyName = CHAIN_PROXY_NAMES[chainId];
   return `${origin}/api/rpc/${proxyName}`;
 }
@@ -93,7 +109,9 @@ export class ChainlinkPriceFeedService {
     if (cached) return cached;
 
     const rpcUrl = getRpcUrl(chainId);
-    const provider = new ethers.JsonRpcProvider(rpcUrl, undefined, { batchMaxCount: 1 });
+    const provider = new ethers.JsonRpcProvider(rpcUrl, undefined, {
+      batchMaxCount: 1,
+    });
     this.providerCache.set(chainId, provider);
     return provider;
   }
@@ -104,7 +122,7 @@ export class ChainlinkPriceFeedService {
    */
   private static async checkSequencerUptime(
     chainId: ChainId,
-    provider: Provider
+    provider: Provider,
   ): Promise<boolean> {
     const sequencerFeedAddress = SEQUENCER_UPTIME_FEEDS[chainId];
     if (!sequencerFeedAddress) {
@@ -116,7 +134,7 @@ export class ChainlinkPriceFeedService {
       const sequencerFeed = new ethers.Contract(
         sequencerFeedAddress,
         AGGREGATOR_V3_ABI,
-        provider
+        provider,
       );
 
       const roundData = await sequencerFeed.latestRoundData();
@@ -160,12 +178,12 @@ export class ChainlinkPriceFeedService {
    */
   private static async readPriceFeed(
     feedConfig: PriceFeedConfig,
-    provider: Provider
+    provider: Provider,
   ): Promise<ChainlinkPriceData> {
     const feed = new ethers.Contract(
       feedConfig.address,
       AGGREGATOR_V3_ABI,
-      provider
+      provider,
     );
 
     const [roundData, decimals] = await Promise.all([
@@ -215,7 +233,7 @@ export class ChainlinkPriceFeedService {
   async getPrice(
     chainId: ChainId | number,
     tokenSymbol: string,
-    provider?: Provider
+    provider?: Provider,
   ): Promise<ChainlinkPriceData | null> {
     const cacheKey = `${chainId}_${tokenSymbol}`;
 
@@ -233,7 +251,10 @@ export class ChainlinkPriceFeedService {
     }
 
     const feedConfig = chainFeeds[tokenSymbol.toUpperCase()];
-    if (!feedConfig || feedConfig.address === "0x0000000000000000000000000000000000000000") {
+    if (
+      !feedConfig ||
+      feedConfig.address === "0x0000000000000000000000000000000000000000"
+    ) {
       Logger.warn("Chainlink: No feed for token", { chainId, tokenSymbol });
       return null;
     }
@@ -244,7 +265,7 @@ export class ChainlinkPriceFeedService {
       // Check sequencer uptime for L2 chains
       const sequencerOk = await ChainlinkPriceFeedService.checkSequencerUptime(
         chainId as ChainId,
-        activeProvider
+        activeProvider,
       );
 
       if (!sequencerOk) {
@@ -256,7 +277,10 @@ export class ChainlinkPriceFeedService {
       }
 
       // Read price from contract
-      const priceData = await ChainlinkPriceFeedService.readPriceFeed(feedConfig, activeProvider);
+      const priceData = await ChainlinkPriceFeedService.readPriceFeed(
+        feedConfig,
+        activeProvider,
+      );
 
       // Update cache
       this.priceCache.set(cacheKey, {
@@ -297,7 +321,7 @@ export class ChainlinkPriceFeedService {
   async getPrices(
     chainId: ChainId | number,
     tokenSymbols: string[],
-    provider?: Provider
+    provider?: Provider,
   ): Promise<Map<string, ChainlinkPriceData>> {
     const results = new Map<string, ChainlinkPriceData>();
 
@@ -311,7 +335,10 @@ export class ChainlinkPriceFeedService {
         // Small delay between requests to be respectful to public RPCs
         await new Promise((resolve) => setTimeout(resolve, 50));
       } catch (error) {
-        Logger.warn("Chainlink: Skipping token due to error", { symbol, error });
+        Logger.warn("Chainlink: Skipping token due to error", {
+          symbol,
+          error,
+        });
       }
     }
 
@@ -328,7 +355,7 @@ export class ChainlinkPriceFeedService {
   async getPriceByCoingeckoId(
     chainId: ChainId | number,
     coingeckoId: string,
-    provider?: Provider
+    provider?: Provider,
   ): Promise<number | null> {
     const symbol = COINGECKO_TO_SYMBOL[coingeckoId];
     if (!symbol) {
@@ -350,7 +377,7 @@ export class ChainlinkPriceFeedService {
   async getPricesByCoingeckoIds(
     chainId: ChainId | number,
     coingeckoIds: string[],
-    provider?: Provider
+    provider?: Provider,
   ): Promise<Record<string, number>> {
     const results: Record<string, number> = {};
 
@@ -364,7 +391,10 @@ export class ChainlinkPriceFeedService {
         // Small delay between requests to be respectful to public RPCs
         await new Promise((resolve) => setTimeout(resolve, 50));
       } catch (error) {
-        Logger.warn("Chainlink: Skipping coingecko ID due to error", { id, error });
+        Logger.warn("Chainlink: Skipping coingecko ID due to error", {
+          id,
+          error,
+        });
       }
     }
 
