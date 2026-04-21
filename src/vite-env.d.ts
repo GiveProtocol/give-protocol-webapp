@@ -9,7 +9,10 @@ interface EIP1193Provider {
   isTalisman?: boolean;
   request: (_args: { method: string; params?: unknown[] }) => Promise<unknown>;
   on: (_event: string, _callback: (..._args: unknown[]) => void) => void;
-  removeListener: (_event: string, _callback: (..._args: unknown[]) => void) => void;
+  removeListener: (
+    _event: string,
+    _callback: (..._args: unknown[]) => void,
+  ) => void;
   removeAllListeners: (_event: string) => void;
   disconnect?: () => Promise<void>;
 }
@@ -20,7 +23,9 @@ interface SolanaWalletProvider {
   isCoinbaseWallet?: boolean;
   publicKey: { toBase58(): string } | null;
   isConnected: boolean;
-  connect: (_opts?: { onlyIfTrusted?: boolean }) => Promise<{ publicKey: { toBase58(): string } }>;
+  connect: (_opts?: {
+    onlyIfTrusted?: boolean;
+  }) => Promise<{ publicKey: { toBase58(): string } }>;
   disconnect: () => Promise<void>;
   signTransaction: (_transaction: unknown) => Promise<unknown>;
   signAllTransactions: (_transactions: unknown[]) => Promise<unknown[]>;
@@ -46,11 +51,17 @@ interface PolkadotWalletProvider {
   version: string;
   accounts: {
     get: (_anyType?: boolean) => Promise<InjectedAccountWithMeta[]>;
-    subscribe: (_callback: (_accounts: InjectedAccountWithMeta[]) => void) => () => void;
+    subscribe: (
+      _callback: (_accounts: InjectedAccountWithMeta[]) => void,
+    ) => () => void;
   };
   signer: {
     signPayload: (_payload: unknown) => Promise<{ signature: string }>;
-    signRaw: (_raw: { address: string; data: string; type: "bytes" | "payload" }) => Promise<{ signature: string }>;
+    signRaw: (_raw: {
+      address: string;
+      data: string;
+      type: "bytes" | "payload";
+    }) => Promise<{ signature: string }>;
   };
 }
 
@@ -76,10 +87,13 @@ interface Window {
   solana?: SolanaWalletProvider;
   solflare?: SolanaWalletProvider;
   /** Polkadot extension injected wallets */
-  injectedWeb3?: Record<string, {
-    enable: (_origin: string) => Promise<PolkadotWalletProvider>;
-    version: string;
-  }>;
+  injectedWeb3?: Record<
+    string,
+    {
+      enable: (_origin: string) => Promise<PolkadotWalletProvider>;
+      version: string;
+    }
+  >;
 }
 
 interface ImportMetaEnv {
