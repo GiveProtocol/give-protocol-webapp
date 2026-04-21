@@ -107,6 +107,11 @@ interface ImportMetaEnv {
   readonly VITE_MONITORING_ENDPOINT?: string;
   readonly VITE_SENTRY_DSN?: string;
   readonly VITE_APP_VERSION?: string;
+  readonly VITE_BASE_RPC_URL?: string;
+  readonly VITE_OPTIMISM_RPC_URL?: string;
+  readonly VITE_MOONBEAM_RPC_URL?: string;
+  readonly VITE_BASE_SEPOLIA_RPC_URL?: string;
+  readonly VITE_OPTIMISM_SEPOLIA_RPC_URL?: string;
   readonly VITE_MOONBASE_RPC_URL?: string;
 }
 
