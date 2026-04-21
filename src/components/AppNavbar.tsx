@@ -269,7 +269,7 @@ const NavHeader: React.FC = () => (
   >
     <Logo className="h-7 w-7" />
     <span
-      className="font-serif text-white"
+      className="font-inter text-white"
       style={{ fontSize: "1.1rem", letterSpacing: "-0.01em" }}
     >
       Give Protocol
