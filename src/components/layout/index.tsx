@@ -7,6 +7,10 @@ interface LayoutProps {
   children: React.ReactNode;
 }
 
+/**
+ * App shell that wraps routed pages with the navbar, main content area, and footer.
+ * The home route ("/") opts out of the shell because it ships its own full-page layout.
+ */
 export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const isHomePage = location.pathname === "/";

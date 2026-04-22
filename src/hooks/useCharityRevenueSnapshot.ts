@@ -20,6 +20,10 @@ const EMPTY: RevenueSnapshot = {
 const DAY_MS = 86_400_000;
 const WINDOW_DAYS = 30;
 
+/**
+ * Buckets donation rows into per-day totals and counts across the last `WINDOW_DAYS`,
+ * seeding every day in the window so the returned series always has one entry per day.
+ */
 function buildDailyBuckets(
   rows: {
     amount: number | null;
@@ -30,8 +34,8 @@ function buildDailyBuckets(
   const buckets = new Map<string, { total: number; count: number }>();
   const now = Date.now();
   for (let i = WINDOW_DAYS - 1; i >= 0; i -= 1) {
-    const d = new Date(now - i * DAY_MS);
-    const key = d.toISOString().slice(0, 10);
+    const bucketDate = new Date(now - i * DAY_MS);
+    const key = bucketDate.toISOString().slice(0, 10);
     buckets.set(key, { total: 0, count: 0 });
   }
   for (const row of rows) {
@@ -68,6 +72,7 @@ export function useCharityRevenueSnapshot() {
       };
     }
 
+    /** Loads donation + cause rows for the charity and derives the snapshot shape. */
     const load = async () => {
       setLoading(true);
       try {

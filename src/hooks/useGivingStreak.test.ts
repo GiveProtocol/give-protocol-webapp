@@ -1,7 +1,7 @@
 import { describe, it, expect } from "@jest/globals";
 import { computeGivingStreak } from "./useGivingStreak";
 
-function iso(year: number, monthIndex: number, day: number = 15): string {
+function iso(year: number, monthIndex: number, day = 15): string {
   return new Date(Date.UTC(year, monthIndex, day)).toISOString();
 }
 

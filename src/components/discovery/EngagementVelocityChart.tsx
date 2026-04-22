@@ -16,6 +16,10 @@ const WIDTH = 640;
 const HEIGHT = 160;
 const PADDING = 8;
 
+/**
+ * Builds an SVG polyline path string from a value series, normalizing the max value to
+ * the chart height so each line fills its own vertical range.
+ */
 function buildPath(values: number[]): string {
   if (values.length === 0) return "";
   const max = Math.max(...values, 1);

@@ -9,6 +9,7 @@ interface NewsUpdatesCardProps {
   limit?: number;
 }
 
+/** Formats an ISO date string into the browser's locale-aware "MMM d, yyyy" form. */
 function formatDate(iso: string): string {
   try {
     return new Date(iso).toLocaleDateString(undefined, {
