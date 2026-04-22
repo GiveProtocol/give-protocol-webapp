@@ -29,23 +29,23 @@ export const DiscoveryShell: React.FC<DiscoveryShellProps> = ({
       )}
     >
       {topBar !== undefined && topBar !== null && (
-        <div className="mb-8">{topBar}</div>
+        <div className="mb-10">{topBar}</div>
       )}
 
       <div
         className={cn(
-          "grid grid-cols-1 gap-8",
-          rail ? "lg:grid-cols-[1fr_320px]" : "",
+          "grid grid-cols-1 gap-8 lg:gap-10",
+          rail ? "lg:grid-cols-[minmax(0,1fr)_360px]" : "",
         )}
       >
-        <div className="min-w-0">{main}</div>
+        <div className="min-w-0 space-y-8">{main}</div>
         {rail !== undefined && rail !== null && (
-          <aside className="min-w-0">{rail}</aside>
+          <aside className="min-w-0 space-y-6">{rail}</aside>
         )}
       </div>
 
       {bottom !== undefined && bottom !== null && (
-        <div className="mt-8">{bottom}</div>
+        <div className="mt-10">{bottom}</div>
       )}
     </div>
   );
