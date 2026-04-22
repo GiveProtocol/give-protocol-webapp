@@ -45,8 +45,7 @@ export const CategoryChips: React.FC<CategoryChipsProps> = ({
     <div className="flex flex-wrap justify-center gap-2">
       {CATEGORIES.map((chip) => {
         const isActive =
-          chip.state === activeState ||
-          (chip.id === "all" && !activeState);
+          chip.state === activeState || (chip.id === "all" && !activeState);
         return (
           <button
             key={chip.id}

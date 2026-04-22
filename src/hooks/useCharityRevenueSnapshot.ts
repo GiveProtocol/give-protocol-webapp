@@ -21,7 +21,11 @@ const DAY_MS = 86_400_000;
 const WINDOW_DAYS = 30;
 
 function buildDailyBuckets(
-  rows: { amount: number | null; created_at: string; donor_id?: string | null }[],
+  rows: {
+    amount: number | null;
+    created_at: string;
+    donor_id?: string | null;
+  }[],
 ): Array<{ date: string; total: number; count: number }> {
   const buckets = new Map<string, { total: number; count: number }>();
   const now = Date.now();

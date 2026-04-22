@@ -24,7 +24,10 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({ organization }) => {
   return (
     <Card className="p-6 flex flex-col h-full">
       <div className="aspect-[16/9] -mx-6 -mt-6 mb-4 bg-gradient-to-br from-emerald-100 via-teal-50 to-emerald-50 dark:from-emerald-900/40 dark:via-teal-900/30 dark:to-emerald-950/40 rounded-t-lg flex items-center justify-center">
-        <Building2 aria-hidden="true" className="h-10 w-10 text-emerald-600/70 dark:text-emerald-400/70" />
+        <Building2
+          aria-hidden="true"
+          className="h-10 w-10 text-emerald-600/70 dark:text-emerald-400/70"
+        />
       </div>
 
       <div className="flex items-start justify-between gap-2">

@@ -9,15 +9,23 @@ interface ComplianceRailProps {
   nextFilingDue?: string | null;
 }
 
-const STATUS_LABEL: Record<NonNullable<ComplianceRailProps["kycStatus"]>, string> = {
+const STATUS_LABEL: Record<
+  NonNullable<ComplianceRailProps["kycStatus"]>,
+  string
+> = {
   pending: "Pending review",
   verified: "Verified",
   rejected: "Action required",
 };
 
-const STATUS_CLASS: Record<NonNullable<ComplianceRailProps["kycStatus"]>, string> = {
-  pending: "text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-300",
-  verified: "text-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-300",
+const STATUS_CLASS: Record<
+  NonNullable<ComplianceRailProps["kycStatus"]>,
+  string
+> = {
+  pending:
+    "text-amber-700 bg-amber-50 dark:bg-amber-900/20 dark:text-amber-300",
+  verified:
+    "text-emerald-700 bg-emerald-50 dark:bg-emerald-900/20 dark:text-emerald-300",
   rejected: "text-red-700 bg-red-50 dark:bg-red-900/20 dark:text-red-300",
 };
 
@@ -44,7 +52,9 @@ export const ComplianceRail: React.FC<ComplianceRailProps> = ({
             <ShieldCheck aria-hidden="true" className="h-4 w-4" />
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">KYC Status</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              KYC Status
+            </p>
             <span
               className={cn(
                 "inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded-full",
@@ -81,7 +91,8 @@ export const ComplianceRail: React.FC<ComplianceRailProps> = ({
               Next Filing Due
             </p>
             <p className="text-xs text-gray-600 dark:text-gray-400">
-              {nextFilingDue ?? "No upcoming filings tracked yet. Enable reminders in Settings."}
+              {nextFilingDue ??
+                "No upcoming filings tracked yet. Enable reminders in Settings."}
             </p>
           </div>
         </div>

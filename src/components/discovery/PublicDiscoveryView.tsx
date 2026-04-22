@@ -15,9 +15,12 @@ export const PublicDiscoveryView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterState, setFilterState] = useState("");
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setSearchTerm(e.target.value);
+    },
+    [],
+  );
 
   const handleCategoryChange = useCallback((filter: { state?: string }) => {
     setFilterState(filter.state ?? "");
@@ -36,7 +39,8 @@ export const PublicDiscoveryView: React.FC = () => {
         Discover causes worth championing
       </h1>
       <p className="mt-3 text-gray-600 dark:text-gray-400 max-w-xl mx-auto">
-        Search verified nonprofits. Donate with crypto or card. Volunteer your skills.
+        Search verified nonprofits. Donate with crypto or card. Volunteer your
+        skills.
       </p>
       <div className="mt-6 max-w-2xl mx-auto">
         <label htmlFor="discovery-search" className="sr-only">
@@ -80,17 +84,14 @@ export const PublicDiscoveryView: React.FC = () => {
       </div>
       {!loading && organizations.length === 0 && (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          No organizations match that search yet. Try a different keyword or category.
+          No organizations match that search yet. Try a different keyword or
+          category.
         </div>
       )}
     </section>
   );
 
   return (
-    <DiscoveryShell
-      topBar={hero}
-      main={grid}
-      rail={<WhyGiveProtocolRail />}
-    />
+    <DiscoveryShell topBar={hero} main={grid} rail={<WhyGiveProtocolRail />} />
   );
 };

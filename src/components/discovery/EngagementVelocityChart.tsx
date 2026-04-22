@@ -33,10 +33,9 @@ function buildPath(values: number[]): string {
  * Lightweight SVG sparkline of donation count and average amount over the last 30 days.
  * Shipped as the "Engagement Velocity" Beta view until a richer sentiment pipeline exists.
  */
-export const EngagementVelocityChart: React.FC<EngagementVelocityChartProps> = ({
-  dailyTotals,
-  loading = false,
-}) => {
+export const EngagementVelocityChart: React.FC<
+  EngagementVelocityChartProps
+> = ({ dailyTotals, loading = false }) => {
   const { countPath, amountPath, hasData } = useMemo(() => {
     const counts = dailyTotals.map((d) => d.count);
     const avgAmounts = dailyTotals.map((d) =>
@@ -79,7 +78,9 @@ export const EngagementVelocityChart: React.FC<EngagementVelocityChartProps> = (
       <div className="mt-3">
         {loading || !hasData ? (
           <div className="flex items-center justify-center h-40 text-sm text-gray-500 dark:text-gray-400">
-            {loading ? "Loading velocity data…" : "No donations yet in the last 30 days."}
+            {loading
+              ? "Loading velocity data…"
+              : "No donations yet in the last 30 days."}
           </div>
         ) : (
           <svg
