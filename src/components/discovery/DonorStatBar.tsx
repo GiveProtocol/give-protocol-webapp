@@ -30,21 +30,24 @@ export const DonorStatBar: React.FC<DonorStatBarProps> = ({
       Icon: Heart,
       label: "Total Impact",
       value: <CurrencyDisplay amount={totalImpact} />,
-      iconClass: "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300",
+      iconClass:
+        "text-emerald-600 bg-emerald-100 dark:bg-emerald-900/30 dark:text-emerald-300",
     },
     {
       id: "recurring",
       Icon: CalendarClock,
       label: "Active Recurring Grants",
       value: activeRecurringGrants,
-      iconClass: "text-teal-600 bg-teal-100 dark:bg-teal-900/30 dark:text-teal-300",
+      iconClass:
+        "text-teal-600 bg-teal-100 dark:bg-teal-900/30 dark:text-teal-300",
     },
     {
       id: "streak",
       Icon: Flame,
       label: "Giving Consistency",
       value: `${givingStreakMonths} mo`,
-      iconClass: "text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300",
+      iconClass:
+        "text-amber-600 bg-amber-100 dark:bg-amber-900/30 dark:text-amber-300",
     },
   ];
 
@@ -59,8 +62,12 @@ export const DonorStatBar: React.FC<DonorStatBarProps> = ({
             <Icon aria-hidden className="h-6 w-6" />
           </div>
           <div className="ml-4">
-            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">{label}</p>
-            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">{value}</p>
+            <p className="text-sm font-medium text-gray-600 dark:text-gray-400">
+              {label}
+            </p>
+            <p className="text-2xl font-semibold text-gray-900 dark:text-gray-100">
+              {value}
+            </p>
           </div>
         </div>
       ))}

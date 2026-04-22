@@ -35,7 +35,9 @@ export function computeGivingStreak(
 /**
  * Returns the donor's current consecutive-month giving streak derived from their donation history.
  */
-export function useGivingStreak(donations: DonationEntry[] | undefined): number {
+export function useGivingStreak(
+  donations: DonationEntry[] | undefined,
+): number {
   if (!donations) return 0;
   return computeGivingStreak(donations);
 }

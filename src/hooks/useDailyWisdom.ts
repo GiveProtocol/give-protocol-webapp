@@ -1,5 +1,8 @@
 import { useMemo } from "react";
-import { GENEROSITY_QUOTES, type GenerosityQuote } from "@/data/generosityQuotes";
+import {
+  GENEROSITY_QUOTES,
+  type GenerosityQuote,
+} from "@/data/generosityQuotes";
 
 /**
  * Selects a quote deterministically based on the current day so the same quote appears

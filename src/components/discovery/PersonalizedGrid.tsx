@@ -15,7 +15,9 @@ interface PersonalizedGridProps {
  * Discovery grid for authenticated donors. Derives a search hint from the donor's past
  * donation recipients when available; otherwise falls back to a default US-on-platform set.
  */
-export const PersonalizedGrid: React.FC<PersonalizedGridProps> = ({ donations }) => {
+export const PersonalizedGrid: React.FC<PersonalizedGridProps> = ({
+  donations,
+}) => {
   const searchTerm = useMemo(() => {
     if (!donations || donations.length === 0) return "";
     const firstWord = donations[0].charity.split(" ")[0] ?? "";
@@ -45,14 +47,15 @@ export const PersonalizedGrid: React.FC<PersonalizedGridProps> = ({ donations })
         {loading && organizations.length === 0 ? (
           <Skeleton className="h-64" count={6} />
         ) : (
-          organizations.slice(0, 9).map((org) => (
-            <ProjectCard key={org.ein} organization={org} />
-          ))
+          organizations
+            .slice(0, 9)
+            .map((org) => <ProjectCard key={org.ein} organization={org} />)
         )}
       </div>
       {!loading && organizations.length === 0 && (
         <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          We&apos;re warming up your recommendations. Browse the full catalog to get started.
+          We&apos;re warming up your recommendations. Browse the full catalog to
+          get started.
         </div>
       )}
     </section>

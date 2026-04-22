@@ -29,7 +29,11 @@ interface AuthOverrides {
   loading?: boolean;
 }
 
-function setAuth({ user = null, userType = null, loading = false }: AuthOverrides = {}) {
+function setAuth({
+  user = null,
+  userType = null,
+  loading = false,
+}: AuthOverrides = {}) {
   mockUseAuth.mockReturnValue({
     user: user as never,
     userType,
