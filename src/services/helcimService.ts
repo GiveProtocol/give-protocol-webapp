@@ -15,6 +15,9 @@ const SUPABASE_URL = ENV.SUPABASE_URL;
 /** Supabase anon key for edge function authorization */
 const SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY;
 
+/** Trusted origin for HelcimPay.js postMessage events (S2819) */
+const HELCIM_ORIGIN = 'https://secure.helcim.app';
+
 /** Common headers for Supabase edge function requests */
 const getHeaders = (): Record<string, string> => ({
   'Content-Type': 'application/json',
@@ -431,6 +434,11 @@ export function openHelcimCheckout(
 
     /** Handles incoming postMessage events from the HelcimPay.js iframe. */
     const handleMessage = (event: MessageEvent): void => {
+      // Validate message origin to prevent spoofed messages (S2819)
+      if (event.origin !== HELCIM_ORIGIN) {
+        return;
+      }
+
       const msg = event.data;
 
       // Only handle HelcimPay.js messages for this checkout
