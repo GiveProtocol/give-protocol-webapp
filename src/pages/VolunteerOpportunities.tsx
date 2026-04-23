@@ -378,16 +378,18 @@ const VolunteerOpportunities: React.FC = () => {
       });
     }
     if (selectedType) {
+      const typeKey = `volunteer.type.${selectedType}`;
       filters.push({
         key: "type",
-        label: `Type: ${t(`volunteer.type.${selectedType}`, selectedType)}`,
+        label: `Type: ${t(typeKey, selectedType)}`,
         onRemove: clearType,
       });
     }
     if (selectedLanguage) {
+      const langKey = `language.${selectedLanguage}`;
       filters.push({
         key: "language",
-        label: `Lang: ${t(`language.${selectedLanguage}`, formatLanguageName(selectedLanguage))}`,
+        label: `Lang: ${t(langKey, formatLanguageName(selectedLanguage))}`,
         onRemove: clearLanguage,
       });
     }

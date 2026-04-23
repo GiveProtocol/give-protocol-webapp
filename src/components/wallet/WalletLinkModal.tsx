@@ -42,6 +42,15 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
     onClose();
   }, [onClose]);
 
+  let buttonLabel: string;
+  if (loading) {
+    buttonLabel = 'Linking\u2026';
+  } else if (isWalletConnected) {
+    buttonLabel = 'Link Wallet';
+  } else {
+    buttonLabel = 'Connect Wallet First';
+  }
+
   return (
     <Modal
       isOpen={isOpen}
@@ -98,7 +107,7 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
         icon={<Wallet className="h-4 w-4" />}
         className="font-semibold mb-3"
       >
-        {loading ? 'Linking\u2026' : isWalletConnected ? 'Link Wallet' : 'Connect Wallet First'}
+        {buttonLabel}
       </Button>
 
       <div className="flex justify-center">

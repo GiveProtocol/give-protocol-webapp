@@ -17,17 +17,16 @@ export const WalletModal = ({ isOpen, onClose, wallets, onConnect }) => {
       <button type="button" onClick={onClose} aria-label="Close modal">
         &times;
       </button>
-      {wallets &&
-        wallets.map((w) => (
-          <button
-            key={w.name}
-            type="button"
-            data-testid={`wallet-option-${w.name}`}
-            onClick={() => onConnect && onConnect(w, w.supportedChainTypes[0])}
-          >
-            {w.name}
-          </button>
-        ))}
+      {wallets?.map((w) => (
+        <button
+          key={w.name}
+          type="button"
+          data-testid={`wallet-option-${w.name}`}
+          onClick={() => onConnect?.(w, w.supportedChainTypes[0])}
+        >
+          {w.name}
+        </button>
+      ))}
       <button type="button" data-chaintype="evm">
         EVM
       </button>

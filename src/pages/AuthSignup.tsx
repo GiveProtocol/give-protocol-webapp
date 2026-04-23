@@ -313,12 +313,14 @@ const SignupRightPanel: React.FC = () => {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const from =
-    role === "charity"
-      ? "/charity-portal"
-      : role === "admin"
-        ? "/admin"
-        : "/give-dashboard";
+  let from: string;
+  if (role === "charity") {
+    from = "/charity-portal";
+  } else if (role === "admin") {
+    from = "/admin";
+  } else {
+    from = "/give-dashboard";
+  }
 
   const handleEmailSignUp = useCallback(
     async (e: React.FormEvent) => {

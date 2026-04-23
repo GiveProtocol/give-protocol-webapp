@@ -90,9 +90,10 @@ export async function requestDataExport(): Promise<ExportRequestResult> {
   const data = await response.json() as ExportRequestResult & { error?: string };
 
   if (response.status === 429) {
+    const nextAllowed = data.next_allowed_at ? `Next allowed: ${data.next_allowed_at}` : '';
     throw new Error(
       data.error ??
-      `You may request one export per 30 days. ${data.next_allowed_at ? `Next allowed: ${data.next_allowed_at}` : ''}`,
+      `You may request one export per 30 days. ${nextAllowed}`,
     );
   }
 

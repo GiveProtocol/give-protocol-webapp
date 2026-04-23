@@ -229,7 +229,7 @@
   }
 }
 
-/* Design-system custom properties */
+/* Design-system custom properties and frame animation system */
 :root {
   --emerald-900: #064e3b;
   --emerald-800: #065f46;
@@ -251,10 +251,7 @@
   --border-glass: rgba(255, 255, 255, 0.1);
   --text-muted: #D1D5DB;
   --accent-amber: #F59E0B;
-}
-
-/* Frame animation system — use .frame-reveal + .visible for staggered page loads */
-:root {
+  /* Frame animation system — use .frame-reveal + .visible for staggered page loads */
   --frame-animation: fadeInUp;
 }
 

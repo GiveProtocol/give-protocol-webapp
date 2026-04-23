@@ -122,7 +122,7 @@ export const ValidationQueueItemComponent: React.FC<ValidationQueueItemProps> = 
       isSelected ? 'border-emerald-300 bg-emerald-50' : 'border-gray-200 hover:border-gray-300'
     }`}>
       <div className="flex items-start gap-4">
-        <label className="pt-1">
+        <label className="pt-1" aria-label="Select item">
           <input
             type="checkbox"
             checked={isSelected}

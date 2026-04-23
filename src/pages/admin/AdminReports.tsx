@@ -67,7 +67,14 @@ function computeDateRange(
       dateTo: customTo ? `${customTo}T23:59:59Z` : "",
     };
   }
-  const days = preset === "7d" ? 7 : preset === "30d" ? 30 : 90;
+  let days: number;
+  if (preset === "7d") {
+    days = 7;
+  } else if (preset === "30d") {
+    days = 30;
+  } else {
+    days = 90;
+  }
   const to = new Date();
   const from = new Date();
   from.setDate(from.getDate() - days);
@@ -864,7 +871,14 @@ function PlatformHealthTab({ preset }: TabProps): React.ReactElement {
   const [rows, setRows] = useState<PlatformHealthRow[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const period = preset === "7d" ? "7d" : preset === "30d" ? "30d" : "90d";
+  let period: string;
+  if (preset === "7d") {
+    period = "7d";
+  } else if (preset === "30d") {
+    period = "30d";
+  } else {
+    period = "90d";
+  }
 
   useEffect(() => {
     setLoading(true);
