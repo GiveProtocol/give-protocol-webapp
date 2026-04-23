@@ -263,26 +263,24 @@ function DonorTable({
   updating: boolean;
 }): React.ReactElement {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donor</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Auth</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Donated</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donations</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {donors.map((donor) => (
-            <DonorRow key={donor.userId} donor={donor} onAction={onAction} updating={updating} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="w-full text-left">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donor</th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Auth</th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Donated</th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donations</th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {donors.map((donor) => (
+          <DonorRow key={donor.userId} donor={donor} onAction={onAction} updating={updating} />
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -420,7 +418,9 @@ const AdminDonorManagement: React.FC = () => {
         )}
 
         {!loading && result.donors.length > 0 && (
-          <DonorTable donors={result.donors} onAction={handleAction} updating={updating} />
+          <div className="overflow-x-auto">
+            <DonorTable donors={result.donors} onAction={handleAction} updating={updating} />
+          </div>
         )}
 
         <Pagination

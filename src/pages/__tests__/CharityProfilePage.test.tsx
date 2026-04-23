@@ -70,7 +70,7 @@ const mockProfile: CharityProfile = {
   updated_at: "2024-03-01T00:00:00Z",
 };
 
-const renderWithRoute = (ein: string = "123456789") =>
+const renderWithRoute = (ein = "123456789") =>
   render(
     <MemoryRouter initialEntries={[`/charity/${ein}`]}>
       <Routes>

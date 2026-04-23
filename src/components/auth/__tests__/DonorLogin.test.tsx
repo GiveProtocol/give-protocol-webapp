@@ -71,19 +71,25 @@ jest.mock("@/utils/security/rateLimiter", () => ({
   },
 }));
 
+function InnerProviders({ children }: { children: React.ReactNode }) {
+  return (
+    <ChainProvider>
+      <MultiChainProvider>
+        <Web3Provider>
+          <AuthProvider>{children}</AuthProvider>
+        </Web3Provider>
+      </MultiChainProvider>
+    </ChainProvider>
+  );
+}
+
 const renderDonorLogin = () => {
   return render(
     <MemoryRouter>
       <ToastProvider>
-        <ChainProvider>
-          <MultiChainProvider>
-            <Web3Provider>
-              <AuthProvider>
-                <DonorLogin />
-              </AuthProvider>
-            </Web3Provider>
-          </MultiChainProvider>
-        </ChainProvider>
+        <InnerProviders>
+          <DonorLogin />
+        </InnerProviders>
       </ToastProvider>
     </MemoryRouter>,
   );
