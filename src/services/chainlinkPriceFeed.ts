@@ -39,34 +39,44 @@ const SEQUENCER_GRACE_PERIOD = 3600;
 /** Local cache TTL in milliseconds */
 const CACHE_TTL_MS = 30000; // 30 seconds
 
-/** Chain short names for the server-side RPC proxy */
-const CHAIN_PROXY_NAMES: Record<ChainId, string> = {
-  [CHAIN_IDS.BASE]: "base",
-  [CHAIN_IDS.OPTIMISM]: "optimism",
-  [CHAIN_IDS.MOONBEAM]: "moonbeam",
-  [CHAIN_IDS.BASE_SEPOLIA]: "base-sepolia",
-  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "optimism-sepolia",
-  [CHAIN_IDS.MOONBASE]: "moonbase",
-};
+/** Per-chain RPC configuration: env var name, public fallback URL, and proxy name */
+interface ChainRpcConfig {
+  envVar: string;
+  publicUrl: string;
+  proxyName: string;
+}
 
-/** Env var names for per-chain RPC URLs */
-const CHAIN_RPC_ENV_VARS: Record<ChainId, string> = {
-  [CHAIN_IDS.BASE]: "VITE_BASE_RPC_URL",
-  [CHAIN_IDS.OPTIMISM]: "VITE_OPTIMISM_RPC_URL",
-  [CHAIN_IDS.MOONBEAM]: "VITE_MOONBEAM_RPC_URL",
-  [CHAIN_IDS.BASE_SEPOLIA]: "VITE_BASE_SEPOLIA_RPC_URL",
-  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "VITE_OPTIMISM_SEPOLIA_RPC_URL",
-  [CHAIN_IDS.MOONBASE]: "VITE_MOONBASE_RPC_URL",
-};
-
-/** Public CORS-enabled RPC endpoints — used when env var is absent (e.g. Netlify static hosting) */
-const CHAIN_PUBLIC_RPC_URLS: Record<ChainId, string> = {
-  [CHAIN_IDS.BASE]: "https://mainnet.base.org",
-  [CHAIN_IDS.OPTIMISM]: "https://mainnet.optimism.io",
-  [CHAIN_IDS.MOONBEAM]: "https://rpc.api.moonbeam.network",
-  [CHAIN_IDS.BASE_SEPOLIA]: "https://sepolia.base.org",
-  [CHAIN_IDS.OPTIMISM_SEPOLIA]: "https://sepolia.optimism.io",
-  [CHAIN_IDS.MOONBASE]: "https://rpc.api.moonbase.moonbeam.network",
+const CHAIN_RPC_CONFIGS: Record<ChainId, ChainRpcConfig> = {
+  [CHAIN_IDS.BASE]: {
+    envVar: "VITE_BASE_RPC_URL",
+    publicUrl: "https://mainnet.base.org",
+    proxyName: "base",
+  },
+  [CHAIN_IDS.OPTIMISM]: {
+    envVar: "VITE_OPTIMISM_RPC_URL",
+    publicUrl: "https://mainnet.optimism.io",
+    proxyName: "optimism",
+  },
+  [CHAIN_IDS.MOONBEAM]: {
+    envVar: "VITE_MOONBEAM_RPC_URL",
+    publicUrl: "https://rpc.api.moonbeam.network",
+    proxyName: "moonbeam",
+  },
+  [CHAIN_IDS.BASE_SEPOLIA]: {
+    envVar: "VITE_BASE_SEPOLIA_RPC_URL",
+    publicUrl: "https://sepolia.base.org",
+    proxyName: "base-sepolia",
+  },
+  [CHAIN_IDS.OPTIMISM_SEPOLIA]: {
+    envVar: "VITE_OPTIMISM_SEPOLIA_RPC_URL",
+    publicUrl: "https://sepolia.optimism.io",
+    proxyName: "optimism-sepolia",
+  },
+  [CHAIN_IDS.MOONBASE]: {
+    envVar: "VITE_MOONBASE_RPC_URL",
+    publicUrl: "https://rpc.api.moonbase.moonbeam.network",
+    proxyName: "moonbase",
+  },
 };
 
 /**
@@ -74,23 +84,22 @@ const CHAIN_PUBLIC_RPC_URLS: Record<ChainId, string> = {
  * Priority: VITE_*_RPC_URL env var → public CORS-enabled endpoint → server-side proxy (dev only).
  */
 function getRpcUrl(chainId: ChainId): string {
-  const envVar = CHAIN_RPC_ENV_VARS[chainId];
-  if (envVar) {
-    const envValue = getEnv(envVar);
-    if (envValue) return envValue;
-  }
+  const config = CHAIN_RPC_CONFIGS[chainId];
 
-  // Fall back to public CORS-enabled endpoints (works in browser / Netlify static hosting)
-  const publicUrl = CHAIN_PUBLIC_RPC_URLS[chainId];
-  if (publicUrl) return publicUrl;
+  if (config) {
+    const envValue = getEnv(config.envVar);
+    if (envValue) return envValue;
+
+    // Fall back to public CORS-enabled endpoints (works in browser / Netlify static hosting)
+    return config.publicUrl;
+  }
 
   // Last resort: server-side proxy (development only — not available on Netlify)
   const origin =
     typeof window !== "undefined"
       ? window.location.origin
       : "http://localhost:5173";
-  const proxyName = CHAIN_PROXY_NAMES[chainId];
-  return `${origin}/api/rpc/${proxyName}`;
+  return `${origin}/api/rpc/unknown`;
 }
 
 /**
