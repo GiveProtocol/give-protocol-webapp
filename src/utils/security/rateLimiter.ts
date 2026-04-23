@@ -86,7 +86,7 @@ export class RateLimiter {
     if (now > record.resetAt) {
       record.attempts = 0;
       record.resetAt = now + config.windowMs;
-      delete record.blockedUntil;
+      record.blockedUntil = undefined;
     }
 
     return record.attempts >= config.maxAttempts;
