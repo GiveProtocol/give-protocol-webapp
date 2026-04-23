@@ -112,9 +112,7 @@ describe("CharityProfilePage", () => {
       renderWithRoute();
       await waitFor(() => {
         expect(
-          screen.getByText(
-            /couldn.t find a charity with this EIN/i,
-          ),
+          screen.getByText(/couldn.t find a charity with this EIN/i),
         ).toBeInTheDocument();
       });
     });
@@ -335,9 +333,7 @@ describe("CharityProfilePage", () => {
     it("renders Registry Public Record section", async () => {
       renderWithRoute();
       await waitFor(() => {
-        expect(
-          screen.getByText("Registry Public Record"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Registry Public Record")).toBeInTheDocument();
       });
     });
 
