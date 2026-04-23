@@ -13,19 +13,25 @@ import type {
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
 /** Status badge pill for a donor's account status */
-function StatusBadge({ status }: { status: DonorUserStatus }): React.ReactElement {
+function StatusBadge({
+  status,
+}: {
+  status: DonorUserStatus;
+}): React.ReactElement {
   const styles: Record<string, string> = {
-    active:    "bg-green-100 text-green-800",
+    active: "bg-green-100 text-green-800",
     suspended: "bg-yellow-100 text-yellow-800",
-    banned:    "bg-red-100 text-red-800",
+    banned: "bg-red-100 text-red-800",
   };
   const labels: Record<string, string> = {
-    active:    "Active",
+    active: "Active",
     suspended: "Suspended",
-    banned:    "Banned",
+    banned: "Banned",
   };
   return (
-    <span className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status] ?? "bg-gray-100 text-gray-600"}`}>
+    <span
+      className={`inline-block px-2 py-0.5 text-xs font-semibold rounded-full ${styles[status] ?? "bg-gray-100 text-gray-600"}`}
+    >
       {labels[status] ?? status}
     </span>
   );
@@ -43,26 +49,70 @@ function DonorActions({
 }): React.ReactElement {
   const { userStatus: s } = donor;
 
-  const handleSuspend   = useCallback(() => onAction(donor, "suspend"),   [donor, onAction]);
-  const handleReinstate = useCallback(() => onAction(donor, "reinstate"), [donor, onAction]);
-  const handleBan       = useCallback(() => onAction(donor, "ban"),       [donor, onAction]);
+  const handleSuspend = useCallback(
+    () => onAction(donor, "suspend"),
+    [donor, onAction],
+  );
+  const handleReinstate = useCallback(
+    () => onAction(donor, "reinstate"),
+    [donor, onAction],
+  );
+  const handleBan = useCallback(
+    () => onAction(donor, "ban"),
+    [donor, onAction],
+  );
 
   return (
     <div className="flex gap-2 flex-wrap">
       {s === "active" && (
         <>
-          <Button size="sm" variant="secondary" onClick={handleSuspend}   disabled={disabled}>Suspend</Button>
-          <Button size="sm" variant="danger"    onClick={handleBan}       disabled={disabled}>Ban</Button>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleSuspend}
+            disabled={disabled}
+          >
+            Suspend
+          </Button>
+          <Button
+            size="sm"
+            variant="danger"
+            onClick={handleBan}
+            disabled={disabled}
+          >
+            Ban
+          </Button>
         </>
       )}
       {s === "suspended" && (
         <>
-          <Button size="sm" variant="primary"   onClick={handleReinstate} disabled={disabled}>Reinstate</Button>
-          <Button size="sm" variant="danger"    onClick={handleBan}       disabled={disabled}>Ban</Button>
+          <Button
+            size="sm"
+            variant="primary"
+            onClick={handleReinstate}
+            disabled={disabled}
+          >
+            Reinstate
+          </Button>
+          <Button
+            size="sm"
+            variant="danger"
+            onClick={handleBan}
+            disabled={disabled}
+          >
+            Ban
+          </Button>
         </>
       )}
       {s === "banned" && (
-        <Button size="sm" variant="primary" onClick={handleReinstate} disabled={disabled}>Reinstate</Button>
+        <Button
+          size="sm"
+          variant="primary"
+          onClick={handleReinstate}
+          disabled={disabled}
+        >
+          Reinstate
+        </Button>
       )}
     </div>
   );
@@ -76,9 +126,9 @@ function FilterBar({
   onSearchChange,
 }: {
   filters: AdminDonorListFilters;
-  onStatusChange:     (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onStatusChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
   onAuthMethodChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
-  onSearchChange:     (_e: React.ChangeEvent<HTMLInputElement>)  => void;
+  onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
 }): React.ReactElement {
   return (
     <div className="flex flex-wrap gap-4 mb-6">
@@ -130,11 +180,23 @@ function Pagination({
   if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
-      <Button variant="secondary" size="sm" onClick={onPrev} disabled={page <= 1}>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onPrev}
+        disabled={page <= 1}
+      >
         Previous
       </Button>
-      <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
-      <Button variant="secondary" size="sm" onClick={onNext} disabled={page >= totalPages}>
+      <span className="text-sm text-gray-500">
+        Page {page} of {totalPages}
+      </span>
+      <Button
+        variant="secondary"
+        size="sm"
+        onClick={onNext}
+        disabled={page >= totalPages}
+      >
         Next
       </Button>
     </div>
@@ -142,15 +204,15 @@ function Pagination({
 }
 
 const ACTION_LABELS: Record<string, string> = {
-  suspend:   "Suspend Donor",
+  suspend: "Suspend Donor",
   reinstate: "Reinstate Donor",
-  ban:       "Ban Donor",
+  ban: "Ban Donor",
 };
 
 const ACTION_REQUIRES_REASON: Record<string, boolean> = {
-  suspend:   true,
+  suspend: true,
   reinstate: false,
-  ban:       true,
+  ban: true,
 };
 
 /** Confirmation modal for status actions */
@@ -201,7 +263,12 @@ function ActionModal({
         </div>
       )}
       <div className="flex justify-end gap-3">
-        <Button variant="secondary" size="sm" onClick={onClose} disabled={confirming}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={onClose}
+          disabled={confirming}
+        >
           Cancel
         </Button>
         <Button
@@ -238,10 +305,16 @@ function DonorRow({
     <tr className="border-t border-gray-100 hover:bg-gray-50">
       <td className="px-4 py-3 text-sm font-medium text-gray-900">
         <div>{donor.displayName ?? "—"}</div>
-        <div className="text-xs text-gray-400">{donor.email ?? donor.walletAddress ?? "—"}</div>
+        <div className="text-xs text-gray-400">
+          {donor.email ?? donor.walletAddress ?? "—"}
+        </div>
       </td>
-      <td className="px-4 py-3 text-xs text-gray-500">{donor.primaryAuthMethod}</td>
-      <td className="px-4 py-3"><StatusBadge status={donor.userStatus} /></td>
+      <td className="px-4 py-3 text-xs text-gray-500">
+        {donor.primaryAuthMethod}
+      </td>
+      <td className="px-4 py-3">
+        <StatusBadge status={donor.userStatus} />
+      </td>
       <td className="px-4 py-3 text-sm text-gray-700">${totalUsd}</td>
       <td className="px-4 py-3 text-sm text-gray-500">{donor.donationCount}</td>
       <td className="px-4 py-3 text-sm text-gray-500">{formattedDate}</td>
@@ -263,26 +336,43 @@ function DonorTable({
   updating: boolean;
 }): React.ReactElement {
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left">
-        <thead>
-          <tr className="bg-gray-50">
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donor</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Auth</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Status</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Total Donated</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Donations</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Joined</th>
-            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {donors.map((donor) => (
-            <DonorRow key={donor.userId} donor={donor} onAction={onAction} updating={updating} />
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <table className="w-full text-left">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Donor
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Auth
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Status
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Total Donated
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Donations
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Joined
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {donors.map((donor) => (
+          <DonorRow
+            key={donor.userId}
+            donor={donor}
+            onAction={onAction}
+            updating={updating}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -303,10 +393,15 @@ const AdminDonorManagement: React.FC = () => {
     banDonor,
   } = useAdminDonors();
 
-  const [filters, setFilters] = useState<AdminDonorListFilters>({ page: 1, limit: 50 });
+  const [filters, setFilters] = useState<AdminDonorListFilters>({
+    page: 1,
+    limit: 50,
+  });
 
   // Modal state
-  const [actionDonor, setActionDonor] = useState<AdminDonorListItem | null>(null);
+  const [actionDonor, setActionDonor] = useState<AdminDonorListItem | null>(
+    null,
+  );
   const [currentAction, setCurrentAction] = useState("");
   const [reason, setReason] = useState("");
 
@@ -314,11 +409,14 @@ const AdminDonorManagement: React.FC = () => {
     fetchDonors(filters);
   }, [fetchDonors, filters]);
 
-  const handleAction = useCallback((donor: AdminDonorListItem, action: string) => {
-    setActionDonor(donor);
-    setCurrentAction(action);
-    setReason("");
-  }, []);
+  const handleAction = useCallback(
+    (donor: AdminDonorListItem, action: string) => {
+      setActionDonor(donor);
+      setCurrentAction(action);
+      setReason("");
+    },
+    [],
+  );
 
   const handleCloseModal = useCallback(() => {
     setActionDonor(null);
@@ -326,35 +424,54 @@ const AdminDonorManagement: React.FC = () => {
     setReason("");
   }, []);
 
-  const handleReasonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setReason(e.target.value);
-  }, []);
+  const handleReasonChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setReason(e.target.value);
+    },
+    [],
+  );
 
-  const handleStatusChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({
-      ...prev,
-      page: 1,
-      status: value !== "" ? (value as DonorUserStatus) : undefined,
-    }));
-  }, []);
+  const handleStatusChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        status: value !== "" ? (value as DonorUserStatus) : undefined,
+      }));
+    },
+    [],
+  );
 
-  const handleAuthMethodChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({
-      ...prev,
-      page: 1,
-      authMethod: value !== "" ? (value as "email" | "wallet") : undefined,
-    }));
-  }, []);
+  const handleAuthMethodChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        authMethod: value !== "" ? (value as "email" | "wallet") : undefined,
+      }));
+    },
+    [],
+  );
 
-  const handleSearchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setFilters((prev) => ({ ...prev, page: 1, search: value !== "" ? value : undefined }));
-  }, []);
+  const handleSearchChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value;
+      setFilters((prev) => ({
+        ...prev,
+        page: 1,
+        search: value !== "" ? value : undefined,
+      }));
+    },
+    [],
+  );
 
   const handlePrevPage = useCallback(() => {
-    setFilters((prev) => ({ ...prev, page: Math.max(1, (prev.page ?? 1) - 1) }));
+    setFilters((prev) => ({
+      ...prev,
+      page: Math.max(1, (prev.page ?? 1) - 1),
+    }));
   }, []);
 
   const handleNextPage = useCallback(() => {
@@ -384,7 +501,16 @@ const AdminDonorManagement: React.FC = () => {
     if (success) {
       handleCloseModal();
     }
-  }, [actionDonor, currentAction, reason, filters, suspendDonor, reinstateDonor, banDonor, handleCloseModal]);
+  }, [
+    actionDonor,
+    currentAction,
+    reason,
+    filters,
+    suspendDonor,
+    reinstateDonor,
+    banDonor,
+    handleCloseModal,
+  ]);
 
   if (loading && result.donors.length === 0) {
     return (
@@ -416,11 +542,19 @@ const AdminDonorManagement: React.FC = () => {
         )}
 
         {!loading && result.donors.length === 0 && (
-          <p className="text-center py-8 text-gray-500">No donors found matching your filters.</p>
+          <p className="text-center py-8 text-gray-500">
+            No donors found matching your filters.
+          </p>
         )}
 
         {!loading && result.donors.length > 0 && (
-          <DonorTable donors={result.donors} onAction={handleAction} updating={updating} />
+          <div className="overflow-x-auto">
+            <DonorTable
+              donors={result.donors}
+              onAction={handleAction}
+              updating={updating}
+            />
+          </div>
         )}
 
         <Pagination

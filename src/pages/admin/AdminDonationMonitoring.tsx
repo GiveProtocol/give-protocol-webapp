@@ -103,8 +103,8 @@ function Pagination({
   totalPages: number;
   onPrev: () => void;
   onNext: () => void;
-}): React.ReactElement {
-  if (totalPages <= 1) return <></>;
+}): React.ReactElement | null {
+  if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
       <Button
@@ -246,8 +246,8 @@ function FlagModal({
   onConfirm: () => void;
   onClose: () => void;
   confirming: boolean;
-}): React.ReactElement {
-  if (!donation) return <></>;
+}): React.ReactElement | null {
+  if (!donation) return null;
 
   const label = donation.donorDisplayName ?? donation.donorEmail ?? donation.id;
 
@@ -258,7 +258,10 @@ function FlagModal({
         for admin review.
       </p>
       <div className="mb-4">
-        <label htmlFor="flag-reason" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="flag-reason"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Reason <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -478,7 +481,10 @@ const AdminDonationMonitoring: React.FC = () => {
           </h2>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
-              <label htmlFor="report-date-from" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="report-date-from"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 From
               </label>
               <input
@@ -490,7 +496,10 @@ const AdminDonationMonitoring: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="report-date-to" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="report-date-to"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 To
               </label>
               <input
