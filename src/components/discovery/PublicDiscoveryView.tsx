@@ -10,6 +10,7 @@ import {
 import { ProjectCard } from "./ProjectCard";
 import { WhyGiveProtocolRail } from "./WhyGiveProtocolRail";
 import { NewsUpdatesCard } from "./NewsUpdatesCard";
+import { FeaturedCharitiesCarousel } from "./FeaturedCharitiesCarousel";
 import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSearch";
 import { useGeographicFilterParams } from "@/hooks/useGeographicFilterParams";
 import { Skeleton } from "@/components/ui/Skeleton";
@@ -42,6 +43,12 @@ export const PublicDiscoveryView: React.FC = () => {
   const handleFiltersChange = useCallback((next: DiscoveryFiltersState) => {
     setFilters(next);
   }, []);
+
+  const hasActiveFilter =
+    filters.searchTerm.trim().length >= 2 ||
+    filters.impactLocations.length > 0 ||
+    filters.hqLocations.length > 0 ||
+    filters.onPlatformOnly;
 
   const hero = (
     <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 lg:gap-12 items-center">
@@ -123,23 +130,27 @@ export const PublicDiscoveryView: React.FC = () => {
         <DiscoveryFilters value={filters} onChange={handleFiltersChange} />
       </section>
 
-      <section aria-label="Charity results">
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 md:gap-8">
-          {loading && organizations.length === 0 ? (
-            <Skeleton className="h-72" count={6} />
-          ) : (
-            organizations.map((org) => (
-              <ProjectCard key={org.ein} organization={org} />
-            ))
-          )}
-        </div>
-        {!loading && organizations.length === 0 && (
-          <div className="text-center py-16 text-gray-500 dark:text-gray-400">
-            No organizations match that search yet. Try a different keyword or
-            add a location filter.
+      {hasActiveFilter ? (
+        <section aria-label="Charity results">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 md:gap-8">
+            {loading && organizations.length === 0 ? (
+              <Skeleton className="h-72" count={6} />
+            ) : (
+              organizations.map((org) => (
+                <ProjectCard key={org.ein} organization={org} />
+              ))
+            )}
           </div>
-        )}
-      </section>
+          {!loading && organizations.length === 0 && (
+            <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+              No organizations match that search yet. Try a different keyword or
+              add a location filter.
+            </div>
+          )}
+        </section>
+      ) : (
+        <FeaturedCharitiesCarousel />
+      )}
     </>
   );
 
