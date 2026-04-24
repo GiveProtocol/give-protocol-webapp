@@ -6,7 +6,10 @@ import { SOCIAL_PLATFORMS } from "./platforms";
 import type { SocialPlatform } from "./platforms";
 
 /** Single social share icon button. */
-function SocialButton({ platform, onClick }: {
+function SocialButton({
+  platform,
+  onClick,
+}: {
   platform: SocialPlatform;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
 }): React.ReactElement {
@@ -25,7 +28,10 @@ function SocialButton({ platform, onClick }: {
 }
 
 /** Copy link button with check icon feedback. */
-function CopyLinkButton({ copied, onClick }: {
+function CopyLinkButton({
+  copied,
+  onClick,
+}: {
   copied: boolean;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
 }): React.ReactElement {
@@ -36,9 +42,11 @@ function CopyLinkButton({ copied, onClick }: {
       aria-label={copied ? "Link copied" : "Copy link"}
       className="p-2 text-gray-400 hover:text-emerald-400 hover:scale-110 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 rounded-full"
     >
-      {copied
-        ? <Check className="w-5 h-5 text-emerald-400" />
-        : <Copy className="w-5 h-5" />}
+      {copied ? (
+        <Check className="w-5 h-5 text-emerald-400" />
+      ) : (
+        <Copy className="w-5 h-5" />
+      )}
     </button>
   );
 }
@@ -68,14 +76,21 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
   const getShareUrl = useCallback(() => url ?? window.location.href, [url]);
   const getShareMessage = useCallback(() => title ?? document.title, [title]);
 
-  const handleShare = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const platformId = e.currentTarget.dataset.platform;
-    const platform = SOCIAL_PLATFORMS.find((p) => p.id === platformId);
-    if (!platform) return;
+  const handleShare = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const platformId = e.currentTarget.dataset.platform;
+      const platform = SOCIAL_PLATFORMS.find((p) => p.id === platformId);
+      if (!platform) return;
 
-    const shareUrl = platform.getShareUrl(getShareUrl(), getShareMessage());
-    window.open(shareUrl, "_blank", "noopener,noreferrer,width=600,height=500");
-  }, [getShareUrl, getShareMessage]);
+      const shareUrl = platform.getShareUrl(getShareUrl(), getShareMessage());
+      window.open(
+        shareUrl,
+        "_blank",
+        "noopener,noreferrer,width=600,height=500",
+      );
+    },
+    [getShareUrl, getShareMessage],
+  );
 
   const handleCopy = useCallback(async () => {
     const success = await copyToClipboard(getShareUrl());
@@ -94,7 +109,11 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
         className="hidden md:flex md:flex-col fixed left-4 top-[60%] -translate-y-1/2 z-40 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-full shadow-lg p-2 gap-1"
       >
         {SOCIAL_PLATFORMS.map((platform) => (
-          <SocialButton key={platform.id} platform={platform} onClick={handleShare} />
+          <SocialButton
+            key={platform.id}
+            platform={platform}
+            onClick={handleShare}
+          />
         ))}
         <div className="border-t border-white/10 my-1" />
         <CopyLinkButton copied={copied} onClick={handleCopy} />
@@ -106,7 +125,11 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
         className="flex md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-white/10 shadow-lg justify-center items-center gap-1 px-2 py-1"
       >
         {SOCIAL_PLATFORMS.map((platform) => (
-          <SocialButton key={platform.id} platform={platform} onClick={handleShare} />
+          <SocialButton
+            key={platform.id}
+            platform={platform}
+            onClick={handleShare}
+          />
         ))}
         <div className="border-l border-white/10 h-6 mx-1" />
         <CopyLinkButton copied={copied} onClick={handleCopy} />

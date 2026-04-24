@@ -308,11 +308,7 @@ function ChecklistHeader({
         </div>
       </div>
       <div className="w-full bg-emerald-200 rounded-full h-1.5">
-        <progress
-          className="sr-only"
-          value={progressPercent}
-          max={100}
-        />
+        <progress className="sr-only" value={progressPercent} max={100} />
         <div
           className="bg-emerald-600 h-1.5 rounded-full transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
