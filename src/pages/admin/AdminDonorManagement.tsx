@@ -250,10 +250,14 @@ function ActionModal({
       </p>
       {requiresReason && (
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label
+            htmlFor="donor-action-reason"
+            className="block text-sm font-medium text-gray-700 mb-1"
+          >
             Reason <span className="text-red-500">*</span>
           </label>
           <textarea
+            id="donor-action-reason"
             className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
             rows={3}
             value={reason}
@@ -336,43 +340,45 @@ function DonorTable({
   updating: boolean;
 }): React.ReactElement {
   return (
-    <table className="w-full text-left">
-      <thead>
-        <tr className="bg-gray-50">
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Donor
-          </th>
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Auth
-          </th>
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Status
-          </th>
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Total Donated
-          </th>
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Donations
-          </th>
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Joined
-          </th>
-          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-            Actions
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        {donors.map((donor) => (
-          <DonorRow
-            key={donor.userId}
-            donor={donor}
-            onAction={onAction}
-            updating={updating}
-          />
-        ))}
-      </tbody>
-    </table>
+    <div className="overflow-x-auto">
+      <table className="w-full text-left">
+        <thead>
+          <tr className="bg-gray-50">
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Donor
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Auth
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Status
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Total Donated
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Donations
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Joined
+            </th>
+            <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {donors.map((donor) => (
+            <DonorRow
+              key={donor.userId}
+              donor={donor}
+              onAction={onAction}
+              updating={updating}
+            />
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -548,13 +554,11 @@ const AdminDonorManagement: React.FC = () => {
         )}
 
         {!loading && result.donors.length > 0 && (
-          <div className="overflow-x-auto">
-            <DonorTable
-              donors={result.donors}
-              onAction={handleAction}
-              updating={updating}
-            />
-          </div>
+          <DonorTable
+            donors={result.donors}
+            onAction={handleAction}
+            updating={updating}
+          />
         )}
 
         <Pagination

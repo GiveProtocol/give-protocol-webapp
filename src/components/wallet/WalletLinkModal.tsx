@@ -1,9 +1,9 @@
-import React, { useState, useCallback } from 'react';
-import { Wallet, ShieldCheck, X, AlertCircle } from 'lucide-react';
-import { Modal } from '@/components/ui/Modal';
-import { Button } from '@/components/ui/Button';
-import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
-import { Logger } from '@/utils/logger';
+import React, { useState, useCallback } from "react";
+import { Wallet, ShieldCheck, X, AlertCircle } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
+import { Button } from "@/components/ui/Button";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
+import { Logger } from "@/utils/logger";
 
 interface WalletLinkModalProps {
   isOpen: boolean;
@@ -24,23 +24,35 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
     setLinkError(null);
     try {
       await linkWallet();
-      Logger.info('Wallet linked via modal');
+      Logger.info("Wallet linked via modal");
       onLinked?.();
       onClose();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Failed to link wallet';
-      if (msg.toLowerCase().includes('user rejected') || msg.toLowerCase().includes('user denied')) {
+      const msg = err instanceof Error ? err.message : "Failed to link wallet";
+      if (
+        msg.toLowerCase().includes("user rejected") ||
+        msg.toLowerCase().includes("user denied")
+      ) {
         return;
       }
       setLinkError(msg);
-      Logger.error('Wallet link failed in modal', { error: msg });
+      Logger.error("Wallet link failed in modal", { error: msg });
     }
   }, [linkWallet, onClose, onLinked]);
 
   const handleSkip = useCallback(() => {
-    Logger.info('User dismissed wallet link modal');
+    Logger.info("User dismissed wallet link modal");
     onClose();
   }, [onClose]);
+
+  let buttonLabel: string;
+  if (loading) {
+    buttonLabel = "Linking\u2026";
+  } else if (isWalletConnected) {
+    buttonLabel = "Link Wallet";
+  } else {
+    buttonLabel = "Connect Wallet First";
+  }
 
   return (
     <Modal
@@ -58,7 +70,8 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
           Link Your Wallet
         </h2>
         <p className="text-gray-600 dark:text-gray-400">
-          Link a wallet to your account for on-chain donations, token rewards, and governance
+          Link a wallet to your account for on-chain donations, token rewards,
+          and governance
         </p>
       </div>
 
@@ -98,7 +111,7 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
         icon={<Wallet className="h-4 w-4" />}
         className="font-semibold mb-3"
       >
-        {loading ? 'Linking\u2026' : isWalletConnected ? 'Link Wallet' : 'Connect Wallet First'}
+        {buttonLabel}
       </Button>
 
       <div className="flex justify-center">

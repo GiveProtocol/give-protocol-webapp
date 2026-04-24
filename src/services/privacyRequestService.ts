@@ -3,20 +3,23 @@
  * Wraps the privacy-export and privacy-erasure Supabase Edge Functions.
  */
 
-import { supabase } from '@/lib/supabase';
-import { ENV } from '@/config/env';
+import { supabase } from "@/lib/supabase";
+import { ENV } from "@/config/env";
 
 // Edge function base URL derived from SUPABASE_URL
 function getFunctionsBaseUrl(): string {
-  const supabaseUrl = ENV.SUPABASE_URL ?? '';
+  const supabaseUrl = ENV.SUPABASE_URL ?? "";
   return `${supabaseUrl}/functions/v1`;
 }
 
 /** Get the current user's auth token for Edge Function calls. */
 async function getAuthToken(): Promise<string> {
-  const { data: { session }, error } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error,
+  } = await supabase.auth.getSession();
   if (error || !session) {
-    throw new Error('Not authenticated. Please sign in to continue.');
+    throw new Error("Not authenticated. Please sign in to continue.");
   }
   return session.access_token;
 }
@@ -39,7 +42,7 @@ async function callEdgeFunction(
     method: options.method,
     body: options.body,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
       ...options.headers,
     },
@@ -48,7 +51,7 @@ async function callEdgeFunction(
 
 export interface ExportRequestResult {
   request_id: string;
-  status: 'pending' | 'processing' | 'ready' | 'expired' | 'failed';
+  status: "pending" | "processing" | "ready" | "expired" | "failed";
   download_url?: string;
   expires_at?: string;
   estimated_delivery_date?: string;
@@ -58,7 +61,7 @@ export interface ExportRequestResult {
 
 export interface ErasureRequestResult {
   request_id: string;
-  status: 'pending' | 'cancelled' | 'processing' | 'completed' | 'failed';
+  status: "pending" | "cancelled" | "processing" | "completed" | "failed";
   scheduled_deletion_date?: string;
   message?: string;
   blockchain_notice?: string;
@@ -67,7 +70,7 @@ export interface ErasureRequestResult {
 
 export interface ExportStatusResult {
   request_id: string;
-  status: 'pending' | 'processing' | 'ready' | 'expired' | 'failed';
+  status: "pending" | "processing" | "ready" | "expired" | "failed";
   download_url?: string;
   expires_at?: string;
   requested_at?: string;
@@ -83,21 +86,25 @@ export interface ExportStatusResult {
  * @throws Error with a user-friendly message on failure
  */
 export async function requestDataExport(): Promise<ExportRequestResult> {
-  const response = await callEdgeFunction('/privacy-export', {
-    method: 'POST',
+  const response = await callEdgeFunction("/privacy-export", {
+    method: "POST",
   });
 
-  const data = await response.json() as ExportRequestResult & { error?: string };
+  const data = (await response.json()) as ExportRequestResult & {
+    error?: string;
+  };
 
   if (response.status === 429) {
+    const nextAllowed = data.next_allowed_at
+      ? `Next allowed: ${data.next_allowed_at}`
+      : "";
     throw new Error(
-      data.error ??
-      `You may request one export per 30 days. ${data.next_allowed_at ? `Next allowed: ${data.next_allowed_at}` : ''}`,
+      data.error ?? `You may request one export per 30 days. ${nextAllowed}`,
     );
   }
 
   if (!response.ok) {
-    throw new Error(data.error ?? 'Failed to create export request');
+    throw new Error(data.error ?? "Failed to create export request");
   }
 
   return data;
@@ -110,15 +117,19 @@ export async function requestDataExport(): Promise<ExportRequestResult> {
  * @returns Current status and download URL if ready
  * @throws Error if the request is not found or call fails
  */
-export async function getExportStatus(requestId: string): Promise<ExportStatusResult> {
+export async function getExportStatus(
+  requestId: string,
+): Promise<ExportStatusResult> {
   const response = await callEdgeFunction(`/privacy-export/${requestId}`, {
-    method: 'GET',
+    method: "GET",
   });
 
-  const data = await response.json() as ExportStatusResult & { error?: string };
+  const data = (await response.json()) as ExportStatusResult & {
+    error?: string;
+  };
 
   if (!response.ok) {
-    throw new Error(data.error ?? 'Failed to fetch export status');
+    throw new Error(data.error ?? "Failed to fetch export status");
   }
 
   return data;
@@ -132,22 +143,26 @@ export async function getExportStatus(requestId: string): Promise<ExportStatusRe
  * @returns The erasure request result with scheduled deletion date
  * @throws Error with a user-friendly message on failure
  */
-export async function requestAccountErasure(reason?: string): Promise<ErasureRequestResult> {
-  const response = await callEdgeFunction('/privacy-erasure', {
-    method: 'POST',
+export async function requestAccountErasure(
+  reason?: string,
+): Promise<ErasureRequestResult> {
+  const response = await callEdgeFunction("/privacy-erasure", {
+    method: "POST",
     body: JSON.stringify({ confirm: true, reason }),
   });
 
-  const data = await response.json() as ErasureRequestResult & { error?: string };
+  const data = (await response.json()) as ErasureRequestResult & {
+    error?: string;
+  };
 
   if (response.status === 409) {
     throw new Error(
-      data.error ?? 'An erasure request is already pending for your account.',
+      data.error ?? "An erasure request is already pending for your account.",
     );
   }
 
   if (!response.ok) {
-    throw new Error(data.error ?? 'Failed to create erasure request');
+    throw new Error(data.error ?? "Failed to create erasure request");
   }
 
   return data;
@@ -160,15 +175,19 @@ export async function requestAccountErasure(reason?: string): Promise<ErasureReq
  * @returns Cancellation confirmation
  * @throws Error if request not found, already processed, or call fails
  */
-export async function cancelErasureRequest(requestId: string): Promise<ErasureRequestResult> {
+export async function cancelErasureRequest(
+  requestId: string,
+): Promise<ErasureRequestResult> {
   const response = await callEdgeFunction(`/privacy-erasure/${requestId}`, {
-    method: 'DELETE',
+    method: "DELETE",
   });
 
-  const data = await response.json() as ErasureRequestResult & { error?: string };
+  const data = (await response.json()) as ErasureRequestResult & {
+    error?: string;
+  };
 
   if (!response.ok) {
-    throw new Error(data.error ?? 'Failed to cancel erasure request');
+    throw new Error(data.error ?? "Failed to cancel erasure request");
   }
 
   return data;
@@ -186,10 +205,10 @@ export async function getActiveErasureRequest(): Promise<{
   requested_at: string;
 } | null> {
   const { data, error } = await supabase
-    .from('erasure_requests')
-    .select('id, status, scheduled_deletion_date, requested_at')
-    .in('status', ['pending', 'processing'])
-    .order('requested_at', { ascending: false })
+    .from("erasure_requests")
+    .select("id, status, scheduled_deletion_date, requested_at")
+    .in("status", ["pending", "processing"])
+    .order("requested_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 
@@ -212,9 +231,9 @@ export async function getMostRecentExportRequest(): Promise<{
   completed_at: string | null;
 } | null> {
   const { data, error } = await supabase
-    .from('export_requests')
-    .select('id, status, requested_at, completed_at')
-    .order('requested_at', { ascending: false })
+    .from("export_requests")
+    .select("id, status, requested_at, completed_at")
+    .order("requested_at", { ascending: false })
     .limit(1)
     .maybeSingle();
 

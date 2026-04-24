@@ -67,7 +67,14 @@ function computeDateRange(
       dateTo: customTo ? `${customTo}T23:59:59Z` : "",
     };
   }
-  const days = preset === "7d" ? 7 : preset === "30d" ? 30 : 90;
+  let days: number;
+  if (preset === "7d") {
+    days = 7;
+  } else if (preset === "30d") {
+    days = 30;
+  } else {
+    days = 90;
+  }
   const to = new Date();
   const from = new Date();
   from.setDate(from.getDate() - days);
@@ -341,7 +348,9 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          <label htmlFor="group-by-select" className="text-sm text-gray-600">Group by:</label>
+          <label htmlFor="group-by-select" className="text-sm text-gray-600">
+            Group by:
+          </label>
           <select
             id="group-by-select"
             className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
@@ -379,45 +388,43 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
       {!loading && rows.length > 0 && (
         <table className="w-full text-left text-sm overflow-x-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Group
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Method
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Total (USD)
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Count
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Charity
-                </th>
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Group
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Method
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Total (USD)
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Count
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Charity
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-2 font-mono text-xs">{row.groupKey}</td>
+                <td className="px-4 py-2">{row.paymentMethod}</td>
+                <td className="px-4 py-2 font-medium">
+                  ${row.totalAmountUsd.toFixed(2)}
+                </td>
+                <td className="px-4 py-2">{row.donationCount}</td>
+                <td className="px-4 py-2 text-gray-600">
+                  {row.charityName ?? row.charityId ?? "—"}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
-                  className="border-t border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 font-mono text-xs">
-                    {row.groupKey}
-                  </td>
-                  <td className="px-4 py-2">{row.paymentMethod}</td>
-                  <td className="px-4 py-2 font-medium">
-                    ${row.totalAmountUsd.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-2">{row.donationCount}</td>
-                  <td className="px-4 py-2 text-gray-600">
-                    {row.charityName ?? row.charityId ?? "—"}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            ))}
+          </tbody>
         </table>
       )}
     </div>
@@ -478,43 +485,43 @@ function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
       {!loading && rows.length > 0 && (
         <table className="w-full text-left text-sm overflow-x-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Period
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  New
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Approved
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Rejected
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Active
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Suspended
-                </th>
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Period
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                New
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Approved
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Rejected
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Active
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Suspended
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={row.period}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
+                <td className="px-4 py-2">{row.newRegistrations}</td>
+                <td className="px-4 py-2 text-green-700">{row.approved}</td>
+                <td className="px-4 py-2 text-red-700">{row.rejected}</td>
+                <td className="px-4 py-2">{row.active}</td>
+                <td className="px-4 py-2 text-gray-500">{row.suspended}</td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.period}
-                  className="border-t border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
-                  <td className="px-4 py-2">{row.newRegistrations}</td>
-                  <td className="px-4 py-2 text-green-700">{row.approved}</td>
-                  <td className="px-4 py-2 text-red-700">{row.rejected}</td>
-                  <td className="px-4 py-2">{row.active}</td>
-                  <td className="px-4 py-2 text-gray-500">{row.suspended}</td>
-                </tr>
-              ))}
-            </tbody>
+            ))}
+          </tbody>
         </table>
       )}
     </div>
@@ -575,51 +582,45 @@ function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
       {!loading && rows.length > 0 && (
         <table className="w-full text-left text-sm overflow-x-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Period
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  New Donors
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Active
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Dormant
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Avg Donation
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Repeat Rate
-                </th>
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Period
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                New Donors
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Active
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Dormant
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Avg Donation
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Repeat Rate
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={row.period}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
+                <td className="px-4 py-2 font-medium">{row.newDonors}</td>
+                <td className="px-4 py-2 text-green-700">{row.activeDonors}</td>
+                <td className="px-4 py-2 text-gray-500">{row.dormantDonors}</td>
+                <td className="px-4 py-2">${row.avgDonationUsd.toFixed(2)}</td>
+                <td className="px-4 py-2">
+                  {(row.repeatDonorRate * 100).toFixed(1)}%
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.period}
-                  className="border-t border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
-                  <td className="px-4 py-2 font-medium">{row.newDonors}</td>
-                  <td className="px-4 py-2 text-green-700">
-                    {row.activeDonors}
-                  </td>
-                  <td className="px-4 py-2 text-gray-500">
-                    {row.dormantDonors}
-                  </td>
-                  <td className="px-4 py-2">
-                    ${row.avgDonationUsd.toFixed(2)}
-                  </td>
-                  <td className="px-4 py-2">
-                    {(row.repeatDonorRate * 100).toFixed(1)}%
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            ))}
+          </tbody>
         </table>
       )}
     </div>
@@ -680,51 +681,49 @@ function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
       {!loading && rows.length > 0 && (
         <table className="w-full text-left text-sm overflow-x-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Period
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Submitted
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Validated
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Rejected
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Rejection Rate
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Avg. Days
-                </th>
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Period
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Submitted
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Validated
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Rejected
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Rejection Rate
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Avg. Days
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr
+                key={row.period}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
+                <td className="px-4 py-2">{row.hoursSubmitted}</td>
+                <td className="px-4 py-2 text-green-700">
+                  {row.hoursValidated}
+                </td>
+                <td className="px-4 py-2 text-red-700">{row.hoursRejected}</td>
+                <td className="px-4 py-2">
+                  {(row.rejectionRate * 100).toFixed(1)}%
+                </td>
+                <td className="px-4 py-2">
+                  {row.avgValidationDays.toFixed(1)}
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr
-                  key={row.period}
-                  className="border-t border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 font-mono text-xs">{row.period}</td>
-                  <td className="px-4 py-2">{row.hoursSubmitted}</td>
-                  <td className="px-4 py-2 text-green-700">
-                    {row.hoursValidated}
-                  </td>
-                  <td className="px-4 py-2 text-red-700">
-                    {row.hoursRejected}
-                  </td>
-                  <td className="px-4 py-2">
-                    {(row.rejectionRate * 100).toFixed(1)}%
-                  </td>
-                  <td className="px-4 py-2">
-                    {row.avgValidationDays.toFixed(1)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            ))}
+          </tbody>
         </table>
       )}
     </div>
@@ -800,51 +799,51 @@ function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
       {!loading && entries.length > 0 && (
         <table className="w-full text-left text-sm overflow-x-auto">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Date
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Action
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Entity
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Entity ID
-                </th>
-                <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                  Admin
-                </th>
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Date
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Action
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Entity
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Entity ID
+              </th>
+              <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Admin
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr
+                key={entry.id}
+                className="border-t border-gray-100 hover:bg-gray-50"
+              >
+                <td className="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">
+                  {fmtDate(entry.createdAt)}
+                </td>
+                <td className="px-4 py-2">
+                  <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
+                    {entry.actionType.replaceAll("_", " ")}
+                  </span>
+                </td>
+                <td className="px-4 py-2 text-gray-600 capitalize">
+                  {entry.entityType.replaceAll("_", " ")}
+                </td>
+                <td className="px-4 py-2 font-mono text-xs text-gray-500">
+                  {entry.entityId.slice(0, 8)}…
+                </td>
+                <td className="px-4 py-2 font-mono text-xs text-gray-500">
+                  {entry.adminUserId.slice(0, 8)}…
+                </td>
               </tr>
-            </thead>
-            <tbody>
-              {entries.map((entry) => (
-                <tr
-                  key={entry.id}
-                  className="border-t border-gray-100 hover:bg-gray-50"
-                >
-                  <td className="px-4 py-2 text-xs text-gray-500 whitespace-nowrap">
-                    {fmtDate(entry.createdAt)}
-                  </td>
-                  <td className="px-4 py-2">
-                    <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-blue-100 text-blue-800">
-                      {entry.actionType.replaceAll("_", " ")}
-                    </span>
-                  </td>
-                  <td className="px-4 py-2 text-gray-600 capitalize">
-                    {entry.entityType.replaceAll("_", " ")}
-                  </td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-500">
-                    {entry.entityId.slice(0, 8)}…
-                  </td>
-                  <td className="px-4 py-2 font-mono text-xs text-gray-500">
-                    {entry.adminUserId.slice(0, 8)}…
-                  </td>
-                </tr>
-              ))}
-            </tbody>
+            ))}
+          </tbody>
         </table>
       )}
 
@@ -864,7 +863,14 @@ function PlatformHealthTab({ preset }: TabProps): React.ReactElement {
   const [rows, setRows] = useState<PlatformHealthRow[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const period = preset === "7d" ? "7d" : preset === "30d" ? "30d" : "90d";
+  let period: string;
+  if (preset === "7d") {
+    period = "7d";
+  } else if (preset === "30d") {
+    period = "30d";
+  } else {
+    period = "90d";
+  }
 
   useEffect(() => {
     setLoading(true);
