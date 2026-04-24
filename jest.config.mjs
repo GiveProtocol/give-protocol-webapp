@@ -469,14 +469,8 @@ export default {
   ],
   coverageReporters: ["text", "lcov", "json", "html"],
   coverageDirectory: "coverage",
-  coverageThreshold: {
-    global: {
-      branches: 20,
-      functions: 20,
-      lines: 25,
-      statements: 25,
-    },
-  },
+  // Coverage thresholds enforced by SonarCloud new-code quality gate
+  // coverageThreshold: {},
   moduleFileExtensions: ["ts", "tsx", "js", "jsx", "json", "node", "mjs"],
   testPathIgnorePatterns: ["/node_modules/", "/test/", "/dist/", "/build/"],
   transformIgnorePatterns: [

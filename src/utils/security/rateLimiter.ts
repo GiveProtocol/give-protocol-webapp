@@ -57,6 +57,7 @@ export class RateLimiter {
     setInterval(() => this.cleanup(), 5 * 60 * 1000);
   }
 
+  /** Returns the singleton RateLimiter instance, creating it on first access. */
   static getInstance(): RateLimiter {
     if (!this.instance) {
       this.instance = new RateLimiter();
@@ -64,6 +65,12 @@ export class RateLimiter {
     return this.instance;
   }
 
+  /**
+   * Checks whether the given key has exceeded its rate limit.
+   * @param key - Identifier to rate-limit (e.g. IP address)
+   * @param isAuth - When true, uses the more lenient auth config
+   * @returns True if the key is currently blocked
+   */
   isRateLimited(key: string, isAuth = false): boolean {
     const config = isAuth ? this.authConfig : this.publicConfig;
     const now = Date.now();
@@ -92,6 +99,10 @@ export class RateLimiter {
     return record.attempts >= config.maxAttempts;
   }
 
+  /**
+   * Increments the attempt count for the given key, blocking it if the limit is exceeded.
+   * @param key - Identifier whose attempt counter should be incremented
+   */
   increment(key: string): void {
     const record = this.store.get(key);
     if (!record) return;
@@ -109,10 +120,15 @@ export class RateLimiter {
     }
   }
 
+  /**
+   * Resets the rate-limit record for the given key.
+   * @param key - Identifier to clear from the store
+   */
   reset(key: string): void {
     this.store.delete(key);
   }
 
+  /** Removes expired rate-limit records from the store. */
   private cleanup(): void {
     const now = Date.now();
     for (const [key, record] of this.store.entries()) {

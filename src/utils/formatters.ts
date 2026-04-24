@@ -43,7 +43,7 @@ export function formatCompact(
     suffix = "";
   }
 
-  const formatted = value.toFixed(2).replace(/\.?0+$/, "");
+  const formatted = value.toFixed(2).replace(/0+$/, "").replace(/\.$/, "");
 
   if (showSymbol && symbol) {
     return `${sign}${symbol}${formatted}${suffix}`;

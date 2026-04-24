@@ -7,6 +7,7 @@ import { useAdminDonations } from "@/hooks/useAdminDonations";
 import type {
   AdminDonationListFilters,
   AdminDonationListItem,
+  AdminDonationSummaryRow,
   DonationPaymentMethod,
 } from "@/types/adminDonation";
 
@@ -106,8 +107,8 @@ function Pagination({
   totalPages: number;
   onPrev: () => void;
   onNext: () => void;
-}): React.ReactElement {
-  if (totalPages <= 1) return <></>;
+}): React.ReactElement | null {
+  if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
       <Button
@@ -253,8 +254,8 @@ function FlagModal({
   onConfirm: () => void;
   onClose: () => void;
   confirming: boolean;
-}): React.ReactElement {
-  if (!donation) return <></>;
+}): React.ReactElement | null {
+  if (!donation) return null;
 
   const label = donation.donorDisplayName ?? donation.donorEmail ?? donation.id;
 
@@ -265,7 +266,10 @@ function FlagModal({
         for admin review.
       </p>
       <div className="mb-4">
-        <label htmlFor="flag-reason" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="flag-reason"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Reason <span className="text-red-500">*</span>
         </label>
         <textarea
@@ -296,6 +300,109 @@ function FlagModal({
         </Button>
       </div>
     </Modal>
+  );
+}
+
+/** Summary report table showing grouped donation aggregates */
+function SummaryTable({
+  summary,
+}: {
+  summary: AdminDonationSummaryRow[];
+}): React.ReactElement {
+  return (
+    <table className="w-full text-left text-sm">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Group
+          </th>
+          <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Method
+          </th>
+          <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Total (USD)
+          </th>
+          <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Count
+          </th>
+          <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Charity
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {summary.map((row) => (
+          <tr
+            key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
+            className="border-t border-gray-100"
+          >
+            <td className="px-4 py-2 font-mono text-xs">{row.groupKey}</td>
+            <td className="px-4 py-2">
+              <PaymentBadge method={row.paymentMethod} />
+            </td>
+            <td className="px-4 py-2">${row.totalAmountUsd.toFixed(2)}</td>
+            <td className="px-4 py-2">{row.donationCount}</td>
+            <td className="px-4 py-2 text-gray-600">
+              {row.charityName ?? row.charityId ?? "—"}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+/** Donation list table with header and body rows */
+function DonationListTable({
+  donations,
+  onFlag,
+  flagging,
+}: {
+  donations: AdminDonationListItem[];
+  onFlag: (_donation: AdminDonationListItem) => void;
+  flagging: boolean;
+}): React.ReactElement {
+  return (
+    <table className="w-full text-left">
+      <thead>
+        <tr className="bg-gray-50">
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Method
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Amount (USD)
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Donor
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Charity
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Tx / ID
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Date
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Flag
+          </th>
+          <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {donations.map((donation) => (
+          <DonationRow
+            key={donation.id}
+            donation={donation}
+            onFlag={onFlag}
+            flagging={flagging}
+          />
+        ))}
+      </tbody>
+    </table>
   );
 }
 
@@ -492,7 +599,10 @@ const AdminDonationMonitoring: React.FC = () => {
           </h2>
           <div className="flex flex-wrap gap-4 items-end">
             <div>
-              <label htmlFor="report-date-from" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="report-date-from"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 From
               </label>
               <input
@@ -504,7 +614,10 @@ const AdminDonationMonitoring: React.FC = () => {
               />
             </div>
             <div>
-              <label htmlFor="report-date-to" className="block text-sm font-medium text-gray-700 mb-1">
+              <label
+                htmlFor="report-date-to"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
                 To
               </label>
               <input
@@ -531,49 +644,7 @@ const AdminDonationMonitoring: React.FC = () => {
           </div>
           {summary.length > 0 && (
             <div className="mt-4 overflow-x-auto">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="bg-gray-50">
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      Group
-                    </th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      Method
-                    </th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      Total (USD)
-                    </th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      Count
-                    </th>
-                    <th className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                      Charity
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {summary.map((row) => (
-                    <tr
-                      key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
-                      className="border-t border-gray-100"
-                    >
-                      <td className="px-4 py-2 font-mono text-xs">
-                        {row.groupKey}
-                      </td>
-                      <td className="px-4 py-2">
-                        <PaymentBadge method={row.paymentMethod} />
-                      </td>
-                      <td className="px-4 py-2">
-                        ${row.totalAmountUsd.toFixed(2)}
-                      </td>
-                      <td className="px-4 py-2">{row.donationCount}</td>
-                      <td className="px-4 py-2 text-gray-600">
-                        {row.charityName ?? row.charityId ?? "—"}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <SummaryTable summary={summary} />
             </div>
           )}
         </Card>
@@ -602,46 +673,11 @@ const AdminDonationMonitoring: React.FC = () => {
 
         {!loading && result.donations.length > 0 && (
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Method
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Amount (USD)
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Donor
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Charity
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Tx / ID
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Date
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Flag
-                  </th>
-                  <th className="px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.donations.map((donation) => (
-                  <DonationRow
-                    key={donation.id}
-                    donation={donation}
-                    onFlag={handleOpenFlag}
-                    flagging={flagging}
-                  />
-                ))}
-              </tbody>
-            </table>
+            <DonationListTable
+              donations={result.donations}
+              onFlag={handleOpenFlag}
+              flagging={flagging}
+            />
           </div>
         )}
 

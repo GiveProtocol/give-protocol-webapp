@@ -565,7 +565,13 @@ describe("helcimService", () => {
 
       let settled = false;
       const promise = openHelcimCheckout("token-123");
-      promise.then(() => { settled = true; }).catch(() => { settled = true; });
+      promise
+        .then(() => {
+          settled = true;
+        })
+        .catch(() => {
+          settled = true;
+        });
 
       // Message from an untrusted origin — must be ignored
       window.dispatchEvent(

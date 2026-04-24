@@ -120,11 +120,9 @@ export const Navbar: React.FC = () => {
   }, []);
 
   // Check if current page should only show limited navigation
-  const isLimitedNavPage = [
-    "/about",
-    "/legal",
-    "/privacy",
-  ].includes(location.pathname);
+  const isLimitedNavPage = ["/about", "/legal", "/privacy"].includes(
+    location.pathname,
+  );
 
   return (
     <nav className="bg-background-primary border-b border-gray-200 shadow-sm">

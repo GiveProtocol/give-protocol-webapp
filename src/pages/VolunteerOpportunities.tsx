@@ -215,6 +215,216 @@ function FilterPill({ filter }: { filter: ActiveFilter }) {
   );
 }
 
+/** Converts a snake_case language code to Title Case display name */
+const formatLanguageName = (language: string): string => {
+  return language
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+/**
+ * Input field with a leading icon, for search and location inputs.
+ * @param props - Component props
+ * @returns The rendered search field
+ */
+function SearchField({
+  icon: Icon,
+  wrapperClass,
+  inputClass,
+  ...inputProps
+}: {
+  icon: React.ElementType;
+  wrapperClass: string;
+  inputClass: string;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">) {
+  return (
+    <div className={wrapperClass}>
+      <input className={inputClass} {...inputProps} />
+      <Icon
+        aria-hidden="true"
+        className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+      />
+    </div>
+  );
+}
+
+/**
+ * Card displaying a single volunteer opportunity.
+ * @param props - Component props
+ * @returns The rendered opportunity card
+ */
+function OpportunityCard({
+  opportunity,
+  onApply,
+}: {
+  opportunity: Opportunity;
+  onApply: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Card className="overflow-hidden">
+      <img
+        src={opportunity.image}
+        alt={opportunity.title}
+        className="w-full h-48 object-cover"
+      />
+      <div className="p-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          {opportunity.title}
+        </h3>
+        <p className="text-sm font-medium text-emerald-600 mb-2">
+          {opportunity.organization}
+        </p>
+        <p className="text-gray-600 mb-4">{opportunity.description}</p>
+        <div className="flex items-center text-sm text-gray-500">
+          <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
+          {opportunity.commitment}
+        </div>
+        <div className="flex items-center text-sm text-gray-500 mt-2">
+          <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
+          {opportunity.location}
+        </div>
+        <div className="flex items-center text-sm text-gray-500 mt-2">
+          <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
+          {t(
+            `language.${opportunity.workLanguage}`,
+            formatLanguageName(opportunity.workLanguage),
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2 mt-2 mb-4">
+          {opportunity.skills.map((skill) => (
+            <span
+              key={skill}
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
+            >
+              <Award aria-hidden="true" className="h-3 w-3 mr-1" />
+              {skill}
+            </span>
+          ))}
+        </div>
+        <button
+          onClick={onApply}
+          className="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+        >
+          {t("volunteer.applyNow", "Apply Now")}
+        </button>
+      </div>
+    </Card>
+  );
+}
+
+/** Search and filter controls for the opportunities page. */
+function OpportunityFilters({
+  searchTerm,
+  locationSearch,
+  selectedSkill,
+  selectedType,
+  selectedLanguage,
+  activeFilters,
+  onSearchChange,
+  onLocationChange,
+  onSkillChange,
+  onRemoteClick,
+  onOnsiteClick,
+  onHybridClick,
+  onLanguageChange,
+}: {
+  searchTerm: string;
+  locationSearch: string;
+  selectedSkill: string;
+  selectedType: string;
+  selectedLanguage: string;
+  activeFilters: ActiveFilter[];
+  onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLocationChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSkillChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onRemoteClick: () => void;
+  onOnsiteClick: () => void;
+  onHybridClick: () => void;
+  onLanguageChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+}): React.ReactElement {
+  const { t } = useTranslation();
+  return (
+    <ScrollReveal direction="up" delay={100} className="space-y-2">
+      <div className="flex gap-3 items-center">
+        <SearchField
+          icon={Search}
+          wrapperClass="relative flex-[3]"
+          inputClass="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+          type="text"
+          placeholder={t(
+            "volunteer.searchOpportunities",
+            "Search opportunities...",
+          )}
+          aria-label={t(
+            "volunteer.searchOpportunities",
+            "Search opportunities",
+          )}
+          value={searchTerm}
+          onChange={onSearchChange}
+        />
+
+        <SearchField
+          icon={MapPin}
+          wrapperClass="relative flex-[2]"
+          inputClass="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+          type="text"
+          placeholder="City or region..."
+          aria-label="Search location"
+          value={locationSearch}
+          onChange={onLocationChange}
+        />
+
+        <WorkTypeToggle
+          selectedType={selectedType}
+          onRemoteClick={onRemoteClick}
+          onOnsiteClick={onOnsiteClick}
+          onHybridClick={onHybridClick}
+        />
+
+        <select
+          value={selectedSkill}
+          onChange={onSkillChange}
+          className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
+          aria-label={t("volunteer.selectSkill", "Select skill")}
+        >
+          <option value="">{t("volunteer.allSkills", "All Skills")}</option>
+          {SKILLS.map((skill) => (
+            <option key={skill} value={skill}>
+              {skill}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedLanguage}
+          onChange={onLanguageChange}
+          className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
+          aria-label={t("volunteer.selectLanguage", "Select language")}
+        >
+          <option value="">
+            {t("volunteer.allLanguages", "All Languages")}
+          </option>
+          {Object.values(WorkLanguage).map((language) => (
+            <option key={language} value={language}>
+              {t(`language.${language}`, formatLanguageName(language))}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {activeFilters.length > 0 && (
+        <div className="flex items-center flex-wrap gap-2">
+          {activeFilters.map((filter) => (
+            <FilterPill key={filter.key} filter={filter} />
+          ))}
+        </div>
+      )}
+    </ScrollReveal>
+  );
+}
+
 /**
  * Browse and apply for volunteer opportunities
  * @returns VolunteerOpportunities page element
@@ -360,14 +570,6 @@ const VolunteerOpportunities: React.FC = () => {
     setLocationSearch("");
   }, []);
 
-  /** Converts a snake_case language code to Title Case display name */
-  const formatLanguageName = (language: string): string => {
-    return language
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
   const activeFilters: ActiveFilter[] = useMemo(() => {
     const filters: ActiveFilter[] = [];
     if (selectedSkill) {
@@ -419,144 +621,30 @@ const VolunteerOpportunities: React.FC = () => {
         {t("volunteer.opportunities", "Volunteer Opportunities")}
       </h1>
 
-      <ScrollReveal direction="up" delay={100} className="space-y-2">
-        <div className="flex gap-3 items-center">
-          <div className="relative flex-[3]">
-            <input
-              type="text"
-              placeholder={t(
-                "volunteer.searchOpportunities",
-                "Search opportunities...",
-              )}
-              aria-label={t(
-                "volunteer.searchOpportunities",
-                "Search opportunities",
-              )}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <Search
-              aria-hidden="true"
-              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-            />
-          </div>
-
-          <div className="relative flex-[2]">
-            <input
-              type="text"
-              placeholder="City or region..."
-              aria-label="Search location"
-              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-              value={locationSearch}
-              onChange={handleLocationChange}
-            />
-            <MapPin
-              aria-hidden="true"
-              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-            />
-          </div>
-
-          <WorkTypeToggle
-            selectedType={selectedType}
-            onRemoteClick={handleRemoteClick}
-            onOnsiteClick={handleOnsiteClick}
-            onHybridClick={handleHybridClick}
-          />
-
-          <select
-            value={selectedSkill}
-            onChange={handleSkillChange}
-            className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
-            aria-label={t("volunteer.selectSkill", "Select skill")}
-          >
-            <option value="">{t("volunteer.allSkills", "All Skills")}</option>
-            {SKILLS.map((skill) => (
-              <option key={skill} value={skill}>
-                {skill}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedLanguage}
-            onChange={handleLanguageChange}
-            className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
-            aria-label={t("volunteer.selectLanguage", "Select language")}
-          >
-            <option value="">
-              {t("volunteer.allLanguages", "All Languages")}
-            </option>
-            {Object.values(WorkLanguage).map((language) => (
-              <option key={language} value={language}>
-                {t(`language.${language}`, formatLanguageName(language))}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {activeFilters.length > 0 && (
-          <div className="flex items-center flex-wrap gap-2">
-            {activeFilters.map((filter) => (
-              <FilterPill key={filter.key} filter={filter} />
-            ))}
-          </div>
-        )}
-      </ScrollReveal>
+      <OpportunityFilters
+        searchTerm={searchTerm}
+        locationSearch={locationSearch}
+        selectedSkill={selectedSkill}
+        selectedType={selectedType}
+        selectedLanguage={selectedLanguage}
+        activeFilters={activeFilters}
+        onSearchChange={handleSearchChange}
+        onLocationChange={handleLocationChange}
+        onSkillChange={handleSkillChange}
+        onRemoteClick={handleRemoteClick}
+        onOnsiteClick={handleOnsiteClick}
+        onHybridClick={handleHybridClick}
+        onLanguageChange={handleLanguageChange}
+      />
 
       <ScrollReveal direction="up" delay={200}>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredOpportunities.map((opportunity) => (
-            <Card key={opportunity.id} className="overflow-hidden">
-              <img
-                src={opportunity.image}
-                alt={opportunity.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {opportunity.title}
-                </h3>
-                <p className="text-sm font-medium text-emerald-600 mb-2">
-                  {opportunity.organization}
-                </p>
-                <p className="text-gray-600 mb-4">{opportunity.description}</p>
-
-                <div className="flex items-center text-sm text-gray-500">
-                  <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
-                  {opportunity.commitment}
-                </div>
-                <div className="flex items-center text-sm text-gray-500 mt-2">
-                  <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
-                  {opportunity.location}
-                </div>
-                <div className="flex items-center text-sm text-gray-500 mt-2">
-                  <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
-                  {t(
-                    `language.${opportunity.workLanguage}`,
-                    formatLanguageName(opportunity.workLanguage),
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2 mb-4">
-                  {opportunity.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
-                    >
-                      <Award aria-hidden="true" className="h-3 w-3 mr-1" />
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <button
-                  onClick={createApplyHandler(opportunity)}
-                  className="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
-                >
-                  {t("volunteer.applyNow", "Apply Now")}
-                </button>
-              </div>
-            </Card>
+            <OpportunityCard
+              key={opportunity.id}
+              opportunity={opportunity}
+              onApply={createApplyHandler(opportunity)}
+            />
           ))}
         </div>
       </ScrollReveal>

@@ -130,8 +130,8 @@ function Pagination({
   totalPages: number;
   onPrev: () => void;
   onNext: () => void;
-}): React.ReactElement {
-  if (totalPages <= 1) return <></>;
+}): React.ReactElement | null {
+  if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
       <Button

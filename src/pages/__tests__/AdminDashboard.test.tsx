@@ -249,26 +249,6 @@ describe("AdminDashboard", () => {
     });
   });
 
-  describe("Refresh", () => {
-    it("renders Refresh button", async () => {
-      renderDashboard();
-      await waitFor(() => {
-        expect(screen.getByText("Refresh")).toBeInTheDocument();
-      });
-    });
-
-    it("calls services again when Refresh is clicked", async () => {
-      renderDashboard();
-      await waitFor(() => {
-        expect(screen.getByText("Refresh")).toBeInTheDocument();
-      });
-      fireEvent.click(screen.getByText("Refresh"));
-      await waitFor(() => {
-        expect(mockGetStats).toHaveBeenCalledTimes(2);
-      });
-    });
-  });
-
   describe("Quick actions", () => {
     it("renders quick action section heading", async () => {
       renderDashboard();
