@@ -93,8 +93,7 @@ export const PostDonationShare: React.FC<PostDonationShareProps> = ({
   }, []);
 
   return (
-    <div
-      role="region"
+    <section
       aria-label="Share your donation"
       className="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 mt-4"
     >
@@ -125,7 +124,7 @@ export const PostDonationShare: React.FC<PostDonationShareProps> = ({
           className="w-full p-3 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
-    </div>
+    </section>
   );
 };
 

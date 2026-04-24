@@ -89,8 +89,7 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
   return (
     <>
       {/* Desktop — vertical pill on left */}
-      <nav
-        role="complementary"
+      <aside
         aria-label="Share this page"
         className="hidden md:flex md:flex-col fixed left-4 top-[60%] -translate-y-1/2 z-40 bg-slate-900/90 backdrop-blur-md border border-white/10 rounded-full shadow-lg p-2 gap-1"
       >
@@ -99,11 +98,10 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
         ))}
         <div className="border-t border-white/10 my-1" />
         <CopyLinkButton copied={copied} onClick={handleCopy} />
-      </nav>
+      </aside>
 
       {/* Mobile — bottom bar */}
-      <nav
-        role="complementary"
+      <aside
         aria-label="Share this page"
         className="flex md:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-900/95 backdrop-blur-md border-t border-white/10 shadow-lg justify-center items-center gap-1 px-2 py-1"
       >
@@ -112,7 +110,7 @@ export const FloatingSocialSidebar: React.FC<FloatingSocialSidebarProps> = ({
         ))}
         <div className="border-l border-white/10 h-6 mx-1" />
         <CopyLinkButton copied={copied} onClick={handleCopy} />
-      </nav>
+      </aside>
     </>
   );
 };

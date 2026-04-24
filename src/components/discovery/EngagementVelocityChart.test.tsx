@@ -47,9 +47,7 @@ describe("EngagementVelocityChart", () => {
     ];
     render(<EngagementVelocityChart dailyTotals={data} />);
 
-    const svg = screen.getByRole("img", {
-      name: "Engagement velocity chart",
-    });
+    const svg = screen.getByLabelText("Engagement velocity chart");
     expect(svg).toBeInTheDocument();
 
     // Two path elements: one for count, one for avg amount
@@ -64,7 +62,7 @@ describe("EngagementVelocityChart", () => {
     ];
     render(<EngagementVelocityChart dailyTotals={data} />);
 
-    const svg = screen.getByRole("img");
+    const svg = screen.getByLabelText("Engagement velocity chart");
     const paths = svg.querySelectorAll("path");
     expect(paths[0]).toHaveAttribute("stroke", "#10b981");
     expect(paths[1]).toHaveAttribute("stroke", "#6366f1");
@@ -74,7 +72,7 @@ describe("EngagementVelocityChart", () => {
     const data = [{ date: "2026-04-01", total: 100, count: 5 }];
     render(<EngagementVelocityChart dailyTotals={data} />);
 
-    const svg = screen.getByRole("img");
+    const svg = screen.getByLabelText("Engagement velocity chart");
     expect(svg).toBeInTheDocument();
     // With a single point, the path should start with M (moveto)
     const paths = svg.querySelectorAll("path");

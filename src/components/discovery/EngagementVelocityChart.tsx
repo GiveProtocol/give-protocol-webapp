@@ -88,7 +88,6 @@ export const EngagementVelocityChart: React.FC<
           </div>
         ) : (
           <svg
-            role="img"
             aria-label="Engagement velocity chart"
             viewBox={`0 0 ${WIDTH} ${HEIGHT}`}
             className="w-full h-40"
