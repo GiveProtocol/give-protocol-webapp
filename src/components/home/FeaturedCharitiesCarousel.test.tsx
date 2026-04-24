@@ -86,8 +86,6 @@ describe("FeaturedCharitiesCarousel", () => {
 
     render(<FeaturedCharitiesCarousel />);
 
-    expect(
-      screen.getByText("Failed to load featured charities"),
-    ).toBeDefined();
+    expect(screen.getByText("Failed to load featured charities")).toBeDefined();
   });
 });

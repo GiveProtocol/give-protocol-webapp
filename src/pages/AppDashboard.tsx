@@ -1,12 +1,12 @@
-import React from 'react';
-import { FeatureCards } from '@/components/home/FeatureCards';
-import { Hero } from '@/components/home/Hero';
-import { ActionButtons } from '@/components/home/ActionButtons';
-import { ProtocolStats } from '@/components/home/ProtocolStats';
-import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { FeaturedCharitiesCarousel } from '@/components/home/FeaturedCharitiesCarousel';
+import React from "react";
+import { FeatureCards } from "@/components/home/FeatureCards";
+import { Hero } from "@/components/home/Hero";
+import { ActionButtons } from "@/components/home/ActionButtons";
+import { ProtocolStats } from "@/components/home/ProtocolStats";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { FeaturedCharitiesCarousel } from "@/components/home/FeaturedCharitiesCarousel";
 
-const BLOB_DELAY: React.CSSProperties = { animationDelay: '1s' };
+const BLOB_DELAY: React.CSSProperties = { animationDelay: "1s" };
 
 /** Landing page dashboard with hero, protocol stats, feature cards, and action buttons. */
 const AppDashboard: React.FC = () => {
@@ -18,7 +18,10 @@ const AppDashboard: React.FC = () => {
       {/* Animated background blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-20 -left-20 w-96 h-96 bg-emerald-200/20 dark:bg-emerald-500/20 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-teal-200/20 dark:bg-teal-500/20 rounded-full blur-3xl animate-pulse" style={BLOB_DELAY} />
+        <div
+          className="absolute -bottom-20 -right-20 w-96 h-96 bg-teal-200/20 dark:bg-teal-500/20 rounded-full blur-3xl animate-pulse"
+          style={BLOB_DELAY}
+        />
       </div>
 
       {/* Content */}

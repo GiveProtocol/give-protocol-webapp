@@ -198,8 +198,7 @@ export default {
     "(.*)/web3/ConnectButton(\\.tsx?)?$":
       "<rootDir>/src/test-utils/connectButtonMock.js",
     // ClientOnly mock (relative import from AppNavbar)
-    "(.*)/ClientOnly(\\.tsx?)?$":
-      "<rootDir>/src/test-utils/clientOnlyMock.js",
+    "(.*)/ClientOnly(\\.tsx?)?$": "<rootDir>/src/test-utils/clientOnlyMock.js",
     // Wallet barrel mock (relative import from AppNavbar: ./Wallet)
     "(.*)/components/Wallet(/index)?(\\.tsx?)?$":
       "<rootDir>/src/test-utils/walletComponentsMock.js",
@@ -378,8 +377,7 @@ export default {
     "(.*)/components/web3/donation/DonationModal(\\.tsx?)?$":
       "<rootDir>/src/test-utils/donationModalMock.js",
     // UI component mocks (Skeleton, ScrollReveal)
-    "^@/components/ui/Skeleton$":
-      "<rootDir>/src/test-utils/skeletonMock.js",
+    "^@/components/ui/Skeleton$": "<rootDir>/src/test-utils/skeletonMock.js",
     "(.*)/components/ui/Skeleton(\\.tsx?)?$":
       "<rootDir>/src/test-utils/skeletonMock.js",
     "^@/components/ui/ScrollReveal$":
@@ -397,8 +395,7 @@ export default {
     "(.*)/components/volunteer/VolunteerApplicationForm(\\.tsx?)?$":
       "<rootDir>/src/test-utils/volunteerApplicationFormMock.js",
     // Hook mocks (donor)
-    "^@/hooks/useDonorData$":
-      "<rootDir>/src/test-utils/useDonorDataMock.js",
+    "^@/hooks/useDonorData$": "<rootDir>/src/test-utils/useDonorDataMock.js",
     "(.*)/hooks/useDonorData(\\.tsx?)?$":
       "<rootDir>/src/test-utils/useDonorDataMock.js",
     // Layout sub-component mocks
@@ -420,8 +417,7 @@ export default {
     "^@/hooks/useFeaturedCharities$":
       "<rootDir>/src/test-utils/useFeaturedCharitiesMock.js",
     // FormInput component mock
-    "^@/components/ui/FormInput$":
-      "<rootDir>/src/test-utils/formInputMock.js",
+    "^@/components/ui/FormInput$": "<rootDir>/src/test-utils/formInputMock.js",
     "(.*)/components/ui/FormInput(\\.tsx?)?$":
       "<rootDir>/src/test-utils/formInputMock.js",
     // Auth component mocks (ForgotPassword, DonorRegistration, CharityVettingForm, etc.)
