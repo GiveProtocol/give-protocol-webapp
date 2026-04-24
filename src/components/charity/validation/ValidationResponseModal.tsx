@@ -31,7 +31,11 @@ interface ValidationResponseModalProps {
 }
 
 /** Single field in the activity details grid showing an icon, label, and value. */
-function ActivityDetailField({ icon: Icon, label, value }: {
+function ActivityDetailField({
+  icon: Icon,
+  label,
+  value,
+}: {
   icon: React.FC<{ className?: string }>;
   label: string;
   value: string;
@@ -142,8 +146,6 @@ export const ValidationResponseModal: React.FC<
 
   return (
     <div
-      role="button"
-      tabIndex={0}
       className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
       onClick={handleOverlayClick}
       onKeyDown={handleKeyDown}
@@ -189,13 +191,13 @@ export const ValidationResponseModal: React.FC<
                   <p className="font-medium text-gray-900">
                     {item.volunteerName}
                   </p>
-                    {item.volunteerEmail && (
-                      <p className="text-sm text-gray-500">
-                        {item.volunteerEmail}
-                      </p>
-                    )}
-                  </div>
+                  {item.volunteerEmail && (
+                    <p className="text-sm text-gray-500">
+                      {item.volunteerEmail}
+                    </p>
+                  )}
                 </div>
+              </div>
 
               {/* Activity Details */}
               <div className="bg-gray-50 rounded-lg p-4 mb-6">
@@ -203,11 +205,27 @@ export const ValidationResponseModal: React.FC<
                   Activity Details
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
-                  <ActivityDetailField icon={Calendar} label="Date" value={formatDate(item.activityDate, false)} />
-                  <ActivityDetailField icon={Clock} label="Hours" value={`${item.hours} ${item.hours === 1 ? "hour" : "hours"}`} />
-                  <ActivityDetailField icon={FileText} label="Activity Type" value={activityTypeLabel} />
+                  <ActivityDetailField
+                    icon={Calendar}
+                    label="Date"
+                    value={formatDate(item.activityDate, false)}
+                  />
+                  <ActivityDetailField
+                    icon={Clock}
+                    label="Hours"
+                    value={`${item.hours} ${item.hours === 1 ? "hour" : "hours"}`}
+                  />
+                  <ActivityDetailField
+                    icon={FileText}
+                    label="Activity Type"
+                    value={activityTypeLabel}
+                  />
                   {item.location && (
-                    <ActivityDetailField icon={MapPin} label="Location" value={item.location} />
+                    <ActivityDetailField
+                      icon={MapPin}
+                      label="Location"
+                      value={item.location}
+                    />
                   )}
                 </div>
               </div>

@@ -17,7 +17,9 @@ describe("WhyGiveProtocolRail", () => {
     render(<WhyGiveProtocolRail />);
     expect(screen.getByText("Verified nonprofits")).toBeInTheDocument();
     expect(
-      screen.getByText(/Every organization is matched against public registries/),
+      screen.getByText(
+        /Every organization is matched against public registries/,
+      ),
     ).toBeInTheDocument();
   });
 
@@ -31,9 +33,7 @@ describe("WhyGiveProtocolRail", () => {
 
   it("renders the volunteer item", () => {
     render(<WhyGiveProtocolRail />);
-    expect(
-      screen.getByText("Give time, not just money"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Give time, not just money")).toBeInTheDocument();
     expect(
       screen.getByText(/Volunteer hours are verified by charities/),
     ).toBeInTheDocument();

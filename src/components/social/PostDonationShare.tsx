@@ -13,7 +13,10 @@ interface PostDonationShareProps {
 }
 
 /** Single social share icon button styled for card context. */
-function ShareButton({ platform, onClick }: {
+function ShareButton({
+  platform,
+  onClick,
+}: {
   platform: SocialPlatform;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
 }): React.ReactElement {
@@ -32,7 +35,10 @@ function ShareButton({ platform, onClick }: {
 }
 
 /** Copy link button that shows "Copy Link" or "Copied!" text. */
-function CopyButton({ copied, onClick }: {
+function CopyButton({
+  copied,
+  onClick,
+}: {
   copied: boolean;
   onClick: React.MouseEventHandler<HTMLButtonElement>;
 }): React.ReactElement {
@@ -43,9 +49,11 @@ function CopyButton({ copied, onClick }: {
       aria-label={copied ? "Link copied" : "Copy link"}
       className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-gray-100 dark:bg-slate-700 hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-gray-600 dark:text-gray-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition-all duration-200 text-sm font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
     >
-      {copied
-        ? <Check className="w-4 h-4 text-emerald-500" />
-        : <Copy className="w-4 h-4" />}
+      {copied ? (
+        <Check className="w-4 h-4 text-emerald-500" />
+      ) : (
+        <Copy className="w-4 h-4" />
+      )}
       <span>{copied ? "Copied!" : "Copy Link"}</span>
     </button>
   );
@@ -68,16 +76,26 @@ export const PostDonationShare: React.FC<PostDonationShareProps> = ({
   const [copied, setCopied] = useState(false);
   const { showToast } = useToast();
 
-  const getUrl = useCallback(() => charityUrl ?? window.location.href, [charityUrl]);
+  const getUrl = useCallback(
+    () => charityUrl ?? window.location.href,
+    [charityUrl],
+  );
 
-  const handleShare = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
-    const platformId = e.currentTarget.dataset.platform;
-    const platform = SOCIAL_PLATFORMS.find((p) => p.id === platformId);
-    if (!platform) return;
+  const handleShare = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const platformId = e.currentTarget.dataset.platform;
+      const platform = SOCIAL_PLATFORMS.find((p) => p.id === platformId);
+      if (!platform) return;
 
-    const shareUrl = platform.getShareUrl(getUrl(), message);
-    window.open(shareUrl, "_blank", "noopener,noreferrer,width=600,height=500");
-  }, [getUrl, message]);
+      const shareUrl = platform.getShareUrl(getUrl(), message);
+      window.open(
+        shareUrl,
+        "_blank",
+        "noopener,noreferrer,width=600,height=500",
+      );
+    },
+    [getUrl, message],
+  );
 
   const handleCopy = useCallback(async () => {
     const success = await copyToClipboard(getUrl());
@@ -88,13 +106,15 @@ export const PostDonationShare: React.FC<PostDonationShareProps> = ({
     }
   }, [getUrl, showToast]);
 
-  const handleMessageChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setMessage(e.target.value);
-  }, []);
+  const handleMessageChange = useCallback(
+    (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+      setMessage(e.target.value);
+    },
+    [],
+  );
 
   return (
-    <div
-      role="region"
+    <section
       aria-label="Share your donation"
       className="bg-gray-50 dark:bg-slate-800 rounded-xl p-6 mt-4"
     >
@@ -104,7 +124,11 @@ export const PostDonationShare: React.FC<PostDonationShareProps> = ({
 
       <div className="flex flex-wrap gap-2 items-center">
         {SOCIAL_PLATFORMS.map((platform) => (
-          <ShareButton key={platform.id} platform={platform} onClick={handleShare} />
+          <ShareButton
+            key={platform.id}
+            platform={platform}
+            onClick={handleShare}
+          />
         ))}
         <div className="border-l border-gray-200 dark:border-slate-600 h-6 mx-1" />
         <CopyButton copied={copied} onClick={handleCopy} />
@@ -125,7 +149,7 @@ export const PostDonationShare: React.FC<PostDonationShareProps> = ({
           className="w-full p-3 rounded-lg border border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-900 text-sm text-gray-900 dark:text-white resize-none focus:outline-none focus:ring-2 focus:ring-emerald-500"
         />
       </div>
-    </div>
+    </section>
   );
 };
 

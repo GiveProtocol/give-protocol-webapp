@@ -32,18 +32,24 @@ describe("DiscoveryShellSkeleton", () => {
   it("passes skeleton elements into the topBar slot", () => {
     render(<DiscoveryShellSkeleton />);
     const topBar = screen.getByTestId("slot-topBar");
-    expect(topBar.querySelectorAll("[data-testid='skeleton']").length).toBeGreaterThan(0);
+    expect(
+      topBar.querySelectorAll("[data-testid='skeleton']").length,
+    ).toBeGreaterThan(0);
   });
 
   it("passes skeleton elements into the main slot", () => {
     render(<DiscoveryShellSkeleton />);
     const main = screen.getByTestId("slot-main");
-    expect(main.querySelectorAll("[data-testid='skeleton']").length).toBeGreaterThan(0);
+    expect(
+      main.querySelectorAll("[data-testid='skeleton']").length,
+    ).toBeGreaterThan(0);
   });
 
   it("passes skeleton elements into the rail slot", () => {
     render(<DiscoveryShellSkeleton />);
     const rail = screen.getByTestId("slot-rail");
-    expect(rail.querySelectorAll("[data-testid='skeleton']").length).toBeGreaterThan(0);
+    expect(
+      rail.querySelectorAll("[data-testid='skeleton']").length,
+    ).toBeGreaterThan(0);
   });
 });
