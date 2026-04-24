@@ -249,7 +249,6 @@ describe("AdminDashboard", () => {
     });
   });
 
-
   describe("Quick actions", () => {
     it("renders quick action section heading", async () => {
       renderDashboard();
