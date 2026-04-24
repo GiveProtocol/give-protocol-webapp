@@ -5,9 +5,13 @@
  * and the HelcimPay.js iframe checkout.
  */
 
-import { Logger } from '@/utils/logger';
-import { ENV } from '@/config/env';
-import type { FiatPaymentData, HelcimPaymentResult, DonationFrequency } from '@/components/web3/donation/types/donation';
+import { Logger } from "@/utils/logger";
+import { ENV } from "@/config/env";
+import type {
+  FiatPaymentData,
+  HelcimPaymentResult,
+  DonationFrequency,
+} from "@/components/web3/donation/types/donation";
 
 /** Base URL for Supabase edge functions */
 const SUPABASE_URL = ENV.SUPABASE_URL;
@@ -16,12 +20,12 @@ const SUPABASE_URL = ENV.SUPABASE_URL;
 const SUPABASE_ANON_KEY = ENV.SUPABASE_ANON_KEY;
 
 /** Trusted origin for HelcimPay.js postMessage events (S2819) */
-const HELCIM_ORIGIN = 'https://secure.helcim.app';
+const HELCIM_ORIGIN = "https://secure.helcim.app";
 
 /** Common headers for Supabase edge function requests */
 const getHeaders = (): Record<string, string> => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
 });
 
 /** Response from the helcim-pay initialization endpoint */
@@ -58,15 +62,17 @@ interface SubscriptionResponse {
  * @returns Payment result with transaction details
  * @throws Error if payment fails
  */
-export async function processPayment(data: FiatPaymentData): Promise<HelcimPaymentResult> {
-  Logger.info('Processing fiat payment', {
+export async function processPayment(
+  data: FiatPaymentData,
+): Promise<HelcimPaymentResult> {
+  Logger.info("Processing fiat payment", {
     charityId: data.charityId,
     amount: data.amount,
     coverFees: data.coverFees,
   });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-payment`, {
-    method: 'POST',
+    method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({
       checkoutToken: data.checkoutToken,
@@ -82,20 +88,20 @@ export async function processPayment(data: FiatPaymentData): Promise<HelcimPayme
   const result: PaymentResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    Logger.error('Fiat payment failed', {
+    Logger.error("Fiat payment failed", {
       status: response.status,
       error: result.error,
     });
-    throw new Error(result.error || 'Payment processing failed');
+    throw new Error(result.error || "Payment processing failed");
   }
 
-  Logger.info('Fiat payment successful', {
+  Logger.info("Fiat payment successful", {
     transactionId: result.transactionId,
   });
 
   return {
-    transactionId: result.transactionId || '',
-    approvalCode: result.approvalCode || '',
+    transactionId: result.transactionId || "",
+    approvalCode: result.approvalCode || "",
     amountCents: Math.round(data.amount * 100),
     cardType: result.cardType,
     cardLastFour: result.cardLastFour,
@@ -113,51 +119,54 @@ export async function createSubscription(data: FiatPaymentData): Promise<{
   customerId: string;
   nextBillingDate: string;
 }> {
-  Logger.info('Creating fiat subscription', {
+  Logger.info("Creating fiat subscription", {
     charityId: data.charityId,
     amount: data.amount,
     coverFees: data.coverFees,
   });
 
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-subscription`, {
-    method: 'POST',
-    headers: getHeaders(),
-    body: JSON.stringify({
-      checkoutToken: data.checkoutToken,
-      amount: Math.round(data.amount * 100), // Convert to cents
-      charityId: data.charityId,
-      charityName: data.charityName,
-      donorName: data.name,
-      donorEmail: data.email,
-      coverFees: data.coverFees,
-    }),
-  });
+  const response = await fetch(
+    `${SUPABASE_URL}/functions/v1/helcim-subscription`,
+    {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify({
+        checkoutToken: data.checkoutToken,
+        amount: Math.round(data.amount * 100), // Convert to cents
+        charityId: data.charityId,
+        charityName: data.charityName,
+        donorName: data.name,
+        donorEmail: data.email,
+        coverFees: data.coverFees,
+      }),
+    },
+  );
 
   const result: SubscriptionResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    Logger.error('Fiat subscription failed', {
+    Logger.error("Fiat subscription failed", {
       status: response.status,
       error: result.error,
     });
-    throw new Error(result.error || 'Subscription creation failed');
+    throw new Error(result.error || "Subscription creation failed");
   }
 
-  Logger.info('Fiat subscription created', {
+  Logger.info("Fiat subscription created", {
     subscriptionId: result.subscriptionId,
   });
 
   return {
-    subscriptionId: result.subscriptionId || '',
-    customerId: result.customerId || '',
-    nextBillingDate: result.nextBillingDate || '',
+    subscriptionId: result.subscriptionId || "",
+    customerId: result.customerId || "",
+    nextBillingDate: result.nextBillingDate || "",
   };
 }
 
 /** Donation context for checkout initialization */
 export interface CheckoutContext {
   /** Giving type: direct charity, CEF, or CIF */
-  givingType?: 'direct' | 'cef' | 'cif';
+  givingType?: "direct" | "cef" | "cif";
   /** Charity profile ID */
   charityId?: string;
   /** Cause ID (if donating to a specific cause) */
@@ -177,17 +186,17 @@ export interface CheckoutContext {
 export async function fetchHelcimCheckoutToken(
   amount: number,
   frequency: DonationFrequency,
-  context?: CheckoutContext
+  context?: CheckoutContext,
 ): Promise<{ checkoutToken: string; secretToken: string }> {
-  Logger.info('Fetching Helcim checkout token', { amount, frequency });
+  Logger.info("Fetching Helcim checkout token", { amount, frequency });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-pay`, {
-    method: 'POST',
+    method: "POST",
     headers: getHeaders(),
     body: JSON.stringify({
       amount,
-      currency: 'USD',
-      donationType: frequency === 'monthly' ? 'subscription' : 'one-time',
+      currency: "USD",
+      donationType: frequency === "monthly" ? "subscription" : "one-time",
       givingType: context?.givingType,
       charityId: context?.charityId,
       causeId: context?.causeId,
@@ -198,20 +207,23 @@ export async function fetchHelcimCheckoutToken(
   const result: HelcimPayInitResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    const errorMessage = result.error || 'Failed to initialize payment form';
-    Logger.error('Failed to fetch checkout token', { status: response.status, error: errorMessage });
+    const errorMessage = result.error || "Failed to initialize payment form";
+    Logger.error("Failed to fetch checkout token", {
+      status: response.status,
+      error: errorMessage,
+    });
     throw new Error(errorMessage);
   }
 
   if (!result.checkoutToken) {
-    throw new Error('No checkout token received');
+    throw new Error("No checkout token received");
   }
 
-  Logger.info('Checkout token received');
+  Logger.info("Checkout token received");
 
   return {
     checkoutToken: result.checkoutToken,
-    secretToken: result.secretToken || '',
+    secretToken: result.secretToken || "",
   };
 }
 
@@ -257,7 +269,7 @@ export interface HelcimTransactionData {
  * @returns true if appendHelcimPayIframe is defined
  */
 function isHelcimReady(): boolean {
-  return typeof window.appendHelcimPayIframe === 'function';
+  return typeof window.appendHelcimPayIframe === "function";
 }
 
 /**
@@ -283,10 +295,12 @@ function waitForHelcimGlobal(): Promise<void> {
         resolve();
       } else if (elapsed >= maxWait) {
         clearInterval(timer);
-        reject(new Error(
-          `HelcimPay.js not ready after ${maxWait}ms. ` +
-          'Check CSP script-src includes https://secure.helcim.app'
-        ));
+        reject(
+          new Error(
+            `HelcimPay.js not ready after ${maxWait}ms. ` +
+              "Check CSP script-src includes https://secure.helcim.app",
+          ),
+        );
       }
     }, pollInterval);
   });
@@ -310,7 +324,7 @@ export function loadHelcimScript(): Promise<void> {
   }
 
   const existingScript = document.querySelector(
-    'script[src*="helcim-pay"]'
+    'script[src*="helcim-pay"]',
   ) as HTMLScriptElement | null;
 
   if (existingScript) {
@@ -322,9 +336,13 @@ export function loadHelcimScript(): Promise<void> {
 
       /** Handles the script load event and waits for the HelcimPay.js global to become available. */
       const handleLoad = (): void => {
-        Logger.info('HelcimPay.js script loaded (existing), waiting for global');
+        Logger.info(
+          "HelcimPay.js script loaded (existing), waiting for global",
+        );
         waitForHelcimGlobal()
-          .then(() => { resolve(); })
+          .then(() => {
+            resolve();
+          })
           .catch((err) => {
             helcimScriptPromise = null;
             reject(err);
@@ -334,27 +352,27 @@ export function loadHelcimScript(): Promise<void> {
       /** Handles the script error event when the HelcimPay.js script fails to load. */
       const handleError = (): void => {
         helcimScriptPromise = null;
-        reject(new Error('Failed to load payment processor'));
+        reject(new Error("Failed to load payment processor"));
       };
 
-      existingScript.addEventListener('load', handleLoad);
-      existingScript.addEventListener('error', handleError);
+      existingScript.addEventListener("load", handleLoad);
+      existingScript.addEventListener("error", handleError);
     });
 
     return helcimScriptPromise;
   }
 
   helcimScriptPromise = new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    script.src = 'https://secure.helcim.app/helcim-pay/services/start.js';
+    const script = document.createElement("script");
+    script.src = "https://secure.helcim.app/helcim-pay/services/start.js";
     script.defer = true;
     script.async = false;
 
     script.onload = () => {
-      Logger.info('HelcimPay.js script loaded, waiting for global');
+      Logger.info("HelcimPay.js script loaded, waiting for global");
       waitForHelcimGlobal()
         .then(() => {
-          Logger.info('HelcimPay.js ready');
+          Logger.info("HelcimPay.js ready");
           resolve();
         })
         .catch((err) => {
@@ -364,9 +382,9 @@ export function loadHelcimScript(): Promise<void> {
     };
 
     script.onerror = () => {
-      Logger.error('Failed to load HelcimPay.js script');
+      Logger.error("Failed to load HelcimPay.js script");
       helcimScriptPromise = null;
-      reject(new Error('Failed to load payment processor'));
+      reject(new Error("Failed to load payment processor"));
     };
 
     document.head.appendChild(script);
@@ -400,7 +418,7 @@ function cleanupHelcimIframe(): void {
   try {
     window.removeHelcimPayIframe?.();
   } catch (err) {
-    Logger.warn('Failed to remove HelcimPay.js iframe', { error: err });
+    Logger.warn("Failed to remove HelcimPay.js iframe", { error: err });
   }
 }
 
@@ -424,7 +442,7 @@ export function openHelcimCheckout(
   email?: string,
 ): Promise<HelcimCheckoutResult> {
   if (!isHelcimReady()) {
-    return Promise.reject(new Error('HelcimPay.js not loaded'));
+    return Promise.reject(new Error("HelcimPay.js not loaded"));
   }
 
   return new Promise((resolve, reject) => {
@@ -448,48 +466,52 @@ export function openHelcimCheckout(
 
       if (settled) return;
 
-      if (msg.eventStatus === 'SUCCESS') {
+      if (msg.eventStatus === "SUCCESS") {
         settled = true;
-        window.removeEventListener('message', handleMessage);
+        window.removeEventListener("message", handleMessage);
         cleanupHelcimIframe();
         const txData: HelcimTransactionData = msg.eventMessage?.data || {};
-        const hash: string = msg.eventMessage?.hash || '';
-        Logger.info('HelcimPay.js payment succeeded', {
+        const hash: string = msg.eventMessage?.hash || "";
+        Logger.info("HelcimPay.js payment succeeded", {
           transactionId: txData.transactionId,
         });
         resolve({ data: txData, hash });
         return;
       }
 
-      if (msg.eventStatus === 'ABORTED') {
+      if (msg.eventStatus === "ABORTED") {
         settled = true;
-        window.removeEventListener('message', handleMessage);
+        window.removeEventListener("message", handleMessage);
         cleanupHelcimIframe();
-        const reason = msg.eventMessage || 'Transaction aborted';
-        Logger.error('HelcimPay.js payment aborted', { reason });
-        reject(new Error(typeof reason === 'string' ? reason : 'Payment was declined'));
+        const reason = msg.eventMessage || "Transaction aborted";
+        Logger.error("HelcimPay.js payment aborted", { reason });
+        reject(
+          new Error(
+            typeof reason === "string" ? reason : "Payment was declined",
+          ),
+        );
         return;
       }
 
-      if (msg.eventStatus === 'HIDE') {
+      if (msg.eventStatus === "HIDE") {
         settled = true;
-        window.removeEventListener('message', handleMessage);
+        window.removeEventListener("message", handleMessage);
         cleanupHelcimIframe();
-        Logger.info('HelcimPay.js modal closed');
-        reject(new Error('Payment cancelled'));
+        Logger.info("HelcimPay.js modal closed");
+        reject(new Error("Payment cancelled"));
       }
     };
 
-    window.addEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
 
     // Open the HelcimPay.js iframe
     const appendFn = window.appendHelcimPayIframe;
     if (!appendFn) {
-      reject(new Error('HelcimPay.js not loaded'));
+      reject(new Error("HelcimPay.js not loaded"));
       return;
     }
-    appendFn(checkoutToken, true, '', email || '');
-    Logger.info('HelcimPay.js checkout iframe opened');
+    appendFn(checkoutToken, true, "", email || "");
+    Logger.info("HelcimPay.js checkout iframe opened");
   });
 }
 
@@ -535,15 +557,15 @@ interface ValidatePaymentResponse {
  * @throws Error if validation fails
  */
 export async function validateHelcimPayment(
-  data: ValidatePaymentRequest
+  data: ValidatePaymentRequest,
 ): Promise<ValidatePaymentResponse> {
-  Logger.info('Validating Helcim payment server-side', {
+  Logger.info("Validating Helcim payment server-side", {
     checkoutToken: data.checkoutToken,
     transactionId: data.transactionData.transactionId,
   });
 
   const response = await fetch(`${SUPABASE_URL}/functions/v1/helcim-validate`, {
-    method: 'POST',
+    method: "POST",
     headers: getHeaders(),
     body: JSON.stringify(data),
   });
@@ -551,14 +573,14 @@ export async function validateHelcimPayment(
   const result: ValidatePaymentResponse = await response.json();
 
   if (!response.ok || !result.success) {
-    Logger.error('Payment validation failed', {
+    Logger.error("Payment validation failed", {
       status: response.status,
       error: result.error,
     });
-    throw new Error(result.error || 'Payment validation failed');
+    throw new Error(result.error || "Payment validation failed");
   }
 
-  Logger.info('Payment validated and recorded', {
+  Logger.info("Payment validated and recorded", {
     transactionId: result.transactionId,
   });
 
