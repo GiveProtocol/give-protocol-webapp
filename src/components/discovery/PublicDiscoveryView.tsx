@@ -1,0 +1,165 @@
+import React, { useCallback, useState } from "react";
+import { Link } from "react-router-dom";
+import { ArrowRight, HeartHandshake } from "lucide-react";
+import { DiscoveryShell } from "./DiscoveryShell";
+import { DiscoveryFilters } from "./DiscoveryFilters";
+import {
+  emptyDiscoveryFilters,
+  type DiscoveryFiltersState,
+} from "./discoveryFiltersState";
+import { ProjectCard } from "./ProjectCard";
+import { WhyGiveProtocolRail } from "./WhyGiveProtocolRail";
+import { NewsUpdatesCard } from "./NewsUpdatesCard";
+import { FeaturedCharitiesCarousel } from "./FeaturedCharitiesCarousel";
+import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSearch";
+import { useGeographicFilterParams } from "@/hooks/useGeographicFilterParams";
+import { Skeleton } from "@/components/ui/Skeleton";
+
+/**
+ * Unauthenticated /app landing. A split hero with a headline + volunteer CTA
+ * sits above the ported /browse filter block and a responsive discovery grid.
+ * The right rail carries a "Why Give Protocol" explainer plus platform news.
+ */
+export const PublicDiscoveryView: React.FC = () => {
+  const [filters, setFilters] = useState<DiscoveryFiltersState>(
+    emptyDiscoveryFilters,
+  );
+
+  const { filterState, filterCountry } = useGeographicFilterParams(
+    filters.hqLocations,
+    filters.impactLocations,
+  );
+
+  const effectiveCountry =
+    filterCountry || (filters.searchTerm || filterState ? "" : "US");
+
+  const { organizations, loading } = useCharityOrganizationSearch({
+    searchTerm: filters.searchTerm,
+    filterState,
+    filterCountry: effectiveCountry,
+    onPlatformOnly: filters.onPlatformOnly,
+  });
+
+  const handleFiltersChange = useCallback((next: DiscoveryFiltersState) => {
+    setFilters(next);
+  }, []);
+
+  const hasActiveFilter =
+    filters.searchTerm.trim().length >= 2 ||
+    filters.impactLocations.length > 0 ||
+    filters.hqLocations.length > 0 ||
+    filters.onPlatformOnly;
+
+  const hero = (
+    <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-8 lg:gap-12 items-center">
+      <div>
+        <p className="text-sm font-medium uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+          Give Protocol
+        </p>
+        <h1 className="mt-2 text-4xl md:text-5xl font-semibold text-gray-900 dark:text-gray-100 tracking-tight leading-[1.1]">
+          Giving, verified on-chain.
+        </h1>
+        <p className="mt-4 text-lg text-gray-600 dark:text-gray-400 max-w-xl">
+          Discover verified nonprofits, donate with crypto or card, and trace
+          your impact from wallet to cause.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <a
+            href="#discover"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-5 py-2.5 transition-colors"
+          >
+            Browse causes
+            <ArrowRight aria-hidden="true" className="h-4 w-4" />
+          </a>
+          <Link
+            to="/opportunities"
+            className="inline-flex items-center gap-2 rounded-[10px] bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm font-medium px-5 py-2.5 border border-gray-300 dark:border-gray-700 transition-colors"
+          >
+            <HeartHandshake aria-hidden="true" className="h-4 w-4" />
+            Volunteer opportunities
+          </Link>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-emerald-950/40 dark:via-gray-900 dark:to-teal-950/40 p-6 md:p-8">
+        <dl className="grid grid-cols-2 gap-6">
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Networks supported
+            </dt>
+            <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              3+
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Charitable sectors
+            </dt>
+            <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              7
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Verified organizations
+            </dt>
+            <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              On-chain
+            </dd>
+          </div>
+          <div>
+            <dt className="text-xs font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400">
+              Volunteer hours
+            </dt>
+            <dd className="mt-1 text-3xl font-semibold text-gray-900 dark:text-gray-100">
+              Verified
+            </dd>
+          </div>
+        </dl>
+      </div>
+    </div>
+  );
+
+  const main = (
+    <>
+      <section
+        id="discover"
+        aria-label="Filter charities"
+        className="scroll-mt-8"
+      >
+        <DiscoveryFilters value={filters} onChange={handleFiltersChange} />
+      </section>
+
+      {hasActiveFilter ? (
+        <section aria-label="Charity results">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 md:gap-8">
+            {loading && organizations.length === 0 ? (
+              <Skeleton className="h-72" count={6} />
+            ) : (
+              organizations.map((org) => (
+                <ProjectCard key={org.ein} organization={org} />
+              ))
+            )}
+          </div>
+          {!loading && organizations.length === 0 && (
+            <div className="text-center py-16 text-gray-500 dark:text-gray-400">
+              No organizations match that search yet. Try a different keyword or
+              add a location filter.
+            </div>
+          )}
+        </section>
+      ) : (
+        <FeaturedCharitiesCarousel />
+      )}
+    </>
+  );
+
+  const rail = (
+    <>
+      <WhyGiveProtocolRail />
+      <NewsUpdatesCard />
+    </>
+  );
+
+  return <DiscoveryShell topBar={hero} main={main} rail={rail} />;
+};

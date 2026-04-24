@@ -94,7 +94,9 @@ describe("useAdminCharities", () => {
     });
 
     it("should set loading state", async () => {
-      let resolveRpc: (_value: Record<string, unknown>) => void;
+      let resolveRpc: (_value: Record<string, unknown>) => void = () => {
+        // Assigned in Promise constructor below
+      };
       const rpcPromise = new Promise<Record<string, unknown>>((resolve) => {
         resolveRpc = resolve;
       });
@@ -102,7 +104,7 @@ describe("useAdminCharities", () => {
 
       const { result } = renderHook(() => useAdminCharities());
 
-      let fetchPromise: Promise<unknown>;
+      let fetchPromise: Promise<unknown> = Promise.resolve();
       act(() => {
         fetchPromise = result.current.fetchCharities();
       });
@@ -110,8 +112,8 @@ describe("useAdminCharities", () => {
       expect(result.current.loading).toBe(true);
 
       await act(async () => {
-        resolveRpc!({ data: [], error: null });
-        await fetchPromise!;
+        resolveRpc({ data: [], error: null });
+        await fetchPromise;
       });
 
       expect(result.current.loading).toBe(false);

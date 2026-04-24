@@ -1,8 +1,9 @@
 // Mock for @/components/auth/ForgotPassword
-// Renders a simple placeholder with back button for testing.
+// Mirrors the real component which delegates to ForgotCredentials with type="password",
+// rendering "Reset Password" as its heading.
 export const ForgotPassword = ({ onBack }) => (
   <div data-testid="forgot-password">
-    <h2>Forgot Password</h2>
+    <h2>Reset Password</h2>
     <button type="button" onClick={onBack}>
       Back to sign in
     </button>

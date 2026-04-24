@@ -215,6 +215,105 @@ function FilterPill({ filter }: { filter: ActiveFilter }) {
   );
 }
 
+/** Converts a snake_case language code to Title Case display name */
+const formatLanguageName = (language: string): string => {
+  return language
+    .split("_")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+/**
+ * Input field with a leading icon, for search and location inputs.
+ * @param props - Component props
+ * @returns The rendered search field
+ */
+function SearchField({
+  icon: Icon,
+  wrapperClass,
+  inputClass,
+  ...inputProps
+}: {
+  icon: React.ElementType;
+  wrapperClass: string;
+  inputClass: string;
+} & Omit<React.InputHTMLAttributes<HTMLInputElement>, "className">) {
+  return (
+    <div className={wrapperClass}>
+      <input className={inputClass} {...inputProps} />
+      <Icon
+        aria-hidden="true"
+        className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
+      />
+    </div>
+  );
+}
+
+/**
+ * Card displaying a single volunteer opportunity.
+ * @param props - Component props
+ * @returns The rendered opportunity card
+ */
+function OpportunityCard({
+  opportunity,
+  onApply,
+}: {
+  opportunity: Opportunity;
+  onApply: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <Card className="overflow-hidden">
+      <img
+        src={opportunity.image}
+        alt={opportunity.title}
+        className="w-full h-48 object-cover"
+      />
+      <div className="p-6">
+        <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          {opportunity.title}
+        </h3>
+        <p className="text-sm font-medium text-emerald-600 mb-2">
+          {opportunity.organization}
+        </p>
+        <p className="text-gray-600 mb-4">{opportunity.description}</p>
+        <div className="flex items-center text-sm text-gray-500">
+          <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
+          {opportunity.commitment}
+        </div>
+        <div className="flex items-center text-sm text-gray-500 mt-2">
+          <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
+          {opportunity.location}
+        </div>
+        <div className="flex items-center text-sm text-gray-500 mt-2">
+          <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
+          {t(
+            `language.${opportunity.workLanguage}`,
+            formatLanguageName(opportunity.workLanguage),
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2 mt-2 mb-4">
+          {opportunity.skills.map((skill) => (
+            <span
+              key={skill}
+              className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
+            >
+              <Award aria-hidden="true" className="h-3 w-3 mr-1" />
+              {skill}
+            </span>
+          ))}
+        </div>
+        <button
+          onClick={onApply}
+          className="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
+        >
+          {t("volunteer.applyNow", "Apply Now")}
+        </button>
+      </div>
+    </Card>
+  );
+}
+
 /**
  * Browse and apply for volunteer opportunities
  * @returns VolunteerOpportunities page element
@@ -360,14 +459,6 @@ const VolunteerOpportunities: React.FC = () => {
     setLocationSearch("");
   }, []);
 
-  /** Converts a snake_case language code to Title Case display name */
-  const formatLanguageName = (language: string): string => {
-    return language
-      .split("_")
-      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(" ");
-  };
-
   const activeFilters: ActiveFilter[] = useMemo(() => {
     const filters: ActiveFilter[] = [];
     if (selectedSkill) {
@@ -421,41 +512,33 @@ const VolunteerOpportunities: React.FC = () => {
 
       <ScrollReveal direction="up" delay={100} className="space-y-2">
         <div className="flex gap-3 items-center">
-          <div className="relative flex-[3]">
-            <input
-              type="text"
-              placeholder={t(
-                "volunteer.searchOpportunities",
-                "Search opportunities...",
-              )}
-              aria-label={t(
-                "volunteer.searchOpportunities",
-                "Search opportunities",
-              )}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <Search
-              aria-hidden="true"
-              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-            />
-          </div>
+          <SearchField
+            icon={Search}
+            wrapperClass="relative flex-[3]"
+            inputClass="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+            type="text"
+            placeholder={t(
+              "volunteer.searchOpportunities",
+              "Search opportunities...",
+            )}
+            aria-label={t(
+              "volunteer.searchOpportunities",
+              "Search opportunities",
+            )}
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
 
-          <div className="relative flex-[2]">
-            <input
-              type="text"
-              placeholder="City or region..."
-              aria-label="Search location"
-              className="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-              value={locationSearch}
-              onChange={handleLocationChange}
-            />
-            <MapPin
-              aria-hidden="true"
-              className="absolute left-3 top-2.5 h-4 w-4 text-gray-400"
-            />
-          </div>
+          <SearchField
+            icon={MapPin}
+            wrapperClass="relative flex-[2]"
+            inputClass="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+            type="text"
+            placeholder="City or region..."
+            aria-label="Search location"
+            value={locationSearch}
+            onChange={handleLocationChange}
+          />
 
           <WorkTypeToggle
             selectedType={selectedType}
@@ -507,56 +590,11 @@ const VolunteerOpportunities: React.FC = () => {
       <ScrollReveal direction="up" delay={200}>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filteredOpportunities.map((opportunity) => (
-            <Card key={opportunity.id} className="overflow-hidden">
-              <img
-                src={opportunity.image}
-                alt={opportunity.title}
-                className="w-full h-48 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">
-                  {opportunity.title}
-                </h3>
-                <p className="text-sm font-medium text-emerald-600 mb-2">
-                  {opportunity.organization}
-                </p>
-                <p className="text-gray-600 mb-4">{opportunity.description}</p>
-
-                <div className="flex items-center text-sm text-gray-500">
-                  <Clock aria-hidden="true" className="h-4 w-4 mr-2" />
-                  {opportunity.commitment}
-                </div>
-                <div className="flex items-center text-sm text-gray-500 mt-2">
-                  <MapPin aria-hidden="true" className="h-4 w-4 mr-2" />
-                  {opportunity.location}
-                </div>
-                <div className="flex items-center text-sm text-gray-500 mt-2">
-                  <Globe aria-hidden="true" className="h-4 w-4 mr-2" />
-                  {t(
-                    `language.${opportunity.workLanguage}`,
-                    formatLanguageName(opportunity.workLanguage),
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2 mb-4">
-                  {opportunity.skills.map((skill) => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800"
-                    >
-                      <Award aria-hidden="true" className="h-3 w-3 mr-1" />
-                      {skill}
-                    </span>
-                  ))}
-                </div>
-
-                <button
-                  onClick={createApplyHandler(opportunity)}
-                  className="w-full bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition-colors"
-                >
-                  {t("volunteer.applyNow", "Apply Now")}
-                </button>
-              </div>
-            </Card>
+            <OpportunityCard
+              key={opportunity.id}
+              opportunity={opportunity}
+              onApply={createApplyHandler(opportunity)}
+            />
           ))}
         </div>
       </ScrollReveal>
