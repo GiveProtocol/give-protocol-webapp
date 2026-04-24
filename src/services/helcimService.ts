@@ -365,6 +365,11 @@ export function loadHelcimScript(): Promise<void> {
   helcimScriptPromise = new Promise((resolve, reject) => {
     const script = document.createElement("script");
     script.src = "https://secure.helcim.app/helcim-pay/services/start.js";
+    // SRI hash — regenerate if Helcim updates start.js:
+    //   curl -s <url> | openssl dgst -sha384 -binary | openssl base64 -A
+    script.integrity =
+      "sha384-8wWGKUkdq5wTIHBBb2inwu8SO3TFDWqLBUSLTwpmjyPzWv9GklIAv8SE3WP3z0Vy";
+    script.crossOrigin = "anonymous";
     script.defer = true;
     script.async = false;
 
