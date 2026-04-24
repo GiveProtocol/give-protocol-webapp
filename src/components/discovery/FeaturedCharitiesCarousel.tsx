@@ -18,6 +18,7 @@ import { cn } from "@/utils/cn";
 const AUTO_ADVANCE_MS = 6000;
 const CARDS_PER_PAGE = 3;
 
+/** Splits an array into fixed-size groups for carousel pagination. */
 function chunk<T>(items: T[], size: number): T[][] {
   if (items.length === 0) return [];
   const out: T[][] = [];

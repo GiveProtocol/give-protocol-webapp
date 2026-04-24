@@ -4,7 +4,14 @@ import React from "react";
 
 const TabsContext = React.createContext(null);
 
-export const Tabs = ({ defaultValue, value, children, className, onValueChange }) => {
+/** @returns {React.ReactElement} Mock Tabs container with context provider */
+export const Tabs = ({
+  defaultValue,
+  value,
+  children,
+  className,
+  onValueChange,
+}) => {
   const [currentValue, setCurrentValue] = React.useState(value || defaultValue);
 
   const handleChange = React.useCallback(
@@ -27,12 +34,14 @@ export const Tabs = ({ defaultValue, value, children, className, onValueChange }
   );
 };
 
+/** @returns {React.ReactElement} Mock TabsList wrapper */
 export const TabsList = ({ children, className }) => (
   <div role="tablist" className={className}>
     {children}
   </div>
 );
 
+/** @returns {React.ReactElement} Mock TabsTrigger button */
 export const TabsTrigger = ({ value, children }) => {
   const context = React.useContext(TabsContext);
   return (
@@ -46,6 +55,7 @@ export const TabsTrigger = ({ value, children }) => {
   );
 };
 
+/** @returns {React.ReactElement|null} Mock TabsContent panel, renders only when active */
 export const TabsContent = ({ value, children }) => {
   const context = React.useContext(TabsContext);
   if (context?.value !== value) return null;

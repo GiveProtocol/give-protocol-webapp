@@ -39,6 +39,7 @@ interface ProfileRow {
     | null;
 }
 
+/** Extracts the first charity_details record, handling both object and array shapes. */
 function pickDetails(
   row: ProfileRow,
 ): NonNullable<Exclude<ProfileRow["charity_details"], unknown[]>> | null {
@@ -48,6 +49,7 @@ function pickDetails(
   return cd;
 }
 
+/** Builds a comma-separated location string from a profile's address metadata. */
 function buildLocation(row: ProfileRow): string | null {
   const addr = row.meta?.address;
   if (!addr) return null;
@@ -76,6 +78,7 @@ export function useFeaturedCharities(): {
 
   useEffect(() => {
     mountedRef.current = true;
+    /** Loads featured charities from Supabase and filters for complete profiles. */
     const load = async () => {
       try {
         const { data, error: queryError } = await supabase
