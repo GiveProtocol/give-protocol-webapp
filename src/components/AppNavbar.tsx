@@ -581,73 +581,73 @@ export const AppNavbar: React.FC = () => {
 
   return (
     <>
-    <a
-      href="#main-content"
-      className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-white focus:text-emerald-700 focus:rounded focus:shadow-lg focus:font-medium"
-    >
-      Skip to main content
-    </a>
-    <nav
-      className="relative z-30 border-b shadow-lg"
-      style={{
-        background: "rgba(6, 78, 59, 0.92)",
-        backdropFilter: "blur(12px)",
-        WebkitBackdropFilter: "blur(12px)",
-        borderColor: "rgba(52, 211, 153, 0.15)",
-      }}
-      aria-label="Application navigation"
-    >
-      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]">
-        <div className="flex items-center">
-          <NavHeader />
-          <div className="hidden md:ml-6 md:flex md:gap-6">
-            <DesktopNavLinks
-              isLimitedNavPage={isLimitedNavPage}
-              isActive={isActive}
-              userType={userType}
-              isAuthenticated={Boolean(user)}
-              handleDashboardClick={handleDashboardClick}
-              t={t}
-            />
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-white focus:text-emerald-700 focus:rounded focus:shadow-lg focus:font-medium"
+      >
+        Skip to main content
+      </a>
+      <nav
+        className="relative z-30 border-b shadow-lg"
+        style={{
+          background: "rgba(6, 78, 59, 0.92)",
+          backdropFilter: "blur(12px)",
+          WebkitBackdropFilter: "blur(12px)",
+          borderColor: "rgba(52, 211, 153, 0.15)",
+        }}
+        aria-label="Application navigation"
+      >
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-[60px]">
+          <div className="flex items-center">
+            <NavHeader />
+            <div className="hidden md:ml-6 md:flex md:gap-6">
+              <DesktopNavLinks
+                isLimitedNavPage={isLimitedNavPage}
+                isActive={isActive}
+                userType={userType}
+                isAuthenticated={Boolean(user)}
+                handleDashboardClick={handleDashboardClick}
+                t={t}
+              />
+            </div>
           </div>
+          <NavActions
+            isMenuOpen={isMenuOpen}
+            toggleMenu={toggleMenu}
+            menuButtonRef={menuButtonRef}
+            isAuthenticated={Boolean(user)}
+            isConnected={isConnected}
+            address={address}
+            network={network}
+            visibleNetworks={visibleNetworks}
+            onNetworkChange={handleNetworkChange}
+            onDisconnect={handleDisconnect}
+            onSignOut={handleSignOut}
+          />
         </div>
-        <NavActions
-          isMenuOpen={isMenuOpen}
-          toggleMenu={toggleMenu}
-          menuButtonRef={menuButtonRef}
-          isAuthenticated={Boolean(user)}
-          isConnected={isConnected}
-          address={address}
-          network={network}
-          visibleNetworks={visibleNetworks}
-          onNetworkChange={handleNetworkChange}
-          onDisconnect={handleDisconnect}
-          onSignOut={handleSignOut}
-        />
-      </div>
 
-      {/* Mobile menu */}
-      <MobileMenu isMenuOpen={isMenuOpen}>
-        <MobileNavLinks
-          isLimitedNavPage={isLimitedNavPage}
-          isActive={isActive}
-          userType={userType}
-          isAuthenticated={Boolean(user)}
-          handleDashboardClick={handleDashboardClick}
-          handleLinkClick={handleLinkClick}
-          t={t}
-        />
-        {Boolean(user) && !isConnected && (
-          <button
-            onClick={handleSignOut}
-            className="flex items-center gap-2 w-full px-3 py-3 rounded-md text-[0.82rem] font-medium text-[rgba(255,255,255,0.75)] hover:text-emerald-300"
-          >
-            <LogOut className="h-4 w-4" />
-            Sign Out
-          </button>
-        )}
-      </MobileMenu>
-    </nav>
+        {/* Mobile menu */}
+        <MobileMenu isMenuOpen={isMenuOpen}>
+          <MobileNavLinks
+            isLimitedNavPage={isLimitedNavPage}
+            isActive={isActive}
+            userType={userType}
+            isAuthenticated={Boolean(user)}
+            handleDashboardClick={handleDashboardClick}
+            handleLinkClick={handleLinkClick}
+            t={t}
+          />
+          {Boolean(user) && !isConnected && (
+            <button
+              onClick={handleSignOut}
+              className="flex items-center gap-2 w-full px-3 py-3 rounded-md text-[0.82rem] font-medium text-[rgba(255,255,255,0.75)] hover:text-emerald-300"
+            >
+              <LogOut className="h-4 w-4" />
+              Sign Out
+            </button>
+          )}
+        </MobileMenu>
+      </nav>
     </>
   );
 };

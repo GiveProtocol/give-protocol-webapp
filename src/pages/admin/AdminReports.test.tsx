@@ -2,12 +2,8 @@ import React from "react";
 import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import {
-  getDonationSummary,
-} from "@/services/adminDonationService";
-import {
-  getAdminAuditLog,
-} from "@/services/adminAuditService";
+import { getDonationSummary } from "@/services/adminDonationService";
+import { getAdminAuditLog } from "@/services/adminAuditService";
 import {
   getCharityGrowthReport,
   getDonorActivityReport,
@@ -88,9 +84,7 @@ describe("AdminReports", () => {
       renderPage();
       fireEvent.click(screen.getByText("Charity Growth"));
       await waitFor(() => {
-        expect(
-          screen.getByText(/No charity growth data/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/No charity growth data/i)).toBeInTheDocument();
       });
     });
 
@@ -98,9 +92,7 @@ describe("AdminReports", () => {
       renderPage();
       fireEvent.click(screen.getByText("Donor Activity"));
       await waitFor(() => {
-        expect(
-          screen.getByText(/No donor activity data/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/No donor activity data/i)).toBeInTheDocument();
       });
     });
 
@@ -108,9 +100,7 @@ describe("AdminReports", () => {
       renderPage();
       fireEvent.click(screen.getByText("Volunteer Hours"));
       await waitFor(() => {
-        expect(
-          screen.getByText(/No volunteer data/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/No volunteer data/i)).toBeInTheDocument();
       });
     });
 
@@ -118,9 +108,7 @@ describe("AdminReports", () => {
       renderPage();
       fireEvent.click(screen.getByText("Audit Trail"));
       await waitFor(() => {
-        expect(
-          screen.getByText(/No audit entries/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/No audit entries/i)).toBeInTheDocument();
       });
     });
 
@@ -155,9 +143,7 @@ describe("AdminReports", () => {
     it("shows empty state with no donation data", async () => {
       renderPage();
       await waitFor(() => {
-        expect(
-          screen.getByText(/No donation data/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/No donation data/i)).toBeInTheDocument();
       });
     });
   });

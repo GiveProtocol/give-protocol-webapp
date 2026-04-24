@@ -120,72 +120,70 @@ export const Navbar: React.FC = () => {
   }, []);
 
   // Check if current page should only show limited navigation
-  const isLimitedNavPage = [
-    "/about",
-    "/legal",
-    "/privacy",
-  ].includes(location.pathname);
+  const isLimitedNavPage = ["/about", "/legal", "/privacy"].includes(
+    location.pathname,
+  );
 
   return (
     <>
-    <a
-      href="#main-content"
-      className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-white focus:text-emerald-700 focus:rounded focus:shadow-lg focus:font-medium"
-    >
-      Skip to main content
-    </a>
-    <nav className="bg-background-primary border-b border-gray-200 shadow-sm">
-      <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
-        <Link to="/" className="flex items-center">
-          <Logo className="h-8 w-8" />
-          <span className="ml-2 text-2xl font-bold text-primary-900">
-            Give Protocol
-          </span>
-        </Link>
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-2 focus:left-2 focus:px-4 focus:py-2 focus:bg-white focus:text-emerald-700 focus:rounded focus:shadow-lg focus:font-medium"
+      >
+        Skip to main content
+      </a>
+      <nav className="bg-background-primary border-b border-gray-200 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
+          <Link to="/" className="flex items-center">
+            <Logo className="h-8 w-8" />
+            <span className="ml-2 text-2xl font-bold text-primary-900">
+              Give Protocol
+            </span>
+          </Link>
 
-        <DesktopNavLinks isActive={isActive} t={t} />
+          <DesktopNavLinks isActive={isActive} t={t} />
 
-        <SettingsMenu />
-        {!isLimitedNavPage && (
-          <Link
-            to="/give-dashboard"
-            className="inline-flex items-center px-4 py-2 border border-transparent
+          <SettingsMenu />
+          {!isLimitedNavPage && (
+            <Link
+              to="/give-dashboard"
+              className="inline-flex items-center px-4 py-2 border border-transparent
                        text-sm font-medium rounded-md text-white bg-emerald-600
                        hover:bg-emerald-700 shadow-cta hover:shadow-[0_4px_18px_rgba(5,150,105,0.5)]
                        transition-all duration-200 transform hover:-translate-y-0.5
                        active:translate-y-0 active:shadow-sm focus:outline-none focus:ring-2
                        focus:ring-offset-2 focus:ring-emerald-500"
-          >
-            {t("nav.launchApp")}
-          </Link>
-        )}
-
-        {/* Mobile menu button */}
-        <button
-          type="button"
-          className="sm:hidden inline-flex items-center justify-center ml-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
-          aria-controls="mobile-menu"
-          aria-expanded={isMenuOpen}
-          aria-label="Toggle navigation menu"
-          onClick={handleMenuToggle}
-        >
-          {isMenuOpen ? (
-            <X className="block h-6 w-6" aria-hidden="true" />
-          ) : (
-            <Menu className="block h-6 w-6" aria-hidden="true" />
+            >
+              {t("nav.launchApp")}
+            </Link>
           )}
-        </button>
-      </div>
 
-      {isMenuOpen && (
-        <MobileMenu
-          isActive={isActive}
-          t={t}
-          onMenuClose={handleMenuClose}
-          isLimitedNavPage={isLimitedNavPage}
-        />
-      )}
-    </nav>
+          {/* Mobile menu button */}
+          <button
+            type="button"
+            className="sm:hidden inline-flex items-center justify-center ml-2 p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-emerald-500"
+            aria-controls="mobile-menu"
+            aria-expanded={isMenuOpen}
+            aria-label="Toggle navigation menu"
+            onClick={handleMenuToggle}
+          >
+            {isMenuOpen ? (
+              <X className="block h-6 w-6" aria-hidden="true" />
+            ) : (
+              <Menu className="block h-6 w-6" aria-hidden="true" />
+            )}
+          </button>
+        </div>
+
+        {isMenuOpen && (
+          <MobileMenu
+            isActive={isActive}
+            t={t}
+            onMenuClose={handleMenuClose}
+            isLimitedNavPage={isLimitedNavPage}
+          />
+        )}
+      </nav>
     </>
   );
 };

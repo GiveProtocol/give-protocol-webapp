@@ -67,9 +67,7 @@ describe("AdminDonationMonitoring", () => {
 
     it("renders payment method filter", () => {
       renderPage();
-      expect(
-        screen.getByLabelText(/Payment method/i),
-      ).toBeInTheDocument();
+      expect(screen.getByLabelText(/Payment method/i)).toBeInTheDocument();
     });
 
     it("renders search input", () => {

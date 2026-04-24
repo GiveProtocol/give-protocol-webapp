@@ -58,9 +58,7 @@ describe("CharityBrowser", () => {
 
     it("renders search input", () => {
       renderPage();
-      expect(
-        screen.getByLabelText("Search charities"),
-      ).toBeInTheDocument();
+      expect(screen.getByLabelText("Search charities")).toBeInTheDocument();
     });
 
     it("renders charity grid by default", () => {
@@ -109,9 +107,7 @@ describe("CharityBrowser", () => {
     it("hides geographic filter in portfolio view", () => {
       renderPage();
       fireEvent.click(screen.getByText("Portfolio Funds"));
-      expect(
-        screen.queryByTestId("geographic-filter"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByTestId("geographic-filter")).not.toBeInTheDocument();
     });
 
     it("returns to charity grid when Charities is clicked after switching", () => {

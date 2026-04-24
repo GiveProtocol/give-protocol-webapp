@@ -3,4 +3,8 @@
 import React from "react";
 
 export const PortfolioGrid = () =>
-  React.createElement("div", { "data-testid": "portfolio-grid" }, "Portfolio Grid");
+  React.createElement(
+    "div",
+    { "data-testid": "portfolio-grid" },
+    "Portfolio Grid",
+  );

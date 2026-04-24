@@ -7,7 +7,9 @@ import AdminVolunteerValidation from "./AdminVolunteerValidation";
 
 // useAdminVolunteerValidation, Card, LoadingSpinner, Modal, Button are mocked via moduleNameMapper
 
-const mockUseAdminVolunteerValidation = jest.mocked(useAdminVolunteerValidation);
+const mockUseAdminVolunteerValidation = jest.mocked(
+  useAdminVolunteerValidation,
+);
 
 const mockStats = {
   totalPending: 5,

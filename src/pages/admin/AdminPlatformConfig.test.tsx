@@ -87,9 +87,7 @@ describe("AdminPlatformConfig", () => {
 
     it("renders Token & Network Config tab", () => {
       renderPage();
-      expect(
-        screen.getByText("Token & Network Config"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Token & Network Config")).toBeInTheDocument();
     });
 
     it("shows empty config message when no configs", () => {
@@ -110,9 +108,7 @@ describe("AdminPlatformConfig", () => {
     it("switches to Token & Network Config tab", () => {
       renderPage();
       fireEvent.click(screen.getByText("Token & Network Config"));
-      expect(
-        screen.getByText(/Token & Network/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Token & Network/i)).toBeInTheDocument();
     });
   });
 
