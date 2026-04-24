@@ -23,11 +23,7 @@ describe("RevenueSnapshotBar", () => {
 
   it("renders the Active Campaigns tile", () => {
     render(
-      <RevenueSnapshotBar
-        fundsRaised={0}
-        activeCampaigns={7}
-        donorCount={0}
-      />,
+      <RevenueSnapshotBar fundsRaised={0} activeCampaigns={7} donorCount={0} />,
     );
     expect(screen.getByText("Active Campaigns")).toBeInTheDocument();
     expect(screen.getByText("7")).toBeInTheDocument();

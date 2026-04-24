@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { renderHook, waitFor } from "@testing-library/react";
-import {
-  setMockResult,
-  resetMockState,
-} from "@/lib/supabase";
+import { setMockResult, resetMockState } from "@/lib/supabase";
 import { useProfile } from "@/hooks/useProfile";
 import { Logger } from "@/utils/logger";
 import { useCharityRevenueSnapshot } from "./useCharityRevenueSnapshot";
@@ -81,11 +78,7 @@ describe("useCharityRevenueSnapshot", () => {
       updateProfile: jest.fn(),
     });
     setMockResult("donations", {
-      data: [
-        makeDonation(100, 0),
-        makeDonation(250, 1),
-        makeDonation(50, 2),
-      ],
+      data: [makeDonation(100, 0), makeDonation(250, 1), makeDonation(50, 2)],
       error: null,
     });
     setMockResult("causes", { data: [], error: null });
@@ -376,9 +369,7 @@ describe("useCharityRevenueSnapshot", () => {
     setMockResult("donations", { data: [], error: null });
     setMockResult("causes", { data: [], error: null });
 
-    const { result, unmount } = renderHook(() =>
-      useCharityRevenueSnapshot(),
-    );
+    const { result, unmount } = renderHook(() => useCharityRevenueSnapshot());
     unmount();
     // Wait a tick -- the async load should not cause state update warnings
     await new Promise((r) => setTimeout(r, 50));

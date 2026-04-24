@@ -5,7 +5,9 @@ import { DiscoveryShell } from "./DiscoveryShell";
 
 describe("DiscoveryShell", () => {
   it("renders the main slot", () => {
-    render(<DiscoveryShell main={<div data-testid="main">Main content</div>} />);
+    render(
+      <DiscoveryShell main={<div data-testid="main">Main content</div>} />,
+    );
     expect(screen.getByTestId("main")).toBeInTheDocument();
     expect(screen.getByText("Main content")).toBeInTheDocument();
   });

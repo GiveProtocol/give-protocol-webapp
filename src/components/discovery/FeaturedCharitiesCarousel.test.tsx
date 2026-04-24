@@ -18,7 +18,10 @@ interface FeaturedCharity {
   location?: string;
 }
 
-function makeCharity(id: string, overrides?: Partial<FeaturedCharity>): FeaturedCharity {
+function makeCharity(
+  id: string,
+  overrides?: Partial<FeaturedCharity>,
+): FeaturedCharity {
   return {
     profileId: id,
     name: `Charity ${id}`,
@@ -55,9 +58,7 @@ describe("FeaturedCharitiesCarousel", () => {
       error: null,
     });
     renderCarousel();
-    expect(
-      screen.getByText("Featured organizations"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Featured organizations")).toBeInTheDocument();
     expect(screen.getByTestId("skeleton")).toBeInTheDocument();
   });
 
@@ -127,7 +128,9 @@ describe("FeaturedCharitiesCarousel", () => {
 
   it("shows category and location on cards", () => {
     mockUseFeaturedCharities.mockReturnValue({
-      charities: [makeCharity("c1", { category: "Health", location: "NYC" })] as never,
+      charities: [
+        makeCharity("c1", { category: "Health", location: "NYC" }),
+      ] as never,
       loading: false,
       error: null,
     });
@@ -252,9 +255,7 @@ describe("FeaturedCharitiesCarousel", () => {
     expect(screen.getByText("Charity c4")).toBeInTheDocument();
 
     // Go back to page 1
-    fireEvent.click(
-      screen.getByLabelText("Previous featured organizations"),
-    );
+    fireEvent.click(screen.getByLabelText("Previous featured organizations"));
     expect(screen.getByText("Charity c1")).toBeInTheDocument();
   });
 

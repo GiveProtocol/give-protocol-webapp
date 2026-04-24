@@ -163,9 +163,9 @@ describe("DonorHubView", () => {
 
   it("renders project cards when organizations are returned", () => {
     mockSearch.mockReturnValue({
-      organizations: [
-        { ein: "12-345", name: "Test Org" },
-      ] as ReturnType<typeof useCharityOrganizationSearch>["organizations"],
+      organizations: [{ ein: "12-345", name: "Test Org" }] as ReturnType<
+        typeof useCharityOrganizationSearch
+      >["organizations"],
       loading: false,
       hasMore: false,
       error: null,

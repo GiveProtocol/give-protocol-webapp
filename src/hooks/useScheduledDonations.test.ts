@@ -10,7 +10,9 @@ const mockUseScheduledDonation = useScheduledDonation as jest.Mock;
 describe("useScheduledDonations", () => {
   beforeEach(() => {
     mockUseScheduledDonation.mockReturnValue({
-      getDonorSchedules: jest.fn<() => Promise<unknown[]>>().mockResolvedValue([]),
+      getDonorSchedules: jest
+        .fn<() => Promise<unknown[]>>()
+        .mockResolvedValue([]),
       cancelSchedule: jest.fn(),
       loading: false,
       error: null,
@@ -36,7 +38,9 @@ describe("useScheduledDonations", () => {
       { id: "3", active: true },
     ];
     mockUseScheduledDonation.mockReturnValue({
-      getDonorSchedules: jest.fn<() => Promise<unknown[]>>().mockResolvedValue(schedules),
+      getDonorSchedules: jest
+        .fn<() => Promise<unknown[]>>()
+        .mockResolvedValue(schedules),
       cancelSchedule: jest.fn(),
       loading: false,
       error: null,
@@ -73,7 +77,9 @@ describe("useScheduledDonations", () => {
       resolveSchedules = resolve;
     });
     mockUseScheduledDonation.mockReturnValue({
-      getDonorSchedules: jest.fn<() => Promise<unknown[]>>().mockReturnValue(deferred),
+      getDonorSchedules: jest
+        .fn<() => Promise<unknown[]>>()
+        .mockReturnValue(deferred),
       cancelSchedule: jest.fn(),
       loading: false,
       error: null,

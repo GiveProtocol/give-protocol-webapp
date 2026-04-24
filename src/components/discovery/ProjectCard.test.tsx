@@ -5,7 +5,9 @@ import { MemoryRouter } from "react-router-dom";
 import type { CharityOrganization } from "@/types/charityOrganization";
 import { ProjectCard } from "./ProjectCard";
 
-const makeOrg = (overrides: Partial<CharityOrganization> = {}): CharityOrganization => ({
+const makeOrg = (
+  overrides: Partial<CharityOrganization> = {},
+): CharityOrganization => ({
   id: "id-1",
   ein: "12-3456789",
   name: "Test Charity",
@@ -39,7 +41,10 @@ describe("ProjectCard", () => {
     );
     const nameLink = screen.getByText("Good Cause");
     expect(nameLink).toBeInTheDocument();
-    expect(nameLink.closest("a")).toHaveAttribute("href", "/charity/11-1111111");
+    expect(nameLink.closest("a")).toHaveAttribute(
+      "href",
+      "/charity/11-1111111",
+    );
   });
 
   it("renders the EIN", () => {
