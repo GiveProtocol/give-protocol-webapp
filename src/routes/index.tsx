@@ -542,10 +542,7 @@ export function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/app"
-          element={<Navigate to="/browse" replace />}
-        />
+        <Route path="/app" element={<Navigate to="/browse" replace />} />
         <Route
           path="/opportunities"
           element={
