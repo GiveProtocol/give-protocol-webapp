@@ -1,10 +1,10 @@
 import React from "react";
-import { FeatureCards } from "@/components/home/FeatureCards";
-import { Hero } from "@/components/home/Hero";
-import { ActionButtons } from "@/components/home/ActionButtons";
-import { ProtocolStats } from "@/components/home/ProtocolStats";
-import { ScrollReveal } from "@/components/ui/ScrollReveal";
-import { FeaturedCharitiesCarousel } from "@/components/home/FeaturedCharitiesCarousel";
+import { Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { DiscoveryShellSkeleton } from "@/components/discovery/DiscoveryShellSkeleton";
+import { PublicDiscoveryView } from "@/components/discovery/PublicDiscoveryView";
+import { DonorHubView } from "@/components/discovery/DonorHubView";
+import { CharityHubView } from "@/components/discovery/CharityHubView";
 
 const BLOB_DELAY: React.CSSProperties = { animationDelay: "1s" };
 

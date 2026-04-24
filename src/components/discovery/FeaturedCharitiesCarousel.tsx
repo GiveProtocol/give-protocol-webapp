@@ -35,7 +35,7 @@ function FeaturedCharityCard({ charity }: { charity: FeaturedCharity }) {
       <div className="relative aspect-[16/9] bg-gray-100 dark:bg-gray-800">
         <img
           src={charity.imageUrl}
-          alt={`${charity.name} cover photo`}
+          alt={`${charity.name} cover`}
           loading="lazy"
           className="absolute inset-0 h-full w-full object-cover"
         />
