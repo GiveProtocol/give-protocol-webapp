@@ -3,8 +3,8 @@ import { Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { DiscoveryShellSkeleton } from "@/components/discovery/DiscoveryShellSkeleton";
 import { PublicDiscoveryView } from "@/components/discovery/PublicDiscoveryView";
-import { CharityHubView } from "@/components/discovery/CharityHubView";
 import { DonorHubView } from "@/components/discovery/DonorHubView";
+import { CharityHubView } from "@/components/discovery/CharityHubView";
 
 const BLOB_DELAY: React.CSSProperties = { animationDelay: "1s" };
 
