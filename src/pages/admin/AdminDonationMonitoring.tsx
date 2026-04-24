@@ -329,15 +329,11 @@ function SummaryTable({
             key={`${row.groupKey}-${row.paymentMethod}-${row.charityId}`}
             className="border-t border-gray-100"
           >
-            <td className="px-4 py-2 font-mono text-xs">
-              {row.groupKey}
-            </td>
+            <td className="px-4 py-2 font-mono text-xs">{row.groupKey}</td>
             <td className="px-4 py-2">
               <PaymentBadge method={row.paymentMethod} />
             </td>
-            <td className="px-4 py-2">
-              ${row.totalAmountUsd.toFixed(2)}
-            </td>
+            <td className="px-4 py-2">${row.totalAmountUsd.toFixed(2)}</td>
             <td className="px-4 py-2">{row.donationCount}</td>
             <td className="px-4 py-2 text-gray-600">
               {row.charityName ?? row.charityId ?? "—"}

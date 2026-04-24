@@ -5,7 +5,13 @@ import React from "react";
 const TabsContext = React.createContext(null);
 
 /** @returns {React.ReactElement} Mock Tabs container with context provider */
-export const Tabs = ({ defaultValue, value, children, className, onValueChange }) => {
+export const Tabs = ({
+  defaultValue,
+  value,
+  children,
+  className,
+  onValueChange,
+}) => {
   const [currentValue, setCurrentValue] = React.useState(value || defaultValue);
 
   const handleChange = React.useCallback(
