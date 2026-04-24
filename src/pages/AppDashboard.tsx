@@ -1,10 +1,10 @@
 import React from "react";
-import { Navigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { DiscoveryShellSkeleton } from "@/components/discovery/DiscoveryShellSkeleton";
-import { PublicDiscoveryView } from "@/components/discovery/PublicDiscoveryView";
-import { DonorHubView } from "@/components/discovery/DonorHubView";
-import { CharityHubView } from "@/components/discovery/CharityHubView";
+import { FeatureCards } from "@/components/home/FeatureCards";
+import { Hero } from "@/components/home/Hero";
+import { ActionButtons } from "@/components/home/ActionButtons";
+import { ProtocolStats } from "@/components/home/ProtocolStats";
+import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { FeaturedCharitiesCarousel } from "@/components/home/FeaturedCharitiesCarousel";
 
 const BLOB_DELAY: React.CSSProperties = { animationDelay: "1s" };
 
@@ -37,6 +37,32 @@ const AppDashboard: React.FC = () => {
           className="absolute -bottom-20 -right-20 w-96 h-96 bg-teal-200/20 dark:bg-teal-500/20 rounded-full blur-3xl animate-pulse"
           style={BLOB_DELAY}
         />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="text-center">
+          <div className="animate-fade-in-up">
+            <Hero />
+          </div>
+          <ScrollReveal direction="up" delay={100}>
+            <ProtocolStats />
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={150}>
+            <div className="mt-12 text-left">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Featured Charities
+              </h2>
+              <FeaturedCharitiesCarousel />
+            </div>
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={200}>
+            <FeatureCards />
+          </ScrollReveal>
+          <ScrollReveal direction="scale" delay={300}>
+            <ActionButtons />
+          </ScrollReveal>
+        </div>
       </div>
       <div className="relative z-10">{content}</div>
     </div>
