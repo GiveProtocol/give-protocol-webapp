@@ -30,7 +30,7 @@
 
 /* Dark mode - Applied outside @layer to ensure they work */
 .dark body {
-  background-color: #050A09;
+  background-color: #050a09;
   color: rgb(243 244 246);
 }
 
@@ -54,12 +54,12 @@
 
 /* Dark mode component styles - Applied outside @layer */
 .dark .card {
-  background-color: #0E1514;
+  background-color: #0e1514;
   border-color: rgba(255, 255, 255, 0.1);
 }
 
 .dark .btn-secondary {
-  background-color: #0E1514;
+  background-color: #0e1514;
   color: rgb(243 244 246);
   border-color: rgba(255, 255, 255, 0.1);
 }
@@ -79,8 +79,12 @@
     scrollbar-width: thin;
     scrollbar-color: #10b981 transparent;
   }
-  .scrollbar-styled::-webkit-scrollbar { width: 6px; }
-  .scrollbar-styled::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-styled::-webkit-scrollbar {
+    width: 6px;
+  }
+  .scrollbar-styled::-webkit-scrollbar-track {
+    background: transparent;
+  }
   .scrollbar-styled::-webkit-scrollbar-thumb {
     background-color: #10b981;
     border-radius: 3px;
@@ -229,7 +233,7 @@
   }
 }
 
-/* Design-system custom properties */
+/* Design-system custom properties and frame animation system */
 :root {
   --emerald-900: #064e3b;
   --emerald-800: #065f46;
@@ -239,22 +243,19 @@
   --emerald-400: #34d399;
   --emerald-300: #6ee7b7;
   --emerald-100: #d1fae5;
-  --emerald-50:  #ecfdf5;
+  --emerald-50: #ecfdf5;
   --slate-900: #0f172a;
   --slate-700: #334155;
   --slate-500: #64748b;
   --slate-300: #cbd5e1;
   --slate-100: #f1f5f9;
-  --slate-50:  #f8fafc;
-  --bg-deep: #050A09;
-  --bg-surface: #0E1514;
+  --slate-50: #f8fafc;
+  --bg-deep: #050a09;
+  --bg-surface: #0e1514;
   --border-glass: rgba(255, 255, 255, 0.1);
-  --text-muted: #D1D5DB;
-  --accent-amber: #F59E0B;
-}
-
-/* Frame animation system — use .frame-reveal + .visible for staggered page loads */
-:root {
+  --text-muted: #d1d5db;
+  --accent-amber: #f59e0b;
+  /* Frame animation system — use .frame-reveal + .visible for staggered page loads */
   --frame-animation: fadeInUp;
 }
 
@@ -350,11 +351,11 @@
 }
 
 .dark .bg-gray-50 {
-  background-color: #050A09 !important;
+  background-color: #050a09 !important;
 }
 
 .dark .bg-white {
-  background-color: #0E1514 !important;
+  background-color: #0e1514 !important;
 }
 
 .dark .text-gray-900 {
@@ -370,7 +371,7 @@
 }
 
 .dark .text-gray-600 {
-  color: #D1D5DB !important;
+  color: #d1d5db !important;
 }
 
 .dark .text-gray-500 {

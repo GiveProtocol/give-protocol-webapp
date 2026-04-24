@@ -72,9 +72,13 @@ export function initSentry() {
     beforeSendTransaction(event) {
       // Remove sensitive headers
       if (event.request?.headers) {
-        delete event.request.headers.Authorization;
-        delete event.request.headers.Cookie;
-        delete event.request.headers["X-API-Key"];
+        const {
+          Authorization: _auth,
+          Cookie: _cookie,
+          "X-API-Key": _apiKey,
+          ...safeHeaders
+        } = event.request.headers;
+        event.request.headers = safeHeaders;
       }
 
       return event;

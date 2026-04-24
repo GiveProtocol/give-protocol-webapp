@@ -473,7 +473,10 @@ function AuditFilterBar({
   return (
     <div className="flex flex-wrap gap-3 items-end p-4 bg-gray-50 rounded-lg mb-4">
       <div className="flex-1 min-w-[180px]">
-        <label htmlFor="audit-action-type" className="block text-xs font-medium text-gray-600 mb-1">
+        <label
+          htmlFor="audit-action-type"
+          className="block text-xs font-medium text-gray-600 mb-1"
+        >
           Action Type
         </label>
         <select
@@ -491,7 +494,10 @@ function AuditFilterBar({
         </select>
       </div>
       <div className="flex-1 min-w-[180px]">
-        <label htmlFor="audit-entity-type" className="block text-xs font-medium text-gray-600 mb-1">
+        <label
+          htmlFor="audit-entity-type"
+          className="block text-xs font-medium text-gray-600 mb-1"
+        >
           Entity Type
         </label>
         <select
@@ -509,7 +515,10 @@ function AuditFilterBar({
         </select>
       </div>
       <div className="min-w-[140px]">
-        <label htmlFor="audit-date-from" className="block text-xs font-medium text-gray-600 mb-1">
+        <label
+          htmlFor="audit-date-from"
+          className="block text-xs font-medium text-gray-600 mb-1"
+        >
           Date From
         </label>
         <input
@@ -521,7 +530,10 @@ function AuditFilterBar({
         />
       </div>
       <div className="min-w-[140px]">
-        <label htmlFor="audit-date-to" className="block text-xs font-medium text-gray-600 mb-1">
+        <label
+          htmlFor="audit-date-to"
+          className="block text-xs font-medium text-gray-600 mb-1"
+        >
           Date To
         </label>
         <input
@@ -879,12 +891,14 @@ function HealthIndicator({
   status: "ok" | "warn" | "unknown";
   detail: string;
 }): React.ReactElement {
-  const dot =
-    status === "ok"
-      ? "bg-emerald-500"
-      : status === "warn"
-        ? "bg-amber-500"
-        : "bg-gray-400";
+  let dot: string;
+  if (status === "ok") {
+    dot = "bg-emerald-500";
+  } else if (status === "warn") {
+    dot = "bg-amber-500";
+  } else {
+    dot = "bg-gray-400";
+  }
 
   return (
     <div className="flex items-center gap-3 py-3 border-b border-gray-100 last:border-0">
@@ -931,10 +945,19 @@ function SystemHealthTab(): React.ReactElement {
       });
   }, []);
 
-  const dbStatus = loading ? "unknown" : stats !== null ? "ok" : "warn";
+  let dbStatus: "ok" | "warn" | "unknown";
+  if (loading) {
+    dbStatus = "unknown";
+  } else if (stats !== null) {
+    dbStatus = "ok";
+  } else {
+    dbStatus = "warn";
+  }
 
   const pendingStatus =
     stats !== null && stats.pendingCharities > 0 ? "warn" : "ok";
+
+  const checkedAt = fetchedAt !== null ? fetchedAt.toLocaleTimeString() : "—";
 
   return (
     <div className="space-y-6">
@@ -953,7 +976,7 @@ function SystemHealthTab(): React.ReactElement {
               status={dbStatus}
               detail={
                 stats !== null
-                  ? `Connected · checked ${fetchedAt !== null ? fetchedAt.toLocaleTimeString() : "—"}`
+                  ? `Connected · checked ${checkedAt}`
                   : "Unable to reach database"
               }
             />

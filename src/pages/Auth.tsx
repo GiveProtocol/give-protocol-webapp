@@ -321,13 +321,15 @@ const AuthRightPanel: React.FC = () => {
     return () => cancelAnimationFrame(id);
   }, []);
 
-  const from =
-    location.state?.from?.pathname ??
-    (role === "charity"
-      ? "/charity-portal"
-      : role === "admin"
-        ? "/admin"
-        : "/give-dashboard");
+  let defaultPath: string;
+  if (role === "charity") {
+    defaultPath = "/charity-portal";
+  } else if (role === "admin") {
+    defaultPath = "/admin";
+  } else {
+    defaultPath = "/give-dashboard";
+  }
+  const from = location.state?.from?.pathname ?? defaultPath;
 
   const handleEmailSignIn = useCallback(
     async (e: React.FormEvent) => {

@@ -52,6 +52,15 @@ function FilterBar({
   onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   onFlaggedChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
 }): React.ReactElement {
+  let flaggedSelectValue: string;
+  if (filters.flagged === true) {
+    flaggedSelectValue = "true";
+  } else if (filters.flagged === false) {
+    flaggedSelectValue = "false";
+  } else {
+    flaggedSelectValue = "";
+  }
+
   return (
     <div className="flex flex-wrap gap-4 mb-6">
       <select
@@ -66,13 +75,7 @@ function FilterBar({
       </select>
       <select
         className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-        value={
-          filters.flagged === true
-            ? "true"
-            : filters.flagged === false
-              ? "false"
-              : ""
-        }
+        value={flaggedSelectValue}
         onChange={onFlaggedChange}
         aria-label="Filter by flag status"
       >
@@ -143,10 +146,11 @@ function DonationActions({
   const handleFlag = useCallback(() => onFlag(donation), [donation, onFlag]);
 
   if (donation.isFlagged) {
+    const flagPlural = donation.openFlagCount > 1 ? "s" : "";
     return (
       <span className="text-xs text-gray-400 italic">
         {donation.openFlagCount > 0
-          ? `${donation.openFlagCount} open flag${donation.openFlagCount > 1 ? "s" : ""}`
+          ? `${donation.openFlagCount} open flag${flagPlural}`
           : "Resolved"}
       </span>
     );
@@ -189,11 +193,14 @@ function DonationRow({
     donation.donorUserId ??
     "Anonymous";
 
-  const txRef = donation.txHash
-    ? `${donation.txHash.slice(0, 8)}…`
-    : donation.processorId
-      ? donation.processorId
-      : "—";
+  let txRef: string;
+  if (donation.txHash) {
+    txRef = `${donation.txHash.slice(0, 8)}…`;
+  } else if (donation.processorId) {
+    txRef = donation.processorId;
+  } else {
+    txRef = "—";
+  }
 
   const amountUsdLabel =
     donation.amountUsd !== null ? `$${donation.amountUsd.toFixed(2)}` : "—";
@@ -350,11 +357,18 @@ const AdminDonationMonitoring: React.FC = () => {
   const handleFlaggedChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       const value = e.target.value;
+      let flaggedFilter: boolean | undefined;
+      if (value === "true") {
+        flaggedFilter = true;
+      } else if (value === "false") {
+        flaggedFilter = false;
+      } else {
+        flaggedFilter = undefined;
+      }
       setFilters((prev) => ({
         ...prev,
         page: 1,
-        flagged:
-          value === "true" ? true : value === "false" ? false : undefined,
+        flagged: flaggedFilter,
       }));
     },
     [],

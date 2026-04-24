@@ -456,6 +456,7 @@ describe("helcimService", () => {
       // Simulate SUCCESS message from iframe
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-token-123",
             eventStatus: "SUCCESS",
@@ -489,6 +490,7 @@ describe("helcimService", () => {
 
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-token-123",
             eventStatus: "ABORTED",
@@ -511,6 +513,7 @@ describe("helcimService", () => {
 
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-token-123",
             eventStatus: "HIDE",
@@ -531,6 +534,7 @@ describe("helcimService", () => {
       // Message for a different token — should be ignored
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-other-token",
             eventStatus: "SUCCESS",
@@ -542,6 +546,7 @@ describe("helcimService", () => {
       // Now send the correct one
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-token-123",
             eventStatus: "SUCCESS",
@@ -554,6 +559,49 @@ describe("helcimService", () => {
       expect(result.data.transactionId).toBe("correct");
     });
 
+    it("should ignore messages from untrusted origins", async () => {
+      window.appendHelcimPayIframe =
+        jest.fn() as unknown as typeof window.appendHelcimPayIframe;
+
+      let settled = false;
+      const promise = openHelcimCheckout("token-123");
+      promise
+        .then(() => {
+          settled = true;
+        })
+        .catch(() => {
+          settled = true;
+        });
+
+      // Message from an untrusted origin — must be ignored
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin: "https://evil.example.com",
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "SUCCESS",
+            eventMessage: { data: { transactionId: "hacked" }, hash: "bad" },
+          },
+        }),
+      );
+
+      // Allow microtasks to drain
+      await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      expect(settled).toBe(false);
+
+      // Cleanup: resolve via correct origin so the promise doesn't leak
+      window.dispatchEvent(
+        new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
+          data: {
+            eventName: "helcim-pay-js-token-123",
+            eventStatus: "HIDE",
+          },
+        }),
+      );
+      await expect(promise).rejects.toThrow("Payment cancelled");
+    });
+
     it("should handle SUCCESS with missing eventMessage.data", async () => {
       window.appendHelcimPayIframe =
         jest.fn() as unknown as typeof window.appendHelcimPayIframe;
@@ -562,6 +610,7 @@ describe("helcimService", () => {
 
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-token-123",
             eventStatus: "SUCCESS",
@@ -584,6 +633,7 @@ describe("helcimService", () => {
 
       window.dispatchEvent(
         new MessageEvent("message", {
+          origin: "https://secure.helcim.app",
           data: {
             eventName: "helcim-pay-js-token-123",
             eventStatus: "SUCCESS",
