@@ -2,9 +2,13 @@
 // Mapped via moduleNameMapper — all exports are jest.fn() for per-test overrides.
 import { jest } from "@jest/globals";
 
-export const validateEmail = jest.fn((email) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email),
-);
+export const validateEmail = jest.fn((email) => {
+  if (typeof email !== "string" || email.length > 254) return false;
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  return local.length > 0 && /^[^.\s][^.\s]*(\.[^.\s]+)+$/.test(domain);
+});
 export const validatePassword = jest.fn(
   (password) => typeof password === "string" && password.length >= 8,
 );
