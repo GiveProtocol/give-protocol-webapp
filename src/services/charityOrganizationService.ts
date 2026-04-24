@@ -8,6 +8,36 @@ import { Logger } from "@/utils/logger";
 
 const EMPTY_RESULT: CharitySearchResult = { organizations: [], hasMore: false };
 
+const FEATURED_LIMIT = 12;
+
+/**
+ * Fetches featured platform charities (is_on_platform = true) for display on the dashboard.
+ * @returns Array of platform charity organizations
+ */
+export async function getFeaturedCharities(): Promise<CharityOrganization[]> {
+  try {
+    const { data, error } = await supabase
+      .from("charity_organizations")
+      .select(
+        "id,ein,name,city,state,zip,ntee_cd,deductibility,is_on_platform,platform_charity_id,country,rank,registry_source,data_source,data_vintage,last_synced_at",
+      )
+      .eq("is_on_platform", true)
+      .limit(FEATURED_LIMIT);
+
+    if (error) {
+      Logger.error("Error fetching featured charities", { error });
+      return [];
+    }
+
+    return (data || []) as CharityOrganization[];
+  } catch (error) {
+    Logger.error("Featured charities fetch failed", {
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return [];
+  }
+}
+
 /**
  * Searches the charity organizations database via the search_charity_organizations RPC.
  * Requires at least a 2-character query OR an active state/country filter.

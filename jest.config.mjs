@@ -340,6 +340,10 @@ export default {
     "^@/services/charityVerificationService$":
       "<rootDir>/src/test-utils/charityVerificationServiceMock.js",
     // Charity component mocks
+    "^@/components/charity/CharityOrganizationCard$":
+      "<rootDir>/src/test-utils/charityOrganizationCardMock.js",
+    "(.*)/components/charity/CharityOrganizationCard(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/charityOrganizationCardMock.js",
     "^@/components/charity/CharityPageTemplate$":
       "<rootDir>/src/test-utils/charityPageTemplateMock.js",
     "(.*)/components/charity/CharityPageTemplate(\\.tsx?)?$":
@@ -411,6 +415,10 @@ export default {
     // that use relative imports still get the real implementation.
     "^@/hooks/useUnifiedAuth$":
       "<rootDir>/src/test-utils/useUnifiedAuthMock.js",
+    // useFeaturedCharities hook mock — only match @/ alias imports so hook unit
+    // tests that use relative imports still get the real implementation.
+    "^@/hooks/useFeaturedCharities$":
+      "<rootDir>/src/test-utils/useFeaturedCharitiesMock.js",
     // FormInput component mock
     "^@/components/ui/FormInput$":
       "<rootDir>/src/test-utils/formInputMock.js",

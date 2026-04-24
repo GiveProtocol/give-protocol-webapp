@@ -4,6 +4,7 @@ import { Hero } from '@/components/home/Hero';
 import { ActionButtons } from '@/components/home/ActionButtons';
 import { ProtocolStats } from '@/components/home/ProtocolStats';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { FeaturedCharitiesCarousel } from '@/components/home/FeaturedCharitiesCarousel';
 
 const BLOB_DELAY: React.CSSProperties = { animationDelay: '1s' };
 
@@ -28,6 +29,14 @@ const AppDashboard: React.FC = () => {
           </div>
           <ScrollReveal direction="up" delay={100}>
             <ProtocolStats />
+          </ScrollReveal>
+          <ScrollReveal direction="up" delay={150}>
+            <div className="mt-12 text-left">
+              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
+                Featured Charities
+              </h2>
+              <FeaturedCharitiesCarousel />
+            </div>
           </ScrollReveal>
           <ScrollReveal direction="up" delay={200}>
             <FeatureCards />
