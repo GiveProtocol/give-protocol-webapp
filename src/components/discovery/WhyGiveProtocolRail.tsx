@@ -31,7 +31,7 @@ const ITEMS: RailItem[] = [
 ];
 
 /**
- * Static explainer rail shown on the public /app view. Replaces passive whitespace on wide
+ * Static explainer rail shown on the public /browse view. Replaces passive whitespace on wide
  * screens with social-proof content.
  */
 export const WhyGiveProtocolRail: React.FC = () => {

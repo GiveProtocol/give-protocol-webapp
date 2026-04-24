@@ -10,7 +10,7 @@ interface DiscoveryShellProps {
 }
 
 /**
- * Layout primitive for the /app Discovery Hub.
+ * Layout primitive for the /browse Discovery Hub.
  * Provides a centered 1440px container with an optional top bar, a main + right rail body,
  * and a bottom slot. Internal gutters follow an 8pt rhythm (gap-6=24px, gap-8=32px).
  */

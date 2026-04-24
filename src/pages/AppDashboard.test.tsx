@@ -49,11 +49,11 @@ function setAuth({
   } as never);
 }
 
-function renderWithRoutes(initialRoute = "/app") {
+function renderWithRoutes(initialRoute = "/browse") {
   return render(
     <MemoryRouter initialEntries={[initialRoute]}>
       <Routes>
-        <Route path="/app" element={<AppDashboard />} />
+        <Route path="/browse" element={<AppDashboard />} />
         <Route path="/admin" element={<div data-testid="admin-page" />} />
       </Routes>
     </MemoryRouter>,

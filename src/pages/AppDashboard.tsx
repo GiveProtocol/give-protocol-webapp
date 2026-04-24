@@ -9,7 +9,7 @@ import { CharityHubView } from "@/components/discovery/CharityHubView";
 const BLOB_DELAY: React.CSSProperties = { animationDelay: "1s" };
 
 /**
- * /app Discovery Hub. Switches between public, donor, and charity views based on the
+ * /browse Discovery Hub. Switches between public, donor, and charity views based on the
  * current auth state. Admins are redirected to /admin.
  */
 const AppDashboard: React.FC = () => {

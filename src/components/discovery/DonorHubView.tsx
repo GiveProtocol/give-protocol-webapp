@@ -17,8 +17,8 @@ import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSear
 import { useGeographicFilterParams } from "@/hooks/useGeographicFilterParams";
 
 /**
- * Authenticated donor/volunteer landing for /app. Personal impact stats sit
- * atop the ported /browse filter block and a "Personalized for You" grid.
+ * Authenticated donor/volunteer landing for /browse. Personal impact stats sit
+ * atop the filter block and a "Personalized for You" grid.
  * The right rail carries the Daily Wisdom card and platform news.
  */
 export const DonorHubView: React.FC = () => {

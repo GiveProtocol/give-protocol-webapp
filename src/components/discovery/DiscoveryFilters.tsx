@@ -19,7 +19,7 @@ interface DiscoveryFiltersProps {
 }
 
 /**
- * Composite filter block ported from the legacy /browse page: view-mode toggle,
+ * Composite filter block for the /browse page: view-mode toggle,
  * search + location dual-input, and the GeographicFilter pill set with an
  * "on platform only" checkbox. Stateless — the caller owns the filter state.
  */

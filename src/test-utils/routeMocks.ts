@@ -56,7 +56,6 @@ export const setupPageMocks = () => {
   jest.mock('@/pages/Login', () => mockPageComponent('login', 'Login'));
   jest.mock('@/pages/Register', () => mockPageComponent('register', 'Register'));
   jest.mock('@/pages/Home', () => mockPageComponent('home', 'Home'));
-  jest.mock('@/pages/CharityBrowser', () => mockPageComponent('charity-browser', 'Charity Browser'));
   jest.mock('@/pages/SentryTest', () => mockPageComponent('sentry-test', 'Sentry Test'));
   jest.mock('@/pages/ContributionTracker', () => mockPageComponent('contribution-tracker', 'Contribution Tracker'));
   jest.mock('@/pages/VolunteerOpportunities', () => mockPageComponent('volunteer-opportunities', 'Volunteer Opportunities'));
