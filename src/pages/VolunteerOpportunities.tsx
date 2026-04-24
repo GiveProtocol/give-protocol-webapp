@@ -314,6 +314,117 @@ function OpportunityCard({
   );
 }
 
+/** Search and filter controls for the opportunities page. */
+function OpportunityFilters({
+  searchTerm,
+  locationSearch,
+  selectedSkill,
+  selectedType,
+  selectedLanguage,
+  activeFilters,
+  onSearchChange,
+  onLocationChange,
+  onSkillChange,
+  onRemoteClick,
+  onOnsiteClick,
+  onHybridClick,
+  onLanguageChange,
+}: {
+  searchTerm: string;
+  locationSearch: string;
+  selectedSkill: string;
+  selectedType: string;
+  selectedLanguage: string;
+  activeFilters: ActiveFilter[];
+  onSearchChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onLocationChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
+  onSkillChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+  onRemoteClick: () => void;
+  onOnsiteClick: () => void;
+  onHybridClick: () => void;
+  onLanguageChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
+}): React.ReactElement {
+  const { t } = useTranslation();
+  return (
+    <ScrollReveal direction="up" delay={100} className="space-y-2">
+      <div className="flex gap-3 items-center">
+        <SearchField
+          icon={Search}
+          wrapperClass="relative flex-[3]"
+          inputClass="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+          type="text"
+          placeholder={t(
+            "volunteer.searchOpportunities",
+            "Search opportunities...",
+          )}
+          aria-label={t(
+            "volunteer.searchOpportunities",
+            "Search opportunities",
+          )}
+          value={searchTerm}
+          onChange={onSearchChange}
+        />
+
+        <SearchField
+          icon={MapPin}
+          wrapperClass="relative flex-[2]"
+          inputClass="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
+          type="text"
+          placeholder="City or region..."
+          aria-label="Search location"
+          value={locationSearch}
+          onChange={onLocationChange}
+        />
+
+        <WorkTypeToggle
+          selectedType={selectedType}
+          onRemoteClick={onRemoteClick}
+          onOnsiteClick={onOnsiteClick}
+          onHybridClick={onHybridClick}
+        />
+
+        <select
+          value={selectedSkill}
+          onChange={onSkillChange}
+          className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
+          aria-label={t("volunteer.selectSkill", "Select skill")}
+        >
+          <option value="">{t("volunteer.allSkills", "All Skills")}</option>
+          {SKILLS.map((skill) => (
+            <option key={skill} value={skill}>
+              {skill}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={selectedLanguage}
+          onChange={onLanguageChange}
+          className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
+          aria-label={t("volunteer.selectLanguage", "Select language")}
+        >
+          <option value="">
+            {t("volunteer.allLanguages", "All Languages")}
+          </option>
+          {Object.values(WorkLanguage).map((language) => (
+            <option key={language} value={language}>
+              {t(`language.${language}`, formatLanguageName(language))}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {activeFilters.length > 0 && (
+        <div className="flex items-center flex-wrap gap-2">
+          {activeFilters.map((filter) => (
+            <FilterPill key={filter.key} filter={filter} />
+          ))}
+        </div>
+      )}
+    </ScrollReveal>
+  );
+}
+
 /**
  * Browse and apply for volunteer opportunities
  * @returns VolunteerOpportunities page element
@@ -508,82 +619,21 @@ const VolunteerOpportunities: React.FC = () => {
         {t("volunteer.opportunities", "Volunteer Opportunities")}
       </h1>
 
-      <ScrollReveal direction="up" delay={100} className="space-y-2">
-        <div className="flex gap-3 items-center">
-          <SearchField
-            icon={Search}
-            wrapperClass="relative flex-[3]"
-            inputClass="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-            type="text"
-            placeholder={t(
-              "volunteer.searchOpportunities",
-              "Search opportunities...",
-            )}
-            aria-label={t(
-              "volunteer.searchOpportunities",
-              "Search opportunities",
-            )}
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-
-          <SearchField
-            icon={MapPin}
-            wrapperClass="relative flex-[2]"
-            inputClass="w-full pl-9 pr-4 py-2 border border-gray-300 rounded-md focus:ring-emerald-500 focus:border-emerald-500 text-sm"
-            type="text"
-            placeholder="City or region..."
-            aria-label="Search location"
-            value={locationSearch}
-            onChange={handleLocationChange}
-          />
-
-          <WorkTypeToggle
-            selectedType={selectedType}
-            onRemoteClick={handleRemoteClick}
-            onOnsiteClick={handleOnsiteClick}
-            onHybridClick={handleHybridClick}
-          />
-
-          <select
-            value={selectedSkill}
-            onChange={handleSkillChange}
-            className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
-            aria-label={t("volunteer.selectSkill", "Select skill")}
-          >
-            <option value="">{t("volunteer.allSkills", "All Skills")}</option>
-            {SKILLS.map((skill) => (
-              <option key={skill} value={skill}>
-                {skill}
-              </option>
-            ))}
-          </select>
-
-          <select
-            value={selectedLanguage}
-            onChange={handleLanguageChange}
-            className="appearance-none bg-white hover:bg-gray-50 text-gray-700 hover:text-gray-900 border border-gray-300 rounded-[10px] shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 font-medium px-3 py-2 pr-8 text-sm shrink-0 transition-all duration-200 cursor-pointer"
-            aria-label={t("volunteer.selectLanguage", "Select language")}
-          >
-            <option value="">
-              {t("volunteer.allLanguages", "All Languages")}
-            </option>
-            {Object.values(WorkLanguage).map((language) => (
-              <option key={language} value={language}>
-                {t(`language.${language}`, formatLanguageName(language))}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {activeFilters.length > 0 && (
-          <div className="flex items-center flex-wrap gap-2">
-            {activeFilters.map((filter) => (
-              <FilterPill key={filter.key} filter={filter} />
-            ))}
-          </div>
-        )}
-      </ScrollReveal>
+      <OpportunityFilters
+        searchTerm={searchTerm}
+        locationSearch={locationSearch}
+        selectedSkill={selectedSkill}
+        selectedType={selectedType}
+        selectedLanguage={selectedLanguage}
+        activeFilters={activeFilters}
+        onSearchChange={handleSearchChange}
+        onLocationChange={handleLocationChange}
+        onSkillChange={handleSkillChange}
+        onRemoteClick={handleRemoteClick}
+        onOnsiteClick={handleOnsiteClick}
+        onHybridClick={handleHybridClick}
+        onLanguageChange={handleLanguageChange}
+      />
 
       <ScrollReveal direction="up" delay={200}>
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

@@ -323,6 +323,7 @@ async function findUserByEmail(email: string): Promise<AdminUser | null> {
   return match ? { id: match.id, email: match.email ?? undefined } : null;
 }
 
+/** Creates or retrieves the Supabase auth user for a seed charity. */
 async function ensureAuthUser(spec: SeedCharity): Promise<string> {
   const existing = await findUserByEmail(spec.email);
   if (existing) {
@@ -341,6 +342,7 @@ async function ensureAuthUser(spec: SeedCharity): Promise<string> {
   return data.user.id;
 }
 
+/** Creates or updates the profiles row for a seed charity user. */
 async function ensureProfile(
   userId: string,
   spec: SeedCharity,
@@ -384,6 +386,7 @@ async function ensureProfile(
   return data.id;
 }
 
+/** Upserts the charity_details row for a seed charity profile. */
 async function ensureCharityDetails(
   profileId: string,
   spec: SeedCharity,
@@ -403,6 +406,7 @@ async function ensureCharityDetails(
   if (error) throw error;
 }
 
+/** Seeds all test charities into the database. */
 async function runSeed(): Promise<void> {
   console.log(`Seeding ${SEED_CHARITIES.length} test charities...`);
   for (const spec of SEED_CHARITIES) {
@@ -418,6 +422,7 @@ async function runSeed(): Promise<void> {
   );
 }
 
+/** Removes all seeded test charities from the database. */
 async function runTeardown(): Promise<void> {
   console.log(`Removing ${SEED_CHARITIES.length} test charities...`);
   for (const spec of SEED_CHARITIES) {
@@ -443,6 +448,7 @@ async function runTeardown(): Promise<void> {
   console.log("\nTeardown complete.");
 }
 
+/** CLI entry point — dispatches to seed or teardown based on argv. */
 async function main(): Promise<void> {
   const command = process.argv[2] ?? "seed";
   if (command === "seed") {
