@@ -1,135 +1,38 @@
-import { useEffect, useRef, useState } from "react";
-import { supabase } from "@/lib/supabase";
-import { Logger } from "@/utils/logger";
+import { useState, useEffect, useRef } from "react";
+import type { CharityOrganization } from "@/types/charityOrganization";
+import { getFeaturedCharities } from "@/services/charityOrganizationService";
 
-export interface FeaturedCharity {
-  profileId: string;
-  name: string;
-  category: string;
-  description: string;
-  missionStatement: string;
-  imageUrl: string;
-  location: string | null;
-}
-
-interface ProfileRow {
-  id: string;
-  meta: {
-    address?: {
-      city?: string;
-      stateProvince?: string;
-      country?: string;
-    } | null;
-  } | null;
-  charity_details:
-    | {
-        name: string | null;
-        description: string | null;
-        category: string | null;
-        image_url: string | null;
-        mission_statement: string | null;
-      }
-    | Array<{
-        name: string | null;
-        description: string | null;
-        category: string | null;
-        image_url: string | null;
-        mission_statement: string | null;
-      }>
-    | null;
-}
-
-/** Extracts the first charity_details record, handling both object and array shapes. */
-function pickDetails(
-  row: ProfileRow,
-): NonNullable<Exclude<ProfileRow["charity_details"], unknown[]>> | null {
-  const cd = row.charity_details;
-  if (!cd) return null;
-  if (Array.isArray(cd)) return cd[0] ?? null;
-  return cd;
-}
-
-/** Builds a comma-separated location string from a profile's address metadata. */
-function buildLocation(row: ProfileRow): string | null {
-  const addr = row.meta?.address;
-  if (!addr) return null;
-  const parts = [addr.city, addr.stateProvince, addr.country].filter(
-    (part): part is string =>
-      typeof part === "string" && part.trim().length > 0,
-  );
-  return parts.length > 0 ? parts.join(", ") : null;
+interface UseFeaturedCharitiesReturn {
+  charities: CharityOrganization[];
+  loading: boolean;
+  error: string | null;
 }
 
 /**
- * Fetches every platform-signed-up charity whose profile is complete enough
- * to feature: name, description, category, image, and mission statement all
- * populated. Partial profiles are filtered out client-side so the carousel
- * never renders a card with missing chrome.
+ * Hook that fetches platform-featured charities on mount.
+ * @returns Featured charities with loading and error state
  */
-export function useFeaturedCharities(): {
-  charities: FeaturedCharity[];
-  loading: boolean;
-  error: string | null;
-} {
-  const [charities, setCharities] = useState<FeaturedCharity[]>([]);
+export function useFeaturedCharities(): UseFeaturedCharitiesReturn {
+  const [charities, setCharities] = useState<CharityOrganization[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const mountedRef = useRef(true);
 
   useEffect(() => {
     mountedRef.current = true;
-    /** Loads featured charities from Supabase and filters for complete profiles. */
-    const load = async () => {
-      try {
-        const { data, error: queryError } = await supabase
-          .from("profiles")
-          .select(
-            `id, meta, charity_details ( name, description, category, image_url, mission_statement )`,
-          )
-          .eq("type", "charity");
 
-        if (queryError) throw queryError;
+    getFeaturedCharities()
+      .then((data) => {
         if (!mountedRef.current) return;
-
-        const rows = (data ?? []) as ProfileRow[];
-        const next: FeaturedCharity[] = [];
-        for (const row of rows) {
-          const details = pickDetails(row);
-          if (!details) continue;
-          const name = details.name?.trim();
-          const description = details.description?.trim();
-          const category = details.category?.trim();
-          const imageUrl = details.image_url?.trim();
-          const mission = details.mission_statement?.trim();
-          if (!name || !description || !category || !imageUrl || !mission) {
-            continue;
-          }
-          next.push({
-            profileId: row.id,
-            name,
-            description,
-            category,
-            missionStatement: mission,
-            imageUrl,
-            location: buildLocation(row),
-          });
-        }
-
-        setCharities(next);
-        setError(null);
-      } catch (err) {
-        Logger.error("useFeaturedCharities failed", { error: err });
+        setCharities(data);
+        setLoading(false);
+      })
+      .catch(() => {
         if (!mountedRef.current) return;
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load featured charities",
-        );
-      } finally {
-        if (mountedRef.current) setLoading(false);
-      }
-    };
-    load();
+        setError("Failed to load featured charities");
+        setLoading(false);
+      });
+
     return () => {
       mountedRef.current = false;
     };
