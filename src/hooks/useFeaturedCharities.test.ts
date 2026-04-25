@@ -47,7 +47,11 @@ describe("useFeaturedCharities", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.charities).toHaveLength(2);
-    expect(result.current.charities[0].ein).toBe("12-3456789");
+    // Hook transforms CharityOrganization into FeaturedCharity
+    expect(result.current.charities[0].profileId).toBe("12-3456789");
+    expect(result.current.charities[0].name).toBe("Charity 12-3456789");
+    expect(result.current.charities[0].category).toBe("Arts & Culture");
+    expect(result.current.charities[0].location).toBe("Boston, MA");
     expect(result.current.error).toBeNull();
   });
 

@@ -22,7 +22,7 @@ describe("useCharityProfile", () => {
 
   // ---------- No profile ----------
 
-  it("returns null profile and loading state when useProfile has no profile", async () => {
+  it("returns null profile and loading state when useProfile has no profile", () => {
     const { result } = renderHook(() => useCharityProfile());
 
     // loading starts true, but since fetchCharityProfile exits early (no profile?.id),
