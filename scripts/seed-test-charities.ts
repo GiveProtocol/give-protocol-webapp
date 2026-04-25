@@ -55,10 +55,9 @@ const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const SEED_PASSWORD = process.env.SEED_CHARITY_PASSWORD ?? "SeedCharity!2026";
 
 if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
-  console.error(
+  throw new Error(
     "Missing required env. Set VITE_SUPABASE_URL (or SUPABASE_URL) and SUPABASE_SERVICE_ROLE_KEY.",
   );
-  process.exit(1);
 }
 
 const admin: SupabaseClient = createClient(SUPABASE_URL, SERVICE_ROLE_KEY, {
@@ -456,12 +455,11 @@ async function main(): Promise<void> {
   } else if (command === "teardown") {
     await runTeardown();
   } else {
-    console.error(`Unknown command: ${command}. Use "seed" or "teardown".`);
-    process.exit(1);
+    throw new Error(`Unknown command: ${command}. Use "seed" or "teardown".`);
   }
 }
 
 main().catch((err) => {
   console.error("Seed script failed:", err);
-  process.exit(1);
+  process.exitCode = 1;
 });

@@ -229,7 +229,7 @@ describe("CharityProfilePage", () => {
       renderWithRoute();
       await waitFor(() => {
         expect(
-          screen.getByText(/Unclaimed — IRS data only/),
+          screen.getByText(/Unclaimed — IRS data only/u),
         ).toBeInTheDocument();
       });
     });

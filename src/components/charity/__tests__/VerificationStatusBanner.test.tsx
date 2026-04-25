@@ -45,7 +45,7 @@ describe("VerificationStatusBanner", () => {
       renderBanner();
       await waitFor(() => {
         expect(
-          screen.getByText(/typically takes 3–5 business days/),
+          screen.getByText(/typically takes 3–5 business days/u),
         ).toBeInTheDocument();
       });
     });

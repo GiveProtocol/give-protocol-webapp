@@ -1,5 +1,4 @@
 import React from "react";
-import { jest } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
 
 import { DiscoveryShellSkeleton } from "./DiscoveryShellSkeleton";
