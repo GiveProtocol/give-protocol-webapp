@@ -22,7 +22,7 @@ describe("useWithdrawals", () => {
 
   // ---------- No profile ----------
 
-  it("returns empty withdrawals when profile is null", async () => {
+  it("returns empty withdrawals when profile is null", () => {
     const { result } = renderHook(() => useWithdrawals());
 
     expect(result.current.withdrawals).toEqual([]);

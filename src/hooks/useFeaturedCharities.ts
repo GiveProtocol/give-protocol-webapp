@@ -4,7 +4,7 @@ import { Logger } from "@/utils/logger";
 
 /** Display shape for a featured charity in the carousel. */
 export interface FeaturedCharity {
-  profileId: string; // EIN — matches /charity/:ein route
+  profileId: string;
   name: string;
   description: string;
   category: string;
@@ -12,13 +12,7 @@ export interface FeaturedCharity {
   location?: string;
 }
 
-interface UseFeaturedCharitiesReturn {
-  charities: FeaturedCharity[];
-  loading: boolean;
-  error: string | null;
-}
-
-// Maps NTEE major group code to human-readable category label.
+/** NTEE major-code to human-readable category label. */
 const NTEE_CATEGORY_MAP: Record<string, string> = {
   A: "Arts & Culture",
   B: "Education",
@@ -47,6 +41,11 @@ const NTEE_CATEGORY_MAP: Record<string, string> = {
   Y: "Mutual Benefit",
 };
 
+/**
+ * Maps an NTEE code prefix to a human-readable category name.
+ * @param nteeCode - NTEE code string (e.g. "B20")
+ * @returns Category label or "Nonprofit" as fallback
+ */
 function nteeToCategory(nteeCode: string | null | undefined): string {
   if (!nteeCode) return "Nonprofit";
   const major = nteeCode.charAt(0).toUpperCase();
@@ -64,6 +63,11 @@ interface CharityProfileRow {
 
 const FEATURED_LIMIT = 12;
 
+/**
+ * Fetches verified charity profiles with logos and transforms them into the
+ * presentation shape consumed by FeaturedCharitiesCarousel.
+ * @returns Array of featured charity display objects
+ */
 async function loadFeaturedCharities(): Promise<FeaturedCharity[]> {
   const { data, error } = await supabase
     .from("charity_profiles")
@@ -87,8 +91,15 @@ async function loadFeaturedCharities(): Promise<FeaturedCharity[]> {
   }));
 }
 
+interface UseFeaturedCharitiesReturn {
+  charities: FeaturedCharity[];
+  loading: boolean;
+  error: string | null;
+}
+
 /**
- * Hook that fetches verified platform charities for the featured carousel.
+ * Hook that fetches platform-featured charities on mount and transforms them
+ * into the presentation shape consumed by FeaturedCharitiesCarousel.
  * @returns Featured charities with loading and error state
  */
 export function useFeaturedCharities(): UseFeaturedCharitiesReturn {
