@@ -47,6 +47,11 @@ const NTEE_CATEGORY_MAP: Record<string, string> = {
   Y: "Mutual Benefit",
 };
 
+/**
+ * Maps an NTEE code prefix to a human-readable category name.
+ * @param nteeCode - NTEE code string (e.g. "B20")
+ * @returns Category label or "Nonprofit" as fallback
+ */
 function nteeToCategory(nteeCode: string | null | undefined): string {
   if (!nteeCode) return "Nonprofit";
   const major = nteeCode.charAt(0).toUpperCase();
