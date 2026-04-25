@@ -223,31 +223,14 @@ function deriveDisplayData(
     isVerified: profile?.status === "verified",
     nteeCategory: getNteeCategory(charityRecord?.ntee_cd ?? profile?.ntee_code),
     walletAddress: profile?.wallet_address ?? null,
-    bannerImageUrl: (profile as Record<string, unknown>)?.banner_image_url as
-      | string
-      | null
-      | undefined,
-    photo1Url: (profile as Record<string, unknown>)?.photo_1_url as
-      | string
-      | null
-      | undefined,
-    photo2Url: (profile as Record<string, unknown>)?.photo_2_url as
-      | string
-      | null
-      | undefined,
-    description: (profile as Record<string, unknown>)?.description as
-      | string
-      | null
-      | undefined,
-    missionStatement: (profile as Record<string, unknown>)
-      ?.mission_statement as string | null | undefined,
-    contactEmail: (profile as Record<string, unknown>)?.contact_email as
-      | string
-      | null
-      | undefined,
+    bannerImageUrl: profile?.banner_image_url,
+    photo1Url: profile?.photo_1_url,
+    photo2Url: profile?.photo_2_url,
+    description: profile?.description,
+    missionStatement: profile?.mission_statement,
+    contactEmail: profile?.contact_email,
     website: profile?.website ?? null,
-    claimedByUserId: (profile as Record<string, unknown>)
-      ?.claimed_by_user_id as string | null | undefined,
+    claimedByUserId: profile?.claimed_by_user_id,
   };
 }
 

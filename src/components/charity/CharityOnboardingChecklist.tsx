@@ -58,6 +58,8 @@ const META_KEY = "onboarding_checklist";
 interface CharityOnboardingChecklistProps {
   /** The profile row ID from the `profiles` table */
   profileId: string;
+  /** The charity's registered wallet address for address-match validation */
+  walletAddress?: string | null;
   /** Called when user clicks an action to navigate to a specific tab */
   onNavigateTab?: (_tab: string) => void;
 }
@@ -67,13 +69,14 @@ interface CharityOnboardingChecklistProps {
  * Persists progress in `profiles.meta.onboarding_checklist`.
  *
  * @param props.profileId - The charity profile ID to store checklist state
+ * @param props.walletAddress - The charity's registered wallet address
  * @param props.onNavigateTab - Optional callback to navigate to a portal tab
  * @returns The onboarding checklist panel, or null when dismissed/complete
  */
 export const CharityOnboardingChecklist: React.FC<
   CharityOnboardingChecklistProps
-> = ({ profileId, onNavigateTab }) => {
-  const { isConnected } = useWeb3();
+> = ({ profileId, walletAddress, onNavigateTab }) => {
+  const { isConnected, address } = useWeb3();
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [dismissed, setDismissed] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
@@ -127,12 +130,15 @@ export const CharityOnboardingChecklist: React.FC<
     };
   }, [profileId]);
 
-  // Auto-mark wallet connected when Web3 connects
+  // Auto-mark wallet connected when Web3 connects with the correct address
   useEffect(() => {
-    if (isConnected && !completedItems.has("connect_wallet")) {
+    if (!address || !walletAddress) return;
+    const addressesMatch =
+      address.toLowerCase() === walletAddress.toLowerCase();
+    if (isConnected && addressesMatch && !completedItems.has("connect_wallet")) {
       setCompletedItems((prev) => new Set([...prev, "connect_wallet"]));
     }
-  }, [isConnected, completedItems]);
+  }, [isConnected, address, walletAddress, completedItems]);
 
   /** Persists onboarding state to profiles.meta in Supabase. */
   const persistState = useCallback(

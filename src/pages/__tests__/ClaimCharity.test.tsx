@@ -7,8 +7,12 @@ import ClaimCharity from "../ClaimCharity";
 // Card, Button, LoadingSpinner, and charityProfileService are mocked via moduleNameMapper
 
 import { getCharityProfileByEin } from "@/services/charityProfileService";
+import { submitCharityRequest } from "@/services/charityDataService";
+import { useAuth } from "@/contexts/AuthContext";
 
 const mockGetProfile = jest.mocked(getCharityProfileByEin);
+const mockSubmitRequest = jest.mocked(submitCharityRequest);
+const mockUseAuth = jest.mocked(useAuth);
 
 const mockProfile = {
   id: "profile-1",
@@ -46,6 +50,20 @@ describe("ClaimCharity", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockGetProfile.mockResolvedValue(mockProfile);
+    mockSubmitRequest.mockResolvedValue(true);
+    mockUseAuth.mockReturnValue({
+      user: { id: "user-123", email: "test@example.com", user_metadata: {}, app_metadata: {}, aud: "authenticated", created_at: "2024-01-01T00:00:00Z" },
+      loading: false,
+      error: null,
+      userType: "charity",
+      login: jest.fn(),
+      loginWithGoogle: jest.fn(),
+      logout: jest.fn(),
+      resetPassword: jest.fn(),
+      refreshSession: jest.fn(),
+      register: jest.fn(),
+      sendUsernameReminder: jest.fn(),
+    } as ReturnType<typeof useAuth>);
   });
 
   describe("Loading state", () => {
@@ -190,21 +208,106 @@ describe("ClaimCharity", () => {
       });
     });
 
-    it("renders the Continue button as disabled", async () => {
+    it("renders the Continue button as disabled when role and email are empty", async () => {
       renderClaimCharity();
       await waitFor(() => {
         expect(screen.getByText("Continue")).toBeDisabled();
       });
     });
 
-    it("renders the coming soon notice", async () => {
+    it("enables the Continue button when role and email are filled", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(
-          screen.getByText(
-            /Claim verification coming soon/,
-          ),
-        ).toBeInTheDocument();
+        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
+        target: { value: "Staff" },
+      });
+      fireEvent.change(screen.getByLabelText("Work email address"), {
+        target: { value: "user@charity.org" },
+      });
+      expect(screen.getByText("Continue")).not.toBeDisabled();
+    });
+
+    it("calls submitCharityRequest when Continue is clicked with valid inputs", async () => {
+      renderClaimCharity("12-3456789");
+      await waitFor(() => {
+        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
+        target: { value: "Staff" },
+      });
+      fireEvent.change(screen.getByLabelText("Work email address"), {
+        target: { value: "user@charity.org" },
+      });
+      fireEvent.click(screen.getByText("Continue"));
+      await waitFor(() => {
+        expect(mockSubmitRequest).toHaveBeenCalledWith("12-3456789", "user-123");
+      });
+    });
+
+    it("shows success message after successful submission", async () => {
+      renderClaimCharity();
+      await waitFor(() => {
+        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
+        target: { value: "Executive Director" },
+      });
+      fireEvent.change(screen.getByLabelText("Work email address"), {
+        target: { value: "director@charity.org" },
+      });
+      fireEvent.click(screen.getByText("Continue"));
+      await waitFor(() => {
+        expect(screen.getByText(/Request submitted/)).toBeInTheDocument();
+      });
+    });
+
+    it("shows error message when submitCharityRequest fails", async () => {
+      mockSubmitRequest.mockResolvedValue(false);
+      renderClaimCharity();
+      await waitFor(() => {
+        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
+        target: { value: "Staff" },
+      });
+      fireEvent.change(screen.getByLabelText("Work email address"), {
+        target: { value: "user@charity.org" },
+      });
+      fireEvent.click(screen.getByText("Continue"));
+      await waitFor(() => {
+        expect(screen.getByText(/Could not submit your request/)).toBeInTheDocument();
+      });
+    });
+
+    it("shows auth error when user is not signed in", async () => {
+      mockUseAuth.mockReturnValue({
+        user: null,
+        loading: false,
+        error: null,
+        userType: null,
+        login: jest.fn(),
+        loginWithGoogle: jest.fn(),
+        logout: jest.fn(),
+        resetPassword: jest.fn(),
+        refreshSession: jest.fn(),
+        register: jest.fn(),
+        sendUsernameReminder: jest.fn(),
+      } as ReturnType<typeof useAuth>);
+      renderClaimCharity();
+      await waitFor(() => {
+        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+      });
+      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
+        target: { value: "Staff" },
+      });
+      fireEvent.change(screen.getByLabelText("Work email address"), {
+        target: { value: "user@charity.org" },
+      });
+      fireEvent.click(screen.getByText("Continue"));
+      await waitFor(() => {
+        expect(screen.getByText(/You must be signed in/)).toBeInTheDocument();
       });
     });
 

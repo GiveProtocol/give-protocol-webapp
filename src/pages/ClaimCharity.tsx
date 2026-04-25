@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
 import { getCharityProfileByEin } from '@/services/charityProfileService';
+import { submitCharityRequest } from '@/services/charityDataService';
+import { useAuth } from '@/contexts/AuthContext';
 import type { CharityProfile } from '@/types/charityProfile';
 
 const STEPS = [
@@ -56,71 +58,90 @@ const VerifyIdentityStep: React.FC<{
   onRoleChange: (_e: React.ChangeEvent<HTMLSelectElement>) => void;
   email: string;
   onEmailChange: (_e: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({ role, onRoleChange, email, onEmailChange }) => (
-  <Card hover={false} className="p-6 space-y-4">
-    <h2 className="text-lg font-semibold text-gray-900">
-      Step 1: Verify Your Identity
-    </h2>
+  onSubmit: () => void;
+  submitting: boolean;
+  submitted: boolean;
+  error: string | null;
+}> = ({ role, onRoleChange, email, onEmailChange, onSubmit, submitting, submitted, error }) => {
+  const isValid = role.length > 0 && email.length > 0;
 
-    <div>
-      <label htmlFor="claim-role" className="block text-sm font-medium text-gray-700 mb-1">
-        Your role at this organization
-      </label>
-      <select
-        id="claim-role"
-        value={role}
-        onChange={onRoleChange}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-      >
-        <option value="">Select a role...</option>
-        {ROLE_OPTIONS.map((r) => (
-          <option key={r} value={r}>{r}</option>
-        ))}
-      </select>
-    </div>
+  return (
+    <Card hover={false} className="p-6 space-y-4">
+      <h2 className="text-lg font-semibold text-gray-900">
+        Step 1: Verify Your Identity
+      </h2>
 
-    <div>
-      <label htmlFor="claim-email" className="block text-sm font-medium text-gray-700 mb-1">
-        Work email address
-      </label>
-      <input
-        id="claim-email"
-        type="email"
-        value={email}
-        onChange={onEmailChange}
-        placeholder="you@organization.org"
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-      />
-      <p className="mt-1 text-xs text-gray-400">
-        Your email domain will be cross-referenced with the organization&apos;s public records.
-      </p>
-    </div>
+      <div>
+        <label htmlFor="claim-role" className="block text-sm font-medium text-gray-700 mb-1">
+          Your role at this organization
+        </label>
+        <select
+          id="claim-role"
+          value={role}
+          onChange={onRoleChange}
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+        >
+          <option value="">Select a role...</option>
+          {ROLE_OPTIONS.map((r) => (
+            <option key={r} value={r}>{r}</option>
+          ))}
+        </select>
+      </div>
 
-    <Button
-      fullWidth
-      disabled
-      className="cursor-not-allowed"
-      title="Claim verification coming soon — check back after mainnet launch"
-    >
-      Continue
-    </Button>
-    <p className="text-xs text-center text-gray-400">
-      Claim verification coming soon — check back after mainnet launch.
-    </p>
-  </Card>
-);
+      <div>
+        <label htmlFor="claim-email" className="block text-sm font-medium text-gray-700 mb-1">
+          Work email address
+        </label>
+        <input
+          id="claim-email"
+          type="email"
+          value={email}
+          onChange={onEmailChange}
+          placeholder="you@organization.org"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+        />
+        <p className="mt-1 text-xs text-gray-400">
+          Your email domain will be cross-referenced with the organization&apos;s public records.
+        </p>
+      </div>
+
+      {error !== null && (
+        <p className="text-xs text-red-600">{error}</p>
+      )}
+
+      {submitted ? (
+        <p className="text-sm text-emerald-700 text-center font-medium">
+          Request submitted! We will review your claim and follow up at {email}.
+        </p>
+      ) : (
+        <Button
+          fullWidth
+          disabled={!isValid || submitting}
+          onClick={onSubmit}
+        >
+          {submitting ? 'Submitting…' : 'Continue'}
+        </Button>
+      )}
+    </Card>
+  );
+};
 
 /**
- * Stub page for the charity claim flow at /claim/:ein.
- * Displays the org info and a step indicator. Full flow is not implemented yet.
+ * Page for the charity claim flow at /claim/:ein.
+ * Displays the org info, step indicator, and identity verification form.
+ * Submits the claim request to the platform for review.
  * @returns The rendered claim page
  */
 function ClaimCharity() {
   const { ein } = useParams<{ ein: string }>();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<CharityProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [role, setRole] = useState('');
   const [email, setEmail] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const fetchProfile = useCallback(async () => {
     if (!ein) {
@@ -153,6 +174,24 @@ function ClaimCharity() {
     setEmail(e.target.value);
   }, []);
 
+  const handleSubmit = useCallback(async () => {
+    if (!role || !email) return;
+    if (!ein) return;
+    if (!user?.id) {
+      setSubmitError('You must be signed in to claim an organization.');
+      return;
+    }
+    setSubmitting(true);
+    setSubmitError(null);
+    const ok = await submitCharityRequest(ein, user.id);
+    setSubmitting(false);
+    if (ok) {
+      setSubmitted(true);
+    } else {
+      setSubmitError('Could not submit your request. Please try again.');
+    }
+  }, [role, email, ein, user]);
+
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -182,6 +221,10 @@ function ClaimCharity() {
         onRoleChange={handleRoleChange}
         email={email}
         onEmailChange={handleEmailChange}
+        onSubmit={handleSubmit}
+        submitting={submitting}
+        submitted={submitted}
+        error={submitError}
       />
     </div>
   );
