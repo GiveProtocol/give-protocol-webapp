@@ -78,13 +78,17 @@ describe("DiscoveryFilters", () => {
 
   it("renders GeographicFilter when viewMode is charities", () => {
     render(<DiscoveryFilters value={defaultValue} onChange={noop} />);
-    expect(screen.getByRole("radiogroup", { name: /location filter mode/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("radiogroup", { name: /location filter mode/i }),
+    ).toBeInTheDocument();
   });
 
   it("hides GeographicFilter when viewMode is causes", () => {
     const causesValue = { ...defaultValue, viewMode: "causes" as const };
     render(<DiscoveryFilters value={causesValue} onChange={noop} />);
-    expect(screen.queryByRole("radiogroup", { name: /location filter mode/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("radiogroup", { name: /location filter mode/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("switches viewMode to causes when Causes button is clicked", () => {

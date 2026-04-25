@@ -44,7 +44,12 @@ describe("useCharityProfile", () => {
     };
 
     mockUseProfile.mockReturnValue({
-      profile: { id: "profile-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "profile-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -66,7 +71,12 @@ describe("useCharityProfile", () => {
 
   it("sets error when fetch fails", async () => {
     mockUseProfile.mockReturnValue({
-      profile: { id: "profile-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "profile-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -99,7 +109,12 @@ describe("useCharityProfile", () => {
     };
 
     mockUseProfile.mockReturnValue({
-      profile: { id: "profile-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "profile-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -148,7 +163,12 @@ describe("useCharityProfile", () => {
     };
 
     mockUseProfile.mockReturnValue({
-      profile: { id: "profile-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "profile-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
