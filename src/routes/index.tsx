@@ -15,7 +15,7 @@ const AuthSignup = lazy(() => import("@/pages/AuthSignup"));
 // Lazy load other routes
 const Home = lazy(() => import("@/pages/Home"));
 const AppDashboard = lazy(() => import("@/pages/AppDashboard"));
-const CharityBrowser = lazy(() => import("@/pages/CharityBrowser"));
+
 const SentryTest = lazy(() => import("@/pages/SentryTest"));
 const GlobalWaterFoundation = lazy(
   () => import("@/pages/charities/GlobalWaterFoundation"),
@@ -499,7 +499,7 @@ export function AppRoutes() {
           }
         />
         <Route
-          path="/app"
+          path="/browse"
           element={
             <RouteTransition>
               <AppDashboard />
@@ -542,16 +542,7 @@ export function AppRoutes() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/browse"
-          element={
-            <RouteTransition>
-              <Suspense fallback={<LoadingFallback />}>
-                <CharityBrowser />
-              </Suspense>
-            </RouteTransition>
-          }
-        />
+        <Route path="/app" element={<Navigate to="/browse" replace />} />
         <Route
           path="/opportunities"
           element={

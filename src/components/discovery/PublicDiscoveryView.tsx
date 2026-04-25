@@ -1,6 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, HeartHandshake } from "lucide-react";
 import { DiscoveryShell } from "./DiscoveryShell";
 import { DiscoveryFilters } from "./DiscoveryFilters";
 import {
@@ -16,8 +14,8 @@ import { useGeographicFilterParams } from "@/hooks/useGeographicFilterParams";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
- * Unauthenticated /app landing. A split hero with a headline + volunteer CTA
- * sits above the ported /browse filter block and a responsive discovery grid.
+ * Unauthenticated /browse landing. A split hero with a headline sits above the
+ * filter block and a responsive discovery grid.
  * The right rail carries a "Why Give Protocol" explainer plus platform news.
  */
 export const PublicDiscoveryView: React.FC = () => {
@@ -63,22 +61,6 @@ export const PublicDiscoveryView: React.FC = () => {
           Discover verified nonprofits, donate with crypto or card, and trace
           your impact from wallet to cause.
         </p>
-        <div className="mt-7 flex flex-wrap gap-3">
-          <a
-            href="#discover"
-            className="inline-flex items-center gap-2 rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-5 py-2.5 transition-colors"
-          >
-            Browse causes
-            <ArrowRight aria-hidden="true" className="h-4 w-4" />
-          </a>
-          <Link
-            to="/opportunities"
-            className="inline-flex items-center gap-2 rounded-[10px] bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-800 dark:text-gray-100 text-sm font-medium px-5 py-2.5 border border-gray-300 dark:border-gray-700 transition-colors"
-          >
-            <HeartHandshake aria-hidden="true" className="h-4 w-4" />
-            Volunteer opportunities
-          </Link>
-        </div>
       </div>
 
       <div className="rounded-2xl border border-emerald-100 dark:border-emerald-900/40 bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-emerald-950/40 dark:via-gray-900 dark:to-teal-950/40 p-6 md:p-8">
