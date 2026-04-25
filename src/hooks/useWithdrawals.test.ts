@@ -52,7 +52,12 @@ describe("useWithdrawals", () => {
     ];
 
     mockUseProfile.mockReturnValue({
-      profile: { id: "charity-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "charity-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -74,7 +79,12 @@ describe("useWithdrawals", () => {
 
   it("handles null data from supabase by setting empty array", async () => {
     mockUseProfile.mockReturnValue({
-      profile: { id: "charity-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "charity-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -95,7 +105,12 @@ describe("useWithdrawals", () => {
 
   it("sets error when fetch fails", async () => {
     mockUseProfile.mockReturnValue({
-      profile: { id: "charity-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "charity-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -139,13 +154,21 @@ describe("useWithdrawals", () => {
     };
 
     mockUseProfile.mockReturnValue({
-      profile: { id: "charity-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "charity-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
     });
 
-    setMockResult("withdrawal_requests", { data: existingWithdrawals, error: null });
+    setMockResult("withdrawal_requests", {
+      data: existingWithdrawals,
+      error: null,
+    });
 
     const { result } = renderHook(() => useWithdrawals());
 
@@ -206,7 +229,12 @@ describe("useWithdrawals", () => {
 
   it("sets error and re-throws when requestWithdrawal fails", async () => {
     mockUseProfile.mockReturnValue({
-      profile: { id: "charity-1", user_id: "u1", type: "charity", created_at: "2024-01-01" },
+      profile: {
+        id: "charity-1",
+        user_id: "u1",
+        type: "charity",
+        created_at: "2024-01-01",
+      },
       loading: false,
       error: null,
       updateProfile: jest.fn(),
@@ -236,9 +264,7 @@ describe("useWithdrawals", () => {
         })),
         select: jest.fn(() => chain),
         eq: jest.fn(() => chain),
-        order: jest.fn(() =>
-          Promise.resolve({ data: [], error: null }),
-        ),
+        order: jest.fn(() => Promise.resolve({ data: [], error: null })),
       };
       return chain;
     });

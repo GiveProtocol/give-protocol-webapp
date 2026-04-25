@@ -1,4 +1,11 @@
-import { jest, describe, it, expect, beforeEach, afterEach } from "@jest/globals";
+import {
+  jest,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+} from "@jest/globals";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { useCharityOrganizationSearch } from "./useCharityOrganizationSearch";
 import { searchCharityOrganizations } from "@/services/charityOrganizationService";
@@ -243,9 +250,11 @@ describe("useCharityOrganizationSearch", () => {
   });
 
   it("loadMore does nothing when loading is true", async () => {
-    mockSearch.mockReturnValue(new Promise(() => {
-      // Intentionally never resolves to keep loading state
-    }));
+    mockSearch.mockReturnValue(
+      new Promise(() => {
+        // Intentionally never resolves to keep loading state
+      }),
+    );
 
     const { result } = renderHook(() =>
       useCharityOrganizationSearch({ ...defaultParams, searchTerm: "test" }),

@@ -10,10 +10,7 @@ describe("DiscoveryShell", () => {
 
   it("renders topBar when provided", () => {
     render(
-      <DiscoveryShell
-        topBar={<div>Top Bar</div>}
-        main={<div>Main</div>}
-      />,
+      <DiscoveryShell topBar={<div>Top Bar</div>} main={<div>Main</div>} />,
     );
     expect(screen.getByText("Top Bar")).toBeInTheDocument();
   });
@@ -25,10 +22,7 @@ describe("DiscoveryShell", () => {
 
   it("renders rail when provided", () => {
     render(
-      <DiscoveryShell
-        main={<div>Main</div>}
-        rail={<div>Rail Content</div>}
-      />,
+      <DiscoveryShell main={<div>Main</div>} rail={<div>Rail Content</div>} />,
     );
     expect(screen.getByText("Rail Content")).toBeInTheDocument();
     expect(screen.getByRole("complementary")).toBeInTheDocument();

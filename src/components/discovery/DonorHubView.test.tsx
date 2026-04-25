@@ -20,12 +20,20 @@ describe("DonorHubView", () => {
   });
 
   it("renders the Personalized for You heading", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Personalized for You")).toBeInTheDocument();
   });
 
   it("shows 'Trending on the platform' when no donation history", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Trending on the platform")).toBeInTheDocument();
   });
 
@@ -40,19 +48,31 @@ describe("DonorHubView", () => {
       loading: false,
       error: null,
     } as ReturnType<typeof useDonorData>);
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Based on your recent giving")).toBeInTheDocument();
   });
 
   it("renders the DonorStatBar with impact stats", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Total Impact")).toBeInTheDocument();
     expect(screen.getByText("Active Recurring Grants")).toBeInTheDocument();
     expect(screen.getByText("Giving Consistency")).toBeInTheDocument();
   });
 
   it("renders zero impact when donor data is null", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("$0")).toBeInTheDocument();
     expect(screen.getByText("0 mo")).toBeInTheDocument();
   });
@@ -63,26 +83,42 @@ describe("DonorHubView", () => {
       loading: false,
       error: null,
     } as ReturnType<typeof useDonorData>);
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("$500")).toBeInTheDocument();
   });
 
   it("shows empty-state message when no matches and not loading", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(
       screen.getByText(/No matches yet\. Try a different search/),
     ).toBeInTheDocument();
   });
 
   it("renders the DailyWisdomCard in the rail", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     // DailyWisdomCard renders a blockquote with a generosity quote
     const blockquote = document.querySelector("blockquote");
     expect(blockquote).toBeInTheDocument();
   });
 
   it("renders the NewsUpdatesCard in the rail", () => {
-    render(<MemoryRouter><DonorHubView /></MemoryRouter>);
+    render(
+      <MemoryRouter>
+        <DonorHubView />
+      </MemoryRouter>,
+    );
     expect(screen.getByText("Platform News")).toBeInTheDocument();
   });
 });
