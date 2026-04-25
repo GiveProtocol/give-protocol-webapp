@@ -1,9 +1,10 @@
 import React from "react";
 import { describe, it, expect, jest, beforeEach } from "@jest/globals";
 import { render, screen } from "@testing-library/react";
-import type { CharityOrganization } from "@/types/charityOrganization";
+import { MemoryRouter } from "react-router-dom";
+import type { FeaturedCharity } from "@/hooks/useFeaturedCharities";
 
-// useFeaturedCharities and CharityOrganizationCard are mocked via moduleNameMapper (ESM-compatible)
+// useFeaturedCharities is mocked via moduleNameMapper (ESM-compatible)
 import { useFeaturedCharities } from "@/hooks/useFeaturedCharities";
 import { FeaturedCharitiesCarousel } from "./FeaturedCharitiesCarousel";
 
@@ -11,24 +12,22 @@ const mockUseFeaturedCharities = useFeaturedCharities as jest.MockedFunction<
   typeof useFeaturedCharities
 >;
 
-const makeOrg = (ein: string): CharityOrganization => ({
-  id: `id-${ein}`,
-  ein,
-  name: `Charity ${ein}`,
-  city: "Boston",
-  state: "MA",
-  zip: "02101",
-  ntee_cd: "A",
-  deductibility: "1",
-  is_on_platform: true,
-  platform_charity_id: `platform-${ein}`,
-  rank: 1,
-  country: "US",
-  registry_source: "IRS_BMF",
-  data_source: null,
-  data_vintage: null,
-  last_synced_at: null,
+const makeCharity = (id: string): FeaturedCharity => ({
+  profileId: id,
+  name: `Charity ${id}`,
+  description: `Description for ${id}`,
+  category: "Education",
+  imageUrl: `https://example.com/${id}.jpg`,
+  location: "Boston, MA",
 });
+
+function renderCarousel() {
+  return render(
+    <MemoryRouter>
+      <FeaturedCharitiesCarousel />
+    </MemoryRouter>,
+  );
+}
 
 describe("FeaturedCharitiesCarousel", () => {
   beforeEach(() => {
@@ -42,20 +41,20 @@ describe("FeaturedCharitiesCarousel", () => {
       error: null,
     });
 
-    render(<FeaturedCharitiesCarousel />);
+    renderCarousel();
 
     expect(screen.getByTestId("loading-spinner")).toBeDefined();
   });
 
   it("renders a card for each featured charity", () => {
-    const orgs = [makeOrg("12-3456789"), makeOrg("98-7654321")];
+    const charities = [makeCharity("12-3456789"), makeCharity("98-7654321")];
     mockUseFeaturedCharities.mockReturnValue({
-      charities: orgs,
+      charities,
       loading: false,
       error: null,
     });
 
-    render(<FeaturedCharitiesCarousel />);
+    renderCarousel();
 
     const cards = screen.getAllByTestId("charity-card");
     expect(cards).toHaveLength(2);
@@ -70,7 +69,7 @@ describe("FeaturedCharitiesCarousel", () => {
       error: null,
     });
 
-    render(<FeaturedCharitiesCarousel />);
+    renderCarousel();
 
     expect(
       screen.getByText("No featured charities available yet."),
@@ -84,7 +83,7 @@ describe("FeaturedCharitiesCarousel", () => {
       error: "Failed to load featured charities",
     });
 
-    render(<FeaturedCharitiesCarousel />);
+    renderCarousel();
 
     expect(screen.getByText("Failed to load featured charities")).toBeDefined();
   });
