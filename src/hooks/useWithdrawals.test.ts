@@ -1,8 +1,7 @@
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { useProfile } from "@/hooks/useProfile";
-import { supabase } from "@/lib/supabase";
-import { setMockResult, resetMockState } from "@/lib/supabase";
+import { supabase, setMockResult, resetMockState } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
 import { useWithdrawals } from "./useWithdrawals";
 
