@@ -1,6 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { useFeaturedCharities } from "@/hooks/useFeaturedCharities";
-import { CharityOrganizationCard } from "@/components/charity/CharityOrganizationCard";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 
 /**
@@ -35,9 +35,18 @@ export const FeaturedCharitiesCarousel: React.FC = () => {
 
   return (
     <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory">
-      {charities.map((org) => (
-        <div key={org.ein} className="flex-shrink-0 w-72 snap-start">
-          <CharityOrganizationCard organization={org} />
+      {charities.map((charity) => (
+        <div
+          key={charity.profileId}
+          className="flex-shrink-0 w-72 snap-start"
+          data-testid="charity-card"
+        >
+          <Link
+            to={`/charity/${charity.profileId}`}
+            className="font-medium text-gray-900 dark:text-gray-100 hover:text-emerald-700 dark:hover:text-emerald-400"
+          >
+            {charity.name}
+          </Link>
         </div>
       ))}
     </div>
