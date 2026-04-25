@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Navigate, Link } from "react-router-dom";
+import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useProfile } from "@/hooks/useProfile";
@@ -336,6 +336,41 @@ function CharityPortalHeader({
   );
 }
 
+interface ConfirmDeleteModalProps {
+  type: "cause" | "opportunity";
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+/** Modal asking the user to confirm before permanently deleting a cause or opportunity. */
+function ConfirmDeleteModal({
+  type,
+  onConfirm,
+  onCancel,
+}: ConfirmDeleteModalProps) {
+  const label = type === "cause" ? "cause" : "opportunity";
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+          Delete {label}?
+        </h2>
+        <p className="text-gray-600 text-sm mb-6">
+          This action cannot be undone. The {label} will be permanently removed.
+        </p>
+        <div className="flex gap-3 justify-end">
+          <Button variant="secondary" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={onConfirm}>
+            Delete
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /** Banner shown when the charity has no receiving wallet configured. */
 function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
   return (
@@ -364,7 +399,12 @@ export const CharityPortal: React.FC = () => {
   const userId = user?.id ?? null;
   const { walletAddress: connectedWalletAddress } = useUnifiedAuth();
   const { profile, loading: profileLoading } = useProfile();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabKey>("transactions");
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    type: "cause" | "opportunity";
+    id: string;
+  } | null>(null);
   const [showExportModal, setShowExportModal] = useState(false);
   const [showWalletModal, setShowWalletModal] = useState(false);
   const [charityWalletAddress, setCharityWalletAddress] = useState<
@@ -615,7 +655,7 @@ export const CharityPortal: React.FC = () => {
       from: donation?.donor?.id || "",
       to: charityId,
       amount: donation?.amount ? Number(donation.amount) : 0,
-      cryptoType: "GLMR",
+      cryptoType: "ETH",
       fiatValue: donation?.amount ? Number(donation.amount) : 0,
       fee: donation?.amount ? Number(donation.amount) * 0.001 : 0,
       timestamp: donation?.created_at || new Date().toISOString(),
@@ -731,7 +771,13 @@ export const CharityPortal: React.FC = () => {
     try {
       const { data: pendingHoursData, error } = await supabase
         .from("volunteer_hours")
-        .select("id, volunteer_id, hours, date_performed, description")
+        .select(
+          `id, volunteer_id, hours, date_performed, description,
+          profiles:volunteer_id (
+            display_name,
+            full_name
+          )`,
+        )
         .eq("charity_id", charityId)
         .eq("status", "pending")
         .order("created_at", { ascending: false });
@@ -750,14 +796,22 @@ export const CharityPortal: React.FC = () => {
         ? pendingHoursData
         : [];
 
-      return pendingHoursList.map((hour) => ({
-        id: hour?.id || "",
-        volunteer_id: hour?.volunteer_id || "",
-        volunteerName: hour?.volunteer_id ? "Volunteer" : "Unknown Volunteer",
-        hours: hour?.hours ? Number(hour.hours) : 0,
-        date_performed: hour?.date_performed || new Date().toISOString(),
-        description: hour?.description || "",
-      }));
+      return pendingHoursList.map((hour) => {
+        const profile = hour?.profiles as
+          | { display_name?: string | null; full_name?: string | null }
+          | null
+          | undefined;
+        const volunteerName =
+          profile?.display_name ?? profile?.full_name ?? "Anonymous Volunteer";
+        return {
+          id: hour?.id || "",
+          volunteer_id: hour?.volunteer_id || "",
+          volunteerName,
+          hours: hour?.hours ? Number(hour.hours) : 0,
+          date_performed: hour?.date_performed || new Date().toISOString(),
+          description: hour?.description || "",
+        };
+      });
     } catch (err) {
       Logger.warn("Exception fetching pending volunteer hours:", {
         error: err,
@@ -965,6 +1019,99 @@ export const CharityPortal: React.FC = () => {
     }
   }, []);
 
+  // Cause handlers
+  const handleEditCause = useCallback(
+    (causeId: string) => {
+      navigate(`/charity-portal/edit-cause/${causeId}`);
+    },
+    [navigate],
+  );
+
+  const handleRequestDeleteCause = useCallback((causeId: string) => {
+    setDeleteConfirm({ type: "cause", id: causeId });
+  }, []);
+
+  // Opportunity handlers
+  const handleEditOpportunity = useCallback(
+    (opportunityId: string) => {
+      navigate(`/charity-portal/edit-opportunity/${opportunityId}`);
+    },
+    [navigate],
+  );
+
+  const handleRequestDeleteOpportunity = useCallback(
+    (opportunityId: string) => {
+      setDeleteConfirm({ type: "opportunity", id: opportunityId });
+    },
+    [],
+  );
+
+  // Shared delete confirm/cancel
+  const handleConfirmDelete = useCallback(async () => {
+    if (!deleteConfirm) return;
+    if (deleteConfirm.type === "cause") {
+      const { error } = await supabase
+        .from("causes")
+        .delete()
+        .eq("id", deleteConfirm.id);
+      if (!error) {
+        setCauses((prev) => prev.filter((c) => c.id !== deleteConfirm.id));
+      }
+    } else {
+      const { error } = await supabase
+        .from("volunteer_opportunities")
+        .delete()
+        .eq("id", deleteConfirm.id);
+      if (!error) {
+        setOpportunities((prev) =>
+          prev.filter((o) => o.id !== deleteConfirm.id),
+        );
+      }
+    }
+    setDeleteConfirm(null);
+  }, [deleteConfirm]);
+
+  const handleCancelDelete = useCallback(() => {
+    setDeleteConfirm(null);
+  }, []);
+
+  // Hours handlers
+  const handleVerifyHours = useCallback(async (hoursId: string) => {
+    const { error } = await supabase
+      .from("volunteer_hours")
+      .update({ status: "approved" })
+      .eq("id", hoursId);
+    if (!error) {
+      setPendingHours((prev) => prev.filter((h) => h.id !== hoursId));
+    }
+  }, []);
+
+  const handleRejectHours = useCallback(async (hoursId: string) => {
+    const { error } = await supabase
+      .from("volunteer_hours")
+      .update({ status: "rejected" })
+      .eq("id", hoursId);
+    if (!error) {
+      setPendingHours((prev) => prev.filter((h) => h.id !== hoursId));
+    }
+  }, []);
+
+  const handleExportHours = useCallback(() => {
+    const header = "Volunteer,Hours,Date,Description";
+    const rows = pendingHours.map(
+      (h) =>
+        `"${h.volunteerName}",${h.hours},"${h.date_performed}","${h.description.replace(/"/g, '""')}"`,
+    );
+    const csv = [header, ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv" });
+    const blobUrl = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = blobUrl;
+    anchor.download = "volunteer-hours.csv";
+    anchor.click();
+    URL.revokeObjectURL(blobUrl);
+  }, [pendingHours]);
+
   if (!user) {
     return <Navigate to="/login?type=charity" />;
   }
@@ -1121,6 +1268,9 @@ export const CharityPortal: React.FC = () => {
           <HoursVerificationTab
             pendingHours={pendingHours}
             profileId={profile.id}
+            onVerify={handleVerifyHours}
+            onReject={handleRejectHours}
+            onExport={handleExportHours}
           />
         )}
 
@@ -1131,11 +1281,21 @@ export const CharityPortal: React.FC = () => {
 
         {/* Volunteer Opportunities Management */}
         {activeTab === "opportunities" && (
-          <OpportunitiesTab opportunities={opportunities} />
+          <OpportunitiesTab
+            opportunities={opportunities}
+            onEdit={handleEditOpportunity}
+            onDelete={handleRequestDeleteOpportunity}
+          />
         )}
 
         {/* Causes Tab */}
-        {activeTab === "causes" && <CausesTab causes={causes} />}
+        {activeTab === "causes" && (
+          <CausesTab
+            causes={causes}
+            onEdit={handleEditCause}
+            onDelete={handleRequestDeleteCause}
+          />
+        )}
 
         {/* Impact Profile */}
         {activeTab === "impact" && profile?.id && (
@@ -1161,6 +1321,15 @@ export const CharityPortal: React.FC = () => {
             isOpen={showWalletModal}
             onClose={handleCloseWalletModal}
             onLinked={handleWalletLinked}
+          />
+        )}
+
+        {/* Delete Confirmation Modal */}
+        {deleteConfirm !== null && (
+          <ConfirmDeleteModal
+            type={deleteConfirm.type}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
           />
         )}
       </div>

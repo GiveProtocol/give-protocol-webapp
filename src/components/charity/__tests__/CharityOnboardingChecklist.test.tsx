@@ -1,11 +1,6 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import {
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { CharityOnboardingChecklist } from "../CharityOnboardingChecklist";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { supabase } from "@/lib/supabase";
@@ -62,8 +57,13 @@ describe("CharityOnboardingChecklist", () => {
     fromMock.mockImplementation(() => makeChain(DEFAULT_RESULT));
   });
 
+  const WALLET = "0xAbCd1234567890AbCd1234567890AbCd12345678";
+
   const renderChecklist = (
-    props: { onNavigateTab?: (tab: string) => void } = {},
+    props: {
+      onNavigateTab?: (tab: string) => void;
+      walletAddress?: string | null;
+    } = {},
   ) => render(<CharityOnboardingChecklist profileId={PROFILE_ID} {...props} />);
 
   it("renders the Getting Started heading after data loads", async () => {
@@ -138,12 +138,59 @@ describe("CharityOnboardingChecklist", () => {
     });
   });
 
-  it("auto-marks connect_wallet complete when wallet is connected", async () => {
+  it("auto-marks connect_wallet complete when wallet is connected and addresses match", async () => {
     mockUseWeb3.mockReturnValue({
       provider: null,
       signer: null,
-      address: null,
-      chainId: 1287,
+      address: WALLET,
+      chainId: 8453,
+      isConnected: true,
+      isConnecting: false,
+      error: null,
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      switchChain: jest.fn(),
+    });
+    renderChecklist({ walletAddress: WALLET });
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: /uncheck connect wallet for receiving donations/i,
+        }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("does not auto-mark connect_wallet complete when connected but addresses do not match", async () => {
+    mockUseWeb3.mockReturnValue({
+      provider: null,
+      signer: null,
+      address: "0x0000000000000000000000000000000000000000",
+      chainId: 8453,
+      isConnected: true,
+      isConnecting: false,
+      error: null,
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      switchChain: jest.fn(),
+    });
+    renderChecklist({ walletAddress: WALLET });
+    await waitFor(() => {
+      expect(screen.getByText("0 of 5 steps complete")).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("button", {
+        name: /uncheck connect wallet for receiving donations/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("does not auto-mark connect_wallet complete when no walletAddress prop is provided", async () => {
+    mockUseWeb3.mockReturnValue({
+      provider: null,
+      signer: null,
+      address: WALLET,
+      chainId: 8453,
       isConnected: true,
       isConnecting: false,
       error: null,
@@ -152,6 +199,25 @@ describe("CharityOnboardingChecklist", () => {
       switchChain: jest.fn(),
     });
     renderChecklist();
+    await waitFor(() => {
+      expect(screen.getByText("0 of 5 steps complete")).toBeInTheDocument();
+    });
+  });
+
+  it("auto-marks connect_wallet complete with case-insensitive address comparison", async () => {
+    mockUseWeb3.mockReturnValue({
+      provider: null,
+      signer: null,
+      address: WALLET.toLowerCase(),
+      chainId: 8453,
+      isConnected: true,
+      isConnecting: false,
+      error: null,
+      connect: jest.fn(),
+      disconnect: jest.fn(),
+      switchChain: jest.fn(),
+    });
+    renderChecklist({ walletAddress: WALLET.toUpperCase() });
     await waitFor(() => {
       expect(
         screen.getByRole("button", {
