@@ -1,11 +1,6 @@
 import React from "react";
 import { jest } from "@jest/globals";
-import {
-  render,
-  screen,
-  waitFor,
-  fireEvent,
-} from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { CharityOnboardingChecklist } from "../CharityOnboardingChecklist";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { supabase } from "@/lib/supabase";
@@ -65,7 +60,10 @@ describe("CharityOnboardingChecklist", () => {
   const WALLET = "0xAbCd1234567890AbCd1234567890AbCd12345678";
 
   const renderChecklist = (
-    props: { onNavigateTab?: (tab: string) => void; walletAddress?: string | null } = {},
+    props: {
+      onNavigateTab?: (tab: string) => void;
+      walletAddress?: string | null;
+    } = {},
   ) => render(<CharityOnboardingChecklist profileId={PROFILE_ID} {...props} />);
 
   it("renders the Getting Started heading after data loads", async () => {

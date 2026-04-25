@@ -102,16 +102,12 @@ describe("HoursVerificationTab", () => {
   });
 
   it("shows empty state when no pending hours", () => {
-    render(
-      <HoursVerificationTab {...baseProps} pendingHours={[]} />,
-    );
+    render(<HoursVerificationTab {...baseProps} pendingHours={[]} />);
     expect(screen.getByText("All caught up!")).toBeTruthy();
   });
 
   it("renders self-reported section heading in all view mode", () => {
-    render(
-      <HoursVerificationTab {...baseProps} pendingHours={[]} />,
-    );
+    render(<HoursVerificationTab {...baseProps} pendingHours={[]} />);
     expect(screen.getByText("Self-Reported Hours")).toBeTruthy();
   });
 });

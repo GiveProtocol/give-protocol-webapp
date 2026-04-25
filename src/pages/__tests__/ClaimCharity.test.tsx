@@ -52,7 +52,14 @@ describe("ClaimCharity", () => {
     mockGetProfile.mockResolvedValue(mockProfile);
     mockSubmitRequest.mockResolvedValue(true);
     mockUseAuth.mockReturnValue({
-      user: { id: "user-123", email: "test@example.com", user_metadata: {}, app_metadata: {}, aud: "authenticated", created_at: "2024-01-01T00:00:00Z" },
+      user: {
+        id: "user-123",
+        email: "test@example.com",
+        user_metadata: {},
+        app_metadata: {},
+        aud: "authenticated",
+        created_at: "2024-01-01T00:00:00Z",
+      },
       loading: false,
       error: null,
       userType: "charity",
@@ -90,9 +97,7 @@ describe("ClaimCharity", () => {
     it("renders the charity name when profile loads", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(
-          screen.getByText(/Test Charity Foundation/),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/Test Charity Foundation/)).toBeInTheDocument();
       });
     });
 
@@ -115,9 +120,7 @@ describe("ClaimCharity", () => {
     it("renders the Confirm Organization step label", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(
-          screen.getByText("Confirm Organization"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Confirm Organization")).toBeInTheDocument();
       });
     });
 
@@ -158,7 +161,9 @@ describe("ClaimCharity", () => {
     it("renders the role select dropdown", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
     });
 
@@ -194,9 +199,7 @@ describe("ClaimCharity", () => {
       renderClaimCharity();
       await waitFor(() => {
         expect(
-          screen.getByText(
-            /Your email domain will be cross-referenced/,
-          ),
+          screen.getByText(/Your email domain will be cross-referenced/),
         ).toBeInTheDocument();
       });
     });
@@ -218,11 +221,16 @@ describe("ClaimCharity", () => {
     it("enables the Continue button when role and email are filled", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
-      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
-        target: { value: "Staff" },
-      });
+      fireEvent.change(
+        screen.getByLabelText("Your role at this organization"),
+        {
+          target: { value: "Staff" },
+        },
+      );
       fireEvent.change(screen.getByLabelText("Work email address"), {
         target: { value: "user@charity.org" },
       });
@@ -232,28 +240,41 @@ describe("ClaimCharity", () => {
     it("calls submitCharityRequest when Continue is clicked with valid inputs", async () => {
       renderClaimCharity("12-3456789");
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
-      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
-        target: { value: "Staff" },
-      });
+      fireEvent.change(
+        screen.getByLabelText("Your role at this organization"),
+        {
+          target: { value: "Staff" },
+        },
+      );
       fireEvent.change(screen.getByLabelText("Work email address"), {
         target: { value: "user@charity.org" },
       });
       fireEvent.click(screen.getByText("Continue"));
       await waitFor(() => {
-        expect(mockSubmitRequest).toHaveBeenCalledWith("12-3456789", "user-123");
+        expect(mockSubmitRequest).toHaveBeenCalledWith(
+          "12-3456789",
+          "user-123",
+        );
       });
     });
 
     it("shows success message after successful submission", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
-      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
-        target: { value: "Executive Director" },
-      });
+      fireEvent.change(
+        screen.getByLabelText("Your role at this organization"),
+        {
+          target: { value: "Executive Director" },
+        },
+      );
       fireEvent.change(screen.getByLabelText("Work email address"), {
         target: { value: "director@charity.org" },
       });
@@ -267,17 +288,24 @@ describe("ClaimCharity", () => {
       mockSubmitRequest.mockResolvedValue(false);
       renderClaimCharity();
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
-      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
-        target: { value: "Staff" },
-      });
+      fireEvent.change(
+        screen.getByLabelText("Your role at this organization"),
+        {
+          target: { value: "Staff" },
+        },
+      );
       fireEvent.change(screen.getByLabelText("Work email address"), {
         target: { value: "user@charity.org" },
       });
       fireEvent.click(screen.getByText("Continue"));
       await waitFor(() => {
-        expect(screen.getByText(/Could not submit your request/)).toBeInTheDocument();
+        expect(
+          screen.getByText(/Could not submit your request/),
+        ).toBeInTheDocument();
       });
     });
 
@@ -297,11 +325,16 @@ describe("ClaimCharity", () => {
       } as ReturnType<typeof useAuth>);
       renderClaimCharity();
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
-      fireEvent.change(screen.getByLabelText("Your role at this organization"), {
-        target: { value: "Staff" },
-      });
+      fireEvent.change(
+        screen.getByLabelText("Your role at this organization"),
+        {
+          target: { value: "Staff" },
+        },
+      );
       fireEvent.change(screen.getByLabelText("Work email address"), {
         target: { value: "user@charity.org" },
       });
@@ -314,7 +347,9 @@ describe("ClaimCharity", () => {
     it("allows selecting a role", async () => {
       renderClaimCharity();
       await waitFor(() => {
-        expect(screen.getByLabelText("Your role at this organization")).toBeInTheDocument();
+        expect(
+          screen.getByLabelText("Your role at this organization"),
+        ).toBeInTheDocument();
       });
       const select = screen.getByLabelText("Your role at this organization");
       fireEvent.change(select, { target: { value: "Staff" } });

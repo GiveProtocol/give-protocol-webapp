@@ -20,9 +20,7 @@ jest.mock("@/components/ui/Button", () => ({
 /* eslint-enable react/prop-types */
 
 jest.mock("@/components/CurrencyDisplay", () => ({
-  CurrencyDisplay: ({ amount }: { amount: number }) => (
-    <span>${amount}</span>
-  ),
+  CurrencyDisplay: ({ amount }: { amount: number }) => <span>${amount}</span>,
 }));
 
 jest.mock("@/hooks/useTranslation", () => ({

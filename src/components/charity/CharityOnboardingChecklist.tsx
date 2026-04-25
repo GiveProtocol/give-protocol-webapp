@@ -135,7 +135,11 @@ export const CharityOnboardingChecklist: React.FC<
     if (!address || !walletAddress) return;
     const addressesMatch =
       address.toLowerCase() === walletAddress.toLowerCase();
-    if (isConnected && addressesMatch && !completedItems.has("connect_wallet")) {
+    if (
+      isConnected &&
+      addressesMatch &&
+      !completedItems.has("connect_wallet")
+    ) {
       setCompletedItems((prev) => new Set([...prev, "connect_wallet"]));
     }
   }, [isConnected, address, walletAddress, completedItems]);

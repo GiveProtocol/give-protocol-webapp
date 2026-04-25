@@ -1,8 +1,8 @@
-export type CharityProfileStatus = 'unclaimed' | 'claimed-pending' | 'verified';
+export type CharityProfileStatus = "unclaimed" | "claimed-pending" | "verified";
 
-export type WalletType = 'new_custodial' | 'existing_evm';
+export type WalletType = "new_custodial" | "existing_evm";
 
-export type PaymentProcessor = 'helcim' | 'paypal';
+export type PaymentProcessor = "helcim" | "paypal";
 
 export interface CharityProfile {
   id: string;

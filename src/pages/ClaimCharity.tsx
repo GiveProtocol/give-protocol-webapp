@@ -1,26 +1,26 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
-import { getCharityProfileByEin } from '@/services/charityProfileService';
-import { submitCharityRequest } from '@/services/charityDataService';
-import { useAuth } from '@/contexts/AuthContext';
-import type { CharityProfile } from '@/types/charityProfile';
+import React, { useEffect, useState, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { getCharityProfileByEin } from "@/services/charityProfileService";
+import { submitCharityRequest } from "@/services/charityDataService";
+import { useAuth } from "@/contexts/AuthContext";
+import type { CharityProfile } from "@/types/charityProfile";
 
 const STEPS = [
-  'Verify Identity',
-  'Confirm Organization',
-  'Wallet Setup',
-  'Complete',
+  "Verify Identity",
+  "Confirm Organization",
+  "Wallet Setup",
+  "Complete",
 ];
 
 const ROLE_OPTIONS = [
-  'Executive Director',
-  'Staff',
-  'Board Member',
-  'Volunteer',
-  'Other',
+  "Executive Director",
+  "Staff",
+  "Board Member",
+  "Volunteer",
+  "Other",
 ];
 
 /** Step indicator showing progress through the claim flow. */
@@ -30,23 +30,21 @@ const StepIndicator: React.FC = () => (
       <React.Fragment key={step}>
         <div
           className={`flex items-center gap-1.5 text-xs font-medium ${
-            i === 0 ? 'text-emerald-700' : 'text-gray-400'
+            i === 0 ? "text-emerald-700" : "text-gray-400"
           }`}
         >
           <span
             className={`flex items-center justify-center w-6 h-6 rounded-full text-xs font-semibold ${
               i === 0
-                ? 'bg-emerald-600 text-white'
-                : 'bg-gray-100 text-gray-400'
+                ? "bg-emerald-600 text-white"
+                : "bg-gray-100 text-gray-400"
             }`}
           >
             {i + 1}
           </span>
           <span className="hidden sm:inline">{step}</span>
         </div>
-        {i < STEPS.length - 1 && (
-          <div className="flex-1 h-px bg-gray-200" />
-        )}
+        {i < STEPS.length - 1 && <div className="flex-1 h-px bg-gray-200" />}
       </React.Fragment>
     ))}
   </div>
@@ -62,7 +60,16 @@ const VerifyIdentityStep: React.FC<{
   submitting: boolean;
   submitted: boolean;
   error: string | null;
-}> = ({ role, onRoleChange, email, onEmailChange, onSubmit, submitting, submitted, error }) => {
+}> = ({
+  role,
+  onRoleChange,
+  email,
+  onEmailChange,
+  onSubmit,
+  submitting,
+  submitted,
+  error,
+}) => {
   const isValid = role.length > 0 && email.length > 0;
 
   return (
@@ -72,7 +79,10 @@ const VerifyIdentityStep: React.FC<{
       </h2>
 
       <div>
-        <label htmlFor="claim-role" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="claim-role"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Your role at this organization
         </label>
         <select
@@ -83,13 +93,18 @@ const VerifyIdentityStep: React.FC<{
         >
           <option value="">Select a role...</option>
           {ROLE_OPTIONS.map((r) => (
-            <option key={r} value={r}>{r}</option>
+            <option key={r} value={r}>
+              {r}
+            </option>
           ))}
         </select>
       </div>
 
       <div>
-        <label htmlFor="claim-email" className="block text-sm font-medium text-gray-700 mb-1">
+        <label
+          htmlFor="claim-email"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
           Work email address
         </label>
         <input
@@ -101,25 +116,20 @@ const VerifyIdentityStep: React.FC<{
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
         />
         <p className="mt-1 text-xs text-gray-400">
-          Your email domain will be cross-referenced with the organization&apos;s public records.
+          Your email domain will be cross-referenced with the
+          organization&apos;s public records.
         </p>
       </div>
 
-      {error !== null && (
-        <p className="text-xs text-red-600">{error}</p>
-      )}
+      {error !== null && <p className="text-xs text-red-600">{error}</p>}
 
       {submitted ? (
         <p className="text-sm text-emerald-700 text-center font-medium">
           Request submitted! We will review your claim and follow up at {email}.
         </p>
       ) : (
-        <Button
-          fullWidth
-          disabled={!isValid || submitting}
-          onClick={onSubmit}
-        >
-          {submitting ? 'Submitting…' : 'Continue'}
+        <Button fullWidth disabled={!isValid || submitting} onClick={onSubmit}>
+          {submitting ? "Submitting…" : "Continue"}
         </Button>
       )}
     </Card>
@@ -137,8 +147,8 @@ function ClaimCharity() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<CharityProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const [role, setRole] = useState('');
-  const [email, setEmail] = useState('');
+  const [role, setRole] = useState("");
+  const [email, setEmail] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -160,25 +170,31 @@ function ClaimCharity() {
   }, [fetchProfile]);
 
   useEffect(() => {
-    document.title = 'Claim Organization | Give Protocol';
+    document.title = "Claim Organization | Give Protocol";
     return () => {
-      document.title = 'Give Protocol';
+      document.title = "Give Protocol";
     };
   }, []);
 
-  const handleRoleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
-    setRole(e.target.value);
-  }, []);
+  const handleRoleChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      setRole(e.target.value);
+    },
+    [],
+  );
 
-  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  }, []);
+  const handleEmailChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEmail(e.target.value);
+    },
+    [],
+  );
 
   const handleSubmit = useCallback(async () => {
     if (!role || !email) return;
     if (!ein) return;
     if (!user?.id) {
-      setSubmitError('You must be signed in to claim an organization.');
+      setSubmitError("You must be signed in to claim an organization.");
       return;
     }
     setSubmitting(true);
@@ -188,7 +204,7 @@ function ClaimCharity() {
     if (ok) {
       setSubmitted(true);
     } else {
-      setSubmitError('Could not submit your request. Please try again.');
+      setSubmitError("Could not submit your request. Please try again.");
     }
   }, [role, email, ein, user]);
 

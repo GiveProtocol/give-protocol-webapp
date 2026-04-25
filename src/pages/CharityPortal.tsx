@@ -343,7 +343,11 @@ interface ConfirmDeleteModalProps {
 }
 
 /** Modal asking the user to confirm before permanently deleting a cause or opportunity. */
-function ConfirmDeleteModal({ type, onConfirm, onCancel }: ConfirmDeleteModalProps) {
+function ConfirmDeleteModal({
+  type,
+  onConfirm,
+  onCancel,
+}: ConfirmDeleteModalProps) {
   const label = type === "cause" ? "cause" : "opportunity";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
