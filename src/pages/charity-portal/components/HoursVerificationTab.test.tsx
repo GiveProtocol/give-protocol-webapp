@@ -26,9 +26,7 @@ jest.mock("@/utils/date", () => ({
 }));
 
 jest.mock("@/components/charity/validation", () => ({
-  ValidationQueueDashboard: () => (
-    <div data-testid="validation-queue">validation-queue</div>
-  ),
+  ValidationQueueDashboard: () => null,
 }));
 
 const makeHours = (id: string) => ({
@@ -110,10 +108,10 @@ describe("HoursVerificationTab", () => {
     expect(screen.getByText("All caught up!")).toBeTruthy();
   });
 
-  it("renders ValidationQueueDashboard section", () => {
+  it("renders self-reported section heading in all view mode", () => {
     render(
       <HoursVerificationTab {...baseProps} pendingHours={[]} />,
     );
-    expect(screen.getByTestId("validation-queue")).toBeTruthy();
+    expect(screen.getByText("Self-Reported Hours")).toBeTruthy();
   });
 });
