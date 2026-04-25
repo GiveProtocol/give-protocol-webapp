@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach } from "@jest/globals";
 import { renderHook, waitFor } from "@testing-library/react";
-import {
-  setMockResult,
-  resetMockState,
-} from "@/lib/supabase";
+import { setMockResult, resetMockState } from "@/lib/supabase";
 import { useFeaturedCharities } from "./useFeaturedCharities";
 
 // supabase is mocked globally via moduleNameMapper — setMockResult controls per-table responses.
@@ -17,7 +14,10 @@ interface CharityProfileRow {
   ntee_code: string | null;
 }
 
-function makeRow(ein: string, overrides?: Partial<CharityProfileRow>): CharityProfileRow {
+function makeRow(
+  ein: string,
+  overrides?: Partial<CharityProfileRow>,
+): CharityProfileRow {
   return {
     ein,
     name: `Charity ${ein}`,
