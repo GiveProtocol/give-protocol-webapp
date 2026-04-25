@@ -4,13 +4,6 @@ import { render, screen, fireEvent } from "@testing-library/react";
 import type { DiscoveryFiltersState } from "./discoveryFiltersState";
 import { emptyDiscoveryFilters } from "./discoveryFiltersState";
 
-// Mock GeographicFilter to a simple stub
-jest.mock("@/components/charity/GeographicFilter", () => ({
-  GeographicFilter: (props: Record<string, unknown>) => (
-    <div data-testid="geographic-filter" data-category={props.activeCategory} />
-  ),
-}));
-
 // Mock resolveLocation to return a predictable LocationFilter
 jest.mock("@/utils/locationResolver", () => ({
   resolveLocation: (input: string) => ({
@@ -85,13 +78,13 @@ describe("DiscoveryFilters", () => {
 
   it("renders GeographicFilter when viewMode is charities", () => {
     render(<DiscoveryFilters value={defaultValue} onChange={noop} />);
-    expect(screen.getByTestId("geographic-filter")).toBeInTheDocument();
+    expect(screen.getByRole("radiogroup", { name: /location filter mode/i })).toBeInTheDocument();
   });
 
   it("hides GeographicFilter when viewMode is causes", () => {
     const causesValue = { ...defaultValue, viewMode: "causes" as const };
     render(<DiscoveryFilters value={causesValue} onChange={noop} />);
-    expect(screen.queryByTestId("geographic-filter")).not.toBeInTheDocument();
+    expect(screen.queryByRole("radiogroup", { name: /location filter mode/i })).not.toBeInTheDocument();
   });
 
   it("switches viewMode to causes when Causes button is clicked", () => {
