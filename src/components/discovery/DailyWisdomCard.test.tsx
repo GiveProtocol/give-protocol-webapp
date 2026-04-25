@@ -23,6 +23,6 @@ describe("DailyWisdomCard", () => {
 
   it("renders the attribution", () => {
     render(<DailyWisdomCard />);
-    expect(screen.getByText(/^—/)).toBeInTheDocument();
+    expect(screen.getByText(/^—/u)).toBeInTheDocument();
   });
 });
