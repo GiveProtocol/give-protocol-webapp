@@ -314,8 +314,10 @@ export default {
       "<rootDir>/src/test-utils/usePortfolioFundsMock.js",
     "(.*)/hooks/web3/usePortfolioFunds(\\.tsx?)?$":
       "<rootDir>/src/test-utils/usePortfolioFundsMock.js",
-    // Service mocks (admin) — only match @/ alias imports so service unit
+    // Service mocks — only match @/ alias imports so service unit
     // tests that use relative imports still get the real implementation.
+    "^@/services/charityOrganizationService$":
+      "<rootDir>/src/test-utils/charityOrganizationServiceMock.js",
     "^@/services/adminDashboardService$":
       "<rootDir>/src/test-utils/adminDashboardServiceMock.js",
     "^@/services/adminContentModerationService$":

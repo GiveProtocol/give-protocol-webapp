@@ -1,8 +1,12 @@
-import { describe, it, expect, beforeEach } from "@jest/globals";
+import { jest, describe, it, expect, beforeEach } from "@jest/globals";
 import { renderHook, waitFor } from "@testing-library/react";
-import { setMockResult, resetMockState } from "@/lib/supabase";
+import { getFeaturedCharities } from "@/services/charityOrganizationService";
 import { useFeaturedCharities } from "./useFeaturedCharities";
 import type { CharityOrganization } from "@/types/charityOrganization";
+
+const mockGetFeatured = getFeaturedCharities as jest.MockedFunction<
+  typeof getFeaturedCharities
+>;
 
 const makeOrg = (ein: string): CharityOrganization => ({
   id: `id-${ein}`,
@@ -25,18 +29,18 @@ const makeOrg = (ein: string): CharityOrganization => ({
 
 describe("useFeaturedCharities", () => {
   beforeEach(() => {
-    resetMockState();
+    mockGetFeatured.mockReset();
+    mockGetFeatured.mockResolvedValue([]);
   });
 
   it("returns loading: true on initial mount", () => {
-    setMockResult("charity_organizations", { data: [], error: null });
     const { result } = renderHook(() => useFeaturedCharities());
     expect(result.current.loading).toBe(true);
   });
 
   it("returns charities and loading: false after successful fetch", async () => {
     const orgs = [makeOrg("12-3456789"), makeOrg("98-7654321")];
-    setMockResult("charity_organizations", { data: orgs, error: null });
+    mockGetFeatured.mockResolvedValue(orgs);
 
     const { result } = renderHook(() => useFeaturedCharities());
 
@@ -47,23 +51,19 @@ describe("useFeaturedCharities", () => {
     expect(result.current.error).toBeNull();
   });
 
-  it("returns empty charities when supabase returns an error (service swallows it)", async () => {
-    setMockResult("charity_organizations", {
-      data: null,
-      error: { message: "Permission denied" },
-    });
+  it("sets error when fetch rejects", async () => {
+    mockGetFeatured.mockRejectedValue(new Error("Network error"));
 
     const { result } = renderHook(() => useFeaturedCharities());
 
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    // Service handles supabase errors internally and returns []
     expect(result.current.charities).toHaveLength(0);
-    expect(result.current.error).toBeNull();
+    expect(result.current.error).toBe("Failed to load featured charities");
   });
 
   it("returns empty array when no platform charities exist", async () => {
-    setMockResult("charity_organizations", { data: [], error: null });
+    mockGetFeatured.mockResolvedValue([]);
 
     const { result } = renderHook(() => useFeaturedCharities());
 

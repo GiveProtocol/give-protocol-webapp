@@ -4,20 +4,9 @@ import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Routes, Route } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Replace the three view components and the skeleton with identifiable stubs so the
-// test focuses purely on the auth-branching logic inside AppDashboard.
-jest.mock("@/components/discovery/PublicDiscoveryView", () => ({
-  PublicDiscoveryView: () => <div data-testid="public-view" />,
-}));
-jest.mock("@/components/discovery/DonorHubView", () => ({
-  DonorHubView: () => <div data-testid="donor-view" />,
-}));
-jest.mock("@/components/discovery/CharityHubView", () => ({
-  CharityHubView: () => <div data-testid="charity-view" />,
-}));
-jest.mock("@/components/discovery/DiscoveryShellSkeleton", () => ({
-  DiscoveryShellSkeleton: () => <div data-testid="shell-skeleton" />,
-}));
+// The four view/skeleton components are mocked via moduleNameMapper in jest.config.mjs
+// (discoveryComponentsMock.js), which provides data-testid stubs so the test focuses
+// purely on the auth-branching logic inside AppDashboard.
 
 import AppDashboard from "./AppDashboard";
 
