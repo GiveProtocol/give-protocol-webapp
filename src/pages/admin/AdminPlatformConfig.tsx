@@ -1061,7 +1061,9 @@ export default function AdminPlatformConfig(): React.ReactElement {
   );
 
   useEffect(() => {
-    void fetchConfig();
+    fetchConfig().catch(() => {
+      // Error handled internally by hook
+    });
   }, [fetchConfig]);
 
   const handleTabChange = useCallback((tab: SettingsTab) => {

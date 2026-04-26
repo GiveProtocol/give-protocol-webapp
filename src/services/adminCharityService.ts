@@ -115,7 +115,9 @@ export async function updateCharityStatus(
     }
 
     // Fire-and-forget: notify the charity by email. Failure must not block the status update.
-    void notifyCharityStatusChange(input);
+    notifyCharityStatusChange(input).catch(() => {
+      // Errors are already logged inside notifyCharityStatusChange
+    });
 
     return data as string;
   } catch (error) {

@@ -137,7 +137,18 @@ jest.mock("@/hooks/useContributionStats", () => ({
     isLoading: false,
   }),
   useUnifiedContributions: () => ({
-    data: [],
+    data: [
+      {
+        id: "test-contribution-1",
+        type: "donation",
+        userId: "test-user-id",
+        date: "2024-01-01T00:00:00Z",
+        organizationName: "Test Charity",
+        amount: 1,
+        status: "completed",
+        createdAt: "2024-01-01T00:00:00Z",
+      },
+    ],
     isLoading: false,
   }),
 }));
