@@ -1,10 +1,5 @@
 import React, { useCallback, useMemo } from "react";
-import {
-  Download,
-  ExternalLink,
-  ChevronUp,
-  ChevronDown,
-} from "lucide-react";
+import { Download, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/Button";
 import { Transaction } from "@/types/contribution";
@@ -427,7 +422,10 @@ export const TransactionsTab: React.FC<TransactionsTabProps> = ({
         <div className="py-16 px-6 text-center">
           <SharedTokenIllustration />
           <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-6">
-            {t("transactions.noTransactionsYet", "Ready to receive your first gift")}
+            {t(
+              "transactions.noTransactionsYet",
+              "Ready to receive your first gift",
+            )}
           </h3>
           <p className="text-sm text-gray-500 max-w-sm mx-auto mb-6">
             {t(

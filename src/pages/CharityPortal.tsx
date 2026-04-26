@@ -3,13 +3,7 @@ import { Navigate, Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useProfile } from "@/hooks/useProfile";
-import {
-  Plus,
-  Heart,
-  RefreshCw,
-  Wallet,
-  Search,
-} from "lucide-react";
+import { Plus, Heart, RefreshCw, Wallet, Search } from "lucide-react";
 import {
   ApplicationsTab,
   CausesTab,

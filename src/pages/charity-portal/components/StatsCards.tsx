@@ -22,9 +22,11 @@ const CARD_CLASS =
 const STATIC_CARD_CLASS =
   "bg-white rounded-xl px-5 py-4 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group flex items-center";
 
-const ICON_WRAPPER = "h-11 w-11 shrink-0 rounded-full flex items-center justify-center";
+const ICON_WRAPPER =
+  "h-11 w-11 shrink-0 rounded-full flex items-center justify-center";
 const LABEL_CLASS = "text-xs font-normal text-gray-500 tracking-wide";
-const VALUE_CLASS = "text-2xl font-extrabold text-gray-900 leading-tight mt-0.5";
+const VALUE_CLASS =
+  "text-2xl font-extrabold text-gray-900 leading-tight mt-0.5";
 const SUB_CLASS = "text-[11px] text-gray-400 mt-1 flex items-center";
 
 /** Grid of summary stat cards for donations, volunteers, hours, and endorsements. */
