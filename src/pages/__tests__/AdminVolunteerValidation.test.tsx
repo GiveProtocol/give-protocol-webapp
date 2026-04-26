@@ -230,7 +230,9 @@ describe("AdminVolunteerValidation", () => {
         createHookReturn({ suspiciousPatterns: [mockPattern] }),
       );
       renderComponent();
-      fireEvent.click(screen.getByText("Suspicious Patterns", { exact: false }));
+      fireEvent.click(
+        screen.getByText("Suspicious Patterns", { exact: false }),
+      );
       expect(
         screen.getByText(/Volunteers flagged for reporting/),
       ).toBeInTheDocument();
@@ -251,7 +253,9 @@ describe("AdminVolunteerValidation", () => {
         createHookReturn({ suspiciousPatterns: [mockPattern] }),
       );
       renderComponent();
-      fireEvent.click(screen.getByText("Suspicious Patterns", { exact: false }));
+      fireEvent.click(
+        screen.getByText("Suspicious Patterns", { exact: false }),
+      );
       expect(screen.getByText("Bob Jones")).toBeInTheDocument();
       expect(screen.getByText("City Shelter")).toBeInTheDocument();
       expect(screen.getByText("45")).toBeInTheDocument();
@@ -294,9 +298,7 @@ describe("AdminVolunteerValidation", () => {
         createHookReturn({ stats: null }),
       );
       renderComponent();
-      expect(
-        screen.getByText("No statistics available."),
-      ).toBeInTheDocument();
+      expect(screen.getByText("No statistics available.")).toBeInTheDocument();
     });
   });
 

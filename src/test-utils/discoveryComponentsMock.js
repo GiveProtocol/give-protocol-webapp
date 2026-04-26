@@ -10,4 +10,3 @@ export const PublicDiscoveryView = () =>
 /** Mock DiscoveryShellSkeleton component. */
 export const DiscoveryShellSkeleton = () =>
   React.createElement("div", { "data-testid": "shell-skeleton" });
-
