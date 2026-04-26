@@ -128,7 +128,10 @@ function mapContributionToTransaction(c: UnifiedContribution): Transaction {
     id: c.id,
     amount: 0,
     timestamp: c.date,
-    status: c.status === "completed" || c.status === "validated" ? "completed" : "pending",
+    status:
+      c.status === "completed" || c.status === "validated"
+        ? "completed"
+        : "pending",
     purpose: purposeMap[c.type] || c.type,
     metadata: {
       organization: c.organizationName,
@@ -194,9 +197,7 @@ function ContributionsFilterBar({
           aria-label="Filter by type"
         >
           <option value="all">{t("filter.allTypes", "All Types")}</option>
-          <option value="Donation">
-            {t("filter.donations", "Donations")}
-          </option>
+          <option value="Donation">{t("filter.donations", "Donations")}</option>
           <option value="Fiat Donation">
             {t("filter.fiatDonations", "Fiat Donations")}
           </option>
@@ -233,7 +234,9 @@ function ContributionsTableHeader({
   onSortByType: () => void;
   onSortByOrganization: () => void;
   onSortByStatus: () => void;
-  getSortIcon: (_key: "date" | "type" | "status" | "organization") => React.ReactNode;
+  getSortIcon: (
+    _key: "date" | "type" | "status" | "organization",
+  ) => React.ReactNode;
   t: (_key: string, _fallback?: string) => string;
 }) {
   return (
@@ -301,8 +304,7 @@ export const GiveDashboard: React.FC = () => {
 
   // Real data hooks
   const { profile } = useProfile();
-  const { data: stats, isLoading: statsLoading } =
-    useUserContributionStats();
+  const { data: stats, isLoading: statsLoading } = useUserContributionStats();
   const { data: rawContributions = [], isLoading: contribLoading } =
     useUnifiedContributions({
       userId: profile?.id,
@@ -471,7 +473,9 @@ export const GiveDashboard: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900">
             {t("dashboard.title")}
           </h1>
-          <p className="mt-2 text-sm text-gray-600">{t("dashboard.subtitle")}</p>
+          <p className="mt-2 text-sm text-gray-600">
+            {t("dashboard.subtitle")}
+          </p>
         </hgroup>
         <div className="flex space-x-3 flex-shrink-0">
           <Button
@@ -636,10 +640,12 @@ export const GiveDashboard: React.FC = () => {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span
-                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${{
-                      completed: "bg-green-100 text-green-800",
-                      pending: "bg-yellow-100 text-yellow-800",
-                    }[contribution.status] || "bg-red-100 text-red-800"}`}
+                    className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      {
+                        completed: "bg-green-100 text-green-800",
+                        pending: "bg-yellow-100 text-yellow-800",
+                      }[contribution.status] || "bg-red-100 text-red-800"
+                    }`}
                   >
                     {t(
                       `status.${contribution.status}`,
@@ -709,7 +715,9 @@ export const GiveDashboard: React.FC = () => {
               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div>
-                <h3 className="text-sm font-medium text-gray-900">{item.skill}</h3>
+                <h3 className="text-sm font-medium text-gray-900">
+                  {item.skill}
+                </h3>
                 <p className="text-sm text-gray-500">
                   {item.endorsements} {t("skills.endorsements", "endorsements")}
                 </p>
