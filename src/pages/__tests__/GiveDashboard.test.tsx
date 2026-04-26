@@ -373,11 +373,11 @@ describe("GiveDashboard", () => {
   });
 
   describe("Skills and Endorsements", () => {
-    it("displays skills section", () => {
+    it("does not render hardcoded skills section", () => {
       renderWithRouter();
-      expect(screen.getByText("Web Development")).toBeInTheDocument();
-      expect(screen.getByText("Project Management")).toBeInTheDocument();
-      expect(screen.getByText("Event Planning")).toBeInTheDocument();
+      expect(screen.queryByText("Web Development")).not.toBeInTheDocument();
+      expect(screen.queryByText("Project Management")).not.toBeInTheDocument();
+      expect(screen.queryByText("Event Planning")).not.toBeInTheDocument();
     });
   });
 });
