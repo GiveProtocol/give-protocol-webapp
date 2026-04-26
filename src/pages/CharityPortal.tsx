@@ -167,7 +167,7 @@ function CharityTabNav({
 
   return (
     <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
-      <nav
+      <div
         className="flex gap-1 min-w-max overflow-x-auto -mb-px"
         role="tablist"
       >
@@ -197,7 +197,7 @@ function CharityTabNav({
             </button>
           );
         })}
-      </nav>
+      </div>
     </div>
   );
 }
