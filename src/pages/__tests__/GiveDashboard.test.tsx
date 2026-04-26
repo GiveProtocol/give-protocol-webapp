@@ -11,11 +11,46 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
 import { useTranslation } from "@/hooks/useTranslation";
+import {
+  useUserContributionStats,
+  useUnifiedContributions,
+} from "@/hooks/useContributionStats";
 
 // Use jest.mocked() — mapper provides jest.fn() mocks for these hooks
 const mockUseAuth = jest.mocked(useAuth);
 const mockUseWeb3 = jest.mocked(useWeb3);
 const mockUseTranslation = jest.mocked(useTranslation);
+const mockUseUserContributionStats = jest.mocked(useUserContributionStats);
+const mockUseUnifiedContributions = jest.mocked(useUnifiedContributions);
+
+const baseStats = {
+  userId: "1",
+  totalDonated: 2000,
+  donationCount: 5,
+  totalFiatDonated: 450,
+  fiatDonationCount: 3,
+  formalVolunteerHours: 30,
+  selfReportedHours: {
+    validated: 18,
+    pending: 0,
+    unvalidated: 0,
+    total: 18,
+  },
+  totalVolunteerHours: 48,
+  skillsEndorsed: 12,
+  organizationsHelped: 4,
+};
+
+const baseContribution = {
+  id: "test-contribution-1",
+  type: "donation" as const,
+  userId: "test-user-id",
+  date: "2024-01-01T00:00:00Z",
+  organizationName: "Test Charity",
+  amount: 1,
+  status: "completed" as const,
+  createdAt: "2024-01-01T00:00:00Z",
+};
 
 jest.mock("@/utils/date", () => ({
   formatDate: jest.fn((date: string) => date),
@@ -115,43 +150,7 @@ jest.mock("@/hooks/useProfile", () => ({
   }),
 }));
 
-jest.mock("@/hooks/useContributionStats", () => ({
-  useUserContributionStats: () => ({
-    data: {
-      userId: "1",
-      totalDonated: 2000,
-      donationCount: 5,
-      totalFiatDonated: 450,
-      fiatDonationCount: 3,
-      formalVolunteerHours: 30,
-      selfReportedHours: {
-        validated: 18,
-        pending: 0,
-        unvalidated: 0,
-        total: 18,
-      },
-      totalVolunteerHours: 48,
-      skillsEndorsed: 12,
-      organizationsHelped: 4,
-    },
-    isLoading: false,
-  }),
-  useUnifiedContributions: () => ({
-    data: [
-      {
-        id: "test-contribution-1",
-        type: "donation",
-        userId: "test-user-id",
-        date: "2024-01-01T00:00:00Z",
-        organizationName: "Test Charity",
-        amount: 1,
-        status: "completed",
-        createdAt: "2024-01-01T00:00:00Z",
-      },
-    ],
-    isLoading: false,
-  }),
-}));
+jest.mock("@/hooks/useContributionStats");
 
 const renderWithRouter = (initialEntries = ["/give-dashboard"]) => {
   return render(
@@ -182,6 +181,18 @@ describe("GiveDashboard", () => {
     );
 
     mockUseTranslation.mockReturnValue(createMockTranslation());
+
+    // Reset contribution mocks each test so cross-file mutations from other
+    // suites cannot leak in (jest.clearAllMocks only clears call history,
+    // not implementations set via mockReturnValue elsewhere).
+    mockUseUserContributionStats.mockReturnValue({
+      data: baseStats,
+      isLoading: false,
+    } as never);
+    mockUseUnifiedContributions.mockReturnValue({
+      data: [baseContribution],
+      isLoading: false,
+    } as never);
   });
 
   describe("Authentication and Access Control", () => {
