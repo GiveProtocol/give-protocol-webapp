@@ -30,6 +30,7 @@ import {
 } from "@/hooks/useContributionStats";
 import type { UnifiedContribution } from "@/services/contributionAggregationService";
 import { useProfile } from "@/hooks/useProfile";
+import { ENV } from "@/config/env";
 
 type View =
   | "select"
@@ -832,42 +833,46 @@ export const GiveDashboard: React.FC = () => {
         )}
       </div>
 
-      {/* Skills & Endorsements - Flattened from 4 to 3 levels */}
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t("skills.endorsements", "Skills & Endorsements")}
-          </h2>
+      {/* Skills & Endorsements - placeholder data, gated behind a local-only
+          demo flag so production never shows the hardcoded list. */}
+      {ENV.SHOW_DEMO_SKILLS && (
+        <div className="bg-white rounded-lg shadow-md">
+          <div className="p-6 border-b border-gray-200">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {t("skills.endorsements", "Skills & Endorsements")}
+            </h2>
+          </div>
+          <div className="p-6 grid gap-4 md:grid-cols-2">
+            {[
+              { skill: "Web Development", endorsements: 5 },
+              { skill: "Project Management", endorsements: 3 },
+              { skill: "Event Planning", endorsements: 4 },
+            ].map((item) => (
+              <Link
+                key={item.skill}
+                to="/contributions"
+                state={{
+                  activeTab: "volunteer",
+                  section: "endorsements",
+                  skill: item.skill,
+                }}
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div>
+                  <h3 className="text-sm font-medium text-gray-900">
+                    {item.skill}
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    {item.endorsements}{" "}
+                    {t("skills.endorsements", "endorsements")}
+                  </p>
+                </div>
+                <Award className="h-5 w-5 text-emerald-600" />
+              </Link>
+            ))}
+          </div>
         </div>
-        <div className="p-6 grid gap-4 md:grid-cols-2">
-          {[
-            { skill: "Web Development", endorsements: 5 },
-            { skill: "Project Management", endorsements: 3 },
-            { skill: "Event Planning", endorsements: 4 },
-          ].map((item) => (
-            <Link
-              key={item.skill}
-              to="/contributions"
-              state={{
-                activeTab: "volunteer",
-                section: "endorsements",
-                skill: item.skill,
-              }}
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">
-                  {item.skill}
-                </h3>
-                <p className="text-sm text-gray-500">
-                  {item.endorsements} {t("skills.endorsements", "endorsements")}
-                </p>
-              </div>
-              <Award className="h-5 w-5 text-emerald-600" />
-            </Link>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Export Modal */}
       {showExportModal && (
