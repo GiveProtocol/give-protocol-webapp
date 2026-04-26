@@ -60,10 +60,12 @@ const mockPattern: AdminSuspiciousVolunteerPattern = {
   totalRequests: 12,
 };
 
-const mockFetchStats = jest.fn();
-const mockFetchRequests = jest.fn();
+const mockFetchStats = jest.fn().mockReturnValue(Promise.resolve());
+const mockFetchRequests = jest.fn().mockReturnValue(Promise.resolve());
 const mockSubmitOverride = jest.fn();
-const mockFetchSuspiciousPatterns = jest.fn();
+const mockFetchSuspiciousPatterns = jest
+  .fn()
+  .mockReturnValue(Promise.resolve());
 
 const createHookReturn = (overrides = {}) => ({
   stats: mockStats,

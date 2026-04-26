@@ -344,10 +344,6 @@ export default {
     // using relative imports still get the real implementation.
     "^@/components/discovery/PublicDiscoveryView$":
       "<rootDir>/src/test-utils/discoveryComponentsMock.js",
-    "^@/components/discovery/DonorHubView$":
-      "<rootDir>/src/test-utils/discoveryComponentsMock.js",
-    "^@/components/discovery/CharityHubView$":
-      "<rootDir>/src/test-utils/discoveryComponentsMock.js",
     "^@/components/discovery/DiscoveryShellSkeleton$":
       "<rootDir>/src/test-utils/discoveryComponentsMock.js",
     // Charity component mocks
