@@ -986,9 +986,9 @@ export const CharityPortal: React.FC = () => {
     );
   }
 
-  // Redirect donor users to donor portal
+  // Redirect donor users to give dashboard
   if (userType !== "charity") {
-    return <Navigate to="/donor-portal" />;
+    return <Navigate to="/give-dashboard" />;
   }
 
   // Format last updated time
