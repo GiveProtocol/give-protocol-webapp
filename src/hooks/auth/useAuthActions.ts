@@ -71,7 +71,7 @@ export function useAuthActions() {
       navigate(
         data.user?.user_metadata?.type === "charity"
           ? "/charity-portal"
-          : "/donor-portal",
+          : "/give-dashboard",
       );
     } catch (error) {
       const message =

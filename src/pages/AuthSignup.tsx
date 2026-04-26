@@ -437,7 +437,7 @@ const SignupRightPanel: React.FC = () => {
             marginBottom: "0.4rem",
           }}
         >
-          Create your account
+          Create your donor account
         </h1>
         <p
           style={{

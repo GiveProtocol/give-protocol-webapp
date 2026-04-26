@@ -20,7 +20,7 @@ describe("AuthSignup", () => {
   describe("Heading", () => {
     it("renders the sign-up heading", () => {
       renderAuthSignup();
-      expect(screen.getByText("Create your account")).toBeInTheDocument();
+      expect(screen.getByText("Create your donor account")).toBeInTheDocument();
     });
 
     it("renders the subtitle text", () => {

@@ -30,7 +30,7 @@ export const PasswordStrengthBar: React.FC<PasswordStrengthBarProps> = ({ passwo
   const activeColor = colors[score];
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-1" data-testid="password-strength-bar">
       <div className="flex gap-1">
         {[0, 1, 2, 3].map((i) => (
           <div
