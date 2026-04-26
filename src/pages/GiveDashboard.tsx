@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { Navigate, useNavigate, useLocation } from "react-router-dom";
+import { Navigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
 import {
@@ -286,7 +286,6 @@ export const GiveDashboard: React.FC = () => {
   const [_view, _setView] = useState<View>("select"); // Prefixed as unused
   const { user, userType } = useAuth();
   const { isConnected } = useWeb3();
-  const navigate = useNavigate();
   const location = useLocation();
   const [selectedYear, setSelectedYear] = useState<string>("all");
   const [selectedType, setSelectedType] = useState<string>("all");
@@ -332,21 +331,6 @@ export const GiveDashboard: React.FC = () => {
     location.pathname === _path
       ? "bg-primary-100 text-primary-900"
       : "text-gray-700 hover:bg-primary-50";
-
-  const handleSkillClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      const skill = e.currentTarget.dataset.skill;
-      if (!skill) return;
-      navigate("/contributions", {
-        state: {
-          activeTab: "volunteer",
-          section: "endorsements",
-          skill,
-        },
-      });
-    },
-    [navigate],
-  );
 
   const handleYearChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -714,10 +698,14 @@ export const GiveDashboard: React.FC = () => {
             { skill: "Project Management", endorsements: 3 },
             { skill: "Event Planning", endorsements: 4 },
           ].map((item) => (
-            <button
+            <Link
               key={item.skill}
-              data-skill={item.skill}
-              onClick={handleSkillClick}
+              to="/contributions"
+              state={{
+                activeTab: "volunteer",
+                section: "endorsements",
+                skill: item.skill,
+              }}
               className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div>
@@ -727,7 +715,7 @@ export const GiveDashboard: React.FC = () => {
                 </p>
               </div>
               <Award className="h-5 w-5 text-emerald-600" />
-            </button>
+            </Link>
           ))}
         </div>
       </div>
