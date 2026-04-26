@@ -243,41 +243,171 @@ function ContributionsTableHeader({
     <thead>
       <tr>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
           onClick={onSortByDate}
         >
-          {t("contributions.date")}
-          {getSortIcon("date")}
+          <span className="flex items-center gap-1">
+            {t("contributions.date")}
+            {getSortIcon("date")}
+          </span>
         </th>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
           onClick={onSortByType}
         >
-          {t("contributions.type")}
-          {getSortIcon("type")}
+          <span className="flex items-center gap-1">
+            {t("contributions.type")}
+            {getSortIcon("type")}
+          </span>
         </th>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
           onClick={onSortByOrganization}
         >
-          {t("contributions.organization")}
-          {getSortIcon("organization")}
+          <span className="flex items-center gap-1">
+            {t("contributions.organization")}
+            {getSortIcon("organization")}
+          </span>
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           {t("contributions.details")}
         </th>
         <th
-          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none flex items-center gap-1"
+          className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-50 select-none"
           onClick={onSortByStatus}
         >
-          {t("contributions.status")}
-          {getSortIcon("status")}
+          <span className="flex items-center gap-1">
+            {t("contributions.status")}
+            {getSortIcon("status")}
+          </span>
         </th>
         <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
           {t("contributions.verification")}
         </th>
       </tr>
     </thead>
+  );
+}
+
+/** Mission-specific minimal line-art: hand offering a heart-token for the donor empty state. */
+function GivingHeartIllustration(): React.ReactElement {
+  return (
+    <svg
+      width="120"
+      height="96"
+      viewBox="0 0 120 96"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      aria-hidden="true"
+      className="mx-auto text-emerald-500"
+    >
+      {/* Sparkles around heart */}
+      <path
+        d="M86 16 V20"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M96 24 L99 21"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      <path
+        d="M76 24 L73 21"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        opacity="0.6"
+      />
+      {/* Heart outline (recipient) */}
+      <path
+        d="M86 52 L70 38 C64 32 64 22 70 16 C76 10 86 10 86 18 C86 10 96 10 102 16 C108 22 108 32 102 38 Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        fill="none"
+        strokeLinejoin="round"
+      />
+      {/* Open hand offering from below-left */}
+      <path
+        d="M14 78 C14 70 22 64 30 66 L52 70 C56 71 58 74 57 78 L54 86 C53 90 49 92 45 91 L20 86 C16 85 14 82 14 78 Z"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        fill="none"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M30 66 V58"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <path
+        d="M38 68 V60"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      <path
+        d="M46 70 V63"
+        stroke="currentColor"
+        strokeWidth="1.75"
+        strokeLinecap="round"
+      />
+      {/* Coin rising from hand toward heart */}
+      <circle
+        cx="62"
+        cy="58"
+        r="5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        fill="currentColor"
+        fillOpacity="0.15"
+      />
+      <path
+        d="M62 56 V60"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+      <path
+        d="M60 58 H64"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+/** Empty state for the donor contributions table — invites a first donation. */
+function ContributionsEmptyState({
+  t,
+}: {
+  t: (_key: string, _fallback?: string) => string;
+}): React.ReactElement {
+  return (
+    <div className="py-16 px-6 text-center">
+      <GivingHeartIllustration />
+      <h3 className="text-lg font-semibold text-gray-900 mb-2 mt-6">
+        {t("contributions.emptyTitle", "Your giving journey starts here")}
+      </h3>
+      <p className="text-sm text-gray-500 max-w-sm mx-auto mb-6">
+        {t(
+          "contributions.emptyDescription",
+          "Donations and volunteer hours you log will appear here. Find a cause that matters to you to get started.",
+        )}
+      </p>
+      <Link
+        to="/browse"
+        className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 rounded-[10px] shadow-cta hover:shadow-[0_4px_18px_rgba(5,150,105,0.5)] transform hover:-translate-y-0.5 transition-all"
+      >
+        {t("contributions.browseCharities", "Browse charities")}
+      </Link>
+    </div>
   );
 }
 
@@ -479,7 +609,7 @@ export const GiveDashboard: React.FC = () => {
         </hgroup>
         <div className="flex space-x-3 flex-shrink-0">
           <Button
-            variant="secondary"
+            variant="primary"
             onClick={toggleVolunteerHours}
             className="flex items-center"
           >
@@ -487,17 +617,17 @@ export const GiveDashboard: React.FC = () => {
             {showVolunteerHours ? "Hide" : "Log"} Volunteer Hours
           </Button>
           <Button
-            variant="secondary"
+            variant="ghost"
             onClick={toggleScheduledDonations}
-            className="flex items-center"
+            className="flex items-center border border-gray-200 text-gray-700 hover:bg-gray-50"
           >
             <Calendar className="h-4 w-4 mr-2" />
             {showScheduledDonations ? "Hide" : "View"} Monthly Donations
           </Button>
           <Button
-            variant="secondary"
+            variant="ghost"
             onClick={toggleWalletSettings}
-            className="flex items-center"
+            className="flex items-center border border-gray-200 text-gray-700 hover:bg-gray-50"
           >
             <Settings className="h-4 w-4 mr-2" />
             Wallet Settings
@@ -533,7 +663,9 @@ export const GiveDashboard: React.FC = () => {
       ) : (
         <div className="grid gap-6 mb-8 md:grid-cols-3">
           <Card className="p-6 flex items-center">
-            <DollarSign className="h-6 w-6 p-3 rounded-full bg-emerald-100 text-emerald-600 mr-4" />
+            <span className="h-11 w-11 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-100 to-emerald-200 mr-4">
+              <DollarSign className="h-5 w-5 text-emerald-600" />
+            </span>
             <div>
               <p className="text-sm font-medium text-gray-600">
                 {t("dashboard.totalDonations")}
@@ -549,7 +681,9 @@ export const GiveDashboard: React.FC = () => {
           </Card>
 
           <Card className="p-6 flex items-center">
-            <Clock className="h-6 w-6 p-3 rounded-full bg-green-100 text-green-600 mr-4" />
+            <span className="h-11 w-11 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-br from-green-100 to-green-200 mr-4">
+              <Clock className="h-5 w-5 text-green-600" />
+            </span>
             <div>
               <p className="text-sm font-medium text-gray-600">
                 {t("dashboard.volunteerHours")}
@@ -561,7 +695,9 @@ export const GiveDashboard: React.FC = () => {
           </Card>
 
           <Card className="p-6 flex items-center">
-            <Award className="h-6 w-6 p-3 rounded-full bg-emerald-100 text-emerald-600 mr-4" />
+            <span className="h-11 w-11 shrink-0 rounded-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200 mr-4">
+              <Award className="h-5 w-5 text-amber-600" />
+            </span>
             <div>
               <p className="text-sm font-medium text-gray-600">
                 {t("dashboard.skillsEndorsed")}
@@ -585,6 +721,9 @@ export const GiveDashboard: React.FC = () => {
           onExport={handleShowExportModal}
           t={t}
         />
+        {filteredContributions.length === 0 ? (
+          <ContributionsEmptyState t={t} />
+        ) : (
         <table className="min-w-full divide-y divide-gray-200">
           <ContributionsTableHeader
             onSortByDate={handleSortByDate}
@@ -689,6 +828,7 @@ export const GiveDashboard: React.FC = () => {
             ))}
           </tbody>
         </table>
+        )}
       </div>
 
       {/* Skills & Endorsements - Flattened from 4 to 3 levels */}
