@@ -333,21 +333,6 @@ export const GiveDashboard: React.FC = () => {
       ? "bg-primary-100 text-primary-900"
       : "text-gray-700 hover:bg-primary-50";
 
-  const handleSkillClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      const skill = e.currentTarget.dataset.skill;
-      if (!skill) return;
-      navigate("/contributions", {
-        state: {
-          activeTab: "volunteer",
-          section: "endorsements",
-          skill,
-        },
-      });
-    },
-    [navigate],
-  );
-
   const handleYearChange = useCallback(
     (e: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedYear(e.target.value);
@@ -699,37 +684,6 @@ export const GiveDashboard: React.FC = () => {
             ))}
           </tbody>
         </table>
-      </div>
-
-      {/* Skills & Endorsements - Flattened from 4 to 3 levels */}
-      <div className="bg-white rounded-lg shadow-md">
-        <div className="p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {t("skills.endorsements", "Skills & Endorsements")}
-          </h2>
-        </div>
-        <div className="p-6 grid gap-4 md:grid-cols-2">
-          {[
-            { skill: "Web Development", endorsements: 5 },
-            { skill: "Project Management", endorsements: 3 },
-            { skill: "Event Planning", endorsements: 4 },
-          ].map((item) => (
-            <button
-              key={item.skill}
-              data-skill={item.skill}
-              onClick={handleSkillClick}
-              className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
-            >
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">{item.skill}</h3>
-                <p className="text-sm text-gray-500">
-                  {item.endorsements} {t("skills.endorsements", "endorsements")}
-                </p>
-              </div>
-              <Award className="h-5 w-5 text-emerald-600" />
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Export Modal */}
