@@ -401,9 +401,15 @@ export default function AdminVolunteerValidation(): React.ReactElement {
 
   // Initial data load
   useEffect(() => {
-    void fetchStats();
-    void fetchRequests({ page: 1, limit: 50 });
-    void fetchSuspiciousPatterns();
+    fetchStats().catch(() => {
+      // Error handled internally by hook
+    });
+    fetchRequests({ page: 1, limit: 50 }).catch(() => {
+      // Error handled internally by hook
+    });
+    fetchSuspiciousPatterns().catch(() => {
+      // Error handled internally by hook
+    });
   }, [fetchStats, fetchRequests, fetchSuspiciousPatterns]);
 
   const handleStatusChange = useCallback(
@@ -415,7 +421,9 @@ export default function AdminVolunteerValidation(): React.ReactElement {
         page: 1,
       };
       setFilters(newFilters);
-      void fetchRequests(newFilters);
+      fetchRequests(newFilters).catch(() => {
+        // Error handled internally by hook
+      });
     },
     [filters, fetchRequests],
   );
@@ -429,7 +437,9 @@ export default function AdminVolunteerValidation(): React.ReactElement {
         page: 1,
       };
       setFilters(newFilters);
-      void fetchRequests(newFilters);
+      fetchRequests(newFilters).catch(() => {
+        // Error handled internally by hook
+      });
     },
     [filters, fetchRequests],
   );
@@ -437,13 +447,17 @@ export default function AdminVolunteerValidation(): React.ReactElement {
   const handlePrev = useCallback(() => {
     const newFilters = { ...filters, page: (filters.page ?? 1) - 1 };
     setFilters(newFilters);
-    void fetchRequests(newFilters);
+    fetchRequests(newFilters).catch(() => {
+      // Error handled internally by hook
+    });
   }, [filters, fetchRequests]);
 
   const handleNext = useCallback(() => {
     const newFilters = { ...filters, page: (filters.page ?? 1) + 1 };
     setFilters(newFilters);
-    void fetchRequests(newFilters);
+    fetchRequests(newFilters).catch(() => {
+      // Error handled internally by hook
+    });
   }, [filters, fetchRequests]);
 
   const handleOpenOverride = useCallback((req: AdminValidationRequestItem) => {
