@@ -1,11 +1,13 @@
-import React, { useMemo } from 'react';
+import React, { useMemo } from "react";
 
 interface PasswordStrengthBarProps {
   password: string;
 }
 
 /** Visual password strength indicator with 4 segments and a text label. */
-export const PasswordStrengthBar: React.FC<PasswordStrengthBarProps> = ({ password }) => {
+export const PasswordStrengthBar: React.FC<PasswordStrengthBarProps> = ({
+  password,
+}) => {
   const { score, label } = useMemo(() => {
     let strength = 0;
     if (password.length >= 8) strength++;
@@ -13,18 +15,24 @@ export const PasswordStrengthBar: React.FC<PasswordStrengthBarProps> = ({ passwo
     if (/[0-9]/.test(password)) strength++;
     if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-    const labels: Record<number, string> = { 0: 'Weak', 1: 'Weak', 2: 'Fair', 3: 'Good', 4: 'Strong' };
+    const labels: Record<number, string> = {
+      0: "Weak",
+      1: "Weak",
+      2: "Fair",
+      3: "Good",
+      4: "Strong",
+    };
     return { score: strength, label: labels[strength] };
   }, [password]);
 
   if (!password) return null;
 
   const colors: Record<number, string> = {
-    0: 'bg-red-500',
-    1: 'bg-red-500',
-    2: 'bg-amber-500',
-    3: 'bg-amber-400',
-    4: 'bg-green-500',
+    0: "bg-red-500",
+    1: "bg-red-500",
+    2: "bg-amber-500",
+    3: "bg-amber-400",
+    4: "bg-green-500",
   };
 
   const activeColor = colors[score];
@@ -36,7 +44,7 @@ export const PasswordStrengthBar: React.FC<PasswordStrengthBarProps> = ({ passwo
           <div
             key={i}
             className={`h-1 flex-1 rounded-full transition-colors duration-200 ${
-              i < score ? activeColor : 'bg-gray-200 dark:bg-gray-600'
+              i < score ? activeColor : "bg-gray-200 dark:bg-gray-600"
             }`}
           />
         ))}
