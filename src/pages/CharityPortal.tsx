@@ -5,15 +5,10 @@ import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { useProfile } from "@/hooks/useProfile";
 import {
   Plus,
-  Receipt,
-  ClipboardList,
-  Briefcase,
   Heart,
   RefreshCw,
-  Clock,
-  Settings,
-  Target,
   Wallet,
+  Search,
 } from "lucide-react";
 import {
   ApplicationsTab,
@@ -148,7 +143,6 @@ interface TabDef {
   key: TabKey;
   labelKey: string;
   labelDefault: string;
-  icon: React.ElementType;
   badge?: number;
 }
 
@@ -178,31 +172,38 @@ function CharityTabNav({
   );
 
   return (
-    <div className="mb-6">
-      <div className="bg-gray-100 dark:bg-gray-800 rounded-xl p-1.5 overflow-x-auto">
-        <nav className="flex gap-1 min-w-max">
-          {tabs.map(({ key, labelKey, labelDefault, icon: Icon, badge }) => (
+    <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+      <nav
+        className="flex gap-1 min-w-max overflow-x-auto -mb-px"
+        role="tablist"
+      >
+        {tabs.map(({ key, labelKey, labelDefault, badge }) => {
+          const isActive = activeTab === key;
+          return (
             <button
               key={key}
               data-tab={key}
               onClick={handleClick}
-              className={`flex items-center gap-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 relative ${
-                activeTab === key
-                  ? "bg-white dark:bg-gray-700 text-emerald-700 dark:text-emerald-300 shadow-sm"
-                  : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-50 dark:hover:bg-gray-700"
+              role="tab"
+              aria-selected={isActive}
+              className={`relative px-4 py-3 text-sm font-medium transition-colors duration-200 border-b-2 -mb-px whitespace-nowrap ${
+                isActive
+                  ? "border-emerald-600 text-emerald-700 dark:text-emerald-300"
+                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
               }`}
             >
-              <Icon className="h-4 w-4" />
-              {t(labelKey, labelDefault)}
-              {badge !== undefined && badge > 0 && (
-                <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                  {badge}
-                </span>
-              )}
+              <span className="inline-flex items-center gap-2">
+                {t(labelKey, labelDefault)}
+                {badge !== undefined && badge > 0 && (
+                  <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 bg-emerald-50 text-emerald-700 text-[11px] font-semibold rounded-full border border-emerald-100">
+                    {badge}
+                  </span>
+                )}
+              </span>
             </button>
-          ))}
-        </nav>
-      </div>
+          );
+        })}
+      </nav>
     </div>
   );
 }
@@ -267,6 +268,31 @@ function CharityPortalSkeleton() {
   );
 }
 
+/** Global quick-nav search bar shown above the dashboard stats. */
+function DashboardSearch({
+  t,
+}: {
+  t: (_key: string, _fallback?: string) => string;
+}) {
+  return (
+    <div className="relative mb-6">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+      <input
+        type="search"
+        aria-label={t("dashboard.search", "Search")}
+        placeholder={t(
+          "dashboard.searchPlaceholder",
+          "Search projects, volunteers (Cmd+K)",
+        )}
+        className="w-full pl-10 pr-16 py-2.5 text-sm bg-white border border-gray-200 rounded-lg shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+      />
+      <kbd className="hidden sm:inline-flex absolute right-3 top-1/2 -translate-y-1/2 items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 bg-gray-100 border border-gray-200 rounded">
+        ⌘K
+      </kbd>
+    </div>
+  );
+}
+
 /** Overview header with title, last-updated timestamp, and refresh button. */
 function OverviewHeader({
   lastUpdatedText,
@@ -320,13 +346,16 @@ function CharityPortalHeader({
       </div>
       <nav className="mt-4 md:mt-0 flex flex-wrap gap-3">
         <Link to="/charity-portal/create-opportunity">
-          <Button variant="secondary" className="flex items-center gap-2">
+          <Button variant="primary" className="flex items-center gap-2">
             <Plus className="h-4 w-4" />
             {t("volunteer.createOpportunity", "Create Opportunity")}
           </Button>
         </Link>
         <Link to="/charity-portal/create-cause">
-          <Button variant="secondary" className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            className="flex items-center gap-2 border border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+          >
             <Heart className="h-4 w-4" />
             {t("cause.createCause", "Create Cause")}
           </Button>
@@ -371,24 +400,27 @@ function ConfirmDeleteModal({
   );
 }
 
-/** Banner shown when the charity has no receiving wallet configured. */
+/** Integrated notice shown when the charity has no receiving wallet configured. */
 function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
   return (
-    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <Wallet className="h-5 w-5 text-amber-600 shrink-0" />
-        <div>
-          <p className="text-sm font-semibold text-amber-900">
-            Receiving wallet not configured
-          </p>
-          <p className="text-xs text-amber-700">
+    <div className="bg-emerald-50/40 border-l-2 border-emerald-500 border-y border-r border-emerald-100 rounded-r-md py-2.5 pl-4 pr-3 mb-6 flex items-center justify-between gap-4">
+      <div className="flex items-center gap-3 min-w-0">
+        <Wallet className="h-4 w-4 text-emerald-700 shrink-0" />
+        <p className="text-sm text-gray-700 truncate">
+          <span className="font-medium text-gray-900">
+            Receiving wallet not configured.
+          </span>{" "}
+          <span className="text-gray-500">
             Connect a wallet to receive on-chain donations.
-          </p>
-        </div>
+          </span>
+        </p>
       </div>
-      <Button variant="secondary" onClick={onOpen}>
+      <button
+        onClick={onOpen}
+        className="text-sm font-medium text-emerald-700 hover:text-emerald-800 hover:underline shrink-0"
+      >
         Set Up Wallet
-      </Button>
+      </button>
     </div>
   );
 }
@@ -1194,6 +1226,9 @@ export const CharityPortal: React.FC = () => {
           />
         )}
 
+        {/* Quick-nav search */}
+        <DashboardSearch t={t} />
+
         {/* Enhanced Metrics Grid */}
         <StatsCards
           stats={charityStats}
@@ -1208,45 +1243,38 @@ export const CharityPortal: React.FC = () => {
               key: "transactions",
               labelKey: "charity.transactions",
               labelDefault: "Transactions",
-              icon: Receipt,
             },
             {
               key: "hours",
               labelKey: "volunteer.hoursVerification",
               labelDefault: "Hours",
-              icon: Clock,
               badge: pendingHoursCount,
             },
             {
               key: "applications",
               labelKey: "charity.applications",
               labelDefault: "Applications",
-              icon: ClipboardList,
               badge: pendingApplicationsCount,
             },
             {
               key: "opportunities",
               labelKey: "volunteer.opportunities",
               labelDefault: "Opportunities",
-              icon: Briefcase,
             },
             {
               key: "causes",
               labelKey: "cause.causes",
               labelDefault: "Causes",
-              icon: Heart,
             },
             {
               key: "impact",
               labelKey: "impact.profile",
               labelDefault: "Impact Profile",
-              icon: Target,
             },
             {
               key: "organization",
               labelKey: "organization.settings",
               labelDefault: "Organization",
-              icon: Settings,
             },
           ]}
           activeTab={activeTab}
