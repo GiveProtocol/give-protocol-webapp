@@ -351,26 +351,29 @@ function DonationsTab({
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <label htmlFor="group-by-select" className="text-sm text-gray-600">
-            Group by:
-          </label>
-          <select
-            id="group-by-select"
-            className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            value={groupBy}
-            onChange={handleGroupByChange}
-          >
-            <option value="day">Day</option>
-            <option value="week">Week</option>
-            <option value="month">Month</option>
-            <option value="charity">Charity</option>
-            <option value="payment_method">Payment Method</option>
-          </select>
-        </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <label htmlFor="group-by-select" className="text-sm text-gray-600">
+          Group by:
+        </label>
+        <select
+          id="group-by-select"
+          className="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          value={groupBy}
+          onChange={handleGroupByChange}
+        >
+          <option value="day">Day</option>
+          <option value="week">Week</option>
+          <option value="month">Month</option>
+          <option value="charity">Charity</option>
+          <option value="payment_method">Payment Method</option>
+        </select>
         {rows.length > 0 && (
-          <Button variant="secondary" size="sm" onClick={handleExport}>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="ml-auto"
+            onClick={handleExport}
+          >
             Export CSV
           </Button>
         )}
