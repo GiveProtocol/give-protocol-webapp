@@ -102,6 +102,7 @@ export function useAuthActions() {
             type,
             ...metadata,
           },
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
