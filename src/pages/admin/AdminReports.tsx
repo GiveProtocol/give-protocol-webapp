@@ -368,7 +368,12 @@ function DonationsTab({
           <option value="payment_method">Payment Method</option>
         </select>
         {rows.length > 0 && (
-          <Button variant="secondary" size="sm" className="ml-auto" onClick={handleExport}>
+          <Button
+            variant="secondary"
+            size="sm"
+            className="ml-auto"
+            onClick={handleExport}
+          >
             Export CSV
           </Button>
         )}
