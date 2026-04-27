@@ -142,9 +142,9 @@ describe("AppNavbar", () => {
       expect(screen.getByText("nav.dashboard")).toBeInTheDocument();
     });
 
-    it("renders Monthly Donations link for donor user type", () => {
+    it("does not render Monthly Donations link for donor user type", () => {
       renderNavbar();
-      expect(screen.getByText("Monthly Donations")).toBeInTheDocument();
+      expect(screen.queryByText("Monthly Donations")).not.toBeInTheDocument();
     });
 
     it("does not render Monthly Donations link for charity user type", () => {
