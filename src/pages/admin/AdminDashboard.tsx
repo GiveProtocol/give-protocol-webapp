@@ -287,6 +287,10 @@ const AdminDashboard: React.FC = () => {
     navigate("/admin/content-moderation");
   }, [navigate]);
 
+  const handleNavigatePortfolioFunds = useCallback(() => {
+    navigate("/admin/portfolio-funds");
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -434,6 +438,11 @@ const AdminDashboard: React.FC = () => {
             title="Content Moderation"
             description="Hide, flag, and review opportunities and causes"
             onClick={handleNavigateContentModeration}
+          />
+          <QuickActionButton
+            title="Portfolio Funds"
+            description="Create and manage curated giving portfolios"
+            onClick={handleNavigatePortfolioFunds}
           />
         </div>
       </Card>
