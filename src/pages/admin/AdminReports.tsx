@@ -49,7 +49,7 @@ interface DateRange {
   dateTo: string;
 }
 
-interface TabProps extends DateRange {
+interface PresetProps {
   preset: DatePreset;
 }
 
@@ -99,9 +99,9 @@ function fmtDate(iso: string): string {
 /** Simple inline SVG bar chart for trend visualization. */
 function MiniBarChart({
   data,
-}: {
+}: Readonly<{
   data: { label: string; value: number }[];
-}): React.ReactElement {
+}>): React.ReactElement {
   if (data.length === 0) return null;
   const max = Math.max(...data.map((d) => d.value), 1);
   const barW = 36;
@@ -161,10 +161,10 @@ const TAB_LABELS: { id: ReportTab; label: string }[] = [
 function TabBar({
   active,
   onSelect,
-}: {
+}: Readonly<{
   active: ReportTab;
   onSelect: (_tab: ReportTab) => void;
-}): React.ReactElement {
+}>): React.ReactElement {
   const handleTabClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       const tab = e.currentTarget.dataset.tab as ReportTab;
@@ -210,14 +210,14 @@ function DateRangeSelector({
   onPreset,
   onCustomFrom,
   onCustomTo,
-}: {
+}: Readonly<{
   preset: DatePreset;
   customFrom: string;
   customTo: string;
   onPreset: (_p: DatePreset) => void;
   onCustomFrom: (_e: React.ChangeEvent<HTMLInputElement>) => void;
   onCustomTo: (_e: React.ChangeEvent<HTMLInputElement>) => void;
-}): React.ReactElement {
+}>): React.ReactElement {
   const handlePresetClick = useCallback(
     (e: React.MouseEvent<HTMLButtonElement>) => {
       const preset = e.currentTarget.dataset.preset as DatePreset;
@@ -267,7 +267,9 @@ function DateRangeSelector({
 
 // ─── Shared: EmptyState + Pagination ─────────────────────────────────────────
 
-function EmptyState({ message }: { message: string }): React.ReactElement {
+function EmptyState({
+  message,
+}: Readonly<{ message: string }>): React.ReactElement {
   return <p className="text-center py-8 text-gray-500 text-sm">{message}</p>;
 }
 
@@ -277,12 +279,12 @@ function ReportPagination({
   totalPages,
   onPrev,
   onNext,
-}: {
+}: Readonly<{
   page: number;
   totalPages: number;
   onPrev: () => void;
   onNext: () => void;
-}): React.ReactElement {
+}>): React.ReactElement {
   if (totalPages <= 1) return null;
   return (
     <div className="flex items-center justify-between mt-4">
@@ -311,7 +313,10 @@ function ReportPagination({
 
 // ─── Donations Tab ────────────────────────────────────────────────────────────
 
-function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
+function DonationsTab({
+  dateFrom,
+  dateTo,
+}: Readonly<DateRange>): React.ReactElement {
   const [rows, setRows] = useState<AdminDonationSummaryRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [groupBy, setGroupBy] = useState<DonationSummaryGroupBy>("month");
@@ -433,7 +438,10 @@ function DonationsTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
 // ─── Charity Growth Tab ───────────────────────────────────────────────────────
 
-function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
+function CharityGrowthTab({
+  dateFrom,
+  dateTo,
+}: Readonly<DateRange>): React.ReactElement {
   const [rows, setRows] = useState<CharityGrowthRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -530,7 +538,10 @@ function CharityGrowthTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
 // ─── Donor Activity Tab ───────────────────────────────────────────────────────
 
-function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
+function DonorActivityTab({
+  dateFrom,
+  dateTo,
+}: Readonly<DateRange>): React.ReactElement {
   const [rows, setRows] = useState<DonorActivityRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -629,7 +640,10 @@ function DonorActivityTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
 // ─── Volunteer Hours Tab ──────────────────────────────────────────────────────
 
-function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
+function VolunteerHoursTab({
+  dateFrom,
+  dateTo,
+}: Readonly<DateRange>): React.ReactElement {
   const [rows, setRows] = useState<VolunteerReportRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -732,7 +746,10 @@ function VolunteerHoursTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
 // ─── Audit Trail Tab ──────────────────────────────────────────────────────────
 
-function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
+function AuditTrailTab({
+  dateFrom,
+  dateTo,
+}: Readonly<DateRange>): React.ReactElement {
   const [entries, setEntries] = useState<AdminAuditLogEntry[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
@@ -859,7 +876,9 @@ function AuditTrailTab({ dateFrom, dateTo }: TabProps): React.ReactElement {
 
 // ─── Platform Health Tab ──────────────────────────────────────────────────────
 
-function PlatformHealthTab({ preset }: TabProps): React.ReactElement {
+function PlatformHealthTab({
+  preset,
+}: Readonly<PresetProps>): React.ReactElement {
   const [rows, setRows] = useState<PlatformHealthRow[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -979,7 +998,7 @@ const AdminReports: React.FC = () => {
     [],
   );
 
-  const tabProps: TabProps = { dateFrom, dateTo, preset: datePreset };
+  const dateRange: DateRange = { dateFrom, dateTo };
 
   return (
     <div className="container mx-auto p-6 space-y-6">
@@ -1004,12 +1023,16 @@ const AdminReports: React.FC = () => {
 
         <TabBar active={activeTab} onSelect={handleTabSelect} />
 
-        {activeTab === "donations" && <DonationsTab {...tabProps} />}
-        {activeTab === "charity-growth" && <CharityGrowthTab {...tabProps} />}
-        {activeTab === "donor-activity" && <DonorActivityTab {...tabProps} />}
-        {activeTab === "volunteer-hours" && <VolunteerHoursTab {...tabProps} />}
-        {activeTab === "audit-trail" && <AuditTrailTab {...tabProps} />}
-        {activeTab === "platform-health" && <PlatformHealthTab {...tabProps} />}
+        {activeTab === "donations" && <DonationsTab {...dateRange} />}
+        {activeTab === "charity-growth" && <CharityGrowthTab {...dateRange} />}
+        {activeTab === "donor-activity" && <DonorActivityTab {...dateRange} />}
+        {activeTab === "volunteer-hours" && (
+          <VolunteerHoursTab {...dateRange} />
+        )}
+        {activeTab === "audit-trail" && <AuditTrailTab {...dateRange} />}
+        {activeTab === "platform-health" && (
+          <PlatformHealthTab preset={datePreset} />
+        )}
       </Card>
     </div>
   );
