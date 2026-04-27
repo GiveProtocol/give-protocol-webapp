@@ -5,7 +5,7 @@ import { useFeaturedPortfolioFunds } from "./useFeaturedPortfolioFunds";
 
 // supabase is mocked globally via moduleNameMapper — setMockResult controls per-table responses.
 
-interface FundRow {
+interface PortfolioFundRow {
   id: string;
   name: string;
   description: string | null;
@@ -14,14 +14,17 @@ interface FundRow {
   charity_ids: string[] | null;
 }
 
-function makeRow(id: string, overrides?: Partial<FundRow>): FundRow {
+function makeRow(
+  id: string,
+  overrides?: Partial<PortfolioFundRow>,
+): PortfolioFundRow {
   return {
     id,
     name: `Fund ${id}`,
     description: `Description for fund ${id}`,
     category: "Environment",
     image_url: `https://example.com/${id}.jpg`,
-    charity_ids: ["c1", "c2"],
+    charity_ids: ["charity-1", "charity-2"],
     ...overrides,
   };
 }
@@ -37,7 +40,7 @@ describe("useFeaturedPortfolioFunds", () => {
   });
 
   it("returns funds and loading: false after successful fetch", async () => {
-    const rows = [makeRow("1"), makeRow("2", { charity_ids: ["c1", "c2", "c3"] })];
+    const rows = [makeRow("fund-1"), makeRow("fund-2")];
     setMockResult("portfolio_funds", { data: rows, error: null });
 
     const { result } = renderHook(() => useFeaturedPortfolioFunds());
@@ -45,15 +48,62 @@ describe("useFeaturedPortfolioFunds", () => {
     await waitFor(() => expect(result.current.loading).toBe(false));
 
     expect(result.current.funds).toHaveLength(2);
-    expect(result.current.funds[0].id).toBe("1");
-    expect(result.current.funds[0].name).toBe("Fund 1");
+    expect(result.current.funds[0].id).toBe("fund-1");
+    expect(result.current.funds[0].name).toBe("Fund fund-1");
+    expect(result.current.funds[0].category).toBe("Environment");
     expect(result.current.funds[0].charityCount).toBe(2);
-    expect(result.current.funds[1].charityCount).toBe(3);
     expect(result.current.error).toBeNull();
   });
 
+  it("sets charityCount to 0 when charity_ids is null", async () => {
+    const rows = [makeRow("fund-1", { charity_ids: null })];
+    setMockResult("portfolio_funds", { data: rows, error: null });
+
+    const { result } = renderHook(() => useFeaturedPortfolioFunds());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.funds[0].charityCount).toBe(0);
+  });
+
+  it("uses 'General' as default category when category is null", async () => {
+    const rows = [makeRow("fund-1", { category: null })];
+    setMockResult("portfolio_funds", { data: rows, error: null });
+
+    const { result } = renderHook(() => useFeaturedPortfolioFunds());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.funds[0].category).toBe("General");
+  });
+
+  it("uses empty string as description when description is null", async () => {
+    const rows = [makeRow("fund-1", { description: null })];
+    setMockResult("portfolio_funds", { data: rows, error: null });
+
+    const { result } = renderHook(() => useFeaturedPortfolioFunds());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.funds[0].description).toBe("");
+  });
+
+  it("uses empty string as imageUrl when image_url is null", async () => {
+    const rows = [makeRow("fund-1", { image_url: null })];
+    setMockResult("portfolio_funds", { data: rows, error: null });
+
+    const { result } = renderHook(() => useFeaturedPortfolioFunds());
+
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.funds[0].imageUrl).toBe("");
+  });
+
   it("sets error when fetch fails", async () => {
-    setMockResult("portfolio_funds", { data: null, error: { message: "DB error" } });
+    setMockResult("portfolio_funds", {
+      data: null,
+      error: { message: "Network error" },
+    });
 
     const { result } = renderHook(() => useFeaturedPortfolioFunds());
 
@@ -72,21 +122,5 @@ describe("useFeaturedPortfolioFunds", () => {
 
     expect(result.current.funds).toHaveLength(0);
     expect(result.current.error).toBeNull();
-  });
-
-  it("handles null fields gracefully", async () => {
-    setMockResult("portfolio_funds", {
-      data: [makeRow("1", { description: null, category: null, image_url: null, charity_ids: null })],
-      error: null,
-    });
-
-    const { result } = renderHook(() => useFeaturedPortfolioFunds());
-
-    await waitFor(() => expect(result.current.loading).toBe(false));
-
-    expect(result.current.funds[0].description).toBe("");
-    expect(result.current.funds[0].category).toBe("General");
-    expect(result.current.funds[0].imageUrl).toBe("");
-    expect(result.current.funds[0].charityCount).toBe(0);
   });
 });

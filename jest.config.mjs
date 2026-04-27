@@ -428,6 +428,10 @@ export default {
     // tests that use relative imports still get the real implementation.
     "^@/hooks/useFeaturedCauses$":
       "<rootDir>/src/test-utils/useFeaturedCausesMock.js",
+    // useFeaturedPortfolioFunds hook mock — only match @/ alias imports so hook unit
+    // tests that use relative imports still get the real implementation.
+    "^@/hooks/useFeaturedPortfolioFunds$":
+      "<rootDir>/src/test-utils/useFeaturedPortfolioFundsMock.js",
     // FormInput component mock
     "^@/components/ui/FormInput$": "<rootDir>/src/test-utils/formInputMock.js",
     "(.*)/components/ui/FormInput(\\.tsx?)?$":
