@@ -1,6 +1,12 @@
 import React from "react";
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -301,8 +307,12 @@ describe("AppNavbar", () => {
 
   describe("handleDisconnect", () => {
     it("calls disconnect and logout when disconnect is triggered", async () => {
-      const mockDisconnect = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
-      const mockLogout = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
+      const mockDisconnect = jest
+        .fn<() => Promise<void>>()
+        .mockImplementation(() => Promise.resolve());
+      const mockLogout = jest
+        .fn<() => Promise<void>>()
+        .mockImplementation(() => Promise.resolve());
 
       mockUseWeb3.mockReturnValue({
         provider: null,
@@ -341,7 +351,9 @@ describe("AppNavbar", () => {
     });
 
     it("calls disconnect without logout when no user is logged in", async () => {
-      const mockDisconnect = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
+      const mockDisconnect = jest
+        .fn<() => Promise<void>>()
+        .mockImplementation(() => Promise.resolve());
 
       mockUseWeb3.mockReturnValue({
         provider: null,
@@ -375,7 +387,9 @@ describe("AppNavbar", () => {
 
   describe("handleSignOut", () => {
     it("calls logout when Sign Out is clicked", async () => {
-      const mockLogout = jest.fn<() => Promise<void>>().mockImplementation(() => Promise.resolve());
+      const mockLogout = jest
+        .fn<() => Promise<void>>()
+        .mockImplementation(() => Promise.resolve());
 
       mockUseAuth.mockReturnValue(
         createAuthMock({
