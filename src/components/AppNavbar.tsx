@@ -24,14 +24,12 @@ import { NETWORKS } from "./Wallet/types";
 const DesktopNavLinks: React.FC<{
   isLimitedNavPage: boolean;
   isActive: (_path: string) => string;
-  userType: string | null;
   isAuthenticated: boolean;
   handleDashboardClick: () => void;
   t: (_key: string) => string;
 }> = ({
   isLimitedNavPage,
   isActive,
-  userType,
   isAuthenticated,
   handleDashboardClick,
   t,
@@ -107,7 +105,6 @@ const DesktopNavLinks: React.FC<{
 const MobileNavLinks: React.FC<{
   isLimitedNavPage: boolean;
   isActive: (_path: string) => string;
-  userType: string | null;
   isAuthenticated: boolean;
   handleDashboardClick: () => void;
   handleLinkClick: () => void;
@@ -115,7 +112,6 @@ const MobileNavLinks: React.FC<{
 }> = ({
   isLimitedNavPage,
   isActive,
-  userType,
   isAuthenticated,
   handleDashboardClick,
   handleLinkClick,
@@ -590,7 +586,6 @@ export const AppNavbar: React.FC = () => {
             <DesktopNavLinks
               isLimitedNavPage={isLimitedNavPage}
               isActive={isActive}
-              userType={userType}
               isAuthenticated={Boolean(user)}
               handleDashboardClick={handleDashboardClick}
               t={t}
@@ -617,7 +612,6 @@ export const AppNavbar: React.FC = () => {
         <MobileNavLinks
           isLimitedNavPage={isLimitedNavPage}
           isActive={isActive}
-          userType={userType}
           isAuthenticated={Boolean(user)}
           handleDashboardClick={handleDashboardClick}
           handleLinkClick={handleLinkClick}
