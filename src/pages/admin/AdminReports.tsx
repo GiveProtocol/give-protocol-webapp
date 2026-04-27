@@ -1026,7 +1026,9 @@ const AdminReports: React.FC = () => {
         {activeTab === "donations" && <DonationsTab {...dateRange} />}
         {activeTab === "charity-growth" && <CharityGrowthTab {...dateRange} />}
         {activeTab === "donor-activity" && <DonorActivityTab {...dateRange} />}
-        {activeTab === "volunteer-hours" && <VolunteerHoursTab {...dateRange} />}
+        {activeTab === "volunteer-hours" && (
+          <VolunteerHoursTab {...dateRange} />
+        )}
         {activeTab === "audit-trail" && <AuditTrailTab {...dateRange} />}
         {activeTab === "platform-health" && (
           <PlatformHealthTab preset={datePreset} />
