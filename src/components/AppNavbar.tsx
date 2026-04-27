@@ -12,7 +12,7 @@ import { ClientOnly } from "./ClientOnly";
 import { SettingsMenu } from "./SettingsMenu";
 import { WalletButton, NetworkSelector } from "./Wallet";
 import type { NetworkType, WalletProviderType } from "./Wallet";
-import { Menu, X, Calendar, LogOut } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
 import { useWeb3 } from "@/contexts/Web3Context";
@@ -71,13 +71,13 @@ const DesktopNavLinks: React.FC<{
     <>
       <Link
         to="/browse"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/browse")}`}
+        className={`flex items-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/browse")}`}
       >
         {t("nav.browse")}
       </Link>
       <Link
         to="/opportunities"
-        className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/opportunities")}`}
+        className={`flex items-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/opportunities")}`}
       >
         {t("nav.opportunities")}
       </Link>
@@ -85,26 +85,18 @@ const DesktopNavLinks: React.FC<{
         <>
           <Link
             to="/contributions"
-            className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/contributions")}`}
+            className={`flex items-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/contributions")}`}
           >
             {t("nav.contributions")}
           </Link>
           <button
             onClick={handleDashboardClick}
-            className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${
+            className={`flex items-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${
               isActive("/give-dashboard") || isActive("/charity-portal")
             }`}
           >
             {t("nav.dashboard")}
           </button>
-          {userType === "donor" && (
-            <Link
-              to="/scheduled-donations"
-              className={`flex items-center justify-center px-3 py-2 rounded-md text-[0.82rem] font-medium transition-colors duration-200 ${isActive("/scheduled-donations")}`}
-            >
-              Monthly Donations
-            </Link>
-          )}
         </>
       )}
     </>
@@ -202,16 +194,6 @@ const MobileNavLinks: React.FC<{
           >
             {t("nav.dashboard")}
           </button>
-          {userType === "donor" && (
-            <Link
-              to="/scheduled-donations"
-              className={`flex items-center px-3 py-3 rounded-md text-[0.82rem] font-medium ${isActive("/scheduled-donations")}`}
-              onClick={handleLinkClick}
-            >
-              <Calendar className="h-4 w-4 mr-1" />
-              <span>Monthly Donations</span>
-            </Link>
-          )}
         </>
       )}
     </>
