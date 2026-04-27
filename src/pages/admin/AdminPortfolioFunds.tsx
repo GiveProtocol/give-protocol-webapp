@@ -419,7 +419,10 @@ const AdminPortfolioFunds: React.FC = () => {
           </p>
         </div>
         {!showForm && (
-          <Button onClick={handleCreateClick} className="flex items-center gap-2">
+          <Button
+            onClick={handleCreateClick}
+            className="flex items-center gap-2"
+          >
             <Plus className="h-4 w-4" />
             New Fund
           </Button>
@@ -459,11 +462,12 @@ const AdminPortfolioFunds: React.FC = () => {
                   {fund.category && <span>{fund.category}</span>}
                   <span>
                     {fund.charity_ids?.length ?? 0}{" "}
-                    {(fund.charity_ids?.length ?? 0) === 1 ? "charity" : "charities"}
+                    {(fund.charity_ids?.length ?? 0) === 1
+                      ? "charity"
+                      : "charities"}
                   </span>
                   <span>
-                    Created{" "}
-                    {new Date(fund.created_at).toLocaleDateString()}
+                    Created {new Date(fund.created_at).toLocaleDateString()}
                   </span>
                 </div>
               </div>

@@ -1,8 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
-import {
-  CausePageTemplate,
-} from "@/components/charity/CausePageTemplate";
+import { CausePageTemplate } from "@/components/charity/CausePageTemplate";
 import type { CauseProfileData } from "@/types/charity";
 import { supabase } from "@/lib/supabase";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";

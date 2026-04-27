@@ -4,11 +4,7 @@ import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/contexts/ToastContext";
-import {
-  setMockResult,
-  resetMockState,
-  supabase,
-} from "@/lib/supabase";
+import { setMockResult, resetMockState, supabase } from "@/lib/supabase";
 import AdminPortfolioFunds from "./AdminPortfolioFunds";
 
 // Card, Button, Input, LoadingSpinner are mocked via moduleNameMapper.

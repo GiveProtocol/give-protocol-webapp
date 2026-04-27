@@ -101,10 +101,15 @@ function FeaturedCauseCard({ cause }: { cause: FeaturedCause }) {
         </p>
 
         <div className="mt-auto pt-4 space-y-2">
-          <ProgressBar raised={cause.raisedAmount} target={cause.targetAmount} />
+          <ProgressBar
+            raised={cause.raisedAmount}
+            target={cause.targetAmount}
+          />
           <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
             <span>${cause.raisedAmount.toLocaleString()} raised</span>
-            <span>{pct}% of ${cause.targetAmount.toLocaleString()}</span>
+            <span>
+              {pct}% of ${cause.targetAmount.toLocaleString()}
+            </span>
           </div>
           <Link
             to={`/causes/${cause.id}`}

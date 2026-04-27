@@ -42,7 +42,9 @@ const FEATURED_LIMIT = 12;
 async function loadFeaturedCauses(): Promise<FeaturedCause[]> {
   const { data, error } = await supabase
     .from("causes")
-    .select("id, name, description, category, image_url, target_amount, raised_amount, location, charity_id")
+    .select(
+      "id, name, description, category, image_url, target_amount, raised_amount, location, charity_id",
+    )
     .eq("status", "active")
     .limit(FEATURED_LIMIT);
 

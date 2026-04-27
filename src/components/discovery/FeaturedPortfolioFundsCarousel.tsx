@@ -61,7 +61,8 @@ function FeaturedFundCard({ fund }: { fund: FeaturedPortfolioFund }) {
           </span>
           <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
             <Users aria-hidden="true" className="h-3.5 w-3.5" />
-            {fund.charityCount} {fund.charityCount === 1 ? "charity" : "charities"}
+            {fund.charityCount}{" "}
+            {fund.charityCount === 1 ? "charity" : "charities"}
           </span>
         </div>
 

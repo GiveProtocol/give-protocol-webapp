@@ -21,7 +21,10 @@ interface FeaturedCause {
   location?: string;
 }
 
-function makeCause(id: string, overrides?: Partial<FeaturedCause>): FeaturedCause {
+function makeCause(
+  id: string,
+  overrides?: Partial<FeaturedCause>,
+): FeaturedCause {
   return {
     id,
     name: `Cause ${id}`,
@@ -72,7 +75,9 @@ describe("FeaturedCausesCarousel", () => {
       error: null,
     });
     renderCarousel();
-    expect(screen.getByText("No causes available yet. Check back soon!")).toBeInTheDocument();
+    expect(
+      screen.getByText("No causes available yet. Check back soon!"),
+    ).toBeInTheDocument();
   });
 
   it("renders cause cards when data is available", () => {
@@ -113,7 +118,9 @@ describe("FeaturedCausesCarousel", () => {
 
   it("shows category and location on cards", () => {
     mockUseFeaturedCauses.mockReturnValue({
-      causes: [makeCause("1", { category: "Health", location: "NYC" })] as never,
+      causes: [
+        makeCause("1", { category: "Health", location: "NYC" }),
+      ] as never,
       loading: false,
       error: null,
     });
@@ -180,19 +187,31 @@ describe("FeaturedCausesCarousel", () => {
   });
 
   it("shows navigation buttons when there are multiple pages", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,
       error: null,
     });
     renderCarousel();
-    expect(screen.getByLabelText("Previous featured causes")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Previous featured causes"),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText("Next featured causes")).toBeInTheDocument();
   });
 
   it("navigates to the next page when Next is clicked", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,
@@ -209,7 +228,12 @@ describe("FeaturedCausesCarousel", () => {
   });
 
   it("navigates to the previous page when Previous is clicked", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,
@@ -225,7 +249,12 @@ describe("FeaturedCausesCarousel", () => {
   });
 
   it("auto-advances after the interval", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,
@@ -243,7 +272,12 @@ describe("FeaturedCausesCarousel", () => {
   });
 
   it("pauses auto-advance on mouse enter", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,
@@ -262,7 +296,12 @@ describe("FeaturedCausesCarousel", () => {
   });
 
   it("renders dot indicators for each page", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,
@@ -277,7 +316,12 @@ describe("FeaturedCausesCarousel", () => {
   });
 
   it("navigates when a dot is clicked", () => {
-    const causes = [makeCause("1"), makeCause("2"), makeCause("3"), makeCause("4")];
+    const causes = [
+      makeCause("1"),
+      makeCause("2"),
+      makeCause("3"),
+      makeCause("4"),
+    ];
     mockUseFeaturedCauses.mockReturnValue({
       causes: causes as never,
       loading: false,

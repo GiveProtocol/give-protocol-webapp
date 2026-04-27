@@ -55,7 +55,10 @@ describe("useFeaturedCauses", () => {
     const rows = [makeRow("1"), makeRow("2")];
     setMockResult("causes", { data: rows, error: null });
     setMockResult("charity_profiles", {
-      data: [makeProfile("charity-1", "Charity One"), makeProfile("charity-2", "Charity Two")],
+      data: [
+        makeProfile("charity-1", "Charity One"),
+        makeProfile("charity-2", "Charity Two"),
+      ],
       error: null,
     });
 
@@ -74,7 +77,10 @@ describe("useFeaturedCauses", () => {
   });
 
   it("sets error when fetch fails", async () => {
-    setMockResult("causes", { data: null, error: { message: "Network error" } });
+    setMockResult("causes", {
+      data: null,
+      error: { message: "Network error" },
+    });
 
     const { result } = renderHook(() => useFeaturedCauses());
 
