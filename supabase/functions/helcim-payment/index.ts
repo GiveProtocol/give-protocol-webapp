@@ -208,6 +208,25 @@ serve(async (req: Request) => {
     if (supabaseUrl && supabaseKey) {
       const supabase = createClient(supabaseUrl, supabaseKey);
       await logDonation(supabase, paymentRequest, paymentResult);
+
+      // Fire-and-forget donation receipt email (non-blocking)
+      fetch(`${supabaseUrl}/functions/v1/donation-receipt`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${supabaseKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          donorEmail: paymentRequest.donorEmail,
+          donorName: paymentRequest.donorName,
+          charityName: paymentRequest.charityName,
+          amountCents: paymentResult.amount,
+          currency: 'USD',
+          transactionId: paymentResult.transactionId,
+          paymentMethod: `Card (${paymentResult.cardType} ending ${paymentResult.cardLastFour})`,
+          donationDate: new Date().toISOString(),
+        }),
+      }).catch((err) => console.error('Donation receipt trigger failed (non-blocking):', err));
     }
 
     // Return sanitized response

@@ -436,6 +436,27 @@ serve(async (req: Request) => {
       body: JSON.stringify({ donationId }),
     }).catch((err) => console.error('Attestation trigger failed (non-blocking):', err));
 
+    // Step 8: Fire-and-forget donation receipt email (non-blocking)
+    fetch(`${supabaseUrl}/functions/v1/donation-receipt`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        donorEmail: payerEmail,
+        donorName: payerFullName || null,
+        charityName: charityName,
+        causeName: resolvedNames.causeName ?? null,
+        fundName: resolvedNames.fundName ?? null,
+        amountCents,
+        currency,
+        transactionId: captureId,
+        paymentMethod: 'PayPal',
+        donationDate: new Date().toISOString(),
+      }),
+    }).catch((err) => console.error('Donation receipt trigger failed (non-blocking):', err));
+
     // Step 8: Return success
     return new Response(
       JSON.stringify({
