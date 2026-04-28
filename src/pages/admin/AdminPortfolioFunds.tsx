@@ -70,6 +70,111 @@ function StatusBadge({ status }: { status: string }) {
   );
 }
 
+/** Scrollable list of charities with selection state for the fund form. */
+function CharitySelector({
+  charities,
+  selectedIds,
+  onToggle,
+}: {
+  charities: CharityOption[];
+  selectedIds: string[];
+  onToggle: (charityId: string) => void;
+}) {
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      const cid = e.currentTarget.dataset.charityId;
+      if (cid) onToggle(cid);
+    },
+    [onToggle],
+  );
+
+  return (
+    <div className="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1">
+      {charities.map((charity) => {
+        const isSelected = selectedIds.includes(charity.id);
+        return (
+          <button
+            key={charity.id}
+            type="button"
+            data-charity-id={charity.id}
+            onClick={handleClick}
+            className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
+              isSelected
+                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                : "hover:bg-gray-50 text-gray-700"
+            }`}
+          >
+            {charity.name}
+            <span className="text-xs text-gray-400 ml-2">({charity.ein})</span>
+          </button>
+        );
+      })}
+      {charities.length === 0 && (
+        <p className="text-sm text-gray-400 text-center py-4">
+          No verified charities found
+        </p>
+      )}
+    </div>
+  );
+}
+
+/** Single fund row with details and edit/archive actions. */
+function FundListItem({
+  fund,
+  onEdit,
+  onArchive,
+}: {
+  fund: PortfolioFundRow;
+  onEdit: (e: React.MouseEvent<HTMLButtonElement>) => void;
+  onArchive: (e: React.MouseEvent<HTMLButtonElement>) => void;
+}) {
+  const charityCount = fund.charity_ids?.length ?? 0;
+  return (
+    <Card className="p-4 flex items-start justify-between gap-4">
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-semibold text-gray-900 truncate">{fund.name}</h3>
+          <StatusBadge status={fund.status} />
+        </div>
+        {fund.description && (
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {fund.description}
+          </p>
+        )}
+        <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
+          {fund.category && <span>{fund.category}</span>}
+          <span>
+            {charityCount} {charityCount === 1 ? "charity" : "charities"}
+          </span>
+          <span>Created {new Date(fund.created_at).toLocaleDateString()}</span>
+        </div>
+      </div>
+      <div className="flex items-center gap-2 flex-shrink-0">
+        <button
+          type="button"
+          data-fund-id={fund.id}
+          onClick={onEdit}
+          className="p-2 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+          aria-label={`Edit ${fund.name}`}
+        >
+          <Edit className="h-4 w-4" />
+        </button>
+        {fund.status !== "archived" && (
+          <button
+            type="button"
+            data-fund-id={fund.id}
+            onClick={onArchive}
+            className="p-2 rounded-md hover:bg-gray-100 text-gray-500 hover:text-red-600"
+            aria-label={`Archive ${fund.name}`}
+          >
+            <Archive className="h-4 w-4" />
+          </button>
+        )}
+      </div>
+    </Card>
+  );
+}
+
 /** Form for creating or editing a portfolio fund. */
 function FundForm({
   formData,
@@ -116,14 +221,6 @@ function FundForm({
       onFieldChange("image_url", e.target.value);
     },
     [onFieldChange],
-  );
-
-  const handleCharityClick = useCallback(
-    (e: React.MouseEvent<HTMLButtonElement>) => {
-      const cid = e.currentTarget.dataset.charityId;
-      if (cid) onCharityToggle(cid);
-    },
-    [onCharityToggle],
   );
 
   return (
@@ -205,34 +302,11 @@ function FundForm({
           <p className="block text-sm font-medium text-gray-700 mb-2">
             Select Charities ({formData.charity_ids.length} selected)
           </p>
-          <div className="max-h-48 overflow-y-auto border rounded-md p-2 space-y-1">
-            {charities.map((charity) => {
-              const isSelected = formData.charity_ids.includes(charity.id);
-              return (
-                <button
-                  key={charity.id}
-                  type="button"
-                  data-charity-id={charity.id}
-                  onClick={handleCharityClick}
-                  className={`w-full text-left px-3 py-2 rounded text-sm transition-colors ${
-                    isSelected
-                      ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
-                      : "hover:bg-gray-50 text-gray-700"
-                  }`}
-                >
-                  {charity.name}
-                  <span className="text-xs text-gray-400 ml-2">
-                    ({charity.ein})
-                  </span>
-                </button>
-              );
-            })}
-            {charities.length === 0 && (
-              <p className="text-sm text-gray-400 text-center py-4">
-                No verified charities found
-              </p>
-            )}
-          </div>
+          <CharitySelector
+            charities={charities}
+            selectedIds={formData.charity_ids}
+            onToggle={onCharityToggle}
+          />
         </div>
 
         <div className="flex gap-3 pt-2">
@@ -444,57 +518,12 @@ const AdminPortfolioFunds: React.FC = () => {
 
       <div className="space-y-4">
         {funds.map((fund) => (
-          <Card key={fund.id} className="p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <h3 className="font-semibold text-gray-900 truncate">
-                    {fund.name}
-                  </h3>
-                  <StatusBadge status={fund.status} />
-                </div>
-                {fund.description && (
-                  <p className="text-sm text-gray-600 line-clamp-2">
-                    {fund.description}
-                  </p>
-                )}
-                <div className="flex items-center gap-4 mt-2 text-xs text-gray-500">
-                  {fund.category && <span>{fund.category}</span>}
-                  <span>
-                    {fund.charity_ids?.length ?? 0}{" "}
-                    {(fund.charity_ids?.length ?? 0) === 1
-                      ? "charity"
-                      : "charities"}
-                  </span>
-                  <span>
-                    Created {new Date(fund.created_at).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
-                <button
-                  type="button"
-                  data-fund-id={fund.id}
-                  onClick={handleEditClick}
-                  className="p-2 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700"
-                  aria-label={`Edit ${fund.name}`}
-                >
-                  <Edit className="h-4 w-4" />
-                </button>
-                {fund.status !== "archived" && (
-                  <button
-                    type="button"
-                    data-fund-id={fund.id}
-                    onClick={handleArchiveClick}
-                    className="p-2 rounded-md hover:bg-gray-100 text-gray-500 hover:text-red-600"
-                    aria-label={`Archive ${fund.name}`}
-                  >
-                    <Archive className="h-4 w-4" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </Card>
+          <FundListItem
+            key={fund.id}
+            fund={fund}
+            onEdit={handleEditClick}
+            onArchive={handleArchiveClick}
+          />
         ))}
 
         {funds.length === 0 && (
