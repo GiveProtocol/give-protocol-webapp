@@ -146,9 +146,7 @@ function FundListItem({
           <span>
             {charityCount} {charityCount === 1 ? "charity" : "charities"}
           </span>
-          <span>
-            Created {new Date(fund.created_at).toLocaleDateString()}
-          </span>
+          <span>Created {new Date(fund.created_at).toLocaleDateString()}</span>
         </div>
       </div>
       <div className="flex items-center gap-2 flex-shrink-0">
