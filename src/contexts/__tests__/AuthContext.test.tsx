@@ -161,6 +161,11 @@ const setupMocks = () => {
     insert: jest.fn().mockResolvedValue({ data: null, error: null }),
   });
 
+  // Mock supabase.functions.invoke for edge function calls
+  mockSupabase.functions = {
+    invoke: jest.fn().mockResolvedValue({ data: { success: true }, error: null }),
+  };
+
   // Silence console.error for expected errors
   jest.spyOn(console, "error").mockImplementation(() => {
     // Suppress console.error output during tests
@@ -689,13 +694,29 @@ describe("AuthContext", () => {
   });
 
   describe("Username Reminder", () => {
-    it("handles successful username reminder", async () => {
+    it("calls username-reminder edge function with the provided email", async () => {
       renderWithAuthProvider();
 
       await act(() => {
         screen.getByTestId("username-reminder-btn").click();
       });
 
+      await waitFor(() => {
+        expect(mockSupabase.functions.invoke).toHaveBeenCalledWith(
+          "username-reminder",
+          { body: { email: "test@example.com" } },
+        );
+      });
+    });
+
+    it("shows success toast after username reminder", async () => {
+      renderWithAuthProvider();
+
+      await act(() => {
+        screen.getByTestId("username-reminder-btn").click();
+      });
+
+      // sendUsernameReminder always shows success for security (no email enumeration)
       await waitFor(() => {
         expect(mockShowToast).toHaveBeenCalledWith(
           "success",
@@ -705,19 +726,22 @@ describe("AuthContext", () => {
       });
     });
 
-    it("handles username reminder shows success message", async () => {
+    it("shows error toast when edge function invocation throws", async () => {
+      mockSupabase.functions.invoke = jest
+        .fn()
+        .mockRejectedValue(new Error("Network error"));
+
       renderWithAuthProvider();
 
       await act(() => {
         screen.getByTestId("username-reminder-btn").click();
       });
 
-      // sendUsernameReminder always shows success for security
       await waitFor(() => {
         expect(mockShowToast).toHaveBeenCalledWith(
-          "success",
-          "Username reminder sent",
-          "If an account exists with this email, a reminder will be sent",
+          "error",
+          "Username Reminder Error",
+          "Network error",
         );
       });
     });
