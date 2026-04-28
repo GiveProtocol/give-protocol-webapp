@@ -48,3 +48,12 @@ enabled = false
 issue_id = "JS-D1001"
 path_patterns = ["public/silktide-consent-manager.js"]
 enabled = false
+
+[[issue_overrides]]
+issue_id = "JS-0116"
+path_patterns = [
+  "**/*.test.ts",
+  "**/*.test.tsx",
+  "**/__tests__/**"
+]
+enabled = false
