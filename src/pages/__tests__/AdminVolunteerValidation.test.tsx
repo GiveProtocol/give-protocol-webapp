@@ -406,6 +406,13 @@ describe("AdminVolunteerValidation", () => {
             reason: "Hours look inflated",
           },
           expect.objectContaining({ page: 1, limit: 50 }),
+          {
+            volunteerId: "vol-1",
+            volunteerDisplayName: "Alice Smith",
+            orgName: "Local Food Bank",
+            hoursReported: 8,
+            activityDate: "2025-03-15",
+          },
         );
       });
     });
