@@ -168,20 +168,17 @@ export async function notifyVolunteerHoursOverride(
   context: VolunteerHoursEmailContext,
 ): Promise<void> {
   try {
-    const { error } = await supabase.functions.invoke(
-      "volunteer-hours-email",
-      {
-        body: {
-          volunteerId: context.volunteerId,
-          volunteerDisplayName: context.volunteerDisplayName ?? null,
-          orgName: context.orgName ?? null,
-          hoursReported: context.hoursReported,
-          activityDate: context.activityDate,
-          newStatus: input.newStatus,
-          reason: input.reason ?? null,
-        },
+    const { error } = await supabase.functions.invoke("volunteer-hours-email", {
+      body: {
+        volunteerId: context.volunteerId,
+        volunteerDisplayName: context.volunteerDisplayName ?? null,
+        orgName: context.orgName ?? null,
+        hoursReported: context.hoursReported,
+        activityDate: context.activityDate,
+        newStatus: input.newStatus,
+        reason: input.reason ?? null,
       },
-    );
+    });
     if (error) {
       Logger.error("volunteer-hours-email edge function error", { error });
     }
