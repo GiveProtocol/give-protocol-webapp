@@ -163,7 +163,9 @@ const setupMocks = () => {
 
   // Mock supabase.functions.invoke for edge function calls
   mockSupabase.functions = {
-    invoke: jest.fn().mockResolvedValue({ data: { success: true }, error: null }),
+    invoke: jest
+      .fn()
+      .mockResolvedValue({ data: { success: true }, error: null }),
   };
 
   // Silence console.error for expected errors

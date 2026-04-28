@@ -21,25 +21,24 @@ const corsHeaders = {
 const SUPPORT_EMAIL = "support@giveprotocol.io";
 const PORTAL_URL = "https://giveprotocol.io";
 
-const ACCOUNT_TYPE_LABELS: Record<string, { label: string; portal: string }> =
-  {
-    donor: {
-      label: "Donor",
-      portal: `${PORTAL_URL}/donor-portal`,
-    },
-    charity: {
-      label: "Charity Organization",
-      portal: `${PORTAL_URL}/charity-portal`,
-    },
-    volunteer: {
-      label: "Volunteer",
-      portal: `${PORTAL_URL}/volunteer`,
-    },
-    admin: {
-      label: "Administrator",
-      portal: `${PORTAL_URL}/admin`,
-    },
-  };
+const ACCOUNT_TYPE_LABELS: Record<string, { label: string; portal: string }> = {
+  donor: {
+    label: "Donor",
+    portal: `${PORTAL_URL}/donor-portal`,
+  },
+  charity: {
+    label: "Charity Organization",
+    portal: `${PORTAL_URL}/charity-portal`,
+  },
+  volunteer: {
+    label: "Volunteer",
+    portal: `${PORTAL_URL}/volunteer`,
+  },
+  admin: {
+    label: "Administrator",
+    portal: `${PORTAL_URL}/admin`,
+  },
+};
 
 interface Profile {
   type: string | null;
@@ -60,7 +59,9 @@ function buildEmailHtml(
   const safeEmail = escapeHtml(email);
   const typeInfo =
     ACCOUNT_TYPE_LABELS[accountType] ?? ACCOUNT_TYPE_LABELS["donor"];
-  const greeting = displayName ? `Hello, ${escapeHtml(displayName)}!` : "Hello!";
+  const greeting = displayName
+    ? `Hello, ${escapeHtml(displayName)}!`
+    : "Hello!";
 
   return `<!DOCTYPE html>
 <html>
