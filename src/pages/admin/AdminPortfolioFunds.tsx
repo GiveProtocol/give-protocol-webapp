@@ -224,99 +224,97 @@ function FundForm({
   );
 
   return (
-    <Card className="p-6 mb-6">
-      <h2 className="text-lg font-semibold mb-4">
+    <Card className="p-6 mb-6 space-y-4">
+      <h2 className="text-lg font-semibold">
         {isEdit ? "Edit Fund" : "Create New Fund"}
       </h2>
-      <div className="space-y-4">
-        <div>
-          <label
-            htmlFor="fund-name"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Fund Name
-          </label>
-          <Input
-            id="fund-name"
-            value={formData.name}
-            onChange={handleNameChange}
-            placeholder="e.g. Environmental Impact Fund"
-          />
-        </div>
+      <div>
+        <label
+          htmlFor="fund-name"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Fund Name
+        </label>
+        <Input
+          id="fund-name"
+          value={formData.name}
+          onChange={handleNameChange}
+          placeholder="e.g. Environmental Impact Fund"
+        />
+      </div>
 
-        <div>
-          <label
-            htmlFor="fund-description"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Description
-          </label>
-          <textarea
-            id="fund-description"
-            value={formData.description}
-            onChange={handleDescChange}
-            rows={3}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-            placeholder="Describe the fund's purpose and impact focus..."
-          />
-        </div>
+      <div>
+        <label
+          htmlFor="fund-description"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Description
+        </label>
+        <textarea
+          id="fund-description"
+          value={formData.description}
+          onChange={handleDescChange}
+          rows={3}
+          className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+          placeholder="Describe the fund's purpose and impact focus..."
+        />
+      </div>
 
-        <div>
-          <label
-            htmlFor="fund-category"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Category
-          </label>
-          <select
-            id="fund-category"
-            value={formData.category}
-            onChange={handleCategoryChange}
-            className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
-          >
-            <option value="">Select a category</option>
-            {FUND_CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-        </div>
+      <div>
+        <label
+          htmlFor="fund-category"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Category
+        </label>
+        <select
+          id="fund-category"
+          value={formData.category}
+          onChange={handleCategoryChange}
+          className="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-emerald-500 focus:ring-emerald-500"
+        >
+          <option value="">Select a category</option>
+          {FUND_CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+      </div>
 
-        <div>
-          <label
-            htmlFor="fund-image"
-            className="block text-sm font-medium text-gray-700 mb-1"
-          >
-            Image URL
-          </label>
-          <Input
-            id="fund-image"
-            value={formData.image_url}
-            onChange={handleImageChange}
-            placeholder="https://..."
-          />
-        </div>
+      <div>
+        <label
+          htmlFor="fund-image"
+          className="block text-sm font-medium text-gray-700 mb-1"
+        >
+          Image URL
+        </label>
+        <Input
+          id="fund-image"
+          value={formData.image_url}
+          onChange={handleImageChange}
+          placeholder="https://..."
+        />
+      </div>
 
-        <div>
-          <p className="block text-sm font-medium text-gray-700 mb-2">
-            Select Charities ({formData.charity_ids.length} selected)
-          </p>
-          <CharitySelector
-            charities={charities}
-            selectedIds={formData.charity_ids}
-            onToggle={onCharityToggle}
-          />
-        </div>
+      <div>
+        <p className="block text-sm font-medium text-gray-700 mb-2">
+          Select Charities ({formData.charity_ids.length} selected)
+        </p>
+        <CharitySelector
+          charities={charities}
+          selectedIds={formData.charity_ids}
+          onToggle={onCharityToggle}
+        />
+      </div>
 
-        <div className="flex gap-3 pt-2">
-          <Button onClick={onSubmit} disabled={loading || !formData.name}>
-            {loading ? "Saving..." : isEdit ? "Update Fund" : "Create Fund"}
-          </Button>
-          <Button variant="secondary" onClick={onCancel} disabled={loading}>
-            Cancel
-          </Button>
-        </div>
+      <div className="flex gap-3 pt-2">
+        <Button onClick={onSubmit} disabled={loading || !formData.name}>
+          {loading ? "Saving..." : isEdit ? "Update Fund" : "Create Fund"}
+        </Button>
+        <Button variant="secondary" onClick={onCancel} disabled={loading}>
+          Cancel
+        </Button>
       </div>
     </Card>
   );
