@@ -42,6 +42,7 @@ const CauseDetail: React.FC = () => {
       return undefined;
     }
 
+    /** Fetches the cause row by id and maps it onto local state. */
     const fetchCause = async () => {
       const { data, error: fetchError } = await supabase
         .from("causes")

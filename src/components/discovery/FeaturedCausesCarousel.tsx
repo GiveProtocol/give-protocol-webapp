@@ -41,6 +41,64 @@ function ProgressBar({ raised, target }: { raised: number; target: number }) {
   );
 }
 
+/** Cover image or placeholder shown at the top of a cause card. */
+function CauseCoverImage({
+  imageUrl,
+  name,
+}: {
+  imageUrl: string | null;
+  name: string;
+}) {
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt={`${name} cover`}
+        loading="lazy"
+        className="absolute inset-0 h-full w-full object-cover"
+      />
+    );
+  }
+  return (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <Target
+        aria-hidden="true"
+        className="h-12 w-12 text-gray-300 dark:text-gray-600"
+      />
+    </div>
+  );
+}
+
+/** Pill displaying a cause's location with a map-pin icon. */
+function LocationBadge({ location }: { location: string }) {
+  return (
+    <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+      <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
+      {location}
+    </span>
+  );
+}
+
+/** Row showing the raised amount and percentage of target. */
+function RaisedStatsRow({
+  raised,
+  target,
+  pct,
+}: {
+  raised: number;
+  target: number;
+  pct: number;
+}) {
+  return (
+    <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+      <span>${raised.toLocaleString()} raised</span>
+      <span>
+        {pct}% of ${target.toLocaleString()}
+      </span>
+    </div>
+  );
+}
+
 /** Single featured-cause card rendered inside a carousel page. */
 function FeaturedCauseCard({ cause }: { cause: FeaturedCause }) {
   const pct =
@@ -51,21 +109,7 @@ function FeaturedCauseCard({ cause }: { cause: FeaturedCause }) {
   return (
     <Card className="flex flex-col h-full overflow-hidden">
       <div className="relative aspect-[16/9] bg-gray-100 dark:bg-gray-800">
-        {cause.imageUrl ? (
-          <img
-            src={cause.imageUrl}
-            alt={`${cause.name} cover`}
-            loading="lazy"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-        ) : (
-          <div className="absolute inset-0 flex items-center justify-center">
-            <Target
-              aria-hidden="true"
-              className="h-12 w-12 text-gray-300 dark:text-gray-600"
-            />
-          </div>
-        )}
+        <CauseCoverImage imageUrl={cause.imageUrl} name={cause.name} />
         <span className="absolute top-3 left-3 inline-flex items-center gap-1 px-2 py-1 bg-white/90 dark:bg-gray-900/90 text-emerald-700 dark:text-emerald-300 text-xs font-medium rounded-full shadow-sm">
           <Target aria-hidden="true" className="h-3.5 w-3.5" />
           Cause
@@ -77,12 +121,7 @@ function FeaturedCauseCard({ cause }: { cause: FeaturedCause }) {
           <span className="inline-block px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300">
             {cause.category}
           </span>
-          {cause.location && (
-            <span className="inline-flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
-              <MapPin aria-hidden="true" className="h-3.5 w-3.5" />
-              {cause.location}
-            </span>
-          )}
+          {cause.location && <LocationBadge location={cause.location} />}
         </div>
 
         <Link
@@ -105,12 +144,11 @@ function FeaturedCauseCard({ cause }: { cause: FeaturedCause }) {
             raised={cause.raisedAmount}
             target={cause.targetAmount}
           />
-          <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
-            <span>${cause.raisedAmount.toLocaleString()} raised</span>
-            <span>
-              {pct}% of ${cause.targetAmount.toLocaleString()}
-            </span>
-          </div>
+          <RaisedStatsRow
+            raised={cause.raisedAmount}
+            target={cause.targetAmount}
+            pct={pct}
+          />
           <Link
             to={`/causes/${cause.id}`}
             className="w-full inline-flex items-center justify-center rounded-[10px] bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium px-4 py-2.5 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
