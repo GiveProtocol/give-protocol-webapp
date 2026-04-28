@@ -20,8 +20,7 @@ const corsHeaders = {
 
 const SUPPORT_EMAIL = "support@giveprotocol.io";
 const PORTAL_URL = "https://giveprotocol.io";
-const ORG_ADDRESS =
-  "Give Protocol Foundation, giveprotocol.io";
+const ORG_ADDRESS = "Give Protocol Foundation, giveprotocol.io";
 
 interface DonationReceiptRequest {
   donorEmail: string;
@@ -87,8 +86,8 @@ function buildReceiptHtml(req: DonationReceiptRequest): string {
   const destinationLabel = safeFund
     ? `Portfolio Fund: ${safeFund}`
     : safeCause
-    ? `${safeCharity} — ${safeCause}`
-    : safeCharity;
+      ? `${safeCharity} — ${safeCause}`
+      : safeCharity;
 
   return `<!DOCTYPE html>
 <html>
@@ -237,14 +236,11 @@ serve(async (req: Request) => {
 
   const request: DonationReceiptRequest = {
     donorEmail: reqObj.donorEmail,
-    donorName:
-      typeof reqObj.donorName === "string" ? reqObj.donorName : null,
+    donorName: typeof reqObj.donorName === "string" ? reqObj.donorName : null,
     charityName:
       typeof reqObj.charityName === "string" ? reqObj.charityName : null,
-    causeName:
-      typeof reqObj.causeName === "string" ? reqObj.causeName : null,
-    fundName:
-      typeof reqObj.fundName === "string" ? reqObj.fundName : null,
+    causeName: typeof reqObj.causeName === "string" ? reqObj.causeName : null,
+    fundName: typeof reqObj.fundName === "string" ? reqObj.fundName : null,
     amountCents: reqObj.amountCents,
     currency: reqObj.currency,
     transactionId: reqObj.transactionId,
