@@ -1,6 +1,12 @@
 import React from "react";
 import { jest, describe, it, expect, beforeEach } from "@jest/globals";
-import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  waitFor,
+  act,
+} from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { SelfReportedHoursForm } from "../SelfReportedHoursForm";
 import type { SelfReportedHoursInput } from "@/types/selfReportedHours";
@@ -15,12 +21,15 @@ import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSear
 
 const mockUseCharityOrgSearch = jest.mocked(useCharityOrganizationSearch);
 
-const mockOnSubmit = jest.fn<(_input: SelfReportedHoursInput) => Promise<void>>();
+const mockOnSubmit =
+  jest.fn<(_input: SelfReportedHoursInput) => Promise<void>>();
 const mockOnCancel = jest.fn();
 
 const VALID_DESCRIPTION = "A".repeat(MIN_DESCRIPTION_LENGTH);
 
-const renderForm = (props: Partial<Parameters<typeof SelfReportedHoursForm>[0]> = {}) =>
+const renderForm = (
+  props: Partial<Parameters<typeof SelfReportedHoursForm>[0]> = {},
+) =>
   render(
     <MemoryRouter>
       <SelfReportedHoursForm
@@ -163,7 +172,9 @@ describe("SelfReportedHoursForm", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Activity date is required")).toBeInTheDocument();
+        expect(
+          screen.getByText("Activity date is required"),
+        ).toBeInTheDocument();
       });
     });
 
@@ -200,7 +211,9 @@ describe("SelfReportedHoursForm", () => {
       });
 
       await waitFor(() => {
-        expect(screen.getByText("Activity date is required")).toBeInTheDocument();
+        expect(
+          screen.getByText("Activity date is required"),
+        ).toBeInTheDocument();
       });
       expect(mockOnSubmit).not.toHaveBeenCalled();
     });
@@ -212,7 +225,9 @@ describe("SelfReportedHoursForm", () => {
 
       // Fill in date
       const dateInput = screen.getByLabelText(/^date/i);
-      fireEvent.change(dateInput, { target: { name: "activityDate", value: "2025-01-15" } });
+      fireEvent.change(dateInput, {
+        target: { name: "activityDate", value: "2025-01-15" },
+      });
 
       // Fill in hours
       const hoursInput = screen.getByLabelText(/^hours/i);
@@ -281,7 +296,9 @@ describe("SelfReportedHoursForm", () => {
       const hoursInput = screen.getByLabelText(/^hours/i) as HTMLInputElement;
       expect(hoursInput.value).toBe("6");
 
-      const locationInput = screen.getByLabelText(/location/i) as HTMLInputElement;
+      const locationInput = screen.getByLabelText(
+        /location/i,
+      ) as HTMLInputElement;
       expect(locationInput.value).toBe("Remote");
     });
   });
@@ -289,9 +306,7 @@ describe("SelfReportedHoursForm", () => {
   describe("Validation status preview", () => {
     it("shows unvalidated preview when in other mode", () => {
       renderForm();
-      expect(
-        screen.getByText(/saved as unvalidated/i),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/saved as unvalidated/i)).toBeInTheDocument();
     });
   });
 
