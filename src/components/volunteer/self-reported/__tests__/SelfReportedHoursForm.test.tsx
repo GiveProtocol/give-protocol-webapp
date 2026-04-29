@@ -186,7 +186,7 @@ describe("SelfReportedHoursForm", () => {
 
       await waitFor(() => {
         expect(
-          screen.getByText(new RegExp("Description must be at least")),
+          screen.getByText(/Description must be at least/),
         ).toBeInTheDocument();
       });
     });
