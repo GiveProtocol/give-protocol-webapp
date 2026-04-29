@@ -59,7 +59,7 @@ describe("ContributionTracker", () => {
 
     mockUseWalletAlias.mockReturnValue({
       alias: null,
-      setAlias: jest.fn().mockResolvedValue(undefined),
+      setAlias: jest.fn<() => Promise<void>>().mockResolvedValue(),
       setWalletAlias: jest.fn().mockResolvedValue(true),
       isLoading: false,
       error: null,
@@ -102,18 +102,14 @@ describe("ContributionTracker", () => {
 
     it("shows Donation Leaderboard by default", () => {
       renderTracker();
-      expect(
-        screen.getByTestId("donation-leaderboard"),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("donation-leaderboard")).toBeInTheDocument();
     });
 
     it("switches to Volunteer Leaderboard when tab is clicked", () => {
       renderTracker();
       const volunteerTab = screen.getByText("Volunteer Rankings");
       fireEvent.click(volunteerTab);
-      expect(
-        screen.getByTestId("volunteer-leaderboard"),
-      ).toBeInTheDocument();
+      expect(screen.getByTestId("volunteer-leaderboard")).toBeInTheDocument();
     });
 
     it("hides Donation Leaderboard when Volunteer tab is active", () => {
@@ -200,9 +196,7 @@ describe("ContributionTracker", () => {
   describe("Wallet alias (not connected)", () => {
     it("does not render Set Wallet Alias button when not connected", () => {
       renderTracker();
-      expect(
-        screen.queryByText("Set Wallet Alias"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByText("Set Wallet Alias")).not.toBeInTheDocument();
     });
   });
 
@@ -230,7 +224,7 @@ describe("ContributionTracker", () => {
     it("renders current alias when connected with alias set", () => {
       mockUseWalletAlias.mockReturnValue({
         alias: "MyAlias",
-        setAlias: jest.fn().mockResolvedValue(undefined),
+        setAlias: jest.fn<() => Promise<void>>().mockResolvedValue(),
         setWalletAlias: jest.fn().mockResolvedValue(true),
         isLoading: false,
         error: null,
@@ -242,7 +236,7 @@ describe("ContributionTracker", () => {
     it("renders Change button when alias is set", () => {
       mockUseWalletAlias.mockReturnValue({
         alias: "MyAlias",
-        setAlias: jest.fn().mockResolvedValue(undefined),
+        setAlias: jest.fn<() => Promise<void>>().mockResolvedValue(),
         setWalletAlias: jest.fn().mockResolvedValue(true),
         isLoading: false,
         error: null,
