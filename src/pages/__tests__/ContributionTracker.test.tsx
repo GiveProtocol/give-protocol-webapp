@@ -59,7 +59,7 @@ describe("ContributionTracker", () => {
 
     mockUseWalletAlias.mockReturnValue({
       alias: null,
-      setAlias: jest.fn().mockResolvedValue(undefined),
+      setAlias: jest.fn<() => Promise<void>>().mockResolvedValue(),
       setWalletAlias: jest.fn().mockResolvedValue(true),
       isLoading: false,
       error: null,
@@ -230,7 +230,7 @@ describe("ContributionTracker", () => {
     it("renders current alias when connected with alias set", () => {
       mockUseWalletAlias.mockReturnValue({
         alias: "MyAlias",
-        setAlias: jest.fn().mockResolvedValue(undefined),
+        setAlias: jest.fn<() => Promise<void>>().mockResolvedValue(),
         setWalletAlias: jest.fn().mockResolvedValue(true),
         isLoading: false,
         error: null,
@@ -242,7 +242,7 @@ describe("ContributionTracker", () => {
     it("renders Change button when alias is set", () => {
       mockUseWalletAlias.mockReturnValue({
         alias: "MyAlias",
-        setAlias: jest.fn().mockResolvedValue(undefined),
+        setAlias: jest.fn<() => Promise<void>>().mockResolvedValue(),
         setWalletAlias: jest.fn().mockResolvedValue(true),
         isLoading: false,
         error: null,

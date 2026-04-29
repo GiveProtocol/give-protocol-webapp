@@ -42,7 +42,7 @@ const submitForm = (container: HTMLElement) => {
 describe("SelfReportedHoursForm", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    mockOnSubmit.mockResolvedValue(undefined);
+    mockOnSubmit.mockResolvedValue();
     mockUseCharityOrgSearch.mockReturnValue({
       organizations: [],
       loading: false,

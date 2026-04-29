@@ -215,7 +215,7 @@ describe("WalletButton", () => {
     it("copies address and shows confirmation", async () => {
       // Mock clipboard API
       const writeText = jest.fn<() => Promise<void>>();
-      writeText.mockResolvedValue(undefined);
+      writeText.mockResolvedValue();
       Object.assign(navigator, {
         clipboard: { writeText },
       });
