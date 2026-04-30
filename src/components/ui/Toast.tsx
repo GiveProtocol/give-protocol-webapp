@@ -1,8 +1,8 @@
 import React from 'react';
-import { X, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
+import { X, CheckCircle, AlertCircle, Loader2, Info } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
-export type ToastType = 'success' | 'error' | 'loading';
+export type ToastType = 'success' | 'error' | 'loading' | 'info';
 
 interface ToastProps {
   type: ToastType;
@@ -20,7 +20,8 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
   const icons = {
     success: CheckCircle,
     error: AlertCircle,
-    loading: Loader2
+    loading: Loader2,
+    info: Info
   };
 
   const Icon = icons[type];
@@ -33,7 +34,8 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
         "pointer-events-auto w-full max-w-sm overflow-hidden rounded-lg bg-white shadow-lg ring-1 p-4",
         type === 'success' && "ring-green-500",
         type === 'error' && "ring-red-500",
-        type === 'loading' && "ring-blue-500"
+        type === 'loading' && "ring-blue-500",
+        type === 'info' && "ring-blue-500"
       )}
     >
       <div className="flex items-start">
@@ -41,7 +43,8 @@ export const Toast: React.FC<ToastProps> = ({ type, title, message, onClose }) =
           "h-6 w-6 flex-shrink-0",
           type === 'success' && "text-green-500",
           type === 'error' && "text-red-500",
-          type === 'loading' && "text-blue-500 animate-spin"
+          type === 'loading' && "text-blue-500 animate-spin",
+          type === 'info' && "text-blue-500"
         )} />
         <div className="ml-3 w-0 flex-1 pt-0.5">
           <p className="text-sm font-medium text-gray-900">{title}</p>
