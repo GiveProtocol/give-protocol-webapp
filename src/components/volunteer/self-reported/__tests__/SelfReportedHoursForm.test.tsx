@@ -321,4 +321,296 @@ describe("SelfReportedHoursForm", () => {
       expect(screen.getByText("Updating...")).toBeInTheDocument();
     });
   });
+
+  describe("Activity dropdown click outside", () => {
+    it("closes the dropdown when clicking outside it", () => {
+      renderForm();
+      const button = document.getElementById("activityTypeButton") as HTMLElement;
+      fireEvent.click(button);
+      // Dropdown is open — fundraising option visible
+      expect(
+        screen.getAllByText(ACTIVITY_TYPE_LABELS[ActivityType.FUNDRAISING])
+          .length,
+      ).toBeGreaterThan(0);
+      // Simulate mousedown outside the dropdown
+      act(() => {
+        fireEvent.mouseDown(document.body);
+      });
+      // The dropdown options should no longer be in the DOM
+      // (Only the trigger label remains, not the dropdown list item)
+      const fundraisingMatches = screen.queryAllByText(
+        ACTIVITY_TYPE_LABELS[ActivityType.FUNDRAISING],
+      );
+      expect(fundraisingMatches.length).toBe(0);
+    });
+  });
+
+  describe("Verified organization selection", () => {
+    /** Renders the form, switches to registry mode, and returns helper data. */
+    const setupWithVerifiedOrg = () => {
+      const org = {
+        id: "charity-org-1",
+        name: "Acme Charity",
+        ein: "12-3456789",
+        city: "San Francisco",
+        state: "CA",
+        is_on_platform: true,
+        platform_charity_id: "platform-1",
+      };
+      mockUseCharityOrgSearch.mockReturnValue({
+        organizations: [org],
+        loading: false,
+        hasMore: false,
+        error: null,
+        loadMore: jest.fn(),
+      });
+      const result = renderForm();
+      const registryRadio = screen.getByLabelText(/search registry/i);
+      fireEvent.click(registryRadio);
+      return { ...result, org };
+    };
+
+    it("selects an organization from the registry results", () => {
+      const { org } = setupWithVerifiedOrg();
+      const input = screen.getByPlaceholderText(/search charity registry/i);
+      fireEvent.change(input, { target: { value: "Acme" } });
+
+      // Click the result button (button has data-ein attribute)
+      const result = document.querySelector(`button[data-ein="${org.ein}"]`);
+      expect(result).not.toBeNull();
+      fireEvent.click(result as HTMLElement);
+
+      // Validation banner should now reflect a selected organization
+      expect(
+        screen.getByText(
+          new RegExp(`This record will be submitted for validation to ${org.name}`),
+        ),
+      ).toBeInTheDocument();
+    });
+
+    it("clears the selected organization when the clear button is clicked", () => {
+      const { org } = setupWithVerifiedOrg();
+      const input = screen.getByPlaceholderText(/search charity registry/i);
+      fireEvent.change(input, { target: { value: "Acme" } });
+      const result = document.querySelector(`button[data-ein="${org.ein}"]`);
+      fireEvent.click(result as HTMLElement);
+
+      // Now click the clear (X) button
+      const clearBtn = document.querySelector(
+        'button[type="button"] svg.lucide-x',
+      )?.closest("button");
+      if (clearBtn) fireEvent.click(clearBtn);
+
+      // Banner should reset to "no organization selected"
+      expect(
+        screen.queryByText(/will be submitted for validation to/i),
+      ).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Verified mode submission", () => {
+    it("submits with charityOrgId and platform organizationId when org is on platform", async () => {
+      const org = {
+        id: "charity-org-2",
+        name: "Beta Charity",
+        ein: "98-7654321",
+        city: "Boston",
+        state: "MA",
+        is_on_platform: true,
+        platform_charity_id: "platform-2",
+      };
+      mockUseCharityOrgSearch.mockReturnValue({
+        organizations: [org],
+        loading: false,
+        hasMore: false,
+        error: null,
+        loadMore: jest.fn(),
+      });
+      const { container } = renderForm();
+      fireEvent.click(screen.getByLabelText(/search registry/i));
+
+      // Fill required fields
+      fireEvent.change(screen.getByLabelText(/^date/i), {
+        target: { name: "activityDate", value: "2025-06-01" },
+      });
+      fireEvent.change(screen.getByLabelText(/^hours/i), {
+        target: { name: "hours", value: "3" },
+      });
+      fireEvent.change(
+        screen.getByPlaceholderText(/describe the activities/i),
+        { target: { name: "description", value: VALID_DESCRIPTION } },
+      );
+
+      // Select org
+      const searchInput = screen.getByPlaceholderText(
+        /search charity registry/i,
+      );
+      fireEvent.change(searchInput, { target: { value: "Beta" } });
+      const result = document.querySelector(`button[data-ein="${org.ein}"]`);
+      fireEvent.click(result as HTMLElement);
+
+      act(() => {
+        submitForm(container);
+      });
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+      });
+      const submittedData = mockOnSubmit.mock.calls[0][0];
+      expect(submittedData.charityOrgId).toBe(org.id);
+      expect(submittedData.organizationId).toBe(org.platform_charity_id);
+      expect(submittedData.organizationName).toBeUndefined();
+    });
+
+    it("submits with org name when registry org is not on platform", async () => {
+      const org = {
+        id: "charity-org-3",
+        name: "Gamma Charity",
+        ein: "11-1111111",
+        city: null,
+        state: null,
+        is_on_platform: false,
+        platform_charity_id: null,
+      };
+      mockUseCharityOrgSearch.mockReturnValue({
+        organizations: [org],
+        loading: false,
+        hasMore: false,
+        error: null,
+        loadMore: jest.fn(),
+      });
+      const { container } = renderForm();
+      fireEvent.click(screen.getByLabelText(/search registry/i));
+
+      fireEvent.change(screen.getByLabelText(/^date/i), {
+        target: { name: "activityDate", value: "2025-06-01" },
+      });
+      fireEvent.change(screen.getByLabelText(/^hours/i), {
+        target: { name: "hours", value: "2" },
+      });
+      fireEvent.change(
+        screen.getByPlaceholderText(/describe the activities/i),
+        { target: { name: "description", value: VALID_DESCRIPTION } },
+      );
+
+      const searchInput = screen.getByPlaceholderText(
+        /search charity registry/i,
+      );
+      fireEvent.change(searchInput, { target: { value: "Gamma" } });
+      const result = document.querySelector(`button[data-ein="${org.ein}"]`);
+      fireEvent.click(result as HTMLElement);
+
+      act(() => {
+        submitForm(container);
+      });
+
+      await waitFor(() => {
+        expect(mockOnSubmit).toHaveBeenCalledTimes(1);
+      });
+      const submittedData = mockOnSubmit.mock.calls[0][0];
+      expect(submittedData.charityOrgId).toBe(org.id);
+      expect(submittedData.organizationName).toBe(org.name);
+      expect(submittedData.organizationId).toBeUndefined();
+    });
+  });
+
+  describe("Validation preview banners", () => {
+    it("shows the verified-with-org preview banner", () => {
+      const org = {
+        id: "charity-org-banner",
+        name: "Banner Charity",
+        ein: "22-2222222",
+        city: "Austin",
+        state: "TX",
+        is_on_platform: false,
+        platform_charity_id: null,
+      };
+      mockUseCharityOrgSearch.mockReturnValue({
+        organizations: [org],
+        loading: false,
+        hasMore: false,
+        error: null,
+        loadMore: jest.fn(),
+      });
+      renderForm();
+      fireEvent.click(screen.getByLabelText(/search registry/i));
+      const searchInput = screen.getByPlaceholderText(
+        /search charity registry/i,
+      );
+      fireEvent.change(searchInput, { target: { value: "Banner" } });
+      const result = document.querySelector(`button[data-ein="${org.ein}"]`);
+      fireEvent.click(result as HTMLElement);
+      expect(
+        screen.getByText(/This record will be submitted for validation/),
+      ).toBeInTheDocument();
+    });
+
+    it("shows the expired preview when verified mode and date is too old", () => {
+      // Activity over 90 days old → expired
+      renderForm({
+        initialData: {
+          organizationId: "platform-x",
+          activityDate: "2020-01-01",
+        },
+      });
+      expect(
+        screen.getByText(/Validation period has expired for this date/),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("Initial verified mode", () => {
+    it("renders in verified mode when initialData has organizationId", () => {
+      renderForm({
+        initialData: {
+          organizationId: "platform-existing",
+          activityDate: "2025-06-01",
+          description: VALID_DESCRIPTION,
+        },
+      });
+      // Search input should be visible (verified mode)
+      expect(
+        screen.getByPlaceholderText(/search charity registry/i),
+      ).toBeInTheDocument();
+    });
+  });
+
+  describe("Switching modes resets organization fields", () => {
+    it("resets selectedOrgName when switching back from verified to other", () => {
+      const org = {
+        id: "charity-org-reset",
+        name: "Reset Charity",
+        ein: "33-3333333",
+        city: null,
+        state: null,
+        is_on_platform: false,
+        platform_charity_id: null,
+      };
+      mockUseCharityOrgSearch.mockReturnValue({
+        organizations: [org],
+        loading: false,
+        hasMore: false,
+        error: null,
+        loadMore: jest.fn(),
+      });
+      renderForm();
+      fireEvent.click(screen.getByLabelText(/search registry/i));
+      const searchInput = screen.getByPlaceholderText(
+        /search charity registry/i,
+      );
+      fireEvent.change(searchInput, { target: { value: "Reset" } });
+      const result = document.querySelector(`button[data-ein="${org.ein}"]`);
+      fireEvent.click(result as HTMLElement);
+      expect(
+        screen.getByText(/will be submitted for validation/),
+      ).toBeInTheDocument();
+
+      // Switch to "Not Listed"
+      fireEvent.click(screen.getByLabelText(/not listed/i));
+      expect(
+        screen.queryByText(/will be submitted for validation/),
+      ).not.toBeInTheDocument();
+      expect(screen.getByText(/saved as unvalidated/i)).toBeInTheDocument();
+    });
+  });
 });
