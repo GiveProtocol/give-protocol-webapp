@@ -520,6 +520,11 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
 
   const connect = useCallback(
     async (_walletProvider?: unknown) => {
+      if (isConnectingRef.current) {
+        Logger.warn("Wallet connection already in progress, skipping");
+        return;
+      }
+
       // Resolve wallet provider (ignore events from onClick={connect})
       const defaultProvider =
         typeof window !== "undefined" ? window.ethereum : null;

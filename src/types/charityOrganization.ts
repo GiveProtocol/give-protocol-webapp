@@ -1,4 +1,4 @@
-/** Represents a row returned by the search_charity_organizations RPC function. */
+/** Represents a row returned by the search_irs_organizations RPC function. */
 export interface CharityOrganization {
   id: string;
   ein: string;
@@ -18,7 +18,7 @@ export interface CharityOrganization {
   last_synced_at: string | null;
 }
 
-/** Parameters for the search_charity_organizations RPC call. */
+/** Parameters for the search_irs_organizations RPC call. */
 export interface CharitySearchParams {
   search_query: string | null;
   filter_state: string | null;
