@@ -72,11 +72,12 @@ describe("charityOrganizationService", () => {
       });
 
       expect(supabase.rpc).toHaveBeenCalledWith(
-        "search_irs_organizations",
+        "search_charity_organizations",
         {
           search_query: "test",
           filter_state: null,
           filter_ntee: null,
+          filter_country: null,
           result_limit: 21,
           result_offset: 0,
         },
@@ -119,11 +120,12 @@ describe("charityOrganizationService", () => {
       });
 
       expect(supabase.rpc).toHaveBeenCalledWith(
-        "search_irs_organizations",
+        "search_charity_organizations",
         {
           search_query: null,
           filter_state: "TX",
           filter_ntee: null,
+          filter_country: null,
           result_limit: 21,
           result_offset: 0,
         },
@@ -165,11 +167,12 @@ describe("charityOrganizationService", () => {
       });
 
       expect(supabase.rpc).toHaveBeenCalledWith(
-        "search_irs_organizations",
+        "search_charity_organizations",
         {
           search_query: null,
           filter_state: null,
           filter_ntee: null,
+          filter_country: "MX",
           result_limit: 21,
           result_offset: 0,
         },
