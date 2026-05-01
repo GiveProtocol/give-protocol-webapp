@@ -31,7 +31,10 @@ const mockEncryptionSuccess = () => {
     (_name: unknown, opts: unknown) => {
       const body = (opts as { body: { operation: string } }).body;
       if (body.operation === "hmac") {
-        return Promise.resolve({ data: { digest: "hmac-digest" }, error: null });
+        return Promise.resolve({
+          data: { digest: "hmac-digest" },
+          error: null,
+        });
       }
       return Promise.resolve({
         data: { ciphertext: "v1:iv:ciphertext" },
@@ -163,7 +166,9 @@ describe("ApplicationForm", () => {
         .getByText(/Relevant Experience/)
         .closest("label")
         ?.querySelector("textarea") as HTMLTextAreaElement;
-      fireEvent.change(textarea, { target: { value: "Five years volunteering" } });
+      fireEvent.change(textarea, {
+        target: { value: "Five years volunteering" },
+      });
       expect(textarea.value).toBe("Five years volunteering");
     });
 
@@ -171,8 +176,12 @@ describe("ApplicationForm", () => {
       render(<ApplicationForm {...defaultProps} />);
       const skills = screen.getByLabelText(/Skills/) as HTMLInputElement;
       const certs = screen.getByLabelText(/Certifications/) as HTMLInputElement;
-      const interests = screen.getByLabelText(/Areas of Interest/) as HTMLInputElement;
-      const works = screen.getByLabelText(/Links to Work Samples/) as HTMLInputElement;
+      const interests = screen.getByLabelText(
+        /Areas of Interest/,
+      ) as HTMLInputElement;
+      const works = screen.getByLabelText(
+        /Links to Work Samples/,
+      ) as HTMLInputElement;
 
       fireEvent.change(skills, { target: { value: "react, node" } });
       fireEvent.change(certs, { target: { value: "cpr" } });
@@ -187,7 +196,9 @@ describe("ApplicationForm", () => {
 
     it("updates reference name and contact fields", () => {
       render(<ApplicationForm {...defaultProps} />);
-      const refName = screen.getByLabelText(/Reference 1 Name/) as HTMLInputElement;
+      const refName = screen.getByLabelText(
+        /Reference 1 Name/,
+      ) as HTMLInputElement;
       const refContact = screen.getByLabelText(
         /Reference 1 Contact/,
       ) as HTMLInputElement;

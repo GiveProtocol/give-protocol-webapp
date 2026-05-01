@@ -325,7 +325,9 @@ describe("SelfReportedHoursForm", () => {
   describe("Activity dropdown click outside", () => {
     it("closes the dropdown when clicking outside it", () => {
       renderForm();
-      const button = document.getElementById("activityTypeButton") as HTMLElement;
+      const button = document.getElementById(
+        "activityTypeButton",
+      ) as HTMLElement;
       fireEvent.click(button);
       // Dropdown is open — fundraising option visible
       expect(
@@ -383,7 +385,9 @@ describe("SelfReportedHoursForm", () => {
       // Validation banner should now reflect a selected organization
       expect(
         screen.getByText(
-          new RegExp(`This record will be submitted for validation to ${org.name}`),
+          new RegExp(
+            `This record will be submitted for validation to ${org.name}`,
+          ),
         ),
       ).toBeInTheDocument();
     });
@@ -396,9 +400,9 @@ describe("SelfReportedHoursForm", () => {
       fireEvent.click(result as HTMLElement);
 
       // Now click the clear (X) button
-      const clearBtn = document.querySelector(
-        'button[type="button"] svg.lucide-x',
-      )?.closest("button");
+      const clearBtn = document
+        .querySelector('button[type="button"] svg.lucide-x')
+        ?.closest("button");
       if (clearBtn) fireEvent.click(clearBtn);
 
       // Banner should reset to "no organization selected"
