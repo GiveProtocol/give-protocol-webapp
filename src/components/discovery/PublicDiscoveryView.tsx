@@ -113,7 +113,11 @@ export const PublicDiscoveryView: React.FC = () => {
         aria-label="Filter charities"
         className="scroll-mt-8"
       >
-        <DiscoveryFilters value={filters} onChange={handleFiltersChange} />
+        <DiscoveryFilters
+          value={filters}
+          onChange={handleFiltersChange}
+          showViewToggle={false}
+        />
       </section>
 
       {hasActiveFilter ? (
