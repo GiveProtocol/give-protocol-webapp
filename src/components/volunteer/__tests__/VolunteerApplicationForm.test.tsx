@@ -43,9 +43,12 @@ const fillValidForm = () => {
   fireEvent.change(screen.getByLabelText(/Age Range/), {
     target: { value: "25-34" },
   });
-  fireEvent.change(screen.getByLabelText(/Tell us about your relevant experience/), {
-    target: { value: "Lots of experience here" },
-  });
+  fireEvent.change(
+    screen.getByLabelText(/Tell us about your relevant experience/),
+    {
+      target: { value: "Lots of experience here" },
+    },
+  );
 
   // Add a skill via Enter
   const skillInput = screen.getByPlaceholderText(/Start typing your skills/);
@@ -134,7 +137,9 @@ describe("VolunteerApplicationForm", () => {
 
     it("renders the three commitment options", () => {
       render(<VolunteerApplicationForm {...defaultProps} />);
-      expect(screen.getByLabelText(/One-time commitment level/)).toBeInTheDocument();
+      expect(
+        screen.getByLabelText(/One-time commitment level/),
+      ).toBeInTheDocument();
       expect(
         screen.getByLabelText(/Short-Term commitment level/),
       ).toBeInTheDocument();
@@ -276,7 +281,9 @@ describe("VolunteerApplicationForm", () => {
 
   describe("validation", () => {
     it("shows validation errors when submitting empty form", async () => {
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       // Clear pre-filled fields to trigger validation errors
       fireEvent.change(screen.getByLabelText(/Email Address/), {
         target: { value: "" },
@@ -300,7 +307,9 @@ describe("VolunteerApplicationForm", () => {
       expect(
         screen.getByText("Please describe your relevant experience"),
       ).toBeInTheDocument();
-      expect(screen.getByText("Please add at least one skill")).toBeInTheDocument();
+      expect(
+        screen.getByText("Please add at least one skill"),
+      ).toBeInTheDocument();
       expect(
         screen.getByText("Please select your age range"),
       ).toBeInTheDocument();
@@ -310,7 +319,9 @@ describe("VolunteerApplicationForm", () => {
     });
 
     it("validates phone number when provided", async () => {
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       fireEvent.change(screen.getByLabelText(/Phone Number/), {
         target: { value: "12" },
       });
@@ -323,7 +334,9 @@ describe("VolunteerApplicationForm", () => {
     });
 
     it("clears a field error when the field is edited", async () => {
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       submitForm(container);
       await waitFor(() => {
         expect(
@@ -341,7 +354,9 @@ describe("VolunteerApplicationForm", () => {
     });
 
     it("clears the consent error when a consent checkbox is changed", async () => {
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       submitForm(container);
       await waitFor(() => {
         expect(
@@ -362,7 +377,9 @@ describe("VolunteerApplicationForm", () => {
 
   describe("submission", () => {
     it("submits the form successfully with valid data", async () => {
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       fillValidForm();
       submitForm(container);
 
@@ -387,7 +404,9 @@ describe("VolunteerApplicationForm", () => {
           .mockResolvedValue({ error: { message: "DB write failed" } }),
       }));
 
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       fillValidForm();
       submitForm(container);
 
@@ -406,7 +425,9 @@ describe("VolunteerApplicationForm", () => {
         loading: false,
         error: null,
       } as unknown as ReturnType<typeof useAuth>);
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       fillValidForm();
       submitForm(container);
 
@@ -420,7 +441,9 @@ describe("VolunteerApplicationForm", () => {
     });
 
     it("does not submit if validation fails", async () => {
-      const { container } = render(<VolunteerApplicationForm {...defaultProps} />);
+      const { container } = render(
+        <VolunteerApplicationForm {...defaultProps} />,
+      );
       // Don't fill anything and clear pre-filled email
       fireEvent.change(screen.getByLabelText(/Email Address/), {
         target: { value: "" },
