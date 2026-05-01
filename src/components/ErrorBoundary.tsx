@@ -97,7 +97,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   /** Returns true when the error is a stale-chunk / dynamic-import failure. */
-  private isChunkError(error: Error): boolean {
+  private static isChunkError(error: Error): boolean {
     return (
       error.name === "ChunkLoadError" ||
       error.message.includes("loading chunk") ||
@@ -117,7 +117,7 @@ export class ErrorBoundary extends Component<Props, State> {
     try {
       // For chunk/import errors a full reload is needed so the browser
       // fetches fresh HTML with correct asset hashes.
-      if (this.state.error && this.isChunkError(this.state.error)) {
+      if (this.state.error && ErrorBoundary.isChunkError(this.state.error)) {
         await this.clearCache();
         window.location.reload();
         return;
