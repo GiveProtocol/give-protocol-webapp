@@ -39,7 +39,7 @@ export async function getFeaturedCharities(): Promise<CharityOrganization[]> {
 }
 
 /**
- * Searches the charity organizations database via the search_irs_organizations RPC.
+ * Searches the charity organizations database via the search_charity_organizations RPC.
  * Requires at least a 2-character query OR an active state/country filter.
  * @param params - Search parameters
  * @returns Paginated search results
@@ -59,10 +59,11 @@ export async function searchCharityOrganizations(
   try {
     const fetchLimit = params.result_limit + 1;
 
-    const { data, error } = await supabase.rpc("search_irs_organizations", {
+    const { data, error } = await supabase.rpc("search_charity_organizations", {
       search_query: hasQuery ? query : null,
       filter_state: params.filter_state || null,
       filter_ntee: params.filter_ntee || null,
+      filter_country: params.filter_country || null,
       result_limit: fetchLimit,
       result_offset: params.result_offset,
     });
