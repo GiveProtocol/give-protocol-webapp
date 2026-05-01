@@ -322,6 +322,8 @@ export default {
       "<rootDir>/src/test-utils/adminDashboardServiceMock.js",
     "^@/services/adminContentModerationService$":
       "<rootDir>/src/test-utils/adminContentModerationServiceMock.js",
+    "^@/services/adminCharityRequestsService$":
+      "<rootDir>/src/test-utils/adminCharityRequestsServiceMock.js",
     "^@/services/adminReportsService$":
       "<rootDir>/src/test-utils/adminReportsServiceMock.js",
     "^@/services/adminDonationService$":
