@@ -91,7 +91,17 @@ export class ErrorBoundary extends Component<Props, State> {
       this.state.recoveryAttempts < MAX_RECOVERY_ATTEMPTS &&
       (recoverableErrors.includes(error.name) ||
         error.message.includes("loading chunk") ||
+        error.message.includes("dynamically imported module") ||
         error.message.includes("network"))
+    );
+  }
+
+  /** Returns true when the error is a stale-chunk / dynamic-import failure. */
+  private isChunkError(error: Error): boolean {
+    return (
+      error.name === "ChunkLoadError" ||
+      error.message.includes("loading chunk") ||
+      error.message.includes("dynamically imported module")
     );
   }
 
@@ -105,6 +115,14 @@ export class ErrorBoundary extends Component<Props, State> {
     this.setState((prev) => ({ recoveryAttempts: prev.recoveryAttempts + 1 }));
 
     try {
+      // For chunk/import errors a full reload is needed so the browser
+      // fetches fresh HTML with correct asset hashes.
+      if (this.state.error && this.isChunkError(this.state.error)) {
+        await this.clearCache();
+        window.location.reload();
+        return;
+      }
+
       // Clear cache and reload resources
       await this.clearCache();
 
