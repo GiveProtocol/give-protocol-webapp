@@ -4,6 +4,11 @@ import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { listCharityRequests } from "@/services/adminCharityRequestsService";
 import type { AdminCharityRequestItem } from "@/types/adminCharityRequests";
 
+/**
+ * Formats an ISO date string to a localized short date.
+ * @param iso - ISO 8601 date string
+ * @returns Formatted date string (e.g. "Mar 15, 2026")
+ */
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
     year: "numeric",
@@ -12,6 +17,11 @@ function formatDate(iso: string): string {
   });
 }
 
+/**
+ * Formats a 9-digit EIN with a hyphen (e.g. "12-3456789").
+ * @param ein - Employer Identification Number string
+ * @returns Formatted EIN or original string if not 9 digits
+ */
 function formatEin(ein: string): string {
   if (ein.length === 9) {
     return `${ein.slice(0, 2)}-${ein.slice(2)}`;

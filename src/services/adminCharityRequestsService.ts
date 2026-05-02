@@ -11,6 +11,11 @@ const EMPTY_RESULT: AdminCharityRequestsResult = {
   totalCount: 0,
 };
 
+/**
+ * Maps a raw database row to a typed charity request item.
+ * @param row - Raw row from the admin_list_charity_requests RPC
+ * @returns Mapped charity request item with normalized fields
+ */
 function mapRow(row: AdminCharityRequestRow): AdminCharityRequestItem {
   return {
     ein: row.ein,

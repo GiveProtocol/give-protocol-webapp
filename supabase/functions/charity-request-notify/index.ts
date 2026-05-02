@@ -33,6 +33,12 @@ interface NotifyRequest {
   userId: string | null;
 }
 
+/**
+ * Creates a JSON response with CORS headers.
+ * @param body - Response body object to serialize
+ * @param status - HTTP status code
+ * @returns Response with JSON content-type and CORS headers
+ */
 function jsonResponse(body: Record<string, unknown>, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -40,6 +46,11 @@ function jsonResponse(body: Record<string, unknown>, status: number): Response {
   });
 }
 
+/**
+ * Escapes HTML special characters to prevent XSS in email content.
+ * @param text - Raw text to escape
+ * @returns Text with &lt;, &gt;, and &amp; entities
+ */
 function escapeHtml(text: string): string {
   return text.replace(/[<>&]/g, (char) => {
     if (char === "<") return "&lt;";
