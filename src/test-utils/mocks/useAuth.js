@@ -4,6 +4,11 @@
 
 // Simple mock functions - tests can spy on these using jest.spyOn
 const createMockFn = () => {
+  /**
+   * Mock function that records call arguments and returns a configured value
+   * @param {...unknown} args - Arguments passed to the mock function
+   * @returns {unknown} The configured return value
+   */
   const fn = function(...args) {
     fn.calls.push(args);
     fn.callCount++;
@@ -61,6 +66,10 @@ export const resetAuthMocks = () => {
   };
 };
 
+/**
+ * Mock useAuth hook that returns the current mock state and mock auth functions
+ * @returns {object} The mock auth state combined with mock auth action functions
+ */
 export const useAuth = () => ({
   ...mockState,
   login: mockLogin,
