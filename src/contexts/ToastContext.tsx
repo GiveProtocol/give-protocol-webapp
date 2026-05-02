@@ -6,11 +6,8 @@ interface ToastContextType {
   showToast: (_type: ToastType, _title: string, _message?: string) => void;
 }
 
-// Create context with undefined initial value but proper type
 // eslint-disable-next-line react-refresh/only-export-components
-export const ToastContext = createContext<ToastContextType | undefined>(
-  undefined,
-);
+export const ToastContext = createContext<ToastContextType | null>(null);
 
 /**
  * Provides toast notification functionality to child components
