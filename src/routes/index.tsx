@@ -94,6 +94,9 @@ const AdminReports = lazy(() => import("@/pages/admin/AdminReports"));
 const AdminPortfolioFunds = lazy(
   () => import("@/pages/admin/AdminPortfolioFunds"),
 );
+const AdminCharityRequests = lazy(
+  () => import("@/pages/admin/AdminCharityRequests"),
+);
 const _SimpleTokenCheck = lazy(() => import("@/pages/admin/SimpleTokenCheck"));
 
 // Lazy load cause pages
@@ -188,6 +191,18 @@ export function AppRoutes() {
               <RouteTransition>
                 <Suspense fallback={<LoadingFallback />}>
                   <AdminCharityManagement />
+                </Suspense>
+              </RouteTransition>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/charity-requests"
+          element={
+            <ProtectedRoute requiredRoles={["admin"]}>
+              <RouteTransition>
+                <Suspense fallback={<LoadingFallback />}>
+                  <AdminCharityRequests />
                 </Suspense>
               </RouteTransition>
             </ProtectedRoute>

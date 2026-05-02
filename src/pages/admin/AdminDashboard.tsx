@@ -291,6 +291,10 @@ const AdminDashboard: React.FC = () => {
     navigate("/admin/portfolio-funds");
   }, [navigate]);
 
+  const handleNavigateCharityRequests = useCallback(() => {
+    navigate("/admin/charity-requests");
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -443,6 +447,11 @@ const AdminDashboard: React.FC = () => {
             title="Portfolio Funds"
             description="Create and manage curated giving portfolios"
             onClick={handleNavigatePortfolioFunds}
+          />
+          <QuickActionButton
+            title="Charity Requests"
+            description="Review donor requests for unclaimed charities"
+            onClick={handleNavigateCharityRequests}
           />
         </div>
       </Card>
