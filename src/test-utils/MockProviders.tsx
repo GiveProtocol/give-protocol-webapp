@@ -43,6 +43,7 @@ export const mockAuthContextValue = {
   userType: null,
   login: jest.fn(),
   loginWithGoogle: jest.fn(),
+  loginWithApple: jest.fn(),
   logout: jest.fn(),
   resetPassword: jest.fn(),
   refreshSession: jest.fn(),
