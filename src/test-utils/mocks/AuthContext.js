@@ -34,8 +34,18 @@ const mockValue = {
 
 const AuthContext = createContext(mockValue);
 
+/**
+ * Mock useAuth hook that returns the mock auth context value
+ * @returns The mock auth context value
+ */
 export const useAuth = () => useContext(AuthContext);
 
+/**
+ * Mock AuthProvider component that wraps children with the mock auth context
+ * @param props - Component props
+ * @param props.children - Child elements to render within the provider
+ * @returns A React element wrapping children with the mock auth context
+ */
 export const AuthProvider = ({ children }) =>
   React.createElement(AuthContext.Provider, { value: mockValue }, children);
 
