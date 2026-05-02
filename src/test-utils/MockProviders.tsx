@@ -233,6 +233,11 @@ export const createMockUseSettings =
     ...overrides,
   });
 
+/**
+ * Creates a mock implementation of the useToast hook for testing
+ * @param overrides - Partial toast context values to override defaults
+ * @returns A mock useToast hook function
+ */
 export const createMockUseToast =
   (overrides = {}) =>
   () => ({
@@ -240,6 +245,11 @@ export const createMockUseToast =
     ...overrides,
   });
 
+/**
+ * Creates a mock implementation of the useAuth hook for testing
+ * @param overrides - Partial auth context values to override defaults
+ * @returns A mock useAuth hook function
+ */
 export const createMockUseAuth =
   (overrides = {}) =>
   () => ({
@@ -247,6 +257,11 @@ export const createMockUseAuth =
     ...overrides,
   });
 
+/**
+ * Creates a mock implementation of the useWeb3 hook for testing
+ * @param overrides - Partial web3 context values to override defaults
+ * @returns A mock useWeb3 hook function
+ */
 export const createMockUseWeb3 =
   (overrides = {}) =>
   () => ({
@@ -254,6 +269,11 @@ export const createMockUseWeb3 =
     ...overrides,
   });
 
+/**
+ * Creates a mock implementation of the useMultiChain hook for testing
+ * @param overrides - Partial multi-chain context values to override defaults
+ * @returns A mock useMultiChain hook function
+ */
 export const createMockUseMultiChain =
   (overrides = {}) =>
   () => ({
@@ -261,6 +281,11 @@ export const createMockUseMultiChain =
     ...overrides,
   });
 
+/**
+ * Creates a mock implementation of the useCurrency hook for testing
+ * @param overrides - Partial currency context values to override defaults
+ * @returns A mock useCurrency hook function
+ */
 export const createMockUseCurrency =
   (overrides = {}) =>
   () => ({
