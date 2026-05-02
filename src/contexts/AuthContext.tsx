@@ -64,9 +64,7 @@ async function fetchUserTypeFromProfile(userId: string): Promise<UserType> {
 /**
  * Gets user type from metadata or falls back to profile table
  */
-function resolveUserType(
-  user: User | null | undefined,
-): Promise<UserType> {
+function resolveUserType(user: User | null | undefined): Promise<UserType> {
   if (!user) return Promise.resolve(null);
 
   const metadataType = user.user_metadata?.type as UserType;

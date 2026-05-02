@@ -1,15 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Phone, CheckCircle2, AlertCircle } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
-import { supabase } from '@/lib/supabase';
-import { validatePhoneNumber } from '@/utils/validation';
-import { Logger } from '@/utils/logger';
+import React, { useState, useEffect, useCallback } from "react";
+import { Phone, CheckCircle2, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { supabase } from "@/lib/supabase";
+import { validatePhoneNumber } from "@/utils/validation";
+import { Logger } from "@/utils/logger";
 
 /** Optional phone number settings for urgent impact alerts. */
 export const PhoneSettings: React.FC = () => {
-  const [phone, setPhone] = useState('');
-  const [savedPhone, setSavedPhone] = useState('');
+  const [phone, setPhone] = useState("");
+  const [savedPhone, setSavedPhone] = useState("");
   const [editing, setEditing] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -22,7 +22,7 @@ export const PhoneSettings: React.FC = () => {
     const loadPhone = async () => {
       const { data } = await supabase.auth.getUser();
       if (cancelled) return;
-      const existing = (data.user?.user_metadata?.phone as string) ?? '';
+      const existing = (data.user?.user_metadata?.phone as string) ?? "";
       setSavedPhone(existing);
       setPhone(existing);
     };
@@ -61,8 +61,10 @@ export const PhoneSettings: React.FC = () => {
 
       const trimmed = phone.trim();
 
-      if (trimmed !== '' && !validatePhoneNumber(trimmed)) {
-        setValidationError('Please enter a valid international phone number (e.g. +1 555 000 1234)');
+      if (trimmed !== "" && !validatePhoneNumber(trimmed)) {
+        setValidationError(
+          "Please enter a valid international phone number (e.g. +1 555 000 1234)",
+        );
         return;
       }
 
@@ -78,9 +80,10 @@ export const PhoneSettings: React.FC = () => {
         setEditing(false);
         setSaveSuccess(true);
       } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Failed to save phone number';
+        const msg =
+          err instanceof Error ? err.message : "Failed to save phone number";
         setSaveError(msg);
-        Logger.error('Phone save failed', { error: msg });
+        Logger.error("Phone save failed", { error: msg });
       } finally {
         setSaving(false);
       }
@@ -99,7 +102,8 @@ export const PhoneSettings: React.FC = () => {
             Phone (Optional — for Urgent Impact Alerts)
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Receive critical notifications when your chosen causes need immediate support
+            Receive critical notifications when your chosen causes need
+            immediate support
           </p>
         </div>
       </div>
@@ -107,7 +111,9 @@ export const PhoneSettings: React.FC = () => {
       {saveSuccess && !editing && (
         <div className="flex items-center gap-2 p-3 mb-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
           <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span className="text-sm text-emerald-600 dark:text-emerald-400">Phone number saved</span>
+          <span className="text-sm text-emerald-600 dark:text-emerald-400">
+            Phone number saved
+          </span>
         </div>
       )}
 
@@ -127,15 +133,23 @@ export const PhoneSettings: React.FC = () => {
           {saveError !== null && (
             <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
               <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
-              <span className="text-sm text-red-600 dark:text-red-400">{saveError}</span>
+              <span className="text-sm text-red-600 dark:text-red-400">
+                {saveError}
+              </span>
             </div>
           )}
 
           <div className="flex gap-2">
             <Button type="submit" size="sm" disabled={saving}>
-              {saving ? 'Saving…' : 'Save'}
+              {saving ? "Saving…" : "Save"}
             </Button>
-            <Button type="button" variant="secondary" size="sm" onClick={handleCancel} disabled={saving}>
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={handleCancel}
+              disabled={saving}
+            >
               Cancel
             </Button>
           </div>
@@ -143,10 +157,14 @@ export const PhoneSettings: React.FC = () => {
       ) : (
         <div className="flex items-center justify-between">
           <span className="text-sm text-gray-700 dark:text-gray-300">
-            {savedPhone !== '' ? savedPhone : <span className="text-gray-400 dark:text-gray-500">Not set</span>}
+            {savedPhone !== "" ? (
+              savedPhone
+            ) : (
+              <span className="text-gray-400 dark:text-gray-500">Not set</span>
+            )}
           </span>
           <Button variant="secondary" size="sm" onClick={handleEdit}>
-            {savedPhone !== '' ? 'Change' : 'Add'}
+            {savedPhone !== "" ? "Change" : "Add"}
           </Button>
         </div>
       )}
