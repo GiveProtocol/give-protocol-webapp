@@ -1,11 +1,13 @@
 import React from 'react';
 import { Settings } from 'lucide-react';
-import { WalletLinkCard } from '@/components/wallet/WalletLinkCard';
+import { LinkedAccountsSection } from '@/components/settings/LinkedAccountsSection';
+import { PhoneSettings } from '@/components/settings/PhoneSettings';
+import { SetPasswordSettings } from '@/components/settings/SetPasswordSettings';
 import { WalletAliasSettings } from '@/components/settings/WalletAliasSettings';
 import { PrivacySettings } from '@/components/settings/PrivacySettings';
 import { useUnifiedAuth } from '@/hooks/useUnifiedAuth';
 
-/** Dashboard settings page with wallet linking and account preferences. */
+/** Dashboard settings page with linked accounts, phone, password, and account preferences. */
 const DashboardSettings: React.FC = () => {
   const { user, email, authMethod } = useUnifiedAuth();
 
@@ -24,13 +26,13 @@ const DashboardSettings: React.FC = () => {
       {/* Account info */}
       <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 mb-6 text-sm">
         <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Account</h3>
-        {email && (
+        {email !== null && (
           <div className="flex justify-between mb-2">
             <span className="text-gray-500 dark:text-gray-400">Email</span>
             <span className="text-gray-900 dark:text-white">{email}</span>
           </div>
         )}
-        {user?.displayName && (
+        {user?.displayName !== null && user?.displayName !== undefined && (
           <div className="flex justify-between mb-2">
             <span className="text-gray-500 dark:text-gray-400">Display name</span>
             <span className="text-gray-900 dark:text-white">{user.displayName}</span>
@@ -46,10 +48,14 @@ const DashboardSettings: React.FC = () => {
         </div>
       </div>
 
-      {/* Wallet linking */}
-      <div className="mb-6">
-        <WalletLinkCard />
-      </div>
+      {/* Linked accounts — Google, Apple, Wallet */}
+      <LinkedAccountsSection />
+
+      {/* Phone number — optional, for urgent impact alerts */}
+      <PhoneSettings />
+
+      {/* Password — set or change */}
+      <SetPasswordSettings />
 
       {/* Wallet alias settings */}
       <div className="mb-6">
