@@ -15,6 +15,9 @@ const mockValue = {
   loginWithGoogle: async () => {
     /* no-op mock for testing */
   },
+  loginWithApple: async () => {
+    /* no-op mock for testing */
+  },
   logout: async () => {
     /* no-op mock for testing */
   },

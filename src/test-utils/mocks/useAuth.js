@@ -29,6 +29,7 @@ export const mockRegister = createMockFn();
 export const mockResetPassword = createMockFn();
 export const mockSendUsernameReminder = createMockFn();
 export const mockLoginWithGoogle = createMockFn();
+export const mockLoginWithApple = createMockFn();
 export const mockRefreshSession = createMockFn();
 
 // Default mock state
@@ -52,6 +53,7 @@ export const resetAuthMocks = () => {
   mockResetPassword.mockClear();
   mockSendUsernameReminder.mockClear();
   mockLoginWithGoogle.mockClear();
+  mockLoginWithApple.mockClear();
   mockRefreshSession.mockClear();
   mockState = {
     user: null,
@@ -69,5 +71,6 @@ export const useAuth = () => ({
   resetPassword: mockResetPassword,
   sendUsernameReminder: mockSendUsernameReminder,
   loginWithGoogle: mockLoginWithGoogle,
+  loginWithApple: mockLoginWithApple,
   refreshSession: mockRefreshSession,
 });

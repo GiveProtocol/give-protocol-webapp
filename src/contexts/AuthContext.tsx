@@ -27,6 +27,7 @@ interface AuthContextType extends AuthState {
     _accountType: "donor" | "charity",
   ) => Promise<void>;
   loginWithGoogle: () => Promise<void>;
+  loginWithApple: () => Promise<void>;
   logout: () => Promise<void>;
   resetPassword: (_email: string) => Promise<void>;
   refreshSession: () => Promise<void>;
@@ -419,6 +420,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [showToast]);
 
+  const loginWithApple = useCallback(async () => {
+    try {
+      setState((prev) => ({ ...prev, loading: true, error: null }));
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "apple",
+        options: {
+          redirectTo: `${window.location.origin}/login`,
+          scopes: "name email",
+        },
+      });
+
+      if (error) {
+        Logger.error("Apple login error", {
+          error: error.message,
+          code: error.status,
+        });
+        throw error;
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to sign in with Apple";
+      showToast("error", "Authentication Error", message);
+      setState((prev) => ({
+        ...prev,
+        error: err instanceof Error ? err : new Error(message),
+      }));
+      throw err;
+    } finally {
+      setState((prev) => ({ ...prev, loading: false }));
+    }
+  }, [showToast]);
+
   const logout = useCallback(async () => {
     try {
       setState((prev) => ({ ...prev, loading: true, error: null }));
@@ -612,6 +646,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ...state,
       login,
       loginWithGoogle,
+      loginWithApple,
       logout,
       resetPassword,
       refreshSession,
@@ -622,6 +657,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       state,
       login,
       loginWithGoogle,
+      loginWithApple,
       logout,
       resetPassword,
       refreshSession,

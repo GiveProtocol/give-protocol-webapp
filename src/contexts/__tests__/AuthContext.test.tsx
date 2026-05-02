@@ -79,6 +79,12 @@ const TestComponent: React.FC = () => {
     });
   }, [auth]);
 
+  const handleAppleLogin = useCallback(() => {
+    auth.loginWithApple().catch(() => {
+      // Error handled by AuthContext
+    });
+  }, [auth]);
+
   const handleUsernameReminder = useCallback(() => {
     auth.sendUsernameReminder("test@example.com").catch(() => {
       // Error handled by AuthContext
@@ -112,6 +118,9 @@ const TestComponent: React.FC = () => {
       </button>
       <button data-testid="google-btn" onClick={handleGoogleLogin}>
         Login with Google
+      </button>
+      <button data-testid="apple-btn" onClick={handleAppleLogin}>
+        Login with Apple
       </button>
       <button
         data-testid="username-reminder-btn"
@@ -433,6 +442,54 @@ describe("AuthContext", () => {
           "error",
           "Authentication Error",
           "Failed to sign in with Google",
+        );
+      });
+    });
+  });
+
+  describe("Apple Login", () => {
+    it("handles successful Apple login", async () => {
+      mockSupabase.auth.signInWithOAuth.mockResolvedValue({
+        data: { provider: "apple", url: null },
+        error: null,
+      });
+
+      renderWithAuthProvider();
+
+      await act(() => {
+        screen.getByTestId("apple-btn").click();
+      });
+
+      await waitFor(() => {
+        expect(mockSupabase.auth.signInWithOAuth).toHaveBeenCalledWith({
+          provider: "apple",
+          options: {
+            redirectTo: `${window.location.origin}/login`,
+            scopes: "name email",
+          },
+        });
+      });
+    });
+
+    it("handles Apple login error", async () => {
+      // Supabase error objects are not Error instances
+      const error = { message: "OAuth error" };
+      mockSupabase.auth.signInWithOAuth.mockResolvedValue({
+        data: { provider: null, url: null },
+        error,
+      });
+
+      renderWithAuthProvider();
+
+      await act(() => {
+        screen.getByTestId("apple-btn").click();
+      });
+
+      await waitFor(() => {
+        expect(mockShowToast).toHaveBeenCalledWith(
+          "error",
+          "Authentication Error",
+          "Failed to sign in with Apple",
         );
       });
     });
