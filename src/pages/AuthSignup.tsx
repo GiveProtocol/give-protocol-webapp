@@ -356,7 +356,7 @@ const SignupRightPanel: React.FC = () => {
     loading,
     signUpWithEmail,
     signInWithWallet,
-    signInWithPasskey,
+    registerPasskey,
     signInWithGoogle,
     signInWithApple,
     isPasskeySupported,
@@ -423,14 +423,26 @@ const SignupRightPanel: React.FC = () => {
       return;
     }
     try {
-      await signInWithPasskey();
+      const randomBytes = new Uint8Array(24);
+      crypto.getRandomValues(randomBytes);
+      const randomPassword = Array.from(randomBytes, (b) =>
+        b.toString(16).padStart(2, "0"),
+      ).join("");
+      await signUpWithEmail(email, randomPassword);
+      await registerPasskey();
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Passkey sign-up failed";
-      setFormError(msg);
-      Logger.error("Passkey sign-up failed", { error: msg });
+      if (
+        !msg.includes("cancelled") &&
+        !msg.includes("AbortError") &&
+        !msg.includes("NotAllowedError")
+      ) {
+        setFormError(msg);
+        Logger.error("Passkey sign-up failed", { error: msg });
+      }
     }
-  }, [email, signInWithPasskey]);
+  }, [email, signUpWithEmail, registerPasskey]);
 
   const handleGoogleSignUp = useCallback(async () => {
     setFormError(null);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
-import { ShieldCheck, Building2, Wallet, Mail, Lock } from "lucide-react";
+import { ShieldCheck, Building2, Wallet, Mail, Lock, Fingerprint } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { FormInput } from "@/components/ui/FormInput";
@@ -306,6 +306,8 @@ const AuthRightPanel: React.FC = () => {
     walletAuthStep,
     signInWithEmail,
     signInWithWallet,
+    signInWithPasskey,
+    isPasskeySupported,
     isWalletConnected: _isWalletConnected,
   } = useUnifiedAuth();
 
@@ -345,6 +347,23 @@ const AuthRightPanel: React.FC = () => {
     },
     [email, password, signInWithEmail],
   );
+
+  const handlePasskeySignIn = useCallback(async () => {
+    setFormError(null);
+    try {
+      await signInWithPasskey();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Sign in failed";
+      if (
+        !msg.includes("cancelled") &&
+        !msg.includes("AbortError") &&
+        !msg.includes("NotAllowedError")
+      ) {
+        setFormError(msg);
+        Logger.error("Passkey sign-in failed", { error: msg });
+      }
+    }
+  }, [signInWithPasskey]);
 
   const handleWalletButtonClick = useCallback(() => {
     setFormError(null);
@@ -484,6 +503,22 @@ const AuthRightPanel: React.FC = () => {
           onPasswordChange={handlePasswordChange}
           onSubmit={handleEmailSignIn}
         />
+
+        {/* Passkey sign in */}
+        {isPasskeySupported && (
+          <Button
+            type="button"
+            onClick={handlePasskeySignIn}
+            variant="secondary"
+            fullWidth
+            size="lg"
+            disabled={loading}
+            icon={<Fingerprint className="h-4 w-4" />}
+            className="font-semibold mt-4"
+          >
+            Sign in with Passkey
+          </Button>
+        )}
 
         {/* Divider */}
         <div className="flex items-center gap-3 my-5">
