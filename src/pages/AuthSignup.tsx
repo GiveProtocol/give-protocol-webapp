@@ -1,12 +1,21 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, Navigate } from "react-router-dom";
-import { ShieldCheck, Building2, Wallet, Mail, Lock, User } from "lucide-react";
+import {
+  ShieldCheck,
+  Building2,
+  Wallet,
+  Mail,
+  Lock,
+  User,
+  Fingerprint,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { FormInput } from "@/components/ui/FormInput";
 import { PasswordStrengthBar } from "@/components/auth/PasswordStrengthBar";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
-import { useAuth } from "@/contexts/AuthContext";
 import { validateEmail, validatePassword } from "@/utils/validation";
 import { Logger } from "@/utils/logger";
 
@@ -222,80 +231,116 @@ const SignupLeftPanel: React.FC = () => (
   </div>
 );
 
-/** Sign-up form fields extracted to reduce JSX nesting depth. */
-const SignupFormFields: React.FC<{
-  displayName: string;
-  email: string;
+/** Google "G" icon for social auth button. */
+const GoogleIcon: React.FC = () => (
+  <svg
+    width="18"
+    height="18"
+    viewBox="0 0 18 18"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908C16.658 14.251 17.64 11.943 17.64 9.2Z"
+      fill="#4285F4"
+    />
+    <path
+      d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18Z"
+      fill="#34A853"
+    />
+    <path
+      d="M3.964 10.71A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.042l3.007-2.332Z"
+      fill="#FBBC05"
+    />
+    <path
+      d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58Z"
+      fill="#EA4335"
+    />
+  </svg>
+);
+
+/** Apple logo icon for social auth button. */
+const AppleIcon: React.FC = () => (
+  <svg
+    className="h-4 w-4"
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    aria-hidden="true"
+  >
+    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
+  </svg>
+);
+
+/** Collapsible "Or set a password" section with traditional form fields. */
+const CollapsiblePasswordSection: React.FC<{
+  isOpen: boolean;
   password: string;
   confirmPassword: string;
   loading: boolean;
-  onDisplayNameChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onEmailChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onToggle: () => void;
   onPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onConfirmPasswordChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
 }> = ({
-  displayName,
-  email,
+  isOpen,
   password,
   confirmPassword,
   loading,
-  onDisplayNameChange,
-  onEmailChange,
+  onToggle,
   onPasswordChange,
   onConfirmPasswordChange,
   onSubmit,
 }) => (
-  <form onSubmit={onSubmit} className="space-y-4">
-    <FormInput
-      icon={<User className="h-4 w-4" />}
-      type="text"
-      value={displayName}
-      onChange={onDisplayNameChange}
-      placeholder="Display name (optional)"
-      autoComplete="name"
-    />
-    <FormInput
-      icon={<Mail className="h-4 w-4" />}
-      type="email"
-      value={email}
-      onChange={onEmailChange}
-      placeholder="Email"
-      required
-      autoComplete="email"
-    />
-    <FormInput
-      icon={<Lock className="h-4 w-4" />}
-      type="password"
-      value={password}
-      onChange={onPasswordChange}
-      placeholder="Password"
-      required
-      autoComplete="new-password"
-    />
-    <PasswordStrengthBar password={password} />
-    <FormInput
-      icon={<Lock className="h-4 w-4" />}
-      type="password"
-      value={confirmPassword}
-      onChange={onConfirmPasswordChange}
-      placeholder="Confirm password"
-      required
-      autoComplete="new-password"
-    />
-    <Button
-      type="submit"
-      fullWidth
-      size="lg"
-      disabled={loading}
-      className="font-semibold"
+  <div className="mt-4">
+    <button
+      type="button"
+      onClick={onToggle}
+      className="w-full flex items-center justify-between text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors py-2"
+      aria-expanded={isOpen}
     >
-      {loading ? "Creating account\u2026" : "Create Account"}
-    </Button>
-  </form>
+      <span className="font-medium">Or set a password</span>
+      {isOpen ? (
+        <ChevronUp className="h-4 w-4" />
+      ) : (
+        <ChevronDown className="h-4 w-4" />
+      )}
+    </button>
+    {isOpen && (
+      <form onSubmit={onSubmit} className="space-y-3 mt-3">
+        <FormInput
+          icon={<Lock className="h-4 w-4" />}
+          type="password"
+          value={password}
+          onChange={onPasswordChange}
+          placeholder="Password"
+          required
+          autoComplete="new-password"
+        />
+        <PasswordStrengthBar password={password} />
+        <FormInput
+          icon={<Lock className="h-4 w-4" />}
+          type="password"
+          value={confirmPassword}
+          onChange={onConfirmPasswordChange}
+          placeholder="Confirm password"
+          required
+          autoComplete="new-password"
+        />
+        <Button
+          type="submit"
+          fullWidth
+          size="lg"
+          disabled={loading}
+          className="font-semibold"
+        >
+          {loading ? "Creating account\u2026" : "Create Account"}
+        </Button>
+      </form>
+    )}
+  </div>
 );
 
-/** Right panel content with sign-up form and wallet registration. */
+/** Right panel content with passwordless-first sign-up and auth method buttons. */
 const SignupRightPanel: React.FC = () => {
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
@@ -303,10 +348,19 @@ const SignupRightPanel: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isPasswordOpen, setIsPasswordOpen] = useState(false);
 
-  const { isAuthenticated, role, loading, signUpWithEmail, signInWithWallet } =
-    useUnifiedAuth();
-  const { loginWithApple } = useAuth();
+  const {
+    isAuthenticated,
+    role,
+    loading,
+    signUpWithEmail,
+    signInWithWallet,
+    signInWithPasskey,
+    signInWithGoogle,
+    signInWithApple,
+    isPasskeySupported,
+  } = useUnifiedAuth();
 
   // Trigger entrance animation
   const [visible, setVisible] = useState(false);
@@ -361,30 +415,61 @@ const SignupRightPanel: React.FC = () => {
     [displayName, email, password, confirmPassword, signUpWithEmail],
   );
 
-  const handleWalletSignUp = useCallback(async () => {
+  const handlePasskeySignUp = useCallback(async () => {
+    setFormError(null);
+    setSuccessMessage(null);
+    if (!validateEmail(email)) {
+      setFormError("Please enter your email address first");
+      return;
+    }
+    try {
+      await signInWithPasskey();
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Passkey sign-up failed";
+      setFormError(msg);
+      Logger.error("Passkey sign-up failed", { error: msg });
+    }
+  }, [email, signInWithPasskey]);
+
+  const handleGoogleSignUp = useCallback(async () => {
     setFormError(null);
     setSuccessMessage(null);
     try {
-      await signInWithWallet();
+      await signInWithGoogle();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Wallet sign-up failed";
+      const msg =
+        err instanceof Error ? err.message : "Google sign-up failed";
       setFormError(msg);
-      Logger.error("Wallet sign-up failed", { error: msg });
+      Logger.error("Google sign-up failed", { error: msg });
     }
-  }, [signInWithWallet]);
+  }, [signInWithGoogle]);
 
   const handleAppleSignUp = useCallback(async () => {
     setFormError(null);
     setSuccessMessage(null);
     try {
-      await loginWithApple();
+      await signInWithApple();
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "Apple sign-up failed";
       setFormError(msg);
       Logger.error("Apple sign-up failed", { error: msg });
     }
-  }, [loginWithApple]);
+  }, [signInWithApple]);
+
+  const handleWalletSignUp = useCallback(async () => {
+    setFormError(null);
+    setSuccessMessage(null);
+    try {
+      await signInWithWallet();
+    } catch (err) {
+      const msg =
+        err instanceof Error ? err.message : "Wallet sign-up failed";
+      setFormError(msg);
+      Logger.error("Wallet sign-up failed", { error: msg });
+    }
+  }, [signInWithWallet]);
 
   const handleDisplayNameChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -413,6 +498,10 @@ const SignupRightPanel: React.FC = () => {
     },
     [],
   );
+
+  const handlePasswordToggle = useCallback(() => {
+    setIsPasswordOpen((prev) => !prev);
+  }, []);
 
   // Redirect if already authenticated
   if (isAuthenticated) {
@@ -465,7 +554,7 @@ const SignupRightPanel: React.FC = () => {
         </p>
 
         {/* Success message */}
-        {successMessage && (
+        {successMessage !== null && (
           <div
             className="flex items-center gap-2 p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm"
             role="status"
@@ -475,7 +564,7 @@ const SignupRightPanel: React.FC = () => {
         )}
 
         {/* Error alert */}
-        {formError && (
+        {formError !== null && (
           <div
             className="flex items-center gap-2 p-3 mb-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm"
             role="alert"
@@ -484,53 +573,102 @@ const SignupRightPanel: React.FC = () => {
           </div>
         )}
 
-        {/* Registration form */}
-        <SignupFormFields
-          displayName={displayName}
-          email={email}
-          password={password}
-          confirmPassword={confirmPassword}
-          loading={loading}
-          onDisplayNameChange={handleDisplayNameChange}
-          onEmailChange={handleEmailChange}
-          onPasswordChange={handlePasswordChange}
-          onConfirmPasswordChange={handleConfirmPasswordChange}
-          onSubmit={handleEmailSignUp}
-        />
+        {/* Identity fields: displayName + email */}
+        <div className="space-y-4 mb-6">
+          <FormInput
+            icon={<User className="h-4 w-4" />}
+            type="text"
+            value={displayName}
+            onChange={handleDisplayNameChange}
+            placeholder="Display name (optional)"
+            autoComplete="name"
+          />
+          <FormInput
+            icon={<Mail className="h-4 w-4" />}
+            type="email"
+            value={email}
+            onChange={handleEmailChange}
+            placeholder="Email"
+            required
+            autoComplete="email"
+          />
+        </div>
+
+        {/* Primary CTA: Passkey */}
+        {isPasskeySupported && (
+          <Button
+            type="button"
+            onClick={handlePasskeySignUp}
+            fullWidth
+            size="lg"
+            disabled={loading}
+            icon={<Fingerprint className="h-4 w-4" />}
+            className="font-semibold mb-3"
+          >
+            Sign up with Passkey
+          </Button>
+        )}
 
         {/* Divider */}
-        <div className="flex items-center gap-3 my-5">
+        <div className="flex items-center gap-3 my-4">
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
           <span className="text-xs text-gray-400 font-medium">or</span>
           <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
         </div>
 
-        {/* Wallet sign up */}
-        <Button
-          onClick={handleWalletSignUp}
-          variant="secondary"
-          fullWidth
-          size="lg"
-          icon={<Wallet className="h-4 w-4" />}
-          disabled={loading}
-          className="font-semibold"
-        >
-          Sign Up with Wallet
-        </Button>
+        {/* Social + wallet buttons */}
+        <div className="space-y-3">
+          <Button
+            type="button"
+            onClick={handleGoogleSignUp}
+            variant="secondary"
+            fullWidth
+            size="lg"
+            icon={<GoogleIcon />}
+            disabled={loading}
+            className="font-semibold"
+          >
+            Continue with Google
+          </Button>
 
-        {/* Apple sign up */}
-        <button
-          type="button"
-          onClick={handleAppleSignUp}
-          disabled={loading}
-          className="w-full flex items-center justify-center gap-2 min-h-[48px] px-4 rounded-lg bg-black text-white text-sm font-semibold hover:bg-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2 transition-colors duration-200 disabled:opacity-60"
-          aria-label="Sign in with Apple"
-        >
-          <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z" />
-          </svg>
-          Sign in with Apple
-        </button>
+          <Button
+            type="button"
+            onClick={handleAppleSignUp}
+            variant="secondary"
+            fullWidth
+            size="lg"
+            icon={<AppleIcon />}
+            disabled={loading}
+            className="font-semibold"
+          >
+            Continue with Apple
+          </Button>
+
+          <Button
+            type="button"
+            onClick={handleWalletSignUp}
+            variant="secondary"
+            fullWidth
+            size="lg"
+            icon={<Wallet className="h-4 w-4" />}
+            disabled={loading}
+            className="font-semibold"
+          >
+            Connect Wallet
+          </Button>
+        </div>
+
+        {/* Collapsible password section */}
+        <CollapsiblePasswordSection
+          isOpen={isPasswordOpen}
+          password={password}
+          confirmPassword={confirmPassword}
+          loading={loading}
+          onToggle={handlePasswordToggle}
+          onPasswordChange={handlePasswordChange}
+          onConfirmPasswordChange={handleConfirmPasswordChange}
+          onSubmit={handleEmailSignUp}
+        />
 
         {/* Sign in prompt */}
         <p className="mt-6 text-center text-sm text-gray-500">
@@ -591,7 +729,7 @@ const SignupRightPanel: React.FC = () => {
   );
 };
 
-/** Unified sign-up page with email and wallet registration. */
+/** Unified sign-up page with passwordless-first auth and wallet registration. */
 const AuthSignup: React.FC = () => (
   <div className="min-h-[calc(100vh-60px)] grid grid-cols-1 lg:grid-cols-[5fr_6fr]">
     <SignupLeftPanel />

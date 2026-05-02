@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AuthSignup from "../AuthSignup";
 
@@ -31,22 +31,10 @@ describe("AuthSignup", () => {
     });
   });
 
-  describe("Form inputs", () => {
+  describe("Identity fields", () => {
     it("renders the email input", () => {
       renderAuthSignup();
       expect(screen.getByPlaceholderText("Email")).toBeInTheDocument();
-    });
-
-    it("renders the password input", () => {
-      renderAuthSignup();
-      expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
-    });
-
-    it("renders the confirm password input", () => {
-      renderAuthSignup();
-      expect(
-        screen.getByPlaceholderText("Confirm password"),
-      ).toBeInTheDocument();
     });
 
     it("renders the display name input", () => {
@@ -55,17 +43,56 @@ describe("AuthSignup", () => {
         screen.getByPlaceholderText("Display name (optional)"),
       ).toBeInTheDocument();
     });
+
+    it("does not render password inputs by default", () => {
+      renderAuthSignup();
+      expect(
+        screen.queryByPlaceholderText("Password"),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.queryByPlaceholderText("Confirm password"),
+      ).not.toBeInTheDocument();
+    });
   });
 
-  describe("Action buttons", () => {
-    it("renders the Create Account button", () => {
+  describe("Auth method buttons", () => {
+    it("renders the Sign up with Passkey button", () => {
       renderAuthSignup();
-      expect(screen.getByText("Create Account")).toBeInTheDocument();
+      expect(
+        screen.getByText("Sign up with Passkey"),
+      ).toBeInTheDocument();
     });
 
-    it("renders the wallet sign-up button", () => {
+    it("renders the Continue with Google button", () => {
       renderAuthSignup();
-      expect(screen.getByText("Sign Up with Wallet")).toBeInTheDocument();
+      expect(screen.getByText("Continue with Google")).toBeInTheDocument();
+    });
+
+    it("renders the Continue with Apple button", () => {
+      renderAuthSignup();
+      expect(screen.getByText("Continue with Apple")).toBeInTheDocument();
+    });
+
+    it("renders the Connect Wallet button", () => {
+      renderAuthSignup();
+      expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
+    });
+  });
+
+  describe("Collapsible password section", () => {
+    it("renders the 'Or set a password' toggle", () => {
+      renderAuthSignup();
+      expect(screen.getByText("Or set a password")).toBeInTheDocument();
+    });
+
+    it("expands password fields when toggle is clicked", () => {
+      renderAuthSignup();
+      fireEvent.click(screen.getByText("Or set a password"));
+      expect(screen.getByPlaceholderText("Password")).toBeInTheDocument();
+      expect(
+        screen.getByPlaceholderText("Confirm password"),
+      ).toBeInTheDocument();
+      expect(screen.getByText("Create Account")).toBeInTheDocument();
     });
   });
 
