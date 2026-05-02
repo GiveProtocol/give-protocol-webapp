@@ -9,7 +9,7 @@ const createMockFn = () => {
    * @param {...unknown} args - Arguments passed to the mock function
    * @returns {unknown} The configured return value
    */
-  const fn = function(...args) {
+  const fn = function (...args) {
     fn.calls.push(args);
     fn.callCount++;
     return fn.returnValue;
