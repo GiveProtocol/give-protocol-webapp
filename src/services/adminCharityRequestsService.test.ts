@@ -30,10 +30,10 @@ describe("adminCharityRequestsService", () => {
 
       await listCharityRequests();
 
-      expect(supabase.rpc).toHaveBeenCalledWith(
-        "admin_list_charity_requests",
-        { p_limit: 100, p_offset: 0 },
-      );
+      expect(supabase.rpc).toHaveBeenCalledWith("admin_list_charity_requests", {
+        p_limit: 100,
+        p_offset: 0,
+      });
     });
 
     it("forwards custom limit and offset", async () => {
@@ -41,10 +41,10 @@ describe("adminCharityRequestsService", () => {
 
       await listCharityRequests(25, 50);
 
-      expect(supabase.rpc).toHaveBeenCalledWith(
-        "admin_list_charity_requests",
-        { p_limit: 25, p_offset: 50 },
-      );
+      expect(supabase.rpc).toHaveBeenCalledWith("admin_list_charity_requests", {
+        p_limit: 25,
+        p_offset: 50,
+      });
     });
 
     it("returns empty result when RPC returns no rows", async () => {
