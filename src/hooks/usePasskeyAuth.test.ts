@@ -126,6 +126,78 @@ describe("usePasskeyAuth", () => {
         { body: { deviceName: "My Device" } },
       );
     });
+
+    it("throws when register-options returns a server error", async () => {
+      Object.defineProperty(window, "PublicKeyCredential", {
+        value: class MockPKC {},
+        configurable: true,
+        writable: true,
+      });
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValueOnce({
+        data: { success: false, error: "User not authenticated" },
+        error: null,
+      });
+
+      const { result } = renderHook(() => usePasskeyAuth());
+
+      await expect(
+        act(async () => {
+          await result.current.registerPasskey();
+        }),
+      ).rejects.toThrow("User not authenticated");
+    });
+
+    it("returns silently when user cancels registration (NotAllowedError)", async () => {
+      Object.defineProperty(window, "PublicKeyCredential", {
+        value: class MockPKC {},
+        configurable: true,
+        writable: true,
+      });
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValueOnce({
+        data: null,
+        error: { message: "NotAllowedError: user cancelled" },
+      });
+
+      const { result } = renderHook(() => usePasskeyAuth());
+
+      await act(async () => {
+        await result.current.registerPasskey();
+      });
+
+      // Cancellation: no error set, loading reset
+      expect(result.current.error).toBeNull();
+      expect(result.current.loading).toBe(false);
+    });
+
+    it("passes undefined deviceName when called with no argument", async () => {
+      Object.defineProperty(window, "PublicKeyCredential", {
+        value: class MockPKC {},
+        configurable: true,
+        writable: true,
+      });
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValueOnce({
+        data: { success: true, options: {} },
+        error: null,
+      });
+
+      const { result } = renderHook(() => usePasskeyAuth());
+
+      await act(async () => {
+        try {
+          await result.current.registerPasskey();
+        } catch {
+          // Dynamic import may fail in test env — that's OK
+        }
+      });
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith(
+        "passkey-register-options",
+        { body: { deviceName: undefined } },
+      );
+    });
   });
 
   describe("loginWithPasskey", () => {
@@ -177,6 +249,55 @@ describe("usePasskeyAuth", () => {
       expect(returnValue).toBeUndefined();
       expect(result.current.error).toBeNull();
       expect(result.current.loading).toBe(false);
+    });
+
+    it("throws for non-cancellation login failure", async () => {
+      Object.defineProperty(window, "PublicKeyCredential", {
+        value: class MockPKC {},
+        configurable: true,
+        writable: true,
+      });
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValueOnce({
+        data: { success: false, error: "No credentials found" },
+        error: null,
+      });
+
+      const { result } = renderHook(() => usePasskeyAuth());
+
+      await expect(
+        act(async () => {
+          await result.current.loginWithPasskey();
+        }),
+      ).rejects.toThrow("No credentials found");
+    });
+
+    it("calls passkey-login-options edge function", async () => {
+      Object.defineProperty(window, "PublicKeyCredential", {
+        value: class MockPKC {},
+        configurable: true,
+        writable: true,
+      });
+
+      (supabase.functions.invoke as jest.Mock).mockResolvedValueOnce({
+        data: { success: true, options: { challenge: "login-challenge" } },
+        error: null,
+      });
+
+      const { result } = renderHook(() => usePasskeyAuth());
+
+      await act(async () => {
+        try {
+          await result.current.loginWithPasskey();
+        } catch {
+          // Dynamic import may fail in test env — that's OK
+        }
+      });
+
+      expect(supabase.functions.invoke).toHaveBeenCalledWith(
+        "passkey-login-options",
+        { body: {} },
+      );
     });
   });
 

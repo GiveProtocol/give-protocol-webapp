@@ -14,7 +14,6 @@ import {
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { FormInput } from "@/components/ui/FormInput";
-import { PasswordStrengthBar } from "@/components/auth/PasswordStrengthBar";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { validateEmail, validatePassword } from "@/utils/validation";
 import { Logger } from "@/utils/logger";
@@ -316,7 +315,6 @@ const CollapsiblePasswordSection: React.FC<{
           required
           autoComplete="new-password"
         />
-        <PasswordStrengthBar password={password} />
         <FormInput
           icon={<Lock className="h-4 w-4" />}
           type="password"

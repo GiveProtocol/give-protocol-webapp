@@ -9,7 +9,6 @@ import {
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { PasswordStrengthBar } from "@/components/auth/PasswordStrengthBar";
 import { validateEmail, validatePassword } from "@/utils/validation";
 
 /** Google "G" icon for social auth button. */
@@ -289,20 +288,17 @@ export const DonorRegistration: React.FC = () => {
             className="space-y-4 mt-3"
             aria-label="Password registration form"
           >
-            <div className="space-y-1">
-              <Input
-                label="Password"
-                type="password"
-                name="password"
-                autoComplete="new-password"
-                variant="fintech"
-                value={password}
-                onChange={handlePasswordChange}
-                required
-                aria-required="true"
-              />
-              <PasswordStrengthBar password={password} />
-            </div>
+            <Input
+              label="Password"
+              type="password"
+              name="password"
+              autoComplete="new-password"
+              variant="fintech"
+              value={password}
+              onChange={handlePasswordChange}
+              required
+              aria-required="true"
+            />
 
             <Input
               label="Confirm Password"

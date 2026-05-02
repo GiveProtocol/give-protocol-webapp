@@ -1,13 +1,22 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { jest } from "@jest/globals";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import AuthSignup from "../AuthSignup";
+import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 
 // useUnifiedAuth calls useAuth (mocked via authContextMock) and useWeb3
 // (mocked via web3ContextMock). With user: null, isAuthenticated is false
 // so the sign-up form renders without redirecting.
-// Button, Logo, PasswordStrengthBar, and validation utils are mocked via
-// moduleNameMapper. FormInput is a simple wrapper that renders a real <input>.
+// Button, Logo, and validation utils are mocked via moduleNameMapper.
+// FormInput is a simple wrapper that renders a real <input>.
+
+const mockRegisterPasskey = jest.fn();
+const mockSignInWithGoogle = jest.fn();
+const mockSignInWithApple = jest.fn();
+const mockSignInWithWallet = jest.fn();
+const mockSignUpWithEmail = jest.fn();
+const mockUseUnifiedAuth = jest.mocked(useUnifiedAuth);
 
 const renderAuthSignup = () =>
   render(
@@ -17,6 +26,38 @@ const renderAuthSignup = () =>
   );
 
 describe("AuthSignup", () => {
+  beforeEach(() => {
+    mockRegisterPasskey.mockClear();
+    mockSignInWithGoogle.mockClear();
+    mockSignInWithApple.mockClear();
+    mockSignInWithWallet.mockClear();
+    mockSignUpWithEmail.mockClear();
+    mockUseUnifiedAuth.mockReturnValue({
+      user: null,
+      isAuthenticated: false,
+      authMethod: null,
+      email: null,
+      walletAddress: null,
+      isWalletConnected: false,
+      isWalletLinked: false,
+      isPasskeySupported: true,
+      chainId: null,
+      role: "donor",
+      loading: false,
+      walletAuthStep: null,
+      error: null,
+      signInWithEmail: jest.fn(),
+      signUpWithEmail: mockSignUpWithEmail,
+      signInWithWallet: mockSignInWithWallet,
+      signInWithPasskey: jest.fn(),
+      registerPasskey: mockRegisterPasskey,
+      signInWithGoogle: mockSignInWithGoogle,
+      signInWithApple: mockSignInWithApple,
+      linkWallet: jest.fn(),
+      unlinkWallet: jest.fn(),
+      signOut: jest.fn(),
+    });
+  });
   describe("Heading", () => {
     it("renders the sign-up heading", () => {
       renderAuthSignup();
@@ -107,6 +148,213 @@ describe("AuthSignup", () => {
       expect(
         screen.getByText("I manage a Nonprofit Profile"),
       ).toBeInTheDocument();
+    });
+  });
+
+  describe("Auth method interactions", () => {
+    it("calls registerPasskey when passkey button is clicked with valid email", async () => {
+      mockRegisterPasskey.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      mockSignUpWithEmail.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.click(screen.getByText("Sign up with Passkey"));
+      await waitFor(() => {
+        expect(mockRegisterPasskey).toHaveBeenCalled();
+      });
+    });
+
+    it("shows error when passkey button is clicked without email", async () => {
+      renderAuthSignup();
+      fireEvent.click(screen.getByText("Sign up with Passkey"));
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent(/email/i);
+      });
+      expect(mockRegisterPasskey).not.toHaveBeenCalled();
+    });
+
+    it("calls signInWithGoogle when Google button is clicked", async () => {
+      mockSignInWithGoogle.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      fireEvent.click(screen.getByText("Continue with Google"));
+      await waitFor(() => {
+        expect(mockSignInWithGoogle).toHaveBeenCalled();
+      });
+    });
+
+    it("calls signInWithApple when Apple button is clicked", async () => {
+      mockSignInWithApple.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      fireEvent.click(screen.getByText("Continue with Apple"));
+      await waitFor(() => {
+        expect(mockSignInWithApple).toHaveBeenCalled();
+      });
+    });
+
+    it("sets error when Apple sign-up fails", async () => {
+      mockSignInWithApple.mockRejectedValueOnce(new Error("Apple OAuth failed"));
+      renderAuthSignup();
+      fireEvent.click(screen.getByText("Continue with Apple"));
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent("Apple OAuth failed");
+      });
+    });
+
+    it("calls signInWithWallet when wallet button is clicked", async () => {
+      mockSignInWithWallet.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      fireEvent.click(screen.getByText("Connect Wallet"));
+      await waitFor(() => {
+        expect(mockSignInWithWallet).toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe("Email/password signup (optional path)", () => {
+    const openPasswordSection = () => {
+      fireEvent.click(screen.getByText("Or set a password"));
+    };
+
+    it("shows error when email is invalid", async () => {
+      renderAuthSignup();
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent(/valid email/i);
+      });
+      expect(mockSignUpWithEmail).not.toHaveBeenCalled();
+    });
+
+    it("shows error when password is too short", async () => {
+      renderAuthSignup();
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "short" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "short" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent(/8 characters/i);
+      });
+      expect(mockSignUpWithEmail).not.toHaveBeenCalled();
+    });
+
+    it("shows error when passwords do not match", async () => {
+      renderAuthSignup();
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "different456" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent(/do not match/i);
+      });
+      expect(mockSignUpWithEmail).not.toHaveBeenCalled();
+    });
+
+    it("calls signUpWithEmail with email and password on valid submission", async () => {
+      mockSignUpWithEmail.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(mockSignUpWithEmail).toHaveBeenCalledWith(
+          "test@example.com",
+          "password123",
+          {},
+        );
+      });
+    });
+
+    it("shows success message after successful email signup", async () => {
+      mockSignUpWithEmail.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(screen.getByRole("status")).toHaveTextContent(/check your email/i);
+      });
+    });
+
+    it("shows error when signUpWithEmail fails", async () => {
+      mockSignUpWithEmail.mockRejectedValueOnce(new Error("Email already in use"));
+      renderAuthSignup();
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toHaveTextContent("Email already in use");
+      });
+    });
+
+    it("includes display name in metadata when provided", async () => {
+      mockSignUpWithEmail.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
+      renderAuthSignup();
+      fireEvent.change(screen.getByPlaceholderText("Display name (optional)"), {
+        target: { value: "Jane Doe" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Email"), {
+        target: { value: "test@example.com" },
+      });
+      openPasswordSection();
+      fireEvent.change(screen.getByPlaceholderText("Password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.change(screen.getByPlaceholderText("Confirm password"), {
+        target: { value: "password123" },
+      });
+      fireEvent.click(screen.getByText("Create Account"));
+      await waitFor(() => {
+        expect(mockSignUpWithEmail).toHaveBeenCalledWith(
+          "test@example.com",
+          "password123",
+          { name: "Jane Doe" },
+        );
+      });
     });
   });
 });
