@@ -8,7 +8,7 @@ import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 const mockSignUpWithEmail = jest.fn();
 const mockSignInWithPasskey = jest.fn();
 const mockSignInWithGoogle = jest.fn();
-const mockSignInWithApple = jest.fn();
+
 const mockSignInWithWallet = jest.fn();
 const mockUseUnifiedAuth = jest.mocked(useUnifiedAuth);
 
@@ -17,13 +17,11 @@ describe("DonorRegistration", () => {
     mockSignUpWithEmail.mockClear();
     mockSignInWithPasskey.mockClear();
     mockSignInWithGoogle.mockClear();
-    mockSignInWithApple.mockClear();
     mockSignInWithWallet.mockClear();
     mockUseUnifiedAuth.mockReturnValue({
       signUpWithEmail: mockSignUpWithEmail,
       signInWithPasskey: mockSignInWithPasskey,
       signInWithGoogle: mockSignInWithGoogle,
-      signInWithApple: mockSignInWithApple,
       signInWithWallet: mockSignInWithWallet,
       isPasskeySupported: true,
       loading: false,
@@ -51,7 +49,6 @@ describe("DonorRegistration", () => {
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByText("Sign up with Passkey")).toBeInTheDocument();
     expect(screen.getByText("Continue with Google")).toBeInTheDocument();
-    expect(screen.getByText("Continue with Apple")).toBeInTheDocument();
     expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
   });
 
@@ -82,15 +79,6 @@ describe("DonorRegistration", () => {
     fireEvent.click(screen.getByText("Continue with Google"));
     await waitFor(() => {
       expect(mockSignInWithGoogle).toHaveBeenCalled();
-    });
-  });
-
-  it("calls signInWithApple when Apple button is clicked", async () => {
-    mockSignInWithApple.mockResolvedValueOnce(undefined); // skipcq: JS-W1042 — mockResolvedValueOnce requires an argument
-    render(<DonorRegistration />);
-    fireEvent.click(screen.getByText("Continue with Apple"));
-    await waitFor(() => {
-      expect(mockSignInWithApple).toHaveBeenCalled();
     });
   });
 

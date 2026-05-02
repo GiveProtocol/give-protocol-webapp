@@ -13,7 +13,7 @@ import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 
 const mockRegisterPasskey = jest.fn();
 const mockSignInWithGoogle = jest.fn();
-const mockSignInWithApple = jest.fn();
+
 const mockSignInWithWallet = jest.fn();
 const mockSignUpWithEmail = jest.fn();
 const mockUseUnifiedAuth = jest.mocked(useUnifiedAuth);
@@ -29,7 +29,6 @@ describe("AuthSignup", () => {
   beforeEach(() => {
     mockRegisterPasskey.mockClear();
     mockSignInWithGoogle.mockClear();
-    mockSignInWithApple.mockClear();
     mockSignInWithWallet.mockClear();
     mockSignUpWithEmail.mockClear();
     mockUseUnifiedAuth.mockReturnValue({
@@ -52,7 +51,6 @@ describe("AuthSignup", () => {
       signInWithPasskey: jest.fn(),
       registerPasskey: mockRegisterPasskey,
       signInWithGoogle: mockSignInWithGoogle,
-      signInWithApple: mockSignInWithApple,
       linkWallet: jest.fn(),
       unlinkWallet: jest.fn(),
       signOut: jest.fn(),
@@ -107,11 +105,6 @@ describe("AuthSignup", () => {
     it("renders the Continue with Google button", () => {
       renderAuthSignup();
       expect(screen.getByText("Continue with Google")).toBeInTheDocument();
-    });
-
-    it("renders the Continue with Apple button", () => {
-      renderAuthSignup();
-      expect(screen.getByText("Continue with Apple")).toBeInTheDocument();
     });
 
     it("renders the Connect Wallet button", () => {
@@ -180,24 +173,6 @@ describe("AuthSignup", () => {
       fireEvent.click(screen.getByText("Continue with Google"));
       await waitFor(() => {
         expect(mockSignInWithGoogle).toHaveBeenCalled();
-      });
-    });
-
-    it("calls signInWithApple when Apple button is clicked", async () => {
-      mockSignInWithApple.mockResolvedValueOnce(undefined); // skipcq: JS-W1042
-      renderAuthSignup();
-      fireEvent.click(screen.getByText("Continue with Apple"));
-      await waitFor(() => {
-        expect(mockSignInWithApple).toHaveBeenCalled();
-      });
-    });
-
-    it("sets error when Apple sign-up fails", async () => {
-      mockSignInWithApple.mockRejectedValueOnce(new Error("Apple OAuth failed"));
-      renderAuthSignup();
-      fireEvent.click(screen.getByText("Continue with Apple"));
-      await waitFor(() => {
-        expect(screen.getByRole("alert")).toHaveTextContent("Apple OAuth failed");
       });
     });
 
