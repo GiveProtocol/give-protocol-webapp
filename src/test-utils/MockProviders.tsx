@@ -43,6 +43,7 @@ export const mockAuthContextValue = {
   userType: null,
   login: jest.fn(),
   loginWithGoogle: jest.fn(),
+  loginWithApple: jest.fn(),
   logout: jest.fn(),
   resetPassword: jest.fn(),
   refreshSession: jest.fn(),
@@ -208,7 +209,10 @@ export const AllProviders: React.FC<AllProvidersProps> = ({
     [MockToastContext.Provider as React.Provider<unknown>, toastValue],
     [MockAuthContext.Provider as React.Provider<unknown>, authValue],
     [MockWeb3Context.Provider as React.Provider<unknown>, web3Value],
-    [MockMultiChainContext.Provider as React.Provider<unknown>, multiChainValue],
+    [
+      MockMultiChainContext.Provider as React.Provider<unknown>,
+      multiChainValue,
+    ],
     [MockCurrencyContext.Provider as React.Provider<unknown>, currencyValue],
   ];
 
