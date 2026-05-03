@@ -213,36 +213,47 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Handle chain changes — refresh provider/signer instead of reloading page
+  // Debounced to prevent MetaMask's rapid chainChanged event spam from
+  // creating multiple providers and triggering cascading RPC calls
+  const chainChangeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleChainChanged = useCallback(
-    async (chainIdHex: string) => {
+    (chainIdHex: string) => {
       const newChainId = Number.parseInt(chainIdHex, 16);
       setChainId(newChainId);
-      Logger.info("Chain changed", { chainId: newChainId });
 
-      // Rebuild ethers provider and signer for the new chain
-      const walletProvider =
-        currentWalletProvider ||
-        (typeof window !== "undefined" ? window.ethereum : null);
-
-      if (walletProvider && isEIP1193Provider(walletProvider)) {
-        try {
-          const newProvider = new ethers.BrowserProvider(
-            walletProvider as ethers.Eip1193Provider,
-          );
-          const newSigner = await newProvider.getSigner();
-          startTransition(() => {
-            setProvider(newProvider);
-            setSigner(newSigner);
-          });
-          Logger.info("Provider refreshed after chain change", {
-            chainId: newChainId,
-          });
-        } catch (err) {
-          Logger.error("Failed to refresh provider after chain change", {
-            error: err,
-          });
-        }
+      // Debounce provider rebuild — MetaMask fires chainChanged multiple times
+      if (chainChangeTimerRef.current) {
+        clearTimeout(chainChangeTimerRef.current);
       }
+      chainChangeTimerRef.current = setTimeout(async () => {
+        chainChangeTimerRef.current = null;
+        Logger.info("Chain changed", { chainId: newChainId });
+
+        // Rebuild ethers provider and signer for the new chain
+        const walletProvider =
+          currentWalletProvider ||
+          (typeof window !== "undefined" ? window.ethereum : null);
+
+        if (walletProvider && isEIP1193Provider(walletProvider)) {
+          try {
+            const newProvider = new ethers.BrowserProvider(
+              walletProvider as ethers.Eip1193Provider,
+            );
+            const newSigner = await newProvider.getSigner();
+            startTransition(() => {
+              setProvider(newProvider);
+              setSigner(newSigner);
+            });
+            Logger.info("Provider refreshed after chain change", {
+              chainId: newChainId,
+            });
+          } catch (err) {
+            Logger.error("Failed to refresh provider after chain change", {
+              error: err,
+            });
+          }
+        }
+      }, 500);
     },
     [currentWalletProvider],
   );

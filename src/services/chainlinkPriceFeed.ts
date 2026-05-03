@@ -37,7 +37,17 @@ interface PriceCacheEntry {
 const SEQUENCER_GRACE_PERIOD = 3600;
 
 /** Local cache TTL in milliseconds */
-const CACHE_TTL_MS = 30000; // 30 seconds
+const CACHE_TTL_MS = 60000; // 60 seconds
+
+/** Sequencer uptime cache TTL in milliseconds */
+const SEQUENCER_CACHE_TTL_MS = 120000; // 2 minutes
+
+/** Decimals cache (immutable per contract address, never expires) */
+const decimalsCache: Map<string, number> = new Map();
+
+/** Sequencer uptime cache */
+const sequencerCache: Map<number, { isUp: boolean; fetchedAt: number }> =
+  new Map();
 
 /** Per-chain RPC configuration: env var name, public fallback URL, and proxy name */
 interface ChainRpcConfig {
@@ -109,6 +119,11 @@ function getRpcUrl(chainId: ChainId): string {
 export class ChainlinkPriceFeedService {
   private readonly priceCache: Map<string, PriceCacheEntry> = new Map();
   private readonly providerCache: Map<number, Provider> = new Map();
+  /** In-flight request deduplication — concurrent calls for the same key share one promise */
+  private readonly inflightRequests: Map<
+    string,
+    Promise<ChainlinkPriceData | null>
+  > = new Map();
 
   /**
    * Get or create a provider for a chain
@@ -119,7 +134,8 @@ export class ChainlinkPriceFeedService {
 
     const rpcUrl = getRpcUrl(chainId);
     const provider = new ethers.JsonRpcProvider(rpcUrl, undefined, {
-      batchMaxCount: 1,
+      batchMaxCount: 10,
+      batchStallTime: 50,
     });
     this.providerCache.set(chainId, provider);
     return provider;
@@ -139,6 +155,12 @@ export class ChainlinkPriceFeedService {
       return true;
     }
 
+    // Check sequencer cache
+    const cached = sequencerCache.get(chainId);
+    if (cached && Date.now() - cached.fetchedAt < SEQUENCER_CACHE_TTL_MS) {
+      return cached.isUp;
+    }
+
     try {
       const sequencerFeed = new ethers.Contract(
         sequencerFeedAddress,
@@ -155,6 +177,7 @@ export class ChainlinkPriceFeedService {
 
       if (!isUp) {
         Logger.warn("Chainlink: L2 sequencer is DOWN", { chainId });
+        sequencerCache.set(chainId, { isUp: false, fetchedAt: Date.now() });
         return false;
       }
 
@@ -168,9 +191,11 @@ export class ChainlinkPriceFeedService {
           timeSinceUp,
           gracePeriod: SEQUENCER_GRACE_PERIOD,
         });
+        sequencerCache.set(chainId, { isUp: false, fetchedAt: Date.now() });
         return false;
       }
 
+      sequencerCache.set(chainId, { isUp: true, fetchedAt: Date.now() });
       return true;
     } catch (error) {
       Logger.error("Chainlink: Failed to check sequencer uptime", {
@@ -195,12 +220,23 @@ export class ChainlinkPriceFeedService {
       provider,
     );
 
-    const [roundData, decimals] = await Promise.all([
+    // decimals() is immutable per contract — cache permanently to save RPC calls
+    const cachedDecimals = decimalsCache.get(feedConfig.address);
+    const fetchPromises: [Promise<unknown>, Promise<unknown>?] = [
       feed.latestRoundData(),
-      feed.decimals(),
-    ]);
+    ];
+    if (cachedDecimals === undefined) {
+      fetchPromises.push(feed.decimals());
+    }
+    const results = await Promise.all(fetchPromises);
+    const roundData = results[0] as { [key: number]: bigint | number };
+    const decimals =
+      cachedDecimals ?? Number(results[1] as bigint);
+    if (cachedDecimals === undefined) {
+      decimalsCache.set(feedConfig.address, decimals);
+    }
 
-    const answer = roundData[1]; // answer field (int256)
+    const answer = roundData[1] as bigint; // answer field (int256)
     const updatedAt = Number(roundData[3]); // updatedAt field
 
     // Validate price is positive
@@ -251,6 +287,30 @@ export class ChainlinkPriceFeedService {
     if (cached && Date.now() - cached.fetchedAt < CACHE_TTL_MS) {
       return cached.data;
     }
+
+    // Deduplicate concurrent in-flight requests for the same token
+    const inflight = this.inflightRequests.get(cacheKey);
+    if (inflight) {
+      return inflight;
+    }
+
+    const request = this.fetchPrice(chainId, tokenSymbol, cacheKey, provider);
+    this.inflightRequests.set(cacheKey, request);
+
+    try {
+      return await request;
+    } finally {
+      this.inflightRequests.delete(cacheKey);
+    }
+  }
+
+  private async fetchPrice(
+    chainId: ChainId | number,
+    tokenSymbol: string,
+    cacheKey: string,
+    provider?: Provider,
+  ): Promise<ChainlinkPriceData | null> {
+    const cached = this.priceCache.get(cacheKey);
 
     // Get feed config
     const chainFeeds = CHAINLINK_FEEDS[chainId as ChainId];

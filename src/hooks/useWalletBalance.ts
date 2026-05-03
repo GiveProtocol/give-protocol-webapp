@@ -44,7 +44,7 @@ const NETWORK_CONFIG: Record<
 
 /** Cache for token prices */
 const priceCache: Record<string, { price: number; timestamp: number }> = {};
-const PRICE_CACHE_TTL = 30000; // 30 second cache (Chainlink is fast, no rate limits)
+const PRICE_CACHE_TTL = 60000; // 60 second cache
 
 /**
  * Fetch token price from Chainlink (primary) or cache
@@ -213,19 +213,25 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
   }, [isConnected, fetchBalance]);
 
   // Listen for block updates to refresh balance after transactions
+  // Debounce to avoid hammering RPC on every block (~2s on Base/Optimism)
   useEffect(() => {
     if (!provider || !isConnected) return undefined;
 
+    let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+
     const handleBlock = () => {
-      // Debounce block updates - only fetch every few blocks
-      fetchBalance();
+      if (debounceTimer) return;
+      debounceTimer = setTimeout(() => {
+        debounceTimer = null;
+        fetchBalance();
+      }, 15000); // At most once per 15 seconds from block events
     };
 
-    // Subscribe to new blocks
     provider.on("block", handleBlock);
 
     return () => {
       provider.off("block", handleBlock);
+      if (debounceTimer) clearTimeout(debounceTimer);
     };
   }, [provider, isConnected, fetchBalance]);
 
