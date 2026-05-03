@@ -17,6 +17,12 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+/**
+ * Builds a JSON Response with CORS headers.
+ * @param body - Response body object
+ * @param status - HTTP status code
+ * @returns Response with JSON content-type and CORS headers
+ */
 function jsonResponse(body: Record<string, unknown>, status: number): Response {
   return new Response(JSON.stringify(body), {
     status,
@@ -24,6 +30,12 @@ function jsonResponse(body: Record<string, unknown>, status: number): Response {
   });
 }
 
+/**
+ * Builds an error JSON Response with a standard `{ success: false, error }` shape.
+ * @param message - Human-readable error message
+ * @param status - HTTP status code
+ * @returns Error response with CORS headers
+ */
 function errorResponse(message: string, status: number): Response {
   return jsonResponse({ success: false, error: message }, status);
 }

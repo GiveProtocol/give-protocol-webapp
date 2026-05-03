@@ -236,7 +236,7 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
       ) {
         Logger.info("Passkey login cancelled by user");
         setError(null);
-        return;
+        return undefined;
       }
 
       Logger.error("Passkey login error:", err);
