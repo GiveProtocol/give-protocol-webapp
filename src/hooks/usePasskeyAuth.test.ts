@@ -21,7 +21,7 @@ describe("usePasskeyAuth", () => {
     it("returns true when PublicKeyCredential is available", () => {
       const originalPKC = window.PublicKeyCredential;
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPublicKeyCredential {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -93,7 +93,7 @@ describe("usePasskeyAuth", () => {
 
     it("calls passkey-register-options edge function", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -129,7 +129,7 @@ describe("usePasskeyAuth", () => {
 
     it("throws when register-options returns a server error", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -150,7 +150,7 @@ describe("usePasskeyAuth", () => {
 
     it("returns silently when user cancels registration (NotAllowedError)", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -173,7 +173,7 @@ describe("usePasskeyAuth", () => {
 
     it("passes undefined deviceName when called with no argument", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -226,7 +226,7 @@ describe("usePasskeyAuth", () => {
 
     it("returns undefined silently when user cancels (NotAllowedError)", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -253,7 +253,7 @@ describe("usePasskeyAuth", () => {
 
     it("throws for non-cancellation login failure", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
@@ -274,7 +274,7 @@ describe("usePasskeyAuth", () => {
 
     it("calls passkey-login-options edge function", async () => {
       Object.defineProperty(window, "PublicKeyCredential", {
-        value: class MockPKC {},
+        value: {},
         configurable: true,
         writable: true,
       });
