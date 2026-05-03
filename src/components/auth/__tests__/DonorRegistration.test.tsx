@@ -6,7 +6,7 @@ import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 // useUnifiedAuth and PasswordStrengthBar are both mocked via moduleNameMapper
 
 const mockSignUpWithEmail = jest.fn();
-const mockSignInWithPasskey = jest.fn();
+const mockRegisterPasskey = jest.fn();
 const mockSignInWithGoogle = jest.fn();
 
 const mockSignInWithWallet = jest.fn();
@@ -15,12 +15,12 @@ const mockUseUnifiedAuth = jest.mocked(useUnifiedAuth);
 describe("DonorRegistration", () => {
   beforeEach(() => {
     mockSignUpWithEmail.mockClear();
-    mockSignInWithPasskey.mockClear();
+    mockRegisterPasskey.mockClear();
     mockSignInWithGoogle.mockClear();
     mockSignInWithWallet.mockClear();
     mockUseUnifiedAuth.mockReturnValue({
       signUpWithEmail: mockSignUpWithEmail,
-      signInWithPasskey: mockSignInWithPasskey,
+      registerPasskey: mockRegisterPasskey,
       signInWithGoogle: mockSignInWithGoogle,
       signInWithWallet: mockSignInWithWallet,
       isPasskeySupported: true,
@@ -37,7 +37,7 @@ describe("DonorRegistration", () => {
       walletAuthStep: null,
       error: null,
       signInWithEmail: jest.fn(),
-      registerPasskey: jest.fn(),
+      signInWithPasskey: jest.fn(),
       linkWallet: jest.fn(),
       unlinkWallet: jest.fn(),
       signOut: jest.fn(),
@@ -177,5 +177,32 @@ describe("DonorRegistration", () => {
         { type: "donor" },
       );
     });
+  });
+
+  it("calls signUpWithEmail and registerPasskey when passkey button clicked with valid email", async () => {
+    mockSignUpWithEmail.mockResolvedValueOnce(undefined); // skipcq: JS-W1042 — mockResolvedValueOnce requires an argument
+    mockRegisterPasskey.mockResolvedValueOnce(undefined); // skipcq: JS-W1042 — mockResolvedValueOnce requires an argument
+    render(<DonorRegistration />);
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: { value: "donor@example.com" },
+    });
+    fireEvent.click(screen.getByText("Sign up with Passkey"));
+    await waitFor(() => {
+      expect(mockSignUpWithEmail).toHaveBeenCalledWith(
+        "donor@example.com",
+        expect.any(String),
+      );
+    });
+    expect(mockRegisterPasskey).toHaveBeenCalled();
+  });
+
+  it("shows error when passkey button clicked without email", async () => {
+    render(<DonorRegistration />);
+    fireEvent.click(screen.getByText("Sign up with Passkey"));
+    await waitFor(() => {
+      expect(screen.getByRole("alert")).toHaveTextContent(/email/i);
+    });
+    expect(mockSignUpWithEmail).not.toHaveBeenCalled();
+    expect(mockRegisterPasskey).not.toHaveBeenCalled();
   });
 });

@@ -49,7 +49,7 @@ export const DonorRegistration: React.FC = () => {
   const {
     loading,
     signUpWithEmail,
-    signInWithPasskey,
+    registerPasskey,
     signInWithGoogle,
     signInWithWallet,
     isPasskeySupported,
@@ -103,14 +103,30 @@ export const DonorRegistration: React.FC = () => {
 
   const handlePasskeySignUp = useCallback(async () => {
     setError("");
+    if (!validateEmail(email)) {
+      setError("Please enter your email address first");
+      return;
+    }
     try {
-      await signInWithPasskey();
+      const randomBytes = new Uint8Array(24);
+      crypto.getRandomValues(randomBytes);
+      const randomPassword = Array.from(randomBytes, (b) =>
+        b.toString(16).padStart(2, "0"),
+      ).join("");
+      await signUpWithEmail(email, randomPassword);
+      await registerPasskey();
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Passkey sign-up failed";
-      setError(message);
+      if (
+        !message.includes("cancelled") &&
+        !message.includes("AbortError") &&
+        !message.includes("NotAllowedError")
+      ) {
+        setError(message);
+      }
     }
-  }, [signInWithPasskey]);
+  }, [email, signUpWithEmail, registerPasskey]);
 
   const handleGoogleSignUp = useCallback(async () => {
     setError("");
