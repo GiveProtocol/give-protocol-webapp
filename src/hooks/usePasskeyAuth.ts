@@ -2,7 +2,6 @@ import { useState, useCallback, useMemo, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
 
-
 interface PasskeyCredential {
   id: string;
   credential_id: string;
@@ -32,10 +31,13 @@ interface UsePasskeyAuthReturn {
   /** Register a new passkey for the currently authenticated user */
   registerPasskey: (_deviceName?: string) => Promise<void>;
   /** Sign in using a registered passkey (no prior auth needed) */
-  loginWithPasskey: () => Promise<{
-    session: PasskeySession;
-    isNewUser: false;
-  } | undefined>;
+  loginWithPasskey: () => Promise<
+    | {
+        session: PasskeySession;
+        isNewUser: false;
+      }
+    | undefined
+  >;
   /** List registered passkeys for the current user */
   listPasskeys: () => Promise<PasskeyCredential[]>;
   /** Remove a registered passkey */
@@ -104,9 +106,7 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
 
       try {
         // Lazy-load @simplewebauthn/browser to keep bundle size small
-        const { startRegistration } = await import(
-          "@simplewebauthn/browser"
-        );
+        const { startRegistration } = await import("@simplewebauthn/browser");
 
         // Step 1: Get registration options from server
         const { data: optionsData, error: optionsError } =
@@ -116,7 +116,9 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
 
         if (optionsError || !optionsData?.success) {
           throw new Error(
-            optionsData?.error ?? optionsError?.message ?? "Failed to get registration options",
+            optionsData?.error ??
+              optionsError?.message ??
+              "Failed to get registration options",
           );
         }
 
@@ -133,7 +135,9 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
 
         if (verifyError || !verifyData?.success) {
           throw new Error(
-            verifyData?.error ?? verifyError?.message ?? "Passkey registration failed",
+            verifyData?.error ??
+              verifyError?.message ??
+              "Passkey registration failed",
           );
         }
 
@@ -174,9 +178,7 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
     setError(null);
 
     try {
-      const { startAuthentication } = await import(
-        "@simplewebauthn/browser"
-      );
+      const { startAuthentication } = await import("@simplewebauthn/browser");
 
       // Step 1: Get authentication options from server
       const { data: optionsData, error: optionsError } =
@@ -186,7 +188,9 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
 
       if (optionsError || !optionsData?.success) {
         throw new Error(
-          optionsData?.error ?? optionsError?.message ?? "Failed to get login options",
+          optionsData?.error ??
+            optionsError?.message ??
+            "Failed to get login options",
         );
       }
 
@@ -203,7 +207,9 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
 
       if (verifyError || !verifyData?.success) {
         throw new Error(
-          verifyData?.error ?? verifyError?.message ?? "Passkey authentication failed",
+          verifyData?.error ??
+            verifyError?.message ??
+            "Passkey authentication failed",
         );
       }
 
@@ -214,9 +220,7 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
       });
 
       if (sessionError) {
-        throw new Error(
-          `Failed to establish session: ${sessionError.message}`,
-        );
+        throw new Error(`Failed to establish session: ${sessionError.message}`);
       }
 
       Logger.info("Passkey login successful");
@@ -250,7 +254,9 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
   const listPasskeys = useCallback(async (): Promise<PasskeyCredential[]> => {
     const { data, error: queryError } = await supabase
       .from("user_passkeys")
-      .select("id, credential_id, device_name, created_at, last_used_at, transports")
+      .select(
+        "id, credential_id, device_name, created_at, last_used_at, transports",
+      )
       .order("created_at", { ascending: false });
 
     if (queryError) {
