@@ -108,7 +108,7 @@ export class SecurityManager {
     return {
       "Content-Security-Policy": `
         default-src 'self';
-        script-src 'self' 'wasm-unsafe-eval' 'sha256-3jmXcBtFOTq+jrqutfpt36T0J4Qm1z+aXPli5zNE1Cc=' 'sha256-1A5C0PgHbkU0Dcl68Pe/TR1vV/k5AMjAVNdjxLJHUaE=' 'sha256-sT0ykMJAN6ofGI+ID++kG8erAOJfF/gVN1p9IN2Wc+U=' ${trustedDomainsList};
+        script-src 'self' 'wasm-unsafe-eval' 'sha256-ooHLYUO0qxugBXSF0QzLAXnSRuY4UhNaiOFO9oNqiOY=' 'sha256-1A5C0PgHbkU0Dcl68Pe/TR1vV/k5AMjAVNdjxLJHUaE=' 'sha256-m9VrlzP2G46X7nBNMitQ7UMiGkSb46V+wRGTzBoGJmE=' ${trustedDomainsList};
         style-src 'self' 'unsafe-inline';
         img-src 'self' data: https: blob:;
         font-src 'self';
