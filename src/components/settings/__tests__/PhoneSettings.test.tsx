@@ -22,7 +22,7 @@ beforeEach(() => {
     data: { user: makeUser() },
     error: null,
   });
-  // @ts-ignore
+  // @ts-ignore - updateUser is not defined in SupabaseAuth API types
   mockSupabase.auth.updateUser = jest
     .fn()
     .mockResolvedValue({ data: {}, error: null });
@@ -101,7 +101,7 @@ describe("PhoneSettings", () => {
       fireEvent.change(input, { target: { value: "" } });
       fireEvent.submit(input.closest("form") as HTMLElement);
       await waitFor(() => {
-        // @ts-ignore
+        // @ts-ignore - missing updateUser in AuthUserApi mock types
         expect(mockSupabase.auth.updateUser).toHaveBeenCalledWith({
           data: { phone: null },
         });
@@ -119,7 +119,7 @@ describe("PhoneSettings", () => {
       fireEvent.change(input, { target: { value: "+15550001234" } });
       fireEvent.submit(input.closest("form") as HTMLElement);
       await waitFor(() => {
-        // @ts-ignore
+        // @ts-ignore - updateUser mock lacks TypeScript definitions
         expect(mockSupabase.auth.updateUser).toHaveBeenCalledWith({
           data: { phone: "+15550001234" },
         });
@@ -142,7 +142,7 @@ describe("PhoneSettings", () => {
     });
 
     it("shows save error when updateUser fails", async () => {
-      // @ts-ignore
+      // @ts-ignore - updateUser is not in Supabase Auth types
       mockSupabase.auth.updateUser = jest.fn().mockResolvedValue({
         data: null,
         error: { message: "Update failed" },

@@ -35,7 +35,7 @@ beforeEach(() => {
     data: { user: makeUser(true) },
     error: null,
   });
-  // @ts-ignore
+  // @ts-ignore - updateUser is missing from Auth type definitions
   mockSupabase.auth.updateUser = jest
     .fn()
     .mockResolvedValue({ data: {}, error: null });
@@ -161,7 +161,7 @@ describe("SetPasswordSettings", () => {
       fireEvent.change(confirmPw, { target: { value: "ValidP@ss123" } });
       fireEvent.submit(newPw.closest("form") as HTMLElement);
       await waitFor(() => {
-        // @ts-ignore
+        // @ts-ignore - mockSupabase.auth.updateUser lacks proper type definitions in this test
         expect(mockSupabase.auth.updateUser).toHaveBeenCalledWith({
           password: "ValidP@ss123",
         });
@@ -188,7 +188,7 @@ describe("SetPasswordSettings", () => {
     });
 
     it("shows error when updateUser fails", async () => {
-      // @ts-ignore
+      // @ts-ignore - mocking updateUser on auth for test
       mockSupabase.auth.updateUser = jest.fn().mockResolvedValue({
         data: null,
         error: { message: "Auth session expired" },

@@ -38,11 +38,11 @@ const renderSection = () =>
 // Provide stubs for methods not in base mock
 beforeEach(() => {
   jest.clearAllMocks();
-  // @ts-ignore — extending the mock for these tests
+  // @ts-ignore - extending the mock for these tests
   mockSupabase.auth.linkIdentity = jest
     .fn()
     .mockResolvedValue({ data: null, error: null });
-  // @ts-ignore
+  // @ts-ignore - mocking unlinkIdentity method not in type definitions
   mockSupabase.auth.unlinkIdentity = jest
     .fn()
     .mockResolvedValue({ data: null, error: null });
@@ -122,7 +122,7 @@ describe("LinkedAccountsSection", () => {
       });
       fireEvent.click(screen.getByText("Connect Google"));
       await waitFor(() => {
-        // @ts-ignore
+        // @ts-ignore - suppress TS error because linkIdentity isn't in Supabase types
         expect(mockSupabase.auth.linkIdentity).toHaveBeenCalledWith({
           provider: "google",
         });
@@ -136,7 +136,7 @@ describe("LinkedAccountsSection", () => {
       });
       fireEvent.click(screen.getByText("Disconnect Google"));
       await waitFor(() => {
-        // @ts-ignore
+        // @ts-ignore - unlinkIdentity isn't declared in Supabase type definitions
         expect(mockSupabase.auth.unlinkIdentity).toHaveBeenCalledWith(
           googleIdentity,
         );
@@ -144,7 +144,7 @@ describe("LinkedAccountsSection", () => {
     });
 
     it("shows disconnect error if unlinkIdentity fails", async () => {
-      // @ts-ignore
+      // @ts-ignore - unlinkIdentity not present on mockSupabase.auth type
       mockSupabase.auth.unlinkIdentity = jest.fn().mockResolvedValue({
         data: null,
         error: { message: "Unlink failed" },
