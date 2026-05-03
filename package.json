@@ -30,6 +30,7 @@
     "@safe-global/safe-apps-provider": "^0.18.3",
     "@safe-global/safe-apps-sdk": "^9.1.0",
     "@sentry/react": "^9.24.0",
+    "@simplewebauthn/browser": "^11.0.0",
     "@solana/wallet-adapter-base": "^0.9.23",
     "@solana/web3.js": "^1.95.0",
     "@supabase/supabase-js": "^2.101.1",

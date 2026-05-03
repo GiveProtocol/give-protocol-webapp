@@ -7,12 +7,13 @@ import { ENV } from "@/config/env";
 import { Logger } from "@/utils/logger";
 import { ethers } from "ethers";
 import type { ChainType, UnifiedWalletProvider } from "@/types/wallet";
+import { usePasskeyAuth } from "@/hooks/usePasskeyAuth";
 
 interface UserIdentity {
   id: string;
   user_id: string;
   wallet_address: string | null;
-  primary_auth_method: "email" | "wallet";
+  primary_auth_method: "email" | "wallet" | "passkey";
   wallet_linked_at: string | null;
 }
 
@@ -21,7 +22,7 @@ interface UnifiedUser {
   email: string | null;
   role: "donor" | "charity" | "volunteer" | "admin";
   walletAddress: string | null;
-  authMethod: "email" | "wallet";
+  authMethod: "email" | "wallet" | "passkey";
   displayName: string | null;
 }
 
@@ -35,11 +36,12 @@ export type WalletAuthStep =
 interface UnifiedAuthState {
   user: UnifiedUser | null;
   isAuthenticated: boolean;
-  authMethod: "email" | "wallet" | null;
+  authMethod: "email" | "wallet" | "passkey" | null;
   email: string | null;
   walletAddress: string | null;
   isWalletConnected: boolean;
   isWalletLinked: boolean;
+  isPasskeySupported: boolean;
   chainId: number | null;
   role: "donor" | "charity" | "volunteer" | "admin";
   loading: boolean;
@@ -60,6 +62,10 @@ interface UnifiedAuthState {
       address: string;
     },
   ) => Promise<void>;
+  signInWithPasskey: () => Promise<void>;
+  registerPasskey: (_deviceName?: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+  signInWithApple: () => Promise<void>;
   linkWallet: () => Promise<void>;
   unlinkWallet: () => Promise<void>;
   signOut: () => Promise<void>;
@@ -79,6 +85,7 @@ function generateNonce(): string {
 export function useUnifiedAuth(): UnifiedAuthState {
   const auth = useAuthContext();
   const web3 = useWeb3();
+  const passkey = usePasskeyAuth();
   const [identity, setIdentity] = useState<UserIdentity | null>(null);
   const [loading, setLoading] = useState(false);
   const [walletAuthStep, setWalletAuthStep] = useState<WalletAuthStep>(null);
@@ -421,6 +428,87 @@ export function useUnifiedAuth(): UnifiedAuthState {
     }
   }, [auth.user]);
 
+  const signInWithPasskey = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await passkey.loginWithPasskey();
+      // Session is set inside usePasskeyAuth via supabase.auth.setSession
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Passkey sign-in failed";
+      // Don't set error for user cancellation
+      if (
+        !message.includes("cancelled") &&
+        !message.includes("AbortError") &&
+        !message.includes("NotAllowedError")
+      ) {
+        setError(message);
+      }
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [passkey]);
+
+  const registerPasskey = useCallback(
+    async (deviceName?: string) => {
+      try {
+        setLoading(true);
+        setError(null);
+        await passkey.registerPasskey(deviceName);
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : "Passkey registration failed";
+        if (
+          !message.includes("cancelled") &&
+          !message.includes("AbortError") &&
+          !message.includes("NotAllowedError")
+        ) {
+          setError(message);
+        }
+        throw err;
+      } finally {
+        setLoading(false);
+      }
+    },
+    [passkey],
+  );
+
+  const signInWithGoogle = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      await auth.loginWithGoogle();
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to sign in with Google";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, [auth]);
+
+  const signInWithApple = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const { error: oauthError } = await supabase.auth.signInWithOAuth({
+        provider: "apple",
+        options: { redirectTo: `${window.location.origin}/auth/callback` },
+      });
+      if (oauthError) throw oauthError;
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to sign in with Apple";
+      setError(message);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   const signOut = useCallback(async () => {
     try {
       setLoading(true);
@@ -445,19 +533,24 @@ export function useUnifiedAuth(): UnifiedAuthState {
   return {
     user: unifiedUser,
     isAuthenticated,
-    authMethod: authMethod as "email" | "wallet" | null,
+    authMethod: authMethod as "email" | "wallet" | "passkey" | null,
     email: auth.user?.email ?? null,
     walletAddress: identity?.wallet_address ?? web3.address,
     isWalletConnected: web3.isConnected,
     isWalletLinked,
+    isPasskeySupported: passkey.isSupported,
     chainId: web3.chainId,
     role: resolvedRole,
-    loading: loading || auth.loading,
+    loading: loading || auth.loading || passkey.loading,
     walletAuthStep,
-    error,
+    error: error ?? passkey.error,
     signInWithEmail,
     signUpWithEmail,
     signInWithWallet,
+    signInWithPasskey,
+    registerPasskey,
+    signInWithGoogle,
+    signInWithApple,
     linkWallet,
     unlinkWallet,
     signOut,
