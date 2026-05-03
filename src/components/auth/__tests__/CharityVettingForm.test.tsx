@@ -51,7 +51,6 @@ describe("CharityVettingForm", () => {
     ).toBeInTheDocument();
     expect(screen.getByLabelText(/contact name/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/contact email/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/contact phone/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^password$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/confirm password/i)).toBeInTheDocument();
   });
@@ -91,9 +90,6 @@ describe("CharityVettingForm", () => {
     });
     fireEvent.change(screen.getByLabelText(/contact email/i), {
       target: { value: "john@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/contact phone/i), {
-      target: { value: "+1234567890" },
     });
     fireEvent.change(screen.getByLabelText(/^password$/i), {
       target: { value: "Test1234!" },
@@ -200,9 +196,6 @@ describe("CharityVettingForm", () => {
     });
     fireEvent.change(screen.getByLabelText(/contact email/i), {
       target: { value: "test@test.com" },
-    });
-    fireEvent.change(screen.getByLabelText(/contact phone/i), {
-      target: { value: "+1234567890" },
     });
     fireEvent.change(screen.getByLabelText(/^password$/i), {
       target: { value: "Test1234!" },

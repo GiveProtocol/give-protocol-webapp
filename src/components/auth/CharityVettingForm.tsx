@@ -8,7 +8,6 @@ import {
   validateEmail,
   validatePassword,
   validateName,
-  validatePhoneNumber,
 } from "@/utils/validation";
 import { AlertCircle } from "lucide-react";
 
@@ -75,7 +74,6 @@ export const CharityVettingForm: React.FC = () => {
     taxId: "",
     contactName: "",
     contactEmail: "",
-    contactPhone: "",
     password: "",
     confirmPassword: "",
   });
@@ -121,10 +119,6 @@ export const CharityVettingForm: React.FC = () => {
           return validateEmail(value)
             ? ""
             : "Please enter a valid email address";
-        case "contactPhone":
-          return validatePhoneNumber(value)
-            ? ""
-            : "Please enter a valid phone number";
         case "password":
           return validatePassword(value)
             ? ""
@@ -152,7 +146,6 @@ export const CharityVettingForm: React.FC = () => {
         { name: "organizationName", value: formData.organizationName },
         { name: "contactName", value: formData.contactName },
         { name: "contactEmail", value: formData.contactEmail },
-        { name: "contactPhone", value: formData.contactPhone },
         { name: "password", value: formData.password },
         { name: "confirmPassword", value: formData.confirmPassword },
       ];
@@ -212,7 +205,6 @@ export const CharityVettingForm: React.FC = () => {
           taxId: formData.taxId,
           contact: {
             name: formData.contactName,
-            phone: formData.contactPhone,
           },
         });
       } catch (err) {
@@ -355,17 +347,6 @@ export const CharityVettingForm: React.FC = () => {
         required
         error={validationErrors["contactEmail"]}
       />
-      <Input
-        label="Contact Phone"
-        type="tel"
-        name="contactPhone"
-        variant="fintech"
-        value={formData.contactPhone}
-        onChange={handleChange}
-        required
-        error={validationErrors["contactPhone"]}
-      />
-
       <h3 className="text-lg font-semibold text-gray-900">Account Security</h3>
       <div className="space-y-1">
         <Input
