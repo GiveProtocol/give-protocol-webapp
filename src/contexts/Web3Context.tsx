@@ -87,7 +87,9 @@ export function Web3Provider({ children }: { children: React.ReactNode }) {
   // Handle chain changes — refresh provider/signer instead of reloading page
   // Debounced to prevent MetaMask's rapid chainChanged event spam from
   // creating multiple providers and triggering cascading RPC calls
-  const chainChangeTimerRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const chainChangeTimerRef = React.useRef<ReturnType<
+    typeof setTimeout
+  > | null>(null);
   const handleChainChanged = useCallback(
     (chainIdHex: string) => {
       const newChainId = Number.parseInt(chainIdHex, 16);
