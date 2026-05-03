@@ -282,6 +282,14 @@ export default {
       "<rootDir>/src/test-utils/walletAliasSettingsComponentMock.js",
     "(.*)/settings/WalletAliasSettings(\\.tsx?)?$":
       "<rootDir>/src/test-utils/walletAliasSettingsComponentMock.js",
+    "^@/components/settings/LinkedAccountsSection$":
+      "<rootDir>/src/test-utils/linkedAccountsSectionMock.js",
+    "^@/components/settings/PhoneSettings$":
+      "<rootDir>/src/test-utils/phoneSettingsMock.js",
+    "^@/components/settings/SetPasswordSettings$":
+      "<rootDir>/src/test-utils/setPasswordSettingsMock.js",
+    "^@/components/settings/PrivacySettings$":
+      "<rootDir>/src/test-utils/privacySettingsMock.js",
     "^@/components/donor/ScheduledDonations$":
       "<rootDir>/src/test-utils/scheduledDonationsComponentMock.js",
     "(.*)/donor/ScheduledDonations(\\.tsx?)?$":
