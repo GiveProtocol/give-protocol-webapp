@@ -178,6 +178,9 @@ export default {
       "<rootDir>/src/test-utils/contractsMock.js",
     "^@/config/chains$": "<rootDir>/src/test-utils/chainsMock.js",
     "(.*)/config/chains(\\.tsx?)?$": "<rootDir>/src/test-utils/chainsMock.js",
+    // WebAuthn library mock
+    "^@simplewebauthn/browser$":
+      "<rootDir>/src/test-utils/simplewebauthnBrowserMock.js",
     // TipTap editor mocks
     "^@tiptap/react$": "<rootDir>/src/test-utils/tiptapReactMock.js",
     "^@tiptap/starter-kit$": "<rootDir>/src/test-utils/tiptapStarterKitMock.js",
