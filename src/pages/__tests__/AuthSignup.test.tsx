@@ -85,9 +85,7 @@ describe("AuthSignup", () => {
 
     it("does not render password inputs by default", () => {
       renderAuthSignup();
-      expect(
-        screen.queryByPlaceholderText("Password"),
-      ).not.toBeInTheDocument();
+      expect(screen.queryByPlaceholderText("Password")).not.toBeInTheDocument();
       expect(
         screen.queryByPlaceholderText("Confirm password"),
       ).not.toBeInTheDocument();
@@ -97,9 +95,7 @@ describe("AuthSignup", () => {
   describe("Auth method buttons", () => {
     it("renders the Sign up with Passkey button", () => {
       renderAuthSignup();
-      expect(
-        screen.getByText("Sign up with Passkey"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("Sign up with Passkey")).toBeInTheDocument();
     });
 
     it("renders the Continue with Google button", () => {
@@ -283,12 +279,16 @@ describe("AuthSignup", () => {
       });
       fireEvent.click(screen.getByText("Create Account"));
       await waitFor(() => {
-        expect(screen.getByRole("status")).toHaveTextContent(/check your email/i);
+        expect(screen.getByRole("status")).toHaveTextContent(
+          /check your email/i,
+        );
       });
     });
 
     it("shows error when signUpWithEmail fails", async () => {
-      mockSignUpWithEmail.mockRejectedValueOnce(new Error("Email already in use"));
+      mockSignUpWithEmail.mockRejectedValueOnce(
+        new Error("Email already in use"),
+      );
       renderAuthSignup();
       openPasswordSection();
       fireEvent.change(screen.getByPlaceholderText("Email"), {
@@ -302,7 +302,9 @@ describe("AuthSignup", () => {
       });
       fireEvent.click(screen.getByText("Create Account"));
       await waitFor(() => {
-        expect(screen.getByRole("alert")).toHaveTextContent("Email already in use");
+        expect(screen.getByRole("alert")).toHaveTextContent(
+          "Email already in use",
+        );
       });
     });
 

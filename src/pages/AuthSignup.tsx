@@ -416,8 +416,7 @@ const SignupRightPanel: React.FC = () => {
       await signUpWithEmail(email, randomPassword);
       await registerPasskey();
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Passkey sign-up failed";
+      const msg = err instanceof Error ? err.message : "Passkey sign-up failed";
       if (
         !msg.includes("cancelled") &&
         !msg.includes("AbortError") &&
@@ -435,8 +434,7 @@ const SignupRightPanel: React.FC = () => {
     try {
       await signInWithGoogle();
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Google sign-up failed";
+      const msg = err instanceof Error ? err.message : "Google sign-up failed";
       setFormError(msg);
       Logger.error("Google sign-up failed", { error: msg });
     }
@@ -448,8 +446,7 @@ const SignupRightPanel: React.FC = () => {
     try {
       await signInWithWallet();
     } catch (err) {
-      const msg =
-        err instanceof Error ? err.message : "Wallet sign-up failed";
+      const msg = err instanceof Error ? err.message : "Wallet sign-up failed";
       setFormError(msg);
       Logger.error("Wallet sign-up failed", { error: msg });
     }

@@ -1,6 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link, Navigate, useLocation } from "react-router-dom";
-import { ShieldCheck, Building2, Wallet, Mail, Lock, Fingerprint } from "lucide-react";
+import {
+  ShieldCheck,
+  Building2,
+  Wallet,
+  Mail,
+  Lock,
+  Fingerprint,
+} from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/Button";
 import { FormInput } from "@/components/ui/FormInput";

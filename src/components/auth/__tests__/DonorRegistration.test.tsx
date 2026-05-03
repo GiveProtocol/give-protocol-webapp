@@ -55,7 +55,9 @@ describe("DonorRegistration", () => {
   it("does not render password fields by default", () => {
     render(<DonorRegistration />);
     expect(screen.queryByLabelText(/^password$/i)).not.toBeInTheDocument();
-    expect(screen.queryByLabelText(/confirm password/i)).not.toBeInTheDocument();
+    expect(
+      screen.queryByLabelText(/confirm password/i),
+    ).not.toBeInTheDocument();
   });
 
   it("renders the 'Or set a password' collapsible toggle", () => {

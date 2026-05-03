@@ -145,28 +145,21 @@ serve(async (req: Request) => {
     const deviceName = challengeRow.email ?? undefined;
 
     // Store the credential
-    const { error: insertError } = await supabase
-      .from("user_passkeys")
-      .insert({
-        user_id: user.id,
-        credential_id: credential.id,
-        public_key: btoa(
-          String.fromCharCode(
-            ...new Uint8Array(credential.publicKey),
-          ),
-        ),
-        counter: credential.counter,
-        transports: credential.transports ?? [],
-        device_name: deviceName,
-      });
+    const { error: insertError } = await supabase.from("user_passkeys").insert({
+      user_id: user.id,
+      credential_id: credential.id,
+      public_key: btoa(
+        String.fromCharCode(...new Uint8Array(credential.publicKey)),
+      ),
+      counter: credential.counter,
+      transports: credential.transports ?? [],
+      device_name: deviceName,
+    });
 
     if (insertError) {
       console.error("Failed to store passkey:", insertError);
       if (insertError.code === "23505") {
-        return errorResponse(
-          "This passkey is already registered",
-          409,
-        );
+        return errorResponse("This passkey is already registered", 409);
       }
       return errorResponse("Failed to store passkey credential", 500);
     }
@@ -190,7 +183,9 @@ serve(async (req: Request) => {
   } catch (error) {
     console.error("passkey-register-verify error:", error);
     const message =
-      error instanceof Error ? error.message : "Registration verification failed";
+      error instanceof Error
+        ? error.message
+        : "Registration verification failed";
     return errorResponse(message, 500);
   }
 });
