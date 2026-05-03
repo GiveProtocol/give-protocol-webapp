@@ -4,7 +4,7 @@
 
 // Simple mock functions - tests can spy on these using jest.spyOn
 const createMockFn = () => {
-  const fn = function(...args) {
+  const fn = function (...args) {
     fn.calls.push(args);
     fn.callCount++;
     return fn.returnValue;

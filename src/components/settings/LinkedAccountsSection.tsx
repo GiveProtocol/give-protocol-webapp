@@ -1,12 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { Globe, Smartphone, AlertCircle, CheckCircle2, Link as LinkIcon, Unlink } from 'lucide-react';
-import { Button } from '@/components/ui/Button';
-import { WalletLinkCard } from '@/components/wallet/WalletLinkCard';
-import { supabase } from '@/lib/supabase';
-import { Logger } from '@/utils/logger';
-import type { UserIdentity } from '@supabase/supabase-js';
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Globe,
+  Smartphone,
+  AlertCircle,
+  CheckCircle2,
+  Link as LinkIcon,
+  Unlink,
+} from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { WalletLinkCard } from "@/components/wallet/WalletLinkCard";
+import { supabase } from "@/lib/supabase";
+import { Logger } from "@/utils/logger";
+import type { UserIdentity } from "@supabase/supabase-js";
 
-type OAuthProvider = 'google' | 'apple';
+type OAuthProvider = "google" | "apple";
 
 interface ProviderConfig {
   provider: OAuthProvider;
@@ -16,13 +23,13 @@ interface ProviderConfig {
 
 const PROVIDERS: ProviderConfig[] = [
   {
-    provider: 'google',
-    label: 'Google',
+    provider: "google",
+    label: "Google",
     icon: <Globe className="h-5 w-5 text-blue-500" />,
   },
   {
-    provider: 'apple',
-    label: 'Apple',
+    provider: "apple",
+    label: "Apple",
     icon: <Smartphone className="h-5 w-5 text-gray-700 dark:text-gray-300" />,
   },
 ];
@@ -52,7 +59,11 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
     try {
       await onLink(config.provider);
     } catch (err) {
-      setCardError(err instanceof Error ? err.message : `Failed to connect ${config.label}`);
+      setCardError(
+        err instanceof Error
+          ? err.message
+          : `Failed to connect ${config.label}`,
+      );
     }
   }, [onLink, config.provider, config.label]);
 
@@ -64,7 +75,11 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
       await onUnlink(identity);
       setCardSuccess(`${config.label} disconnected`);
     } catch (err) {
-      setCardError(err instanceof Error ? err.message : `Failed to disconnect ${config.label}`);
+      setCardError(
+        err instanceof Error
+          ? err.message
+          : `Failed to disconnect ${config.label}`,
+      );
     }
   }, [onUnlink, identity, config.label]);
 
@@ -75,9 +90,13 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
           {config.icon}
         </div>
         <div>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">{config.label}</h3>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+            {config.label}
+          </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            {identity !== undefined ? `Connected to your account` : `Not connected`}
+            {identity !== undefined
+              ? `Connected to your account`
+              : `Not connected`}
           </p>
         </div>
       </div>
@@ -94,14 +113,18 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
       {cardError !== null && (
         <div className="flex items-center gap-2 p-3 mb-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
-          <span className="text-sm text-red-600 dark:text-red-400">{cardError}</span>
+          <span className="text-sm text-red-600 dark:text-red-400">
+            {cardError}
+          </span>
         </div>
       )}
 
       {cardSuccess !== null && cardError === null && (
         <div className="flex items-center gap-2 p-3 mb-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-lg">
           <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-          <span className="text-sm text-emerald-600 dark:text-emerald-400">{cardSuccess}</span>
+          <span className="text-sm text-emerald-600 dark:text-emerald-400">
+            {cardSuccess}
+          </span>
         </div>
       )}
 
@@ -142,8 +165,10 @@ export const LinkedAccountsSection: React.FC = () => {
       const { data, error } = await supabase.auth.getUser();
       if (cancelled) return;
       if (error) {
-        setLoadError('Could not load linked accounts');
-        Logger.error('Failed to load user identities', { error: error.message });
+        setLoadError("Could not load linked accounts");
+        Logger.error("Failed to load user identities", {
+          error: error.message,
+        });
         return;
       }
       setIdentities(data.user?.identities ?? []);
@@ -177,7 +202,9 @@ export const LinkedAccountsSection: React.FC = () => {
       if (error) {
         throw new Error(error.message);
       }
-      setIdentities((prev) => prev.filter((i) => i.identity_id !== identity.identity_id));
+      setIdentities((prev) =>
+        prev.filter((i) => i.identity_id !== identity.identity_id),
+      );
     } finally {
       setActionLoading(false);
     }
@@ -191,12 +218,16 @@ export const LinkedAccountsSection: React.FC = () => {
 
   return (
     <div className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 mb-6">
-      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">Linked Accounts</h3>
+      <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4">
+        Linked Accounts
+      </h3>
 
       {loadError !== null && (
         <div className="flex items-center gap-2 p-3 mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
           <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400 shrink-0" />
-          <span className="text-sm text-red-600 dark:text-red-400">{loadError}</span>
+          <span className="text-sm text-red-600 dark:text-red-400">
+            {loadError}
+          </span>
         </div>
       )}
 
