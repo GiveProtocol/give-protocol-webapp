@@ -1,11 +1,5 @@
 import React, { useState, useCallback } from "react";
-import {
-  Fingerprint,
-  ChevronDown,
-  ChevronUp,
-  Lock,
-  Wallet,
-} from "lucide-react";
+import { Fingerprint, ChevronDown, ChevronUp, Wallet } from "lucide-react";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
