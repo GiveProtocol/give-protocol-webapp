@@ -110,9 +110,7 @@ describe("ValidationResponseModal", () => {
         item={{ ...mockItem, isResubmission: true }}
       />,
     );
-    expect(
-      screen.getByText(/appeal\/resubmission/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/appeal\/resubmission/)).toBeInTheDocument();
   });
 
   it("calls onApprove when Approve button is clicked", async () => {
@@ -126,9 +124,7 @@ describe("ValidationResponseModal", () => {
   it("switches to reject mode when Reject button is clicked", () => {
     render(<ValidationResponseModal {...defaultProps} />);
     fireEvent.click(screen.getByText("Reject"));
-    expect(
-      screen.getByText("Reject Validation Request"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Reject Validation Request")).toBeInTheDocument();
     expect(screen.getByTestId("rejection-reason-select")).toBeInTheDocument();
   });
 
@@ -136,9 +132,7 @@ describe("ValidationResponseModal", () => {
     render(<ValidationResponseModal {...defaultProps} />);
     fireEvent.click(screen.getByText("Reject"));
     fireEvent.click(screen.getByText("Back"));
-    expect(
-      screen.getByText("Review Validation Request"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Review Validation Request")).toBeInTheDocument();
   });
 
   it("calls onClose when overlay is clicked", () => {
