@@ -42,11 +42,11 @@ import { SecurityManager } from "../index";
 // SHA-256 hashes of the three inline scripts in index.html (PCI DSS SAQ A-EP requirement 6.4.3)
 const INLINE_SCRIPT_HASHES = [
   // GTM loader script
-  "sha256-3jmXcBtFOTq+jrqutfpt36T0J4Qm1z+aXPli5zNE1Cc=",
+  "sha256-ooHLYUO0qxugBXSF0QzLAXnSRuY4UhNaiOFO9oNqiOY=",
   // gtag consent/config script
   "sha256-1A5C0PgHbkU0Dcl68Pe/TR1vV/k5AMjAVNdjxLJHUaE=",
   // Silktide consent manager config script
-  "sha256-sT0ykMJAN6ofGI+ID++kG8erAOJfF/gVN1p9IN2Wc+U=",
+  "sha256-m9VrlzP2G46X7nBNMitQ7UMiGkSb46V+wRGTzBoGJmE=",
 ];
 
 type SecurityManagerPrivate = {

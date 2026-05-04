@@ -10,7 +10,6 @@ import {
   validateEmail,
   validatePassword,
   validateName,
-  validatePhoneNumber,
 } from "@/utils/validation";
 import { Logger } from "@/utils/logger";
 import type { CharityOrganization } from "@/types/charityOrganization";
@@ -68,7 +67,6 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
   const [formData, setFormData] = useState({
     contactName: "",
     contactEmail: "",
-    contactPhone: "",
     password: "",
     confirmPassword: "",
   });
@@ -108,10 +106,6 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           return validateEmail(value)
             ? ""
             : "Please enter a valid email address";
-        case "contactPhone":
-          return validatePhoneNumber(value)
-            ? ""
-            : "Please enter a valid phone number";
         case "password":
           return validatePassword(value)
             ? ""
@@ -135,7 +129,6 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
       const fieldsToValidate = [
         { name: "contactName", value: formData.contactName },
         { name: "contactEmail", value: formData.contactEmail },
-        { name: "contactPhone", value: formData.contactPhone },
         { name: "password", value: formData.password },
         { name: "confirmPassword", value: formData.confirmPassword },
       ];
@@ -211,7 +204,6 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
             p_ein: organization.ein,
             p_signer_name: formData.contactName,
             p_signer_email: formData.contactEmail,
-            p_signer_phone: formData.contactPhone,
           },
         );
 
@@ -284,17 +276,6 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           required
           error={validationErrors["contactEmail"]}
         />
-        <Input
-          label="Contact Phone"
-          type="tel"
-          name="contactPhone"
-          variant="fintech"
-          value={formData.contactPhone}
-          onChange={handleChange}
-          required
-          error={validationErrors["contactPhone"]}
-        />
-
         <h3 className="text-lg font-semibold text-gray-900">
           Account Security
         </h3>

@@ -188,9 +188,7 @@ const Login: React.FC = () => {
 
             {/* Sign up prompt */}
             <div className="text-center space-y-1 pt-2">
-              <p className="text-sm text-gray-500">
-                New to Give Protocol?
-              </p>
+              <p className="text-sm text-gray-500">New to Give Protocol?</p>
               <Link
                 to="/register"
                 className="inline-block text-sm text-emerald-700 hover:text-emerald-800 font-semibold hover:underline decoration-emerald-500 decoration-2 underline-offset-4 transition-all duration-200 py-1 px-2 rounded-md focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
@@ -233,7 +231,10 @@ const Login: React.FC = () => {
               </p>
             </div>
             <DonorLogin />
-            <LoginHelpers onForgotUsername={handleForgotUsername} onForgotPassword={handleForgotPassword} />
+            <LoginHelpers
+              onForgotUsername={handleForgotUsername}
+              onForgotPassword={handleForgotPassword}
+            />
           </>
         );
       case "forgotPassword":
@@ -259,7 +260,10 @@ const Login: React.FC = () => {
               </p>
             </div>
             <CharityLogin />
-            <LoginHelpers onForgotUsername={handleForgotUsername} onForgotPassword={handleForgotPassword} />
+            <LoginHelpers
+              onForgotUsername={handleForgotUsername}
+              onForgotPassword={handleForgotPassword}
+            />
             <NonprofitOnboardingTray />
           </>
         );
@@ -296,7 +300,11 @@ const Login: React.FC = () => {
           className={`frame-reveal ${visibleClass} flex flex-col items-center mb-6`}
           style={{ "--reveal-delay": "0.05s" } as React.CSSProperties}
         >
-          <Link to="/" className="flex items-center mb-4" aria-label="Go to homepage">
+          <Link
+            to="/"
+            className="flex items-center mb-4"
+            aria-label="Go to homepage"
+          >
             <Logo className="h-12 w-12" />
           </Link>
           <h2 className="text-xl font-semibold text-gray-900">

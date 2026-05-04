@@ -142,9 +142,8 @@ function WorkTypeToggle({
   onHybridClick: () => void;
 }) {
   return (
-    <div
-      className="inline-flex rounded-full bg-gray-100 p-0.5 border border-gray-200 shrink-0"
-      role="group"
+    <fieldset
+      className="inline-flex rounded-full bg-gray-100 p-0.5 border border-gray-200 shrink-0 m-0"
       aria-label="Work type filter"
     >
       <button
@@ -183,7 +182,7 @@ function WorkTypeToggle({
       >
         Hybrid
       </button>
-    </div>
+    </fieldset>
   );
 }
 

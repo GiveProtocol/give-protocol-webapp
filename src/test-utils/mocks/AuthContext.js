@@ -15,6 +15,9 @@ const mockValue = {
   loginWithGoogle: async () => {
     /* no-op mock for testing */
   },
+  loginWithApple: async () => {
+    /* no-op mock for testing */
+  },
   logout: async () => {
     /* no-op mock for testing */
   },
@@ -34,8 +37,18 @@ const mockValue = {
 
 const AuthContext = createContext(mockValue);
 
+/**
+ * Mock useAuth hook that returns the mocked auth context value
+ * @returns The mocked auth context value
+ */
 export const useAuth = () => useContext(AuthContext);
 
+/**
+ * Mock AuthProvider component that wraps children with the mocked auth context
+ * @param props - Component props
+ * @param props.children - Child components to render within the provider
+ * @returns The provider element wrapping children
+ */
 export const AuthProvider = ({ children }) =>
   React.createElement(AuthContext.Provider, { value: mockValue }, children);
 

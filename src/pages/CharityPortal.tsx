@@ -166,7 +166,7 @@ function CharityTabNav({
   );
 
   return (
-    <div className="mb-6 border-b border-gray-200 dark:border-gray-700">
+    <div className="mb-6 border-b border-line-subtle dark:border-line-subtle/15">
       <div
         className="flex gap-1 min-w-max overflow-x-auto -mb-px"
         role="tablist"
@@ -182,14 +182,14 @@ function CharityTabNav({
               aria-selected={isActive}
               className={`relative px-4 py-3 text-sm font-medium transition-colors duration-200 border-b-2 -mb-px whitespace-nowrap ${
                 isActive
-                  ? "border-emerald-600 text-emerald-700 dark:text-emerald-300"
-                  : "border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
+                  ? "border-accent-base text-accent-base"
+                  : "border-transparent text-content-muted hover:text-content-primary"
               }`}
             >
               <span className="inline-flex items-center gap-2">
                 {t(labelKey, labelDefault)}
                 {badge !== undefined && badge > 0 && (
-                  <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 bg-emerald-50 text-emerald-700 text-[11px] font-semibold rounded-full border border-emerald-100">
+                  <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 bg-accent-subtle/60 dark:bg-accent-subtle/30 text-accent-base text-[11px] font-semibold rounded-full border border-line-accent/30">
                     {badge}
                   </span>
                 )}
@@ -205,12 +205,12 @@ function CharityTabNav({
 /** Skeleton placeholder for a single stat card. */
 function SkeletonStatCard() {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md animate-pulse">
+    <div className="bg-surface-raised rounded-xl p-6 shadow-md animate-pulse">
       <div className="flex items-center">
-        <div className="h-14 w-14 bg-gray-200 rounded-full" />
+        <div className="h-14 w-14 bg-surface-sunken rounded-full" />
         <div className="ml-4 flex-1">
-          <div className="h-4 bg-gray-200 rounded w-24 mb-2" />
-          <div className="h-8 bg-gray-200 rounded w-20" />
+          <div className="h-4 bg-surface-sunken rounded w-24 mb-2" />
+          <div className="h-8 bg-surface-sunken rounded w-20" />
         </div>
       </div>
     </div>
@@ -220,11 +220,11 @@ function SkeletonStatCard() {
 /** Skeleton placeholder for content area. */
 function SkeletonContent() {
   return (
-    <div className="bg-white rounded-xl p-6 shadow-md animate-pulse">
-      <div className="h-6 bg-gray-200 rounded w-48 mb-6" />
+    <div className="bg-surface-raised rounded-xl p-6 shadow-md animate-pulse">
+      <div className="h-6 bg-surface-sunken rounded w-48 mb-6" />
       <div className="space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="h-16 bg-gray-100 rounded-lg" />
+          <div key={i} className="h-16 bg-surface-sunken rounded-lg" />
         ))}
       </div>
     </div>
@@ -234,12 +234,12 @@ function SkeletonContent() {
 /** Loading skeleton for the charity portal dashboard. */
 function CharityPortalSkeleton() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-surface-base">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Skeleton Header */}
         <div className="mb-8 animate-pulse">
-          <div className="h-9 bg-gray-200 rounded w-64 mb-2" />
-          <div className="h-5 bg-gray-200 rounded w-80" />
+          <div className="h-9 bg-surface-sunken rounded w-64 mb-2" />
+          <div className="h-5 bg-surface-sunken rounded w-80" />
         </div>
         {/* Skeleton Stats */}
         <div className="grid gap-6 mb-8 grid-cols-2 lg:grid-cols-4">
@@ -248,10 +248,13 @@ function CharityPortalSkeleton() {
           ))}
         </div>
         {/* Skeleton Tabs */}
-        <div className="bg-gray-100 rounded-xl p-1 mb-6 animate-pulse">
+        <div className="bg-surface-sunken rounded-xl p-1 mb-6 animate-pulse">
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-10 bg-gray-200 rounded-lg flex-1" />
+              <div
+                key={i}
+                className="h-10 bg-surface-raised rounded-lg flex-1"
+              />
             ))}
           </div>
         </div>
@@ -270,7 +273,7 @@ function DashboardSearch({
 }) {
   return (
     <div className="relative mb-6">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-content-muted pointer-events-none" />
       <input
         type="search"
         aria-label={t("dashboard.search", "Search")}
@@ -278,9 +281,9 @@ function DashboardSearch({
           "dashboard.searchPlaceholder",
           "Search projects, volunteers (Cmd+K)",
         )}
-        className="w-full pl-10 pr-16 py-2.5 text-sm bg-white border border-gray-200 rounded-lg shadow-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition"
+        className="w-full pl-10 pr-16 py-2.5 text-sm bg-surface-raised text-content-primary border border-line-subtle dark:border-line-subtle/15 rounded-lg shadow-sm placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-accent-base/30 focus:border-accent-base transition"
       />
-      <kbd className="hidden sm:inline-flex absolute right-3 top-1/2 -translate-y-1/2 items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 bg-gray-100 border border-gray-200 rounded">
+      <kbd className="hidden sm:inline-flex absolute right-3 top-1/2 -translate-y-1/2 items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-content-muted bg-surface-sunken border border-line-subtle dark:border-line-subtle/15 rounded">
         ⌘K
       </kbd>
     </div>
@@ -299,10 +302,10 @@ function OverviewHeader({
 }) {
   return (
     <div className="flex items-center justify-between mb-4">
-      <h2 className="text-lg font-semibold text-gray-900">
+      <h2 className="text-lg font-semibold text-content-primary">
         {t("dashboard.overview", "Overview")}
       </h2>
-      <div className="flex items-center gap-3 text-sm text-gray-500">
+      <div className="flex items-center gap-3 text-sm text-content-muted">
         {lastUpdatedText && (
           <span>
             {t("dashboard.lastUpdated", "Last updated")}: {lastUpdatedText}
@@ -310,7 +313,7 @@ function OverviewHeader({
         )}
         <button
           onClick={onRefresh}
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 text-content-secondary hover:bg-surface-sunken rounded-full transition-colors"
           title={t("common.refresh", "Refresh")}
         >
           <RefreshCw className="h-4 w-4" />
@@ -331,10 +334,10 @@ function CharityPortalHeader({
   return (
     <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">
+        <h1 className="text-3xl font-bold text-content-primary">
           {displayName || t("charity.dashboard", "Charity Dashboard")}
         </h1>
-        <p className="mt-1 text-gray-600">
+        <p className="mt-1 text-content-secondary">
           {t("charity.subtitle", "Manage your charity dashboard")}
         </p>
       </div>
@@ -348,7 +351,7 @@ function CharityPortalHeader({
         <Link to="/charity-portal/create-cause">
           <Button
             variant="ghost"
-            className="flex items-center gap-2 border border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+            className="flex items-center gap-2 border border-line-accent/40 text-accent-base hover:bg-accent-subtle/40 dark:hover:bg-accent-subtle/20"
           >
             <Heart className="h-4 w-4" />
             {t("cause.createCause", "Create Cause")}
@@ -374,11 +377,11 @@ function ConfirmDeleteModal({
   const label = type === "cause" ? "cause" : "opportunity";
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-      <div className="bg-white rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
-        <h2 className="text-lg font-semibold text-gray-900 mb-2">
+      <div className="bg-surface-overlay rounded-xl shadow-xl p-6 max-w-sm w-full mx-4">
+        <h2 className="text-lg font-semibold text-content-primary mb-2">
           Delete {label}?
         </h2>
-        <p className="text-gray-600 text-sm mb-6">
+        <p className="text-content-secondary text-sm mb-6">
           This action cannot be undone. The {label} will be permanently removed.
         </p>
         <div className="flex gap-3 justify-end">
@@ -397,21 +400,21 @@ function ConfirmDeleteModal({
 /** Integrated notice shown when the charity has no receiving wallet configured. */
 function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
   return (
-    <div className="bg-emerald-50/40 border-l-2 border-emerald-500 border-y border-r border-emerald-100 rounded-r-md py-2.5 pl-4 pr-3 mb-6 flex items-center justify-between gap-4">
+    <div className="bg-accent-subtle/30 dark:bg-accent-subtle/15 border-l-2 border-line-accent border-y border-r border-line-accent/30 rounded-r-md py-2.5 pl-4 pr-3 mb-6 flex items-center justify-between gap-4">
       <div className="flex items-center gap-3 min-w-0">
-        <Wallet className="h-4 w-4 text-emerald-700 shrink-0" />
-        <p className="text-sm text-gray-700 truncate">
-          <span className="font-medium text-gray-900">
+        <Wallet className="h-4 w-4 text-accent-base shrink-0" />
+        <p className="text-sm text-content-secondary truncate">
+          <span className="font-medium text-content-primary">
             Receiving wallet not configured.
           </span>{" "}
-          <span className="text-gray-500">
+          <span className="text-content-muted">
             Connect a wallet to receive on-chain donations.
           </span>
         </p>
       </div>
       <button
         onClick={onOpen}
-        className="text-sm font-medium text-emerald-700 hover:text-emerald-800 hover:underline shrink-0"
+        className="text-sm font-medium text-accent-base hover:text-accent-hover hover:underline shrink-0"
       >
         Set Up Wallet
       </button>
@@ -1149,7 +1152,7 @@ export const CharityPortal: React.FC = () => {
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-red-50 p-4 rounded-md text-red-700">
+        <div className="bg-status-danger/10 p-4 rounded-md text-status-danger">
           {error}
           <Button onClick={handleRetry} variant="secondary" className="mt-4">
             Retry
@@ -1181,7 +1184,7 @@ export const CharityPortal: React.FC = () => {
   const pendingHoursCount = pendingHours.length;
 
   return (
-    <main className="min-h-screen bg-gray-50">
+    <main className="min-h-screen bg-surface-base">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <CharityPortalHeader displayName={profile?.display_name} t={t} />
@@ -1203,7 +1206,7 @@ export const CharityPortal: React.FC = () => {
 
         {/* Wallet indicator when wallet is configured */}
         {typeof charityWalletAddress === "string" && (
-          <div className="flex items-center gap-2 mb-4 text-xs text-emerald-700">
+          <div className="flex items-center gap-2 mb-4 text-xs text-accent-base">
             <Wallet className="h-3.5 w-3.5" />
             <span>
               Receiving wallet: {charityWalletAddress.slice(0, 6)}&hellip;
