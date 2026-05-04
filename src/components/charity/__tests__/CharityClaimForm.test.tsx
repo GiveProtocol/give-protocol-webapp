@@ -53,9 +53,6 @@ const fillFormFields = () => {
   fireEvent.change(screen.getByLabelText(/contact email/i), {
     target: { name: "contactEmail", value: "jane@example.com" },
   });
-  fireEvent.change(screen.getByLabelText(/contact phone/i), {
-    target: { name: "contactPhone", value: "+15551234567" },
-  });
   fireEvent.change(screen.getByLabelText(/^password$/i), {
     target: { name: "password", value: "SecurePass1!" },
   });
@@ -100,9 +97,7 @@ describe("CharityClaimForm", () => {
 
     it("renders location when city, state, and zip are present", () => {
       renderForm();
-      expect(
-        screen.getByText("San Francisco, CA, 94102"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("San Francisco, CA, 94102")).toBeInTheDocument();
     });
 
     it("does not render location when city, state, and zip are all null", () => {
@@ -121,7 +116,7 @@ describe("CharityClaimForm", () => {
       expect(screen.getByText("Contact Information")).toBeInTheDocument();
       expect(screen.getByLabelText(/contact name/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/contact email/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/contact phone/i)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/contact phone/i)).not.toBeInTheDocument();
     });
 
     it("renders account security fields", () => {
@@ -235,9 +230,6 @@ describe("CharityClaimForm", () => {
       fireEvent.change(screen.getByLabelText(/contact email/i), {
         target: { name: "contactEmail", value: "jane@example.com" },
       });
-      fireEvent.change(screen.getByLabelText(/contact phone/i), {
-        target: { name: "contactPhone", value: "+15551234567" },
-      });
       fireEvent.change(screen.getByLabelText(/^password$/i), {
         target: { name: "password", value: "SecurePass1!" },
       });
@@ -252,35 +244,7 @@ describe("CharityClaimForm", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/passwords do not match/i),
-        ).toBeInTheDocument();
-      });
-    });
-
-    it("shows phone validation error for invalid phone", async () => {
-      renderForm();
-
-      fireEvent.change(screen.getByLabelText(/contact name/i), {
-        target: { name: "contactName", value: "Jane Doe" },
-      });
-      fireEvent.change(screen.getByLabelText(/contact email/i), {
-        target: { name: "contactEmail", value: "jane@example.com" },
-      });
-      fireEvent.change(screen.getByLabelText(/contact phone/i), {
-        target: { name: "contactPhone", value: "12" },
-      });
-
-      const form = screen
-        .getByRole("button", { name: /claim organization/i })
-        .closest("form");
-      if (!form) throw new Error("Could not find form element");
-      fireEvent.submit(form);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(/please enter a valid phone number/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
       });
     });
 
@@ -292,9 +256,6 @@ describe("CharityClaimForm", () => {
       });
       fireEvent.change(screen.getByLabelText(/contact email/i), {
         target: { name: "contactEmail", value: "jane@example.com" },
-      });
-      fireEvent.change(screen.getByLabelText(/contact phone/i), {
-        target: { name: "contactPhone", value: "+15551234567" },
       });
       fireEvent.change(screen.getByLabelText(/^password$/i), {
         target: { name: "password", value: "short" },
@@ -355,15 +316,11 @@ describe("CharityClaimForm", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(mockSupabase.rpc).toHaveBeenCalledWith(
-          "claim_charity_profile",
-          {
-            p_ein: "12-3456789",
-            p_signer_name: "Jane Doe",
-            p_signer_email: "jane@example.com",
-            p_signer_phone: "+15551234567",
-          },
-        );
+        expect(mockSupabase.rpc).toHaveBeenCalledWith("claim_charity_profile", {
+          p_ein: "12-3456789",
+          p_signer_name: "Jane Doe",
+          p_signer_email: "jane@example.com",
+        });
       });
     });
 
@@ -430,9 +387,7 @@ describe("CharityClaimForm", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Account creation failed"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Account creation failed")).toBeInTheDocument();
       });
     });
 
