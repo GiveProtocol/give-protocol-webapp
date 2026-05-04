@@ -53,9 +53,6 @@ const fillFormFields = () => {
   fireEvent.change(screen.getByLabelText(/contact email/i), {
     target: { name: "contactEmail", value: "jane@example.com" },
   });
-  fireEvent.change(screen.getByLabelText(/contact phone/i), {
-    target: { name: "contactPhone", value: "+15551234567" },
-  });
   fireEvent.change(screen.getByLabelText(/^password$/i), {
     target: { name: "password", value: "SecurePass1!" },
   });
@@ -121,7 +118,7 @@ describe("CharityClaimForm", () => {
       expect(screen.getByText("Contact Information")).toBeInTheDocument();
       expect(screen.getByLabelText(/contact name/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/contact email/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/contact phone/i)).toBeInTheDocument();
+      expect(screen.queryByLabelText(/contact phone/i)).not.toBeInTheDocument();
     });
 
     it("renders account security fields", () => {
@@ -235,9 +232,6 @@ describe("CharityClaimForm", () => {
       fireEvent.change(screen.getByLabelText(/contact email/i), {
         target: { name: "contactEmail", value: "jane@example.com" },
       });
-      fireEvent.change(screen.getByLabelText(/contact phone/i), {
-        target: { name: "contactPhone", value: "+15551234567" },
-      });
       fireEvent.change(screen.getByLabelText(/^password$/i), {
         target: { name: "password", value: "SecurePass1!" },
       });
@@ -258,32 +252,6 @@ describe("CharityClaimForm", () => {
       });
     });
 
-    it("shows phone validation error for invalid phone", async () => {
-      renderForm();
-
-      fireEvent.change(screen.getByLabelText(/contact name/i), {
-        target: { name: "contactName", value: "Jane Doe" },
-      });
-      fireEvent.change(screen.getByLabelText(/contact email/i), {
-        target: { name: "contactEmail", value: "jane@example.com" },
-      });
-      fireEvent.change(screen.getByLabelText(/contact phone/i), {
-        target: { name: "contactPhone", value: "12" },
-      });
-
-      const form = screen
-        .getByRole("button", { name: /claim organization/i })
-        .closest("form");
-      if (!form) throw new Error("Could not find form element");
-      fireEvent.submit(form);
-
-      await waitFor(() => {
-        expect(
-          screen.getByText(/please enter a valid phone number/i),
-        ).toBeInTheDocument();
-      });
-    });
-
     it("shows password length error for short password", async () => {
       renderForm();
 
@@ -292,9 +260,6 @@ describe("CharityClaimForm", () => {
       });
       fireEvent.change(screen.getByLabelText(/contact email/i), {
         target: { name: "contactEmail", value: "jane@example.com" },
-      });
-      fireEvent.change(screen.getByLabelText(/contact phone/i), {
-        target: { name: "contactPhone", value: "+15551234567" },
       });
       fireEvent.change(screen.getByLabelText(/^password$/i), {
         target: { name: "password", value: "short" },
@@ -361,7 +326,6 @@ describe("CharityClaimForm", () => {
             p_ein: "12-3456789",
             p_signer_name: "Jane Doe",
             p_signer_email: "jane@example.com",
-            p_signer_phone: "+15551234567",
           },
         );
       });
