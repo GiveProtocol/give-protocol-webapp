@@ -251,7 +251,10 @@ function CharityPortalSkeleton() {
         <div className="bg-surface-sunken rounded-xl p-1 mb-6 animate-pulse">
           <div className="flex gap-2">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="h-10 bg-surface-raised rounded-lg flex-1" />
+              <div
+                key={i}
+                className="h-10 bg-surface-raised rounded-lg flex-1"
+              />
             ))}
           </div>
         </div>

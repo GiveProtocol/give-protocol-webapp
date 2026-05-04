@@ -51,9 +51,7 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
           <p className={VALUE_CLASS}>
             <CurrencyDisplay amount={stats.totalDonated} />
           </p>
-          <p
-            className={`${SUB_CLASS} text-emerald-600 dark:text-emerald-300`}
-          >
+          <p className={`${SUB_CLASS} text-emerald-600 dark:text-emerald-300`}>
             <TrendingUp className="h-3 w-3 mr-1" />
             {t("dashboard.thisMonth", "This month")}
           </p>
