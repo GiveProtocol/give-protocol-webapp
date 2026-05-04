@@ -20,7 +20,7 @@ describe("web3ContextHelpers", () => {
     });
 
     it("returns false for undefined", () => {
-      expect(isEIP1193Provider(undefined)).toBe(false);
+      expect(isEIP1193Provider()).toBe(false);
     });
 
     it("returns false for primitives", () => {
@@ -49,7 +49,7 @@ describe("web3ContextHelpers", () => {
     it("returns false for primitives", () => {
       expect(isWalletError("string")).toBe(false);
       expect(isWalletError(123)).toBe(false);
-      expect(isWalletError(undefined)).toBe(false);
+      expect(isWalletError()).toBe(false);
     });
   });
 
@@ -113,7 +113,7 @@ describe("web3ContextHelpers", () => {
 
     it("returns false for null and primitives", () => {
       expect(isEventObject(null)).toBe(false);
-      expect(isEventObject(undefined)).toBe(false);
+      expect(isEventObject()).toBe(false);
       expect(isEventObject("event")).toBe(false);
       expect(isEventObject(42)).toBe(false);
     });
