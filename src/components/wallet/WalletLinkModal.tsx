@@ -4,6 +4,7 @@ import { Modal } from "@/components/ui/Modal";
 import { Button } from "@/components/ui/Button";
 import { useUnifiedAuth } from "@/hooks/useUnifiedAuth";
 import { Logger } from "@/utils/logger";
+import { DOCS_CONFIG } from "@/config/docs";
 
 interface WalletLinkModalProps {
   isOpen: boolean;
@@ -85,7 +86,16 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
         <li className="flex items-start gap-3">
           <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
           <span className="text-sm text-gray-700 dark:text-gray-300">
-            Earn GIVE tokens and SBT credentials for your contributions
+            Develop{" "}
+            <a
+              href={`${DOCS_CONFIG.url}/docs/volunteers/earning-credentials/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline hover:text-emerald-700 dark:hover:text-emerald-300"
+            >
+              SBT
+            </a>{" "}
+            credentials for your contributions
           </span>
         </li>
         <li className="flex items-start gap-3">
