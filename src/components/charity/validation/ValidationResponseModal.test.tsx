@@ -139,7 +139,9 @@ describe("ValidationResponseModal", () => {
     render(<ValidationResponseModal {...defaultProps} />);
     const overlay = screen.getByRole("dialog").parentElement;
     expect(overlay).toBeTruthy();
-    fireEvent.click(overlay!);
+    if (overlay) {
+      fireEvent.click(overlay);
+    }
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 
@@ -147,7 +149,10 @@ describe("ValidationResponseModal", () => {
     render(<ValidationResponseModal {...defaultProps} />);
     const overlay = screen.getByRole("dialog").parentElement;
     expect(overlay).toBeTruthy();
-    fireEvent.keyDown(overlay!, { key: "Escape" });
+    if (!overlay) {
+      throw new Error("Overlay element not found");
+    }
+    fireEvent.keyDown(overlay, { key: "Escape" });
     expect(defaultProps.onClose).toHaveBeenCalled();
   });
 });
