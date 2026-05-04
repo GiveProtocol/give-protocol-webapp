@@ -63,10 +63,10 @@ export const WalletLinkModal: React.FC<WalletLinkModalProps> = ({
       closeOnBackdrop={false}
       showCloseButton={false}
     >
+      <span className="mx-auto w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full flex items-center justify-center mb-4">
+        <Wallet className="h-8 w-8 text-green-600 dark:text-green-400" />
+      </span>
       <div className="text-center mb-6">
-        <span className="mx-auto w-16 h-16 bg-gradient-to-br from-green-100 to-emerald-100 dark:from-green-900/30 dark:to-emerald-900/30 rounded-full flex items-center justify-center mb-4">
-          <Wallet className="h-8 w-8 text-green-600 dark:text-green-400" />
-        </span>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">
           Link Your Wallet
         </h2>
