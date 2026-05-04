@@ -216,8 +216,8 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
   useEffect(() => {
     if (!provider || !isConnected) return undefined;
 
+    /** Refetches the wallet balance on each new block event. */
     const handleBlock = () => {
-      // Debounce block updates - only fetch every few blocks
       fetchBalance();
     };
 
