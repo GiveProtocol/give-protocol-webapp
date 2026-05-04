@@ -17,17 +17,17 @@ interface StatsCardsProps {
 }
 
 const CARD_CLASS =
-  "bg-white rounded-xl px-5 py-4 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-left group cursor-pointer flex items-center";
+  "bg-surface-raised rounded-xl px-5 py-4 shadow-sm border border-line-subtle dark:border-line-subtle/15 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-left group cursor-pointer flex items-center";
 
 const STATIC_CARD_CLASS =
-  "bg-white rounded-xl px-5 py-4 shadow-sm border border-gray-100 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group flex items-center";
+  "bg-surface-raised rounded-xl px-5 py-4 shadow-sm border border-line-subtle dark:border-line-subtle/15 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group flex items-center";
 
 const ICON_WRAPPER =
   "h-11 w-11 shrink-0 rounded-full flex items-center justify-center";
-const LABEL_CLASS = "text-xs font-normal text-gray-500 tracking-wide";
+const LABEL_CLASS = "text-xs font-normal text-content-muted tracking-wide";
 const VALUE_CLASS =
-  "text-2xl font-extrabold text-gray-900 leading-tight mt-0.5";
-const SUB_CLASS = "text-[11px] text-gray-400 mt-1 flex items-center";
+  "text-2xl font-extrabold text-content-primary leading-tight mt-0.5";
+const SUB_CLASS = "text-[11px] text-content-muted mt-1 flex items-center";
 
 /** Grid of summary stat cards for donations, volunteers, hours, and endorsements. */
 export const StatsCards: React.FC<StatsCardsProps> = ({
@@ -42,16 +42,18 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       {/* Donations Card */}
       <button onClick={onTransactionsClick} className={CARD_CLASS}>
         <span
-          className={`${ICON_WRAPPER} bg-gradient-to-br from-emerald-100 to-emerald-200`}
+          className={`${ICON_WRAPPER} bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/40 dark:to-emerald-800/40`}
         >
-          <DollarSign className="h-5 w-5 text-emerald-600" />
+          <DollarSign className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
         </span>
         <div className="ml-3">
           <p className={LABEL_CLASS}>{t("dashboard.totalDonations")}</p>
           <p className={VALUE_CLASS}>
             <CurrencyDisplay amount={stats.totalDonated} />
           </p>
-          <p className={`${SUB_CLASS} text-emerald-600`}>
+          <p
+            className={`${SUB_CLASS} text-emerald-600 dark:text-emerald-300`}
+          >
             <TrendingUp className="h-3 w-3 mr-1" />
             {t("dashboard.thisMonth", "This month")}
           </p>
@@ -61,9 +63,9 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       {/* Volunteers Card */}
       <button onClick={onVolunteersClick} className={CARD_CLASS}>
         <span
-          className={`${ICON_WRAPPER} bg-gradient-to-br from-green-100 to-green-200`}
+          className={`${ICON_WRAPPER} bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/40 dark:to-green-800/40`}
         >
-          <Users className="h-5 w-5 text-green-600" />
+          <Users className="h-5 w-5 text-green-600 dark:text-green-300" />
         </span>
         <div className="ml-3">
           <p className={LABEL_CLASS}>{t("charity.activeVolunteers")}</p>
@@ -77,9 +79,9 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       {/* Hours Card */}
       <button onClick={onVolunteersClick} className={CARD_CLASS}>
         <span
-          className={`${ICON_WRAPPER} bg-gradient-to-br from-emerald-100 to-emerald-200`}
+          className={`${ICON_WRAPPER} bg-gradient-to-br from-emerald-100 to-emerald-200 dark:from-emerald-900/40 dark:to-emerald-800/40`}
         >
-          <Clock className="h-5 w-5 text-emerald-600" />
+          <Clock className="h-5 w-5 text-emerald-600 dark:text-emerald-300" />
         </span>
         <div className="ml-3">
           <p className={LABEL_CLASS}>{t("dashboard.volunteerHours")}</p>
@@ -93,9 +95,9 @@ export const StatsCards: React.FC<StatsCardsProps> = ({
       {/* Skills Card */}
       <div className={STATIC_CARD_CLASS}>
         <span
-          className={`${ICON_WRAPPER} bg-gradient-to-br from-amber-100 to-amber-200`}
+          className={`${ICON_WRAPPER} bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/40 dark:to-amber-800/40`}
         >
-          <Award className="h-5 w-5 text-amber-600" />
+          <Award className="h-5 w-5 text-amber-600 dark:text-amber-300" />
         </span>
         <div className="ml-3">
           <p className={LABEL_CLASS}>{t("dashboard.skillsEndorsed")}</p>

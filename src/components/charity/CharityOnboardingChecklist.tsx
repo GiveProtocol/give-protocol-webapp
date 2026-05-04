@@ -229,7 +229,7 @@ export const CharityOnboardingChecklist: React.FC<
 
   return (
     <section
-      className="bg-emerald-50 border border-emerald-200 rounded-xl mb-6 overflow-hidden"
+      className="bg-accent-subtle/40 dark:bg-accent-subtle/20 border border-line-accent/40 rounded-xl mb-6 overflow-hidden"
       aria-label="Onboarding checklist"
     >
       <ChecklistHeader
@@ -255,7 +255,7 @@ export const CharityOnboardingChecklist: React.FC<
             ))}
           </ul>
           {allComplete && (
-            <p className="mt-4 text-sm text-emerald-700 font-medium text-center">
+            <p className="mt-4 text-sm text-accent-base font-medium text-center">
               All steps complete! You can dismiss this checklist.
             </p>
           )}
@@ -287,17 +287,17 @@ function ChecklistHeader({
     <div className="px-5 pt-4 pb-3">
       <div className="flex items-center justify-between mb-2">
         <div>
-          <h2 className="text-base font-semibold text-emerald-900">
+          <h2 className="text-base font-semibold text-content-primary">
             Getting Started
           </h2>
-          <p className="text-xs text-emerald-700 mt-0.5">
+          <p className="text-xs text-content-secondary mt-0.5">
             {completedCount} of {totalCount} steps complete
           </p>
         </div>
         <div className="flex items-center gap-2">
           <button
             onClick={onToggleCollapse}
-            className="p-1 rounded hover:bg-emerald-100 text-emerald-700 transition-colors"
+            className="p-1 rounded hover:bg-accent-subtle/60 dark:hover:bg-accent-subtle/40 text-accent-base hover:text-accent-hover transition-colors"
             aria-label={collapsed ? "Expand checklist" : "Collapse checklist"}
           >
             {collapsed ? (
@@ -309,7 +309,7 @@ function ChecklistHeader({
           {allComplete && (
             <button
               onClick={onDismiss}
-              className="p-1 rounded hover:bg-emerald-100 text-emerald-700 transition-colors"
+              className="p-1 rounded hover:bg-accent-subtle/60 dark:hover:bg-accent-subtle/40 text-accent-base hover:text-accent-hover transition-colors"
               aria-label="Dismiss onboarding checklist"
             >
               <X className="h-4 w-4" />
@@ -317,10 +317,10 @@ function ChecklistHeader({
           )}
         </div>
       </div>
-      <div className="w-full bg-emerald-200 rounded-full h-1.5">
+      <div className="w-full bg-line-subtle/60 dark:bg-line-subtle/15 rounded-full h-1.5">
         <progress className="sr-only" value={progressPercent} max={100} />
         <div
-          className="bg-emerald-600 h-1.5 rounded-full transition-all duration-300"
+          className="bg-accent-base h-1.5 rounded-full transition-all duration-300"
           style={{ width: `${progressPercent}%` }}
           aria-hidden="true"
         />
@@ -359,7 +359,7 @@ function ChecklistRow({
     <li className="flex items-start gap-3">
       <button
         onClick={handleToggle}
-        className="mt-0.5 flex-shrink-0 text-emerald-600 hover:text-emerald-800 transition-colors"
+        className="mt-0.5 flex-shrink-0 text-accent-base hover:text-accent-hover transition-colors"
         aria-label={completed ? `Uncheck ${item.label}` : `Check ${item.label}`}
         aria-pressed={completed}
       >
@@ -371,18 +371,20 @@ function ChecklistRow({
       </button>
       <div className="flex-1 min-w-0">
         <p
-          className={`text-sm font-medium ${completed ? "line-through text-gray-400" : "text-gray-800"}`}
+          className={`text-sm font-medium ${completed ? "line-through text-content-muted" : "text-content-primary"}`}
         >
           {item.label}
         </p>
         {!completed && (
-          <p className="text-xs text-gray-500 mt-0.5">{item.description}</p>
+          <p className="text-xs text-content-muted mt-0.5">
+            {item.description}
+          </p>
         )}
       </div>
       {item.actionLabel && item.actionTab && onNavigateTab && !completed && (
         <button
           onClick={handleAction}
-          className="flex-shrink-0 text-xs text-emerald-600 hover:text-emerald-800 underline transition-colors"
+          className="flex-shrink-0 text-xs text-accent-base hover:text-accent-hover underline transition-colors"
         >
           {item.actionLabel}
         </button>
