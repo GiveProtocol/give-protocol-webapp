@@ -250,7 +250,6 @@ export function useWalletBalance(network: NetworkType): WalletBalanceResult {
 
     return () => {
       provider.off("block", handleBlock);
-      if (debounceTimer) clearTimeout(debounceTimer);
     };
   }, [provider, isConnected, fetchBalance]);
 
