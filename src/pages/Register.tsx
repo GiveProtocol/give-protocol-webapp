@@ -172,7 +172,7 @@ const RegisterWalletNotice: React.FC<{ truncatedAddress: string }> = ({
         }}
       >
         Wallet detected: {truncatedAddress}
-      </strong>
+      </strong>{" "}
       Create an account to link this wallet and access your donation history,
       CEF portfolio, and SBT credentials across sessions.
       <a
@@ -457,7 +457,7 @@ const WalletLinkToggle: React.FC<{
           }}
         >
           Link wallet {truncatedAddress}
-        </strong>
+        </strong>{" "}
         Auto-link your connected wallet to this account
       </div>
     </div>

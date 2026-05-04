@@ -536,12 +536,9 @@ const SignupRightPanel: React.FC = () => {
 
         {/* Success message */}
         {successMessage !== null && (
-          <div
-            className="flex items-center gap-2 p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm"
-            role="status"
-          >
+          <output className="flex items-center gap-2 p-3 mb-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm">
             {successMessage}
-          </div>
+          </output>
         )}
 
         {/* Error alert */}
