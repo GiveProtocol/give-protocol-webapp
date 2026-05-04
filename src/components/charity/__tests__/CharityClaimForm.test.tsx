@@ -97,9 +97,7 @@ describe("CharityClaimForm", () => {
 
     it("renders location when city, state, and zip are present", () => {
       renderForm();
-      expect(
-        screen.getByText("San Francisco, CA, 94102"),
-      ).toBeInTheDocument();
+      expect(screen.getByText("San Francisco, CA, 94102")).toBeInTheDocument();
     });
 
     it("does not render location when city, state, and zip are all null", () => {
@@ -246,9 +244,7 @@ describe("CharityClaimForm", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(
-          screen.getByText(/passwords do not match/i),
-        ).toBeInTheDocument();
+        expect(screen.getByText(/passwords do not match/i)).toBeInTheDocument();
       });
     });
 
@@ -320,14 +316,11 @@ describe("CharityClaimForm", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(mockSupabase.rpc).toHaveBeenCalledWith(
-          "claim_charity_profile",
-          {
-            p_ein: "12-3456789",
-            p_signer_name: "Jane Doe",
-            p_signer_email: "jane@example.com",
-          },
-        );
+        expect(mockSupabase.rpc).toHaveBeenCalledWith("claim_charity_profile", {
+          p_ein: "12-3456789",
+          p_signer_name: "Jane Doe",
+          p_signer_email: "jane@example.com",
+        });
       });
     });
 
@@ -394,9 +387,7 @@ describe("CharityClaimForm", () => {
       fireEvent.submit(form);
 
       await waitFor(() => {
-        expect(
-          screen.getByText("Account creation failed"),
-        ).toBeInTheDocument();
+        expect(screen.getByText("Account creation failed")).toBeInTheDocument();
       });
     });
 
