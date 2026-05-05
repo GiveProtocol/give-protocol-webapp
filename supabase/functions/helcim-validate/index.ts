@@ -320,166 +320,192 @@ async function logFiatSubscription(
 // Main handler
 // ---------------------------------------------------------------------------
 
+/** Build a JSON response with CORS headers. */
+function jsonResponse(body: unknown, status: number): Response {
+  return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
+}
+
+/**
+ * Parse and structurally validate the request body.
+ * @returns The validated request, or a Response describing the failure.
+ */
+async function parseAndValidateBody(
+  req: Request
+): Promise<ValidateRequest | Response> {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ success: false, error: 'Invalid JSON body' }, 400);
+  }
+
+  if (!validateRequestBody(body)) {
+    return jsonResponse(
+      {
+        success: false,
+        error:
+          'Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail, donorId',
+      },
+      400
+    );
+  }
+
+  return body;
+}
+
+/** Resolve env-backed Supabase client, or null when env is missing. */
+function getSupabaseClient(): {
+  supabase: ReturnType<typeof createClient>;
+  url: string;
+  key: string;
+} | null {
+  const url = Deno.env.get('SUPABASE_URL');
+  const key = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+  if (!url || !key) {
+    return null;
+  }
+  return { supabase: createClient(url, key), url, key };
+}
+
+/** Fire-and-forget attestation trigger; failures are logged but never thrown. */
+function triggerAttestation(
+  supabaseUrl: string,
+  supabaseKey: string,
+  donationId: string
+): void {
+  fetch(`${supabaseUrl}/functions/v1/attest-fiat-donation`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${supabaseKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ donationId }),
+  }).catch((err) =>
+    console.error('Attestation trigger failed (non-blocking):', err)
+  );
+}
+
+/**
+ * Run the full validation + persistence flow against an authenticated client.
+ * Returns the final HTTP response.
+ */
+async function processValidation(
+  supabase: ReturnType<typeof createClient>,
+  supabaseUrl: string,
+  supabaseKey: string,
+  body: ValidateRequest
+): Promise<Response> {
+  // Step 1: Look up the checkout session (contains the secretToken)
+  const session = await lookupSession(supabase, body.checkoutToken);
+  if (!session) {
+    console.error('No valid checkout session found', {
+      checkoutToken: body.checkoutToken,
+    });
+    return jsonResponse(
+      { success: false, error: 'Invalid or expired checkout session' },
+      403
+    );
+  }
+
+  // Step 2: Compute the expected hash and compare
+  const computedHash = await computeHelcimHash(
+    body.transactionData,
+    session.secret_token
+  );
+  if (computedHash !== body.hash) {
+    console.error('Hash validation failed', {
+      checkoutToken: body.checkoutToken,
+      expected: computedHash,
+      received: body.hash,
+    });
+    return jsonResponse(
+      { success: false, error: 'Payment validation failed: hash mismatch' },
+      403
+    );
+  }
+
+  // Step 3: Mark session as validated (prevents replay attacks)
+  await markSessionValidated(supabase, session.id);
+
+  // Step 3b: Resolve cause/fund names from session (trusted source)
+  const resolvedNames = await resolveNames(supabase, {
+    charityId: session.charity_id ?? body.charityId,
+    causeId: session.cause_id ?? undefined,
+    fundId: session.fund_id ?? undefined,
+    amountUsd: session.amount,
+    donationType: session.donation_type as 'one-time' | 'subscription',
+  });
+
+  const donationNames: ResolvedDonationNames = {
+    causeName: resolvedNames.causeName,
+    fundName: resolvedNames.fundName,
+  };
+
+  // Step 4: Persist the donation / subscription
+  const donationId =
+    session.donation_type === 'subscription'
+      ? await logFiatSubscription(
+          supabase,
+          body,
+          body.transactionData,
+          session,
+          donationNames
+        )
+      : await logFiatPayment(
+          supabase,
+          body,
+          body.transactionData,
+          session,
+          donationNames
+        );
+
+  // Step 4b: Fire-and-forget attestation (non-blocking)
+  triggerAttestation(supabaseUrl, supabaseKey, donationId);
+
+  // Step 5: Return success with sanitized transaction details
+  const cardNumber = body.transactionData.cardNumber || '';
+  const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
+
+  return jsonResponse(
+    {
+      success: true,
+      transactionId: body.transactionData.transactionId || '',
+      approvalCode: body.transactionData.approvalCode || '',
+      cardLastFour,
+      donationType: session.donation_type,
+    },
+    200
+  );
+}
+
 serve(async (req: Request) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders });
   }
+  if (req.method !== 'POST') {
+    return jsonResponse({ success: false, error: 'Method not allowed' }, 405);
+  }
 
   try {
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Method not allowed' }),
-        { status: 405, headers: jsonHeaders }
-      );
+    const parsed = await parseAndValidateBody(req);
+    if (parsed instanceof Response) {
+      return parsed;
     }
 
-    // Parse request body
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
-        { status: 400, headers: jsonHeaders }
-      );
-    }
-
-    // Validate request structure
-    if (!validateRequestBody(body)) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail, donorId',
-        }),
-        { status: 400, headers: jsonHeaders }
-      );
-    }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!supabaseUrl || !supabaseKey) {
+    const client = getSupabaseClient();
+    if (!client) {
       console.error('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured');
-      return new Response(
-        JSON.stringify({ success: false, error: 'Validation service unavailable' }),
-        { status: 503, headers: jsonHeaders }
+      return jsonResponse(
+        { success: false, error: 'Validation service unavailable' },
+        503
       );
     }
 
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // -----------------------------------------------------------------------
-    // Step 1: Look up the checkout session (contains the secretToken)
-    // -----------------------------------------------------------------------
-    const session = await lookupSession(supabase, body.checkoutToken);
-
-    if (!session) {
-      console.error('No valid checkout session found', {
-        checkoutToken: body.checkoutToken,
-      });
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid or expired checkout session',
-        }),
-        { status: 403, headers: jsonHeaders }
-      );
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 2: Compute the expected hash and compare
-    // -----------------------------------------------------------------------
-    const computedHash = await computeHelcimHash(
-      body.transactionData,
-      session.secret_token
-    );
-
-    if (computedHash !== body.hash) {
-      console.error('Hash validation failed', {
-        checkoutToken: body.checkoutToken,
-        expected: computedHash,
-        received: body.hash,
-      });
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Payment validation failed: hash mismatch',
-        }),
-        { status: 403, headers: jsonHeaders }
-      );
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 3: Mark session as validated (prevents replay attacks)
-    // -----------------------------------------------------------------------
-    await markSessionValidated(supabase, session.id);
-
-    // -----------------------------------------------------------------------
-    // Step 3b: Resolve cause/fund names from session (trusted source)
-    // -----------------------------------------------------------------------
-    const resolvedNames = await resolveNames(supabase, {
-      charityId: session.charity_id ?? body.charityId,
-      causeId: session.cause_id ?? undefined,
-      fundId: session.fund_id ?? undefined,
-      amountUsd: session.amount,
-      donationType: session.donation_type as 'one-time' | 'subscription',
-    });
-
-    const donationNames: ResolvedDonationNames = {
-      causeName: resolvedNames.causeName,
-      fundName: resolvedNames.fundName,
-    };
-
-    // -----------------------------------------------------------------------
-    // Step 4: Persist the donation / subscription
-    // -----------------------------------------------------------------------
-    let donationId: string;
-    if (session.donation_type === 'subscription') {
-      donationId = await logFiatSubscription(supabase, body, body.transactionData, session, donationNames);
-    } else {
-      donationId = await logFiatPayment(supabase, body, body.transactionData, session, donationNames);
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 4b: Fire-and-forget attestation (non-blocking)
-    // -----------------------------------------------------------------------
-    fetch(`${supabaseUrl}/functions/v1/attest-fiat-donation`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ donationId }),
-    }).catch((err) => console.error('Attestation trigger failed (non-blocking):', err));
-
-    // -----------------------------------------------------------------------
-    // Step 5: Return success with sanitized transaction details
-    // -----------------------------------------------------------------------
-    const cardNumber = body.transactionData.cardNumber || '';
-    const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        transactionId: body.transactionData.transactionId || '',
-        approvalCode: body.transactionData.approvalCode || '',
-        cardLastFour,
-        donationType: session.donation_type,
-      }),
-      { status: 200, headers: jsonHeaders }
-    );
+    return await processValidation(client.supabase, client.url, client.key, parsed);
   } catch (error) {
     console.error('Validation error:', error);
-
     const errorMessage =
       error instanceof Error ? error.message : 'Payment validation failed';
-
-    return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
-      { status: 500, headers: jsonHeaders }
-    );
+    return jsonResponse({ success: false, error: errorMessage }, 500);
   }
 });
