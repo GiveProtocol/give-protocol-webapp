@@ -34,6 +34,13 @@ const ZERO_DECIMAL_CURRENCIES = [
   "XPF",
 ];
 
+/**
+ * Formats an amount in cents into a localized currency string.
+ *
+ * @param cents - The amount in the smallest currency unit (e.g., cents).
+ * @param currency - The currency code (e.g., "USD").
+ * @returns The formatted currency string.
+ */
 function formatAmount(cents: number, currency: string): string {
   const major = ZERO_DECIMAL_CURRENCIES.includes(currency.toUpperCase())
     ? cents
@@ -64,7 +71,7 @@ Deno.test("formatAmount: JPY (zero-decimal) is NOT divided by 100", () => {
 Deno.test("formatAmount: KRW (zero-decimal) is NOT divided by 100", () => {
   const result = formatAmount(10000, "KRW");
   // Intl formats KRW with a ₩ symbol
-  assertMatch(result, /₩.*10,000/);
+  assertMatch(result, /₩.*10,000/u);
 });
 
 Deno.test("formatAmount: VND (zero-decimal) is NOT divided by 100", () => {
