@@ -40,9 +40,34 @@ function escapeHtml(text: string): string {
   return text.replace(/[<>]/g, (char) => (char === "<" ? "&lt;" : "&gt;"));
 }
 
+/**
+ * Zero-decimal currencies where amountCents already represents major units.
+ * Must stay in sync with paypal-capture-order/index.ts.
+ */
+const ZERO_DECIMAL_CURRENCIES = [
+  "BIF",
+  "CLP",
+  "DJF",
+  "GNF",
+  "JPY",
+  "KMF",
+  "KRW",
+  "MGA",
+  "PYG",
+  "RWF",
+  "UGX",
+  "VND",
+  "VUV",
+  "XAF",
+  "XOF",
+  "XPF",
+];
+
 /** Format cents as a localised currency string e.g. "$50.00" */
 function formatAmount(cents: number, currency: string): string {
-  const major = cents / 100;
+  const major = ZERO_DECIMAL_CURRENCIES.includes(currency.toUpperCase())
+    ? cents
+    : cents / 100;
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
