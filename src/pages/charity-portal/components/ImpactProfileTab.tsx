@@ -35,7 +35,7 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
           .from("charity_details")
           .select("mission_statement, impact_stats, impact_highlights")
           .eq("profile_id", profileId)
-          .single();
+          .maybeSingle();
 
         if (fetchError) throw fetchError;
 

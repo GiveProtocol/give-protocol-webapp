@@ -130,7 +130,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   }
 
   return (
-    <div className="mb-8">
+    <div id="organization-profile" className="mb-8 scroll-mt-24">
       <div className="flex justify-between items-center mb-4">
         <div>
           <h2 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
