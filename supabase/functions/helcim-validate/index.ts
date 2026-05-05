@@ -456,6 +456,40 @@ serve(async (req: Request) => {
     }).catch((err) => console.error('Attestation trigger failed (non-blocking):', err));
 
     // -----------------------------------------------------------------------
+    // Step 4c: Fire-and-forget donation receipt email (non-blocking)
+    // -----------------------------------------------------------------------
+    const receiptAmountCents = body.transactionData.amount
+      ? Math.round(Number(body.transactionData.amount) * 100)
+      : Math.round(session.amount * 100);
+    const receiptCardNumber = body.transactionData.cardNumber || '';
+    const receiptCardLastFour = receiptCardNumber.length >= 4
+      ? receiptCardNumber.slice(-4)
+      : '';
+    const receiptCardType = body.transactionData.type || 'Card';
+
+    fetch(`${supabaseUrl}/functions/v1/donation-receipt`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        donorEmail: body.donorEmail,
+        donorName: body.donorName,
+        charityName: resolvedNames.charityName ?? body.charityName,
+        causeName: resolvedNames.causeName,
+        fundName: resolvedNames.fundName,
+        amountCents: receiptAmountCents,
+        currency: session.currency,
+        transactionId: body.transactionData.transactionId || '',
+        paymentMethod: receiptCardLastFour
+          ? `Card (${receiptCardType} ending ${receiptCardLastFour})`
+          : 'Card',
+        donationDate: new Date().toISOString(),
+      }),
+    }).catch((err) => console.error('Donation receipt trigger failed (non-blocking):', err));
+
+    // -----------------------------------------------------------------------
     // Step 5: Return success with sanitized transaction details
     // -----------------------------------------------------------------------
     const cardNumber = body.transactionData.cardNumber || '';

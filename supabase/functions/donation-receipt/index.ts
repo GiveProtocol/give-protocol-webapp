@@ -4,8 +4,9 @@
  * @description Sends a donation acknowledgement email to the donor after a
  * successful payment via Helcim or PayPal. This letter serves as an official
  * record for the donor's charitable contribution and may be used for tax
- * purposes. Called fire-and-forget from helcim-payment and
- * paypal-capture-order after the donation is persisted.
+ * purposes. Called fire-and-forget from helcim-validate (primary live path),
+ * helcim-payment (legacy direct API), and paypal-capture-order after the
+ * donation is persisted.
  * @version 1
  */
 
