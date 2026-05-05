@@ -14,19 +14,20 @@
  *   6. Only if the hash matches → persists donation and returns success
  */
 
-import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { resolveNames } from '../_shared/receipt-context.ts';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { resolveNames } from "../_shared/receipt-context.ts";
 
 // CORS headers for browser requests
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
 /** JSON content-type header merged with CORS */
-const jsonHeaders = { ...corsHeaders, 'Content-Type': 'application/json' };
+const jsonHeaders = { ...corsHeaders, "Content-Type": "application/json" };
 
 // ---------------------------------------------------------------------------
 // Request / response types
@@ -95,26 +96,26 @@ interface CheckoutSession {
  * @returns Whether the body contains all required fields
  */
 function validateRequestBody(body: unknown): body is ValidateRequest {
-  if (typeof body !== 'object' || body === null) {
+  if (typeof body !== "object" || body === null) {
     return false;
   }
 
   const req = body as Record<string, unknown>;
 
   return (
-    typeof req.checkoutToken === 'string' &&
+    typeof req.checkoutToken === "string" &&
     req.checkoutToken.length > 0 &&
-    typeof req.transactionData === 'object' &&
+    typeof req.transactionData === "object" &&
     req.transactionData !== null &&
-    typeof req.hash === 'string' &&
+    typeof req.hash === "string" &&
     req.hash.length > 0 &&
-    typeof req.charityId === 'string' &&
+    typeof req.charityId === "string" &&
     req.charityId.length > 0 &&
-    typeof req.charityName === 'string' &&
-    typeof req.donorName === 'string' &&
-    typeof req.donorEmail === 'string' &&
-    req.donorEmail.includes('@') &&
-    typeof req.donorId === 'string' &&
+    typeof req.charityName === "string" &&
+    typeof req.donorName === "string" &&
+    typeof req.donorEmail === "string" &&
+    req.donorEmail.includes("@") &&
+    typeof req.donorId === "string" &&
     req.donorId.length > 0
   );
 }
@@ -132,7 +133,7 @@ function validateRequestBody(body: unknown): body is ValidateRequest {
  */
 async function computeHelcimHash(
   transactionData: HelcimTransactionData,
-  secretToken: string
+  secretToken: string,
 ): Promise<string> {
   // Re-encode to ensure consistent JSON representation.
   // Helcim uses JSON-escaped unicode for special characters.
@@ -141,11 +142,11 @@ async function computeHelcimHash(
 
   const encoder = new TextEncoder();
   const data = encoder.encode(payload);
-  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
 
   // Convert ArrayBuffer to hex string
   const hashArray = Array.from(new Uint8Array(hashBuffer));
-  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+  return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 // ---------------------------------------------------------------------------
@@ -160,14 +161,14 @@ async function computeHelcimHash(
  */
 async function lookupSession(
   supabase: ReturnType<typeof createClient>,
-  checkoutToken: string
+  checkoutToken: string,
 ): Promise<CheckoutSession | null> {
   const { data, error } = await supabase
-    .from('checkout_sessions')
-    .select('*')
-    .eq('checkout_token', checkoutToken)
-    .eq('validated', false)
-    .gt('expires_at', new Date().toISOString())
+    .from("checkout_sessions")
+    .select("*")
+    .eq("checkout_token", checkoutToken)
+    .eq("validated", false)
+    .gt("expires_at", new Date().toISOString())
     .single();
 
   if (error || !data) {
@@ -184,15 +185,15 @@ async function lookupSession(
  */
 async function markSessionValidated(
   supabase: ReturnType<typeof createClient>,
-  sessionId: string
+  sessionId: string,
 ): Promise<void> {
   const { error } = await supabase
-    .from('checkout_sessions')
+    .from("checkout_sessions")
     .update({ validated: true })
-    .eq('id', sessionId);
+    .eq("id", sessionId);
 
   if (error) {
-    console.error('Failed to mark session as validated:', error);
+    console.error("Failed to mark session as validated:", error);
   }
 }
 
@@ -218,42 +219,46 @@ async function logFiatPayment(
   txData: HelcimTransactionData,
   session: CheckoutSession,
   names: ResolvedDonationNames,
-  subscriptionId?: string
+  subscriptionId?: string,
 ): Promise<string> {
-  const cardNumber = txData.cardNumber || '';
-  const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
+  const cardNumber = txData.cardNumber || "";
+  const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : "";
 
   const amountCents = txData.amount
     ? Math.round(Number(txData.amount) * 100)
     : Math.round(session.amount * 100);
 
-  const { data, error } = await supabase.from('fiat_donations').insert({
-    donor_id: request.donorId,
-    charity_id: session.charity_id ?? request.charityId,
-    donor_email: request.donorEmail,
-    donor_name: request.donorName,
-    donor_address: request.donorAddress || null,
-    amount_cents: amountCents,
-    currency: session.currency,
-    payment_method: 'card',
-    transaction_id: txData.transactionId || '',
-    card_type: txData.type || '',
-    card_last_four: cardLastFour,
-    fee_covered: request.coverFees,
-    subscription_id: subscriptionId || null,
-    disbursement_status: 'received',
-    status: 'completed',
-    // Cause/fund context from trusted session data
-    cause_id: session.cause_id ?? null,
-    fund_id: session.fund_id ?? null,
-    cause_name: names.causeName ?? null,
-    fund_name: names.fundName ?? null,
-    created_at: new Date().toISOString(),
-  }).select('id').single();
+  const { data, error } = await supabase
+    .from("fiat_donations")
+    .insert({
+      donor_id: request.donorId,
+      charity_id: session.charity_id ?? request.charityId,
+      donor_email: request.donorEmail,
+      donor_name: request.donorName,
+      donor_address: request.donorAddress || null,
+      amount_cents: amountCents,
+      currency: session.currency,
+      payment_method: "card",
+      transaction_id: txData.transactionId || "",
+      card_type: txData.type || "",
+      card_last_four: cardLastFour,
+      fee_covered: request.coverFees,
+      subscription_id: subscriptionId || null,
+      disbursement_status: "received",
+      status: "completed",
+      // Cause/fund context from trusted session data
+      cause_id: session.cause_id ?? null,
+      fund_id: session.fund_id ?? null,
+      cause_name: names.causeName ?? null,
+      fund_name: names.fundName ?? null,
+      created_at: new Date().toISOString(),
+    })
+    .select("id")
+    .single();
 
   if (error) {
-    console.error('Failed to log fiat payment:', error);
-    throw new Error('Payment validated but failed to record donation');
+    console.error("Failed to log fiat payment:", error);
+    throw new Error("Payment validated but failed to record donation");
   }
 
   return data.id;
@@ -273,7 +278,7 @@ async function logFiatSubscription(
   request: ValidateRequest,
   txData: HelcimTransactionData,
   session: CheckoutSession,
-  names: ResolvedDonationNames
+  names: ResolvedDonationNames,
 ): Promise<string> {
   const amountCents = txData.amount
     ? Math.round(Number(txData.amount) * 100)
@@ -283,7 +288,7 @@ async function logFiatSubscription(
   nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
   const { data: subscription, error: subError } = await supabase
-    .from('fiat_subscriptions')
+    .from("fiat_subscriptions")
     .insert({
       donor_id: request.donorId,
       charity_id: session.charity_id ?? request.charityId,
@@ -292,10 +297,10 @@ async function logFiatSubscription(
       donor_address: request.donorAddress || null,
       amount_cents: amountCents,
       currency: session.currency,
-      customer_id: txData.customerCode || '',
+      customer_id: txData.customerCode || "",
       fee_covered: request.coverFees,
-      frequency: 'monthly',
-      status: 'active',
+      frequency: "monthly",
+      status: "active",
       next_billing_date: nextBillingDate.toISOString(),
       // Cause/fund context from trusted session data
       cause_id: session.cause_id ?? null,
@@ -304,182 +309,220 @@ async function logFiatSubscription(
       fund_name: names.fundName ?? null,
       created_at: new Date().toISOString(),
     })
-    .select('id')
+    .select("id")
     .single();
 
   if (subError) {
-    console.error('Failed to log fiat subscription:', subError);
-    throw new Error('Payment validated but failed to record subscription');
+    console.error("Failed to log fiat subscription:", subError);
+    throw new Error("Payment validated but failed to record subscription");
   }
 
   // Log the initial payment linked to the subscription
-  return await logFiatPayment(supabase, request, txData, session, names, subscription.id);
+  return await logFiatPayment(
+    supabase,
+    request,
+    txData,
+    session,
+    names,
+    subscription.id,
+  );
 }
 
 // ---------------------------------------------------------------------------
 // Main handler
 // ---------------------------------------------------------------------------
 
+/** Build a JSON response with CORS headers. */
+function jsonResponse(body: unknown, status: number): Response {
+  return new Response(JSON.stringify(body), { status, headers: jsonHeaders });
+}
+
+/**
+ * Parse and structurally validate the request body.
+ * @returns The validated request, or a Response describing the failure.
+ */
+async function parseAndValidateBody(
+  req: Request,
+): Promise<ValidateRequest | Response> {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return jsonResponse({ success: false, error: "Invalid JSON body" }, 400);
+  }
+
+  if (!validateRequestBody(body)) {
+    return jsonResponse(
+      {
+        success: false,
+        error:
+          "Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail, donorId",
+      },
+      400,
+    );
+  }
+
+  return body;
+}
+
+/** Resolve env-backed Supabase client, or null when env is missing. */
+function getSupabaseClient(): {
+  supabase: ReturnType<typeof createClient>;
+  url: string;
+  key: string;
+} | null {
+  const url = Deno.env.get("SUPABASE_URL");
+  const key = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!url || !key) {
+    return null;
+  }
+  return { supabase: createClient(url, key), url, key };
+}
+
+/** Fire-and-forget attestation trigger; failures are logged but never thrown. */
+function triggerAttestation(
+  supabaseUrl: string,
+  supabaseKey: string,
+  donationId: string,
+): void {
+  fetch(`${supabaseUrl}/functions/v1/attest-fiat-donation`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${supabaseKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ donationId }),
+  }).catch((err) =>
+    console.error("Attestation trigger failed (non-blocking):", err),
+  );
+}
+
+/**
+ * Run the full validation + persistence flow against an authenticated client.
+ * Returns the final HTTP response.
+ */
+async function processValidation(
+  supabase: ReturnType<typeof createClient>,
+  supabaseUrl: string,
+  supabaseKey: string,
+  body: ValidateRequest,
+): Promise<Response> {
+  // Step 1: Look up the checkout session (contains the secretToken)
+  const session = await lookupSession(supabase, body.checkoutToken);
+  if (!session) {
+    console.error("No valid checkout session found", {
+      checkoutToken: body.checkoutToken,
+    });
+    return jsonResponse(
+      { success: false, error: "Invalid or expired checkout session" },
+      403,
+    );
+  }
+
+  // Step 2: Compute the expected hash and compare
+  const computedHash = await computeHelcimHash(
+    body.transactionData,
+    session.secret_token,
+  );
+  if (computedHash !== body.hash) {
+    console.error("Hash validation failed", {
+      checkoutToken: body.checkoutToken,
+      expected: computedHash,
+      received: body.hash,
+    });
+    return jsonResponse(
+      { success: false, error: "Payment validation failed: hash mismatch" },
+      403,
+    );
+  }
+
+  // Step 3: Mark session as validated (prevents replay attacks)
+  await markSessionValidated(supabase, session.id);
+
+  // Step 3b: Resolve cause/fund names from session (trusted source)
+  const resolvedNames = await resolveNames(supabase, {
+    charityId: session.charity_id ?? body.charityId,
+    causeId: session.cause_id ?? undefined,
+    fundId: session.fund_id ?? undefined,
+    amountUsd: session.amount,
+    donationType: session.donation_type as "one-time" | "subscription",
+  });
+
+  const donationNames: ResolvedDonationNames = {
+    causeName: resolvedNames.causeName,
+    fundName: resolvedNames.fundName,
+  };
+
+  // Step 4: Persist the donation / subscription
+  const donationId =
+    session.donation_type === "subscription"
+      ? await logFiatSubscription(
+          supabase,
+          body,
+          body.transactionData,
+          session,
+          donationNames,
+        )
+      : await logFiatPayment(
+          supabase,
+          body,
+          body.transactionData,
+          session,
+          donationNames,
+        );
+
+  // Step 4b: Fire-and-forget attestation (non-blocking)
+  triggerAttestation(supabaseUrl, supabaseKey, donationId);
+
+  // Step 5: Return success with sanitized transaction details
+  const cardNumber = body.transactionData.cardNumber || "";
+  const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : "";
+
+  return jsonResponse(
+    {
+      success: true,
+      transactionId: body.transactionData.transactionId || "",
+      approvalCode: body.transactionData.approvalCode || "",
+      cardLastFour,
+      donationType: session.donation_type,
+    },
+    200,
+  );
+}
+
 serve(async (req: Request) => {
-  // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    return new Response('ok', { headers: corsHeaders });
+  if (req.method === "OPTIONS") {
+    return new Response("ok", { headers: corsHeaders });
+  }
+  if (req.method !== "POST") {
+    return jsonResponse({ success: false, error: "Method not allowed" }, 405);
   }
 
   try {
-    // Only allow POST requests
-    if (req.method !== 'POST') {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Method not allowed' }),
-        { status: 405, headers: jsonHeaders }
+    const parsed = await parseAndValidateBody(req);
+    if (parsed instanceof Response) {
+      return parsed;
+    }
+
+    const client = getSupabaseClient();
+    if (!client) {
+      console.error("SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured");
+      return jsonResponse(
+        { success: false, error: "Validation service unavailable" },
+        503,
       );
     }
 
-    // Parse request body
-    let body: unknown;
-    try {
-      body = await req.json();
-    } catch {
-      return new Response(
-        JSON.stringify({ success: false, error: 'Invalid JSON body' }),
-        { status: 400, headers: jsonHeaders }
-      );
-    }
-
-    // Validate request structure
-    if (!validateRequestBody(body)) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid request. Required: checkoutToken, transactionData, hash, charityId, charityName, donorName, donorEmail, donorId',
-        }),
-        { status: 400, headers: jsonHeaders }
-      );
-    }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!supabaseUrl || !supabaseKey) {
-      console.error('SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not configured');
-      return new Response(
-        JSON.stringify({ success: false, error: 'Validation service unavailable' }),
-        { status: 503, headers: jsonHeaders }
-      );
-    }
-
-    const supabase = createClient(supabaseUrl, supabaseKey);
-
-    // -----------------------------------------------------------------------
-    // Step 1: Look up the checkout session (contains the secretToken)
-    // -----------------------------------------------------------------------
-    const session = await lookupSession(supabase, body.checkoutToken);
-
-    if (!session) {
-      console.error('No valid checkout session found', {
-        checkoutToken: body.checkoutToken,
-      });
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Invalid or expired checkout session',
-        }),
-        { status: 403, headers: jsonHeaders }
-      );
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 2: Compute the expected hash and compare
-    // -----------------------------------------------------------------------
-    const computedHash = await computeHelcimHash(
-      body.transactionData,
-      session.secret_token
-    );
-
-    if (computedHash !== body.hash) {
-      console.error('Hash validation failed', {
-        checkoutToken: body.checkoutToken,
-        expected: computedHash,
-        received: body.hash,
-      });
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: 'Payment validation failed: hash mismatch',
-        }),
-        { status: 403, headers: jsonHeaders }
-      );
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 3: Mark session as validated (prevents replay attacks)
-    // -----------------------------------------------------------------------
-    await markSessionValidated(supabase, session.id);
-
-    // -----------------------------------------------------------------------
-    // Step 3b: Resolve cause/fund names from session (trusted source)
-    // -----------------------------------------------------------------------
-    const resolvedNames = await resolveNames(supabase, {
-      charityId: session.charity_id ?? body.charityId,
-      causeId: session.cause_id ?? undefined,
-      fundId: session.fund_id ?? undefined,
-      amountUsd: session.amount,
-      donationType: session.donation_type as 'one-time' | 'subscription',
-    });
-
-    const donationNames: ResolvedDonationNames = {
-      causeName: resolvedNames.causeName,
-      fundName: resolvedNames.fundName,
-    };
-
-    // -----------------------------------------------------------------------
-    // Step 4: Persist the donation / subscription
-    // -----------------------------------------------------------------------
-    let donationId: string;
-    if (session.donation_type === 'subscription') {
-      donationId = await logFiatSubscription(supabase, body, body.transactionData, session, donationNames);
-    } else {
-      donationId = await logFiatPayment(supabase, body, body.transactionData, session, donationNames);
-    }
-
-    // -----------------------------------------------------------------------
-    // Step 4b: Fire-and-forget attestation (non-blocking)
-    // -----------------------------------------------------------------------
-    fetch(`${supabaseUrl}/functions/v1/attest-fiat-donation`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${supabaseKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ donationId }),
-    }).catch((err) => console.error('Attestation trigger failed (non-blocking):', err));
-
-    // -----------------------------------------------------------------------
-    // Step 5: Return success with sanitized transaction details
-    // -----------------------------------------------------------------------
-    const cardNumber = body.transactionData.cardNumber || '';
-    const cardLastFour = cardNumber.length >= 4 ? cardNumber.slice(-4) : '';
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        transactionId: body.transactionData.transactionId || '',
-        approvalCode: body.transactionData.approvalCode || '',
-        cardLastFour,
-        donationType: session.donation_type,
-      }),
-      { status: 200, headers: jsonHeaders }
+    return await processValidation(
+      client.supabase,
+      client.url,
+      client.key,
+      parsed,
     );
   } catch (error) {
-    console.error('Validation error:', error);
-
+    console.error("Validation error:", error);
     const errorMessage =
-      error instanceof Error ? error.message : 'Payment validation failed';
-
-    return new Response(
-      JSON.stringify({ success: false, error: errorMessage }),
-      { status: 500, headers: jsonHeaders }
-    );
+      error instanceof Error ? error.message : "Payment validation failed";
+    return jsonResponse({ success: false, error: errorMessage }, 500);
   }
 });

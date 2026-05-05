@@ -114,6 +114,14 @@ function validateYear(year: string): boolean {
   return yearNum >= 1800 && yearNum <= currentYear;
 }
 
+/**
+ * Editable form for the charity's public organization profile (year founded,
+ * address, contact info, social links).
+ * @param props.initialData - Existing profile values to seed the form, or null
+ * @param props.onSave - Called with the validated profile when the user submits
+ * @param props.loading - When true, disables the submit button and shows a saving state
+ * @returns The organization profile form
+ */
 export const OrganizationProfileForm: React.FC<
   OrganizationProfileFormProps
 > = ({ initialData, onSave, loading }) => {
