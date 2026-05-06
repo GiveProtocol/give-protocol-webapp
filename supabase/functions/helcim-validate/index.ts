@@ -149,6 +149,27 @@ async function computeHelcimHash(
   return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
+/**
+ * Compare two strings in constant time to prevent timing attacks on
+ * cryptographic hash verification. Returns false immediately on length
+ * mismatch, otherwise XORs every byte so total work is independent of
+ * where the first differing byte appears.
+ *
+ * @param a - First string
+ * @param b - Second string
+ * @returns Whether the strings are byte-for-byte equal
+ */
+function timingSafeEqual(a: string, b: string): boolean {
+  if (a.length !== b.length) {
+    return false;
+  }
+  let mismatch = 0;
+  for (let i = 0; i < a.length; i++) {
+    mismatch |= a.charCodeAt(i) ^ b.charCodeAt(i);
+  }
+  return mismatch === 0;
+}
+
 // ---------------------------------------------------------------------------
 // Database operations
 // ---------------------------------------------------------------------------
@@ -424,7 +445,7 @@ async function processValidation(
     body.transactionData,
     session.secret_token,
   );
-  if (computedHash !== body.hash) {
+  if (!timingSafeEqual(computedHash, body.hash)) {
     console.error("Hash validation failed", {
       checkoutToken: body.checkoutToken,
       expected: computedHash,
