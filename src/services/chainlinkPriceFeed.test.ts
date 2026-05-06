@@ -3,6 +3,7 @@ import { CHAIN_IDS } from "@/config/contracts";
 import {
   mockLatestRoundData,
   mockDecimals,
+  resetEthersMock,
 } from "@/test-utils/ethersMock";
 
 // Mock Logger
@@ -27,8 +28,9 @@ describe("ChainlinkPriceFeedService", () => {
   const now = Math.floor(Date.now() / 1000);
 
   beforeEach(() => {
+    // Fully reset queued mock return values; clearAllMocks only clears history.
+    resetEthersMock();
     service = new ChainlinkPriceFeedService();
-    jest.clearAllMocks();
   });
 
   describe("getPrice", () => {
@@ -187,12 +189,19 @@ describe("ChainlinkPriceFeedService", () => {
 
       await service.getPrice(CHAIN_IDS.BASE, "ETH");
 
-      // Expire cache
-      const priceCache = (service as unknown as { priceCache: Map<string, { fetchedAt: number; data: unknown }> }).priceCache;
-      const entry = priceCache.get(`${CHAIN_IDS.BASE}_ETH`);
+      // Expire price cache and sequencer cache so the second call re-checks both
+      const internals = service as unknown as {
+        priceCache: Map<string, { fetchedAt: number; data: unknown }>;
+        sequencerCache: Map<number, unknown>;
+      };
+      const entry = internals.priceCache.get(`${CHAIN_IDS.BASE}_ETH`);
       if (entry) {
-        priceCache.set(`${CHAIN_IDS.BASE}_ETH`, { ...entry, fetchedAt: 0 });
+        internals.priceCache.set(`${CHAIN_IDS.BASE}_ETH`, {
+          ...entry,
+          fetchedAt: 0,
+        });
       }
+      internals.sequencerCache.clear();
 
       // Second call: sequencer down
       mockFns.latestRoundData.mockResolvedValueOnce([1n, 1n, BigInt(0), BigInt(0), 1n]);
