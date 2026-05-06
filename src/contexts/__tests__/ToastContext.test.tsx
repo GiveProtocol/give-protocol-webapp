@@ -1,5 +1,12 @@
 import React from "react";
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from "@jest/globals";
 import { render, screen, act } from "@testing-library/react";
 // eslint-disable-next-line import/no-unresolved
 import { ToastProvider, useToast } from "@/contexts/ToastContext.real";
@@ -41,7 +48,11 @@ describe("ToastContext", () => {
 
   it("displays a toast when showToast is called", () => {
     renderWithProvider(
-      <ShowToastButton type="success" title="Saved" message="Profile updated" />,
+      <ShowToastButton
+        type="success"
+        title="Saved"
+        message="Profile updated"
+      />,
     );
     act(() => {
       screen.getByText("show").click();
