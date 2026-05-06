@@ -35,7 +35,7 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
           .from("charity_details")
           .select("mission_statement, impact_stats, impact_highlights")
           .eq("profile_id", profileId)
-          .single();
+          .maybeSingle();
 
         if (fetchError) throw fetchError;
 
@@ -46,9 +46,7 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
         });
       } catch (err) {
         Logger.error("Error fetching impact profile", { error: err });
-        setError(
-          t("impact.loadError", "Failed to load impact profile"),
-        );
+        setError(t("impact.loadError", "Failed to load impact profile"));
       } finally {
         setLoading(false);
       }
@@ -81,9 +79,7 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
         setTimeout(() => setSuccess(false), 3000);
       } catch (err) {
         Logger.error("Error saving impact profile", { error: err });
-        setError(
-          t("impact.saveError", "Failed to save impact profile"),
-        );
+        setError(t("impact.saveError", "Failed to save impact profile"));
       } finally {
         setSaving(false);
       }
@@ -141,13 +137,8 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
           </div>
         )}
         {success && (
-          <output
-            className="mb-4 p-3 bg-green-50 text-green-600 rounded-md block"
-          >
-            {t(
-              "impact.saveSuccess",
-              "Impact profile saved successfully",
-            )}
+          <output className="mb-4 p-3 bg-green-50 text-green-600 rounded-md block">
+            {t("impact.saveSuccess", "Impact profile saved successfully")}
           </output>
         )}
 

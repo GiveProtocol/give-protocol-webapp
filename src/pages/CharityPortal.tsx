@@ -1045,6 +1045,14 @@ export const CharityPortal: React.FC = () => {
     ];
     if (validTabs.includes(tab as TabKey)) {
       setActiveTab(tab as TabKey);
+      if (tab === "organization") {
+        // Wait for the tab panel to mount before scrolling.
+        requestAnimationFrame(() => {
+          document
+            .getElementById("organization-profile")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
     }
   }, []);
 
