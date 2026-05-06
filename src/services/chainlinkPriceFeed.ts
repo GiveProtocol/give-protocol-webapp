@@ -177,7 +177,10 @@ export class ChainlinkPriceFeedService {
 
       if (!isUp) {
         Logger.warn("Chainlink: L2 sequencer is DOWN", { chainId });
-        this.sequencerCache.set(chainId, { isUp: false, fetchedAt: Date.now() });
+        this.sequencerCache.set(chainId, {
+          isUp: false,
+          fetchedAt: Date.now(),
+        });
         return false;
       }
 
@@ -191,7 +194,10 @@ export class ChainlinkPriceFeedService {
           timeSinceUp,
           gracePeriod: SEQUENCER_GRACE_PERIOD,
         });
-        this.sequencerCache.set(chainId, { isUp: false, fetchedAt: Date.now() });
+        this.sequencerCache.set(chainId, {
+          isUp: false,
+          fetchedAt: Date.now(),
+        });
         return false;
       }
 
