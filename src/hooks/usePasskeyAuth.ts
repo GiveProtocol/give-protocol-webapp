@@ -77,6 +77,7 @@ export function usePasskeyAuth(): UsePasskeyAuthReturn {
   useEffect(() => {
     if (!isSupported) return;
 
+    /** Detect WebAuthn conditional-mediation support on this user agent. */
     const checkConditional = async () => {
       try {
         if (

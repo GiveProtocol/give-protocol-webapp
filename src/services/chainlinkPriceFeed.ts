@@ -304,6 +304,15 @@ export class ChainlinkPriceFeedService {
     }
   }
 
+  /**
+   * Fetch a price from the Chainlink aggregator, falling back to cached or
+   * stub data when the feed is unavailable.
+   * @param chainId - Target chain identifier
+   * @param tokenSymbol - Token symbol whose USD price is requested
+   * @param cacheKey - Key used to look up and store the result in the cache
+   * @param provider - Optional ethers provider override
+   * @returns Resolved price data, or null when no feed is configured
+   */
   private async fetchPrice(
     chainId: ChainId | number,
     tokenSymbol: string,

@@ -12,6 +12,7 @@ interface WalletLinkModalProps {
   onLinked?: () => void;
 }
 
+/** Single benefit row rendered inside the wallet-linking benefits list. */
 const BenefitItem: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <li className="flex items-start gap-3">
     <ShieldCheck className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
