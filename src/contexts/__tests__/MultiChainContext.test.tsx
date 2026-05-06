@@ -7,10 +7,7 @@ import {
   useMultiChainEVM,
   useMultiChainSigner,
 } from "@/contexts/MultiChainContext.real";
-import type {
-  UnifiedAccount,
-  UnifiedWalletProvider,
-} from "@/types/wallet";
+import type { UnifiedAccount, UnifiedWalletProvider } from "@/types/wallet";
 
 const STORAGE_KEY = "giveprotocol_multichain_state";
 
@@ -177,7 +174,9 @@ describe("MultiChainContext", () => {
         await result.current.connect(wallet);
       });
 
-      expect(localStorage.getItem("giveprotocol_wallet_disconnected")).toBeNull();
+      expect(
+        localStorage.getItem("giveprotocol_wallet_disconnected"),
+      ).toBeNull();
     });
   });
 

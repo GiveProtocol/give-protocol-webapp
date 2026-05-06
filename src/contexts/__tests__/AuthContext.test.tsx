@@ -975,7 +975,10 @@ describe("AuthContext", () => {
     it("falls back to the profiles table when user metadata has no type", async () => {
       const userWithoutMetadata = { ...MOCK_USER, user_metadata: {} };
       mockSupabase.auth.signInWithPassword.mockResolvedValue({
-        data: { user: userWithoutMetadata, session: { user: userWithoutMetadata } },
+        data: {
+          user: userWithoutMetadata,
+          session: { user: userWithoutMetadata },
+        },
         error: null,
       });
 
@@ -1128,9 +1131,10 @@ describe("AuthContext", () => {
             single: jest.fn().mockResolvedValue({ data: null, error: null }),
           }),
         }),
-        insert: jest
-          .fn()
-          .mockResolvedValue({ data: null, error: { message: "profile fail", code: "23505" } }),
+        insert: jest.fn().mockResolvedValue({
+          data: null,
+          error: { message: "profile fail", code: "23505" },
+        }),
       });
 
       renderWithAuthProvider();
