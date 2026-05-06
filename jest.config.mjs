@@ -32,6 +32,12 @@ export default {
     ],
   },
   moduleNameMapper: {
+    // Test escape-hatch: importing "@/contexts/<Name>.real" bypasses the
+    // global mock and loads the actual context source. Used by tests in
+    // src/contexts/__tests__/ to exercise context logic directly.
+    "^@/contexts/ToastContext\\.real$": "<rootDir>/src/contexts/ToastContext.tsx",
+    "^@/contexts/SettingsContext\\.real$":
+      "<rootDir>/src/contexts/SettingsContext.tsx",
     // Config and library mocks
     "^@/config/env$": "<rootDir>/src/test-utils/envMock.js",
     "^@/config/docs$": "<rootDir>/src/test-utils/docsMock.js",
