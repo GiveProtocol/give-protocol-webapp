@@ -39,8 +39,7 @@ export default {
       "<rootDir>/src/contexts/ToastContext.tsx",
     "^@/contexts/SettingsContext\\.real$":
       "<rootDir>/src/contexts/SettingsContext.tsx",
-    "^@/contexts/Web3Context\\.real$":
-      "<rootDir>/src/contexts/Web3Context.tsx",
+    "^@/contexts/Web3Context\\.real$": "<rootDir>/src/contexts/Web3Context.tsx",
     // Config and library mocks
     "^@/config/env$": "<rootDir>/src/test-utils/envMock.js",
     "^@/config/docs$": "<rootDir>/src/test-utils/docsMock.js",

@@ -1,5 +1,12 @@
 import React from "react";
-import { describe, it, expect, beforeEach, afterEach, jest } from "@jest/globals";
+import {
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  jest,
+} from "@jest/globals";
 import { render, act, renderHook, waitFor } from "@testing-library/react";
 import { ethers } from "ethers";
 import {
@@ -188,7 +195,9 @@ describe("Web3Context", () => {
       expect(result.current.address).toBe("0xabc");
       expect(result.current.chainId).toBe(8453);
       expect(result.current.isConnected).toBe(true);
-      expect(localStorage.getItem("giveprotocol_wallet_disconnected")).toBeNull();
+      expect(
+        localStorage.getItem("giveprotocol_wallet_disconnected"),
+      ).toBeNull();
     });
 
     it("rejects when no accounts are returned", async () => {
@@ -419,13 +428,21 @@ describe("Web3Context", () => {
       await waitFor(() => expect(ethereum.on).toHaveBeenCalled());
       const events = ethereum.on!.mock.calls.map((c) => c[0]);
       expect(events).toEqual(
-        expect.arrayContaining(["accountsChanged", "chainChanged", "disconnect"]),
+        expect.arrayContaining([
+          "accountsChanged",
+          "chainChanged",
+          "disconnect",
+        ]),
       );
 
       unmount();
       const removed = ethereum.removeListener!.mock.calls.map((c) => c[0]);
       expect(removed).toEqual(
-        expect.arrayContaining(["accountsChanged", "chainChanged", "disconnect"]),
+        expect.arrayContaining([
+          "accountsChanged",
+          "chainChanged",
+          "disconnect",
+        ]),
       );
     });
 
