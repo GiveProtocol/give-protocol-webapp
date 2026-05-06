@@ -74,11 +74,15 @@ describe("AdminPortfolioFunds", () => {
     mockShowToast.mockReset();
   });
 
-  it("shows loading spinner initially", () => {
+  it("shows loading spinner initially", async () => {
     setMockResult("portfolio_funds", { data: [], error: null });
     setMockResult("charity_profiles", { data: [], error: null });
     renderPage();
     expect(screen.getByTestId("loading-spinner")).toBeInTheDocument();
+    // Let the effect resolve so the post-test setState doesn't trigger an act warning.
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument(),
+    );
   });
 
   it("renders fund list after data loads", async () => {
@@ -241,7 +245,9 @@ describe("AdminPortfolioFunds", () => {
 
     renderPage();
 
-    await waitFor(() => screen.queryByTestId("loading-spinner") === null);
+    await waitFor(() =>
+      expect(screen.queryByTestId("loading-spinner")).not.toBeInTheDocument(),
+    );
 
     expect(supabase.from).toHaveBeenCalledWith("portfolio_funds");
     expect(supabase.from).toHaveBeenCalledWith("charity_profiles");
