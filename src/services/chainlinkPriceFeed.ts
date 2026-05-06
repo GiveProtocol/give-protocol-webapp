@@ -230,8 +230,7 @@ export class ChainlinkPriceFeedService {
     }
     const results = await Promise.all(fetchPromises);
     const roundData = results[0] as { [key: number]: bigint | number };
-    const decimals =
-      cachedDecimals ?? Number(results[1] as bigint);
+    const decimals = cachedDecimals ?? Number(results[1] as bigint);
     if (cachedDecimals === undefined) {
       decimalsCache.set(feedConfig.address, decimals);
     }
