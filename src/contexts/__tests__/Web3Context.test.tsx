@@ -23,8 +23,8 @@ const mockedBrowserProvider = ethers.BrowserProvider as unknown as jest.Mock;
 
 interface EthereumLike {
   request: jest.Mock;
-  on?: jest.Mock;
-  removeListener?: jest.Mock;
+  on: jest.Mock;
+  removeListener: jest.Mock;
   disconnect?: jest.Mock;
   isMetaMask?: boolean;
   isPhantom?: boolean;
@@ -47,6 +47,18 @@ function makeEthereum(overrides: Partial<EthereumLike> = {}): EthereumLike {
     isMetaMask: true,
     ...overrides,
   };
+}
+
+/** Look up the listener registered for a given event on a mocked provider. */
+function findHandler<T extends (..._args: never[]) => unknown>(
+  ethereum: EthereumLike,
+  eventName: string,
+): T {
+  const call = ethereum.on.mock.calls.find((c) => c[0] === eventName);
+  if (!call) {
+    throw new Error(`No handler registered for event "${eventName}"`);
+  }
+  return call[1] as T;
 }
 
 function setupBrowserProvider({
@@ -175,7 +187,7 @@ describe("Web3Context", () => {
 
     it("connects, fetches the network, and populates state", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         if (method === "eth_accounts") return ["0xabc"];
         return undefined;
@@ -257,7 +269,7 @@ describe("Web3Context", () => {
 
     it("issues wallet_switchEthereumChain when on the wrong network", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -293,7 +305,7 @@ describe("Web3Context", () => {
   describe("disconnect", () => {
     it("clears state and sets the disconnect flag", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -316,7 +328,7 @@ describe("Web3Context", () => {
     });
 
     it("invokes wallet.disconnect when the wallet exposes one", async () => {
-      const disconnectFn = jest.fn().mockResolvedValue(undefined);
+      const disconnectFn = jest.fn().mockResolvedValue();
       const ethereum = makeEthereum({ disconnect: disconnectFn });
       setEthereum(ethereum);
 
@@ -330,7 +342,7 @@ describe("Web3Context", () => {
 
     it("falls back to wallet_revokePermissions when no disconnect method exists", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockResolvedValue(undefined);
+      ethereum.request.mockResolvedValue();
       setEthereum(ethereum);
 
       const { result } = renderHook(() => useWeb3(), { wrapper });
@@ -370,7 +382,7 @@ describe("Web3Context", () => {
 
     it("delegates to wallet_switchEthereumChain on the active provider", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -396,7 +408,7 @@ describe("Web3Context", () => {
     it("rejects when the bound wallet provider isn't EIP-1193", async () => {
       // Wallet stored from a previous connect happens to lose its `request`.
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -426,7 +438,7 @@ describe("Web3Context", () => {
       const { unmount } = renderHook(() => useWeb3(), { wrapper });
 
       await waitFor(() => expect(ethereum.on).toHaveBeenCalled());
-      const events = ethereum.on!.mock.calls.map((c) => c[0]);
+      const events = ethereum.on.mock.calls.map((c) => c[0]);
       expect(events).toEqual(
         expect.arrayContaining([
           "accountsChanged",
@@ -436,7 +448,7 @@ describe("Web3Context", () => {
       );
 
       unmount();
-      const removed = ethereum.removeListener!.mock.calls.map((c) => c[0]);
+      const removed = ethereum.removeListener.mock.calls.map((c) => c[0]);
       expect(removed).toEqual(
         expect.arrayContaining([
           "accountsChanged",
@@ -448,7 +460,7 @@ describe("Web3Context", () => {
 
     it("clears state when the provider fires disconnect", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -461,11 +473,7 @@ describe("Web3Context", () => {
       expect(result.current.address).toBe("0xabc");
 
       // Trigger the disconnect handler that Web3Context registered on mount.
-      const disconnectCall = ethereum.on!.mock.calls.find(
-        (c) => c[0] === "disconnect",
-      );
-      expect(disconnectCall).toBeDefined();
-      const handler = disconnectCall![1] as () => void;
+      const handler = findHandler<() => void>(ethereum, "disconnect");
       act(() => handler());
 
       expect(result.current.address).toBeNull();
@@ -474,7 +482,7 @@ describe("Web3Context", () => {
 
     it("clears state when accountsChanged fires with an empty array", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -485,10 +493,10 @@ describe("Web3Context", () => {
         await result.current.connect(ethereum);
       });
 
-      const handlerCall = ethereum.on!.mock.calls.find(
-        (c) => c[0] === "accountsChanged",
+      const handler = findHandler<(_accounts: string[]) => void>(
+        ethereum,
+        "accountsChanged",
       );
-      const handler = handlerCall![1] as (accounts: string[]) => void;
       act(() => handler([]));
 
       expect(result.current.address).toBeNull();
@@ -496,7 +504,7 @@ describe("Web3Context", () => {
 
     it("updates the address when accountsChanged fires with a new account", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -507,10 +515,10 @@ describe("Web3Context", () => {
         await result.current.connect(ethereum);
       });
 
-      const handlerCall = ethereum.on!.mock.calls.find(
-        (c) => c[0] === "accountsChanged",
+      const handler = findHandler<(_accounts: string[]) => void>(
+        ethereum,
+        "accountsChanged",
       );
-      const handler = handlerCall![1] as (accounts: string[]) => void;
       act(() => handler(["0xnew"]));
 
       expect(result.current.address).toBe("0xnew");
@@ -519,7 +527,7 @@ describe("Web3Context", () => {
     it("debounces chainChanged and rebuilds the provider", async () => {
       jest.useFakeTimers();
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -532,10 +540,10 @@ describe("Web3Context", () => {
 
       const callsBefore = mockedBrowserProvider.mock.calls.length;
 
-      const handlerCall = ethereum.on!.mock.calls.find(
-        (c) => c[0] === "chainChanged",
+      const handler = findHandler<(_chainIdHex: string) => void>(
+        ethereum,
+        "chainChanged",
       );
-      const handler = handlerCall![1] as (chainIdHex: string) => void;
       act(() => handler("0xa"));
       expect(result.current.chainId).toBe(10);
 
@@ -579,7 +587,7 @@ describe("Web3Context", () => {
 
     it("restores state when eth_accounts returns a connected address", async () => {
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_accounts") return ["0xrestored"];
         return undefined;
       });
@@ -605,7 +613,7 @@ describe("Web3Context", () => {
     it("prefers a MetaMask entry inside providers[] when multiple are present", async () => {
       const phantom = makeEthereum({ isPhantom: true, isMetaMask: false });
       const metamask = makeEthereum({ isMetaMask: true, isPhantom: false });
-      metamask.request.mockImplementation(async ({ method }) => {
+      metamask.request.mockImplementation(({ method }) => {
         if (method === "eth_accounts") return ["0xmm"];
         return undefined;
       });
@@ -818,7 +826,7 @@ describe("Web3Context", () => {
       });
 
       const ethereum = makeEthereum();
-      ethereum.request.mockImplementation(async ({ method }) => {
+      ethereum.request.mockImplementation(({ method }) => {
         if (method === "eth_requestAccounts") return ["0xabc"];
         return undefined;
       });
@@ -838,7 +846,7 @@ describe("Web3Context", () => {
         connect: () => Promise<{ address: string }[]>;
         disconnect: () => Promise<void>;
         getAccounts: () => Promise<unknown[]>;
-        switchChain: (id: number) => Promise<void>;
+        switchChain: (_id: number) => Promise<void>;
         signTransaction: () => Promise<string>;
         signMessage: () => Promise<string>;
       };
@@ -925,7 +933,7 @@ describe("Web3Context", () => {
     it("delegates switchChain to MultiChainContext for the EVM chain type", async () => {
       const multiSwitch = jest
         .fn<MultiChainContextType["switchChain"]>()
-        .mockResolvedValue(undefined);
+        .mockResolvedValue();
       mockedUseMultiChainContext.mockReturnValue({
         wallet: null,
         accounts: [],
