@@ -39,6 +39,8 @@ export default {
       "<rootDir>/src/contexts/ToastContext.tsx",
     "^@/contexts/SettingsContext\\.real$":
       "<rootDir>/src/contexts/SettingsContext.tsx",
+    "^@/contexts/Web3Context\\.real$":
+      "<rootDir>/src/contexts/Web3Context.tsx",
     // Config and library mocks
     "^@/config/env$": "<rootDir>/src/test-utils/envMock.js",
     "^@/config/docs$": "<rootDir>/src/test-utils/docsMock.js",
@@ -97,11 +99,21 @@ export default {
       "<rootDir>/src/test-utils/multiChainContextMock.js",
     "(.*)/contexts/MultiChainContext(\\.tsx?)?$":
       "<rootDir>/src/test-utils/multiChainContextMock.js",
+    // Web3Context.tsx imports MultiChainContext via "./MultiChainContext"
+    // (no /contexts/ in the specifier). Catch that form so the real
+    // Web3Context source can be tested with a controllable MultiChain mock.
+    "^\\./MultiChainContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/multiChainContextMock.js",
     "^@/contexts/Web3Context$": "<rootDir>/src/test-utils/web3ContextMock.js",
     "(.*)/contexts/Web3Context(\\.tsx?)?$":
       "<rootDir>/src/test-utils/web3ContextMock.js",
     "^@/contexts/ChainContext$": "<rootDir>/src/test-utils/chainContextMock.js",
     "(.*)/contexts/ChainContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/chainContextMock.js",
+    // Web3Context.tsx imports ChainContext via "./ChainContext"
+    // (no /contexts/ in the specifier). Catch that exact form so the real
+    // Web3Context source loads the mocked ChainContext during tests.
+    "^\\./ChainContext(\\.tsx?)?$":
       "<rootDir>/src/test-utils/chainContextMock.js",
     "^@/contexts/CurrencyContext$":
       "<rootDir>/src/test-utils/currencyContextMock.js",
