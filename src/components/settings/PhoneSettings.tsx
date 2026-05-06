@@ -19,6 +19,7 @@ export const PhoneSettings: React.FC = () => {
   useEffect(() => {
     let cancelled = false;
 
+    /** Load the current user's saved phone number from auth metadata. */
     const loadPhone = async () => {
       const { data } = await supabase.auth.getUser();
       if (cancelled) return;
