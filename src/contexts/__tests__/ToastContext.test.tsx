@@ -8,7 +8,6 @@ import {
   jest,
 } from "@jest/globals";
 import { render, screen, act } from "@testing-library/react";
-// eslint-disable-next-line import/no-unresolved
 import { ToastProvider, useToast } from "@/contexts/ToastContext.real";
 
 describe("ToastContext", () => {

@@ -1,7 +1,6 @@
 import React from "react";
 import { describe, it, expect, beforeEach, jest } from "@jest/globals";
 import { render, act, renderHook } from "@testing-library/react";
-// eslint-disable-next-line import/no-unresolved
 import {
   SettingsProvider,
   useSettings,
