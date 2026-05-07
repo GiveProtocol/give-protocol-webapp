@@ -87,7 +87,11 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 );
 
 // Safe auto-connect wrapper
-const SafeAutoConnectWrapper = ({ children }: { children: React.ReactElement }) => {
+const SafeAutoConnectWrapper = ({
+  children,
+}: {
+  children: React.ReactElement;
+}) => {
   useSafeAutoConnect();
   return children;
 };
@@ -120,8 +124,8 @@ const AppRouter = () => (
  * ```
  */
 function App() {
-  const sentryFallback = useCallback(
-    ({ error, resetError }: { error: Error; resetError: () => void }) => (
+  const sentryFallback = useCallback<Sentry.FallbackRender>(
+    ({ error, resetError }) => (
       <ErrorBoundary fallback={null}>
         <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
           <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full text-center">
@@ -129,7 +133,9 @@ function App() {
               Something went wrong
             </h2>
             <p className="text-gray-600 mb-6">
-              {error?.message || "An unexpected error occurred"}
+              {error instanceof Error
+                ? error.message
+                : "An unexpected error occurred"}
             </p>
             <button
               onClick={resetError}
