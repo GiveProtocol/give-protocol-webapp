@@ -12,6 +12,11 @@ import { ClientOnly } from "./ClientOnly";
 import { SettingsMenu } from "./SettingsMenu";
 import { WalletButton, NetworkSelector } from "./Wallet";
 import type { NetworkType, WalletProviderType } from "./Wallet";
+import {
+  switchEvmNetwork,
+  switchSolanaNetwork,
+  switchPolkadotNetwork,
+} from "./appNavbarHelpers";
 import { Menu, X, LogOut } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -431,56 +436,6 @@ export const AppNavbar: React.FC = () => {
     [],
   );
 
-  /** Switch to an EVM chain via Web3Context, falling back to local-only update. */
-  const switchEvmNetwork = useCallback(
-    async (network: NetworkType) => {
-      const targetChainId = evmChainIds[network];
-      if (!targetChainId || !isConnected) {
-        setNetwork(network);
-        return;
-      }
-      try {
-        if (multiChain.activeChainType !== "evm") {
-          multiChain.switchChainType("evm");
-        }
-        await switchChain(targetChainId);
-        setNetwork(network);
-      } catch (err) {
-        console.error("Failed to switch network:", err);
-      }
-    },
-    [isConnected, switchChain, multiChain, evmChainIds],
-  );
-
-  /** Switch to Solana chain type via MultiChainContext. */
-  const switchSolanaNetwork = useCallback(
-    (network: NetworkType) => {
-      try {
-        multiChain.switchChainType("solana");
-        setNetwork(network);
-      } catch (err) {
-        console.error("Failed to switch to Solana:", err);
-      }
-    },
-    [multiChain],
-  );
-
-  /** Switch to a Polkadot/Kusama chain via MultiChainContext. */
-  const switchPolkadotNetwork = useCallback(
-    async (network: NetworkType) => {
-      try {
-        multiChain.switchChainType("polkadot");
-        if (multiChain.wallet) {
-          await multiChain.switchChain(network, "polkadot");
-        }
-        setNetwork(network);
-      } catch (err) {
-        console.error("Failed to switch to Polkadot network:", err);
-      }
-    },
-    [multiChain],
-  );
-
   const handleNetworkChange = useCallback(
     async (_network: NetworkType) => {
       const networkConfig = NETWORKS.find((n) => n.id === _network);
@@ -488,15 +443,22 @@ export const AppNavbar: React.FC = () => {
         setNetwork(_network);
         return;
       }
+      const deps = {
+        evmChainIds,
+        isConnected,
+        setNetwork,
+        switchChain,
+        multiChain,
+      };
       if (networkConfig.chainType === "evm") {
-        await switchEvmNetwork(_network);
+        await switchEvmNetwork(_network, deps);
       } else if (networkConfig.chainType === "solana") {
-        switchSolanaNetwork(_network);
+        switchSolanaNetwork(_network, deps);
       } else if (networkConfig.chainType === "polkadot") {
-        await switchPolkadotNetwork(_network);
+        await switchPolkadotNetwork(_network, deps);
       }
     },
-    [switchEvmNetwork, switchSolanaNetwork, switchPolkadotNetwork],
+    [isConnected, switchChain, multiChain, evmChainIds],
   );
 
   const handleDisconnect = useCallback(async () => {
