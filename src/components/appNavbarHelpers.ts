@@ -31,7 +31,8 @@ export async function switchEvmNetwork(
   network: NetworkType,
   deps: NetworkSwitchDeps,
 ): Promise<void> {
-  const { evmChainIds, isConnected, setNetwork, switchChain, multiChain } = deps;
+  const { evmChainIds, isConnected, setNetwork, switchChain, multiChain } =
+    deps;
   const targetChainId = evmChainIds[network];
   if (!targetChainId || !isConnected) {
     setNetwork(network);

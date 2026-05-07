@@ -128,10 +128,7 @@ describe("switchPolkadotNetwork", () => {
     const deps = buildDeps({ multiChain });
     await switchPolkadotNetwork("polkadot" as NetworkType, deps);
     expect(multiChain.switchChainType).toHaveBeenCalledWith("polkadot");
-    expect(multiChain.switchChain).toHaveBeenCalledWith(
-      "polkadot",
-      "polkadot",
-    );
+    expect(multiChain.switchChain).toHaveBeenCalledWith("polkadot", "polkadot");
     expect(deps.setNetwork).toHaveBeenCalledWith("polkadot");
   });
 
