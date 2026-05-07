@@ -321,7 +321,8 @@ const FAQ_SECTIONS: FAQSectionData[] = [
             >
               Give Protocol Opportunities
             </a>
-            . You can filter by cause, location, required skills, and time
+            {". "}
+            You can filter by cause, location, required skills, and time
             commitment. Registered organizations can also post new opportunities
             directly from their charity portal.
           </p>
@@ -344,7 +345,8 @@ const FAQ_SECTIONS: FAQSectionData[] = [
             >
               the charity registration page
             </a>
-            . You will need to provide basic organizational details and a wallet
+            {". "}
+            You will need to provide basic organizational details and a wallet
             address for receiving donations. After registration, you can apply
             for Verified status by submitting your official non-profit
             credentials.

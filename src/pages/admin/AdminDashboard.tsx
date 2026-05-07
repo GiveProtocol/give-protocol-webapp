@@ -335,7 +335,7 @@ const AdminDashboard: React.FC = () => {
       {alerts.length > 0 && (
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Alerts
+            Alerts{" "}
             <span className="ml-2 text-sm font-normal text-red-600">
               ({alerts.length} pending)
             </span>
