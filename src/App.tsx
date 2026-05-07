@@ -87,7 +87,11 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 );
 
 // Safe auto-connect wrapper
-const SafeAutoConnectWrapper = ({ children }: { children: React.ReactElement }) => {
+const SafeAutoConnectWrapper = ({
+  children,
+}: {
+  children: React.ReactElement;
+}) => {
   useSafeAutoConnect();
   return children;
 };
