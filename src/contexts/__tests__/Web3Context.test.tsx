@@ -31,7 +31,7 @@ interface EthereumLike {
   providers?: EthereumLike[];
 }
 
-function setEthereum(value: EthereumLike | undefined): void {
+function setEthereum(value?: EthereumLike): void {
   Object.defineProperty(window, "ethereum", {
     value,
     configurable: true,
@@ -98,7 +98,7 @@ describe("Web3Context", () => {
       switchChain: jest.fn(),
       clearError: jest.fn(),
     });
-    setEthereum(undefined);
+    setEthereum();
     // Auto-restore checks the pathname; reset to a non-/auth route.
     window.history.replaceState({}, "", "/");
   });
@@ -547,11 +547,11 @@ describe("Web3Context", () => {
       act(() => handler("0xa"));
       expect(result.current.chainId).toBe(10);
 
-      // Advance past the 500 ms debounce so the rebuild runs.
-      await act(async () => {
+      // Advance past the 500 ms debounce so the rebuild runs, then flush
+      // the microtask queue so the async provider rebuild settles.
+      await act(() => {
         jest.advanceTimersByTime(500);
       });
-      // Allow microtask queue to flush async setup.
       await act(async () => {
         await Promise.resolve();
       });
