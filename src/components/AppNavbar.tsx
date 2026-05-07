@@ -281,12 +281,14 @@ const NavActions: React.FC<{
   onDisconnect,
   onSignOut,
 }) => {
-  // Determine wallet provider from window.ethereum
+  // Determine wallet provider from globalThis.ethereum
   const getWalletProvider = useCallback((): WalletProviderType => {
-    if (typeof window === "undefined" || !window.ethereum) return "metamask";
-    if (window.ethereum.isMetaMask) return "metamask";
-    if (window.ethereum.isTalisman) return "talisman";
-    if (window.ethereum.isSubWallet) return "subwallet";
+    const browserGlobal = globalThis as typeof globalThis & Window;
+    if (typeof browserGlobal.window === "undefined" || !browserGlobal.ethereum)
+      return "metamask";
+    if (browserGlobal.ethereum.isMetaMask) return "metamask";
+    if (browserGlobal.ethereum.isTalisman) return "talisman";
+    if (browserGlobal.ethereum.isSubWallet) return "subwallet";
     return "metamask";
   }, []);
 
@@ -429,6 +431,56 @@ export const AppNavbar: React.FC = () => {
     [],
   );
 
+  /** Switch to an EVM chain via Web3Context, falling back to local-only update. */
+  const switchEvmNetwork = useCallback(
+    async (network: NetworkType) => {
+      const targetChainId = evmChainIds[network];
+      if (!targetChainId || !isConnected) {
+        setNetwork(network);
+        return;
+      }
+      try {
+        if (multiChain.activeChainType !== "evm") {
+          multiChain.switchChainType("evm");
+        }
+        await switchChain(targetChainId);
+        setNetwork(network);
+      } catch (err) {
+        console.error("Failed to switch network:", err);
+      }
+    },
+    [isConnected, switchChain, multiChain, evmChainIds],
+  );
+
+  /** Switch to Solana chain type via MultiChainContext. */
+  const switchSolanaNetwork = useCallback(
+    (network: NetworkType) => {
+      try {
+        multiChain.switchChainType("solana");
+        setNetwork(network);
+      } catch (err) {
+        console.error("Failed to switch to Solana:", err);
+      }
+    },
+    [multiChain],
+  );
+
+  /** Switch to a Polkadot/Kusama chain via MultiChainContext. */
+  const switchPolkadotNetwork = useCallback(
+    async (network: NetworkType) => {
+      try {
+        multiChain.switchChainType("polkadot");
+        if (multiChain.wallet) {
+          await multiChain.switchChain(network, "polkadot");
+        }
+        setNetwork(network);
+      } catch (err) {
+        console.error("Failed to switch to Polkadot network:", err);
+      }
+    },
+    [multiChain],
+  );
+
   const handleNetworkChange = useCallback(
     async (_network: NetworkType) => {
       const networkConfig = NETWORKS.find((n) => n.id === _network);
@@ -436,46 +488,15 @@ export const AppNavbar: React.FC = () => {
         setNetwork(_network);
         return;
       }
-
       if (networkConfig.chainType === "evm") {
-        // EVM switching via Web3Context
-        const targetChainId = evmChainIds[_network];
-        if (targetChainId && isConnected) {
-          try {
-            // Ensure multiChain is on EVM chain type
-            if (multiChain.activeChainType !== "evm") {
-              multiChain.switchChainType("evm");
-            }
-            await switchChain(targetChainId);
-            setNetwork(_network);
-          } catch (err) {
-            console.error("Failed to switch network:", err);
-          }
-        } else {
-          setNetwork(_network);
-        }
+        await switchEvmNetwork(_network);
       } else if (networkConfig.chainType === "solana") {
-        // Solana switching via MultiChainContext
-        try {
-          multiChain.switchChainType("solana");
-          setNetwork(_network);
-        } catch (err) {
-          console.error("Failed to switch to Solana:", err);
-        }
+        switchSolanaNetwork(_network);
       } else if (networkConfig.chainType === "polkadot") {
-        // Polkadot/Kusama switching via MultiChainContext
-        try {
-          multiChain.switchChainType("polkadot");
-          if (multiChain.wallet) {
-            await multiChain.switchChain(_network, "polkadot");
-          }
-          setNetwork(_network);
-        } catch (err) {
-          console.error("Failed to switch to Polkadot network:", err);
-        }
+        await switchPolkadotNetwork(_network);
       }
     },
-    [isConnected, switchChain, multiChain, evmChainIds],
+    [switchEvmNetwork, switchSolanaNetwork, switchPolkadotNetwork],
   );
 
   const handleDisconnect = useCallback(async () => {
@@ -504,7 +525,7 @@ export const AppNavbar: React.FC = () => {
     } catch (err) {
       console.warn("Logout failed:", err);
     }
-    window.location.href = `${window.location.origin}/auth`;
+    globalThis.location.href = `${globalThis.location.origin}/auth`;
   }, [logout]);
 
   // Check if current page should only show limited navigation
