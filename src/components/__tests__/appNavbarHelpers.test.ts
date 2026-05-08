@@ -13,7 +13,7 @@ function buildMultiChain(
 ): MultiChainHandle {
   return {
     switchChainType: jest.fn(),
-    switchChain: jest.fn().mockResolvedValue(undefined),
+    switchChain: jest.fn().mockResolvedValue(),
     activeChainType: "evm",
     wallet: null,
     ...overrides,
@@ -29,7 +29,7 @@ function buildDeps(
     >,
     isConnected: true,
     setNetwork: jest.fn(),
-    switchChain: jest.fn().mockResolvedValue(undefined),
+    switchChain: jest.fn().mockResolvedValue(),
     multiChain: buildMultiChain(),
     ...overrides,
   };
