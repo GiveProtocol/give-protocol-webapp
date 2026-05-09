@@ -45,11 +45,7 @@ function setProfile(loading: boolean): void {
   } as never);
 }
 
-function setWeb3({
-  isConnected,
-}: {
-  isConnected: boolean;
-}): void {
+function setWeb3({ isConnected }: { isConnected: boolean }): void {
   mockedUseWeb3.mockReturnValue({
     provider: null,
     signer: null,
@@ -192,9 +188,7 @@ describe("ProtectedRoute", () => {
   it("renders the wallet-required prompt when requireWallet is set and not connected", () => {
     setAuth({ user: { id: "u", email: "d@x" }, userType: "donor" });
     renderProtected({ requireWallet: true });
-    expect(
-      screen.getByText("Wallet Connection Required"),
-    ).toBeInTheDocument();
+    expect(screen.getByText("Wallet Connection Required")).toBeInTheDocument();
     expect(screen.getByText("Connect Wallet")).toBeInTheDocument();
   });
 
