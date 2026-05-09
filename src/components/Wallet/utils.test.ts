@@ -18,15 +18,15 @@ describe("getAddressGradient", () => {
   });
 
   it("derives a deterministic gradient from address bytes", () => {
-    const a = getAddressGradient("0xab1234567890");
-    const b = getAddressGradient("0xab9876543210");
-    expect(a).toBe(b);
+    const firstGradient = getAddressGradient("0xab1234567890");
+    const secondGradient = getAddressGradient("0xab9876543210");
+    expect(firstGradient).toBe(secondGradient);
   });
 
   it("produces different gradients for addresses with different leading bytes", () => {
-    const a = getAddressGradient("0x00abcdef0000");
-    const b = getAddressGradient("0x07abcdef0000");
-    expect(a).not.toBe(b);
+    const firstGradient = getAddressGradient("0x00abcdef0000");
+    const secondGradient = getAddressGradient("0x07abcdef0000");
+    expect(firstGradient).not.toBe(secondGradient);
   });
 
   it("always returns a CSS linear-gradient string", () => {
@@ -103,7 +103,8 @@ describe("network constants", () => {
 
 describe("formatBalance", () => {
   it("returns the zero placeholder for missing input", () => {
-    expect(formatBalance(undefined)).toBe("0.0000");
+    const missing: string | number | undefined = undefined;
+    expect(formatBalance(missing)).toBe("0.0000");
     expect(formatBalance(null as unknown as undefined)).toBe("0.0000");
     expect(formatBalance("")).toBe("0.0000");
   });
@@ -128,7 +129,8 @@ describe("formatBalance", () => {
 
 describe("formatUsdValue", () => {
   it("returns $0.00 for missing input", () => {
-    expect(formatUsdValue(undefined)).toBe("$0.00");
+    const missing: string | number | undefined = undefined;
+    expect(formatUsdValue(missing)).toBe("$0.00");
     expect(formatUsdValue(null as unknown as undefined)).toBe("$0.00");
     expect(formatUsdValue("")).toBe("$0.00");
   });
@@ -160,7 +162,7 @@ describe("copyToClipboard", () => {
   });
 
   it("uses navigator.clipboard.writeText on the happy path", async () => {
-    const writeText = jest.fn().mockResolvedValue(undefined);
+    const writeText = jest.fn(() => Promise.resolve());
     Object.defineProperty(navigator, "clipboard", {
       configurable: true,
       value: { writeText },
