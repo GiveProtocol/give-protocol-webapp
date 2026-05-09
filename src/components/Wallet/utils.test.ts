@@ -149,8 +149,7 @@ describe("formatUsdValue", () => {
 });
 
 describe("copyToClipboard", () => {
-  const originalClipboard = (navigator as Navigator & { clipboard?: Clipboard })
-    .clipboard;
+  const originalClipboard = navigator.clipboard;
   const originalExecCommand = document.execCommand;
 
   afterEach(() => {
