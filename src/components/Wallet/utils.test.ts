@@ -147,9 +147,8 @@ describe("formatUsdValue", () => {
 });
 
 describe("copyToClipboard", () => {
-  const originalClipboard = (
-    navigator as Navigator & { clipboard?: Clipboard }
-  ).clipboard;
+  const originalClipboard = (navigator as Navigator & { clipboard?: Clipboard })
+    .clipboard;
   const originalExecCommand = document.execCommand;
 
   afterEach(() => {
@@ -181,7 +180,8 @@ describe("copyToClipboard", () => {
       },
     });
     const execCommand = jest.fn().mockReturnValue(true);
-    document.execCommand = execCommand as unknown as typeof document.execCommand;
+    document.execCommand =
+      execCommand as unknown as typeof document.execCommand;
 
     const result = await copyToClipboard("fallback text");
 
