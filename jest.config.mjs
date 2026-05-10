@@ -388,6 +388,10 @@ export default {
       "<rootDir>/src/test-utils/charityPageTemplateMock.js",
     "(.*)/components/charity/CharityPageTemplate(\\.tsx?)?$":
       "<rootDir>/src/test-utils/charityPageTemplateMock.js",
+    "^@/components/charity/CausePageTemplate$":
+      "<rootDir>/src/test-utils/causePageTemplateMock.js",
+    "(.*)/components/charity/CausePageTemplate(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/causePageTemplateMock.js",
     "^@/components/charity/CharityHeroBanner$":
       "<rootDir>/src/test-utils/charityHeroBannerMock.js",
     "(.*)/components/charity/CharityHeroBanner(\\.tsx?)?$":
