@@ -17,7 +17,10 @@ interface DonateWidgetProps {
   onClose?: () => void;
 }
 
-const PRESETS = [25, 50, 100, 250];
+const FIAT_PRESETS = [25, 50, 100, 250];
+const CRYPTO_PRESETS = [0.01, 0.05, 0.1, 0.5];
+const MAX_FIAT_DONATION = 10_000;
+const MAX_CRYPTO_DONATION = 10;
 
 /**
  * Donation widget with crypto/fiat toggle. Appears in the sidebar or as a modal.
@@ -36,12 +39,16 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
   const [tab, setTab] = useState<PaymentTab>('crypto');
   const [amount, setAmount] = useState(0);
   const [customAmount, setCustomAmount] = useState('');
+  const [amountError, setAmountError] = useState<string | null>(null);
   const [showDonationModal, setShowDonationModal] = useState(false);
   const { isConnected, connect } = useWeb3();
 
   const handleTabChange = useCallback(
     (newTab: PaymentTab) => () => {
       setTab(newTab);
+      setAmount(0);
+      setCustomAmount('');
+      setAmountError(null);
     },
     [],
   );
@@ -58,12 +65,28 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
     setAmount(0);
   }, []);
 
-  const handleCustomChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setCustomAmount(val);
-    const parsed = Number.parseFloat(val);
-    setAmount(Number.isNaN(parsed) ? 0 : parsed);
-  }, []);
+  const handleCustomChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const val = e.target.value;
+      setCustomAmount(val);
+      const parsed = Number.parseFloat(val);
+      if (Number.isNaN(parsed)) {
+        setAmountError(null);
+        setAmount(0);
+        return;
+      }
+      const max = tab === 'crypto' ? MAX_CRYPTO_DONATION : MAX_FIAT_DONATION;
+      const symbol = tab === 'crypto' ? 'Ξ' : '$';
+      if (parsed > max) {
+        setAmountError(`Maximum donation is ${symbol}${max}`);
+        setAmount(0);
+      } else {
+        setAmountError(null);
+        setAmount(parsed);
+      }
+    },
+    [tab],
+  );
 
   const handleDonate = useCallback(() => {
     if (tab === 'crypto' && !isConnected) {
@@ -83,7 +106,11 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
 
   const presetGridClass = mode === 'sidebar' ? 'grid-cols-2' : 'grid-cols-4';
 
-  const content = useMemo(() => (
+  const content = useMemo(() => {
+    const currencySymbol = tab === 'crypto' ? 'Ξ' : '$';
+    const presets = tab === 'crypto' ? CRYPTO_PRESETS : FIAT_PRESETS;
+    const maxDonation = tab === 'crypto' ? MAX_CRYPTO_DONATION : MAX_FIAT_DONATION;
+    return (
     <div className="space-y-4">
       {/* Crypto / Fiat toggle — hidden for verified charities */}
       {!isVerified && (
@@ -115,7 +142,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
 
       {/* Amount presets */}
       <div className={`grid ${presetGridClass} gap-2`}>
-        {PRESETS.map((preset) => (
+        {presets.map((preset) => (
           <button
             key={preset}
             type="button"
@@ -126,14 +153,14 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
                 : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
             }`}
           >
-            ${preset}
+            {currencySymbol}{preset}
           </button>
         ))}
       </div>
 
       {/* Custom input */}
       <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">$</span>
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{currencySymbol}</span>
         <input
           type="number"
           value={customAmount}
@@ -141,9 +168,13 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
           onFocus={handleCustomFocus}
           placeholder="Custom amount"
           min="1"
+          max={maxDonation}
           className="w-full pl-7 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
         />
       </div>
+      {amountError && (
+        <p className="text-xs text-red-600 -mt-2">{amountError}</p>
+      )}
 
       {/* Wallet warning for crypto */}
       {tab === 'crypto' && !hasWallet && (
@@ -167,7 +198,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
           if (tab === 'crypto' && !isConnected) return 'Connect wallet';
           if (tab === 'fiat') return 'Donate with card';
           const displayAmount = amount > 0 ? amount : '';
-          return `Donate $${displayAmount}`;
+          return `Donate ${currencySymbol}${displayAmount}`;
         })()}
       </Button>
 
@@ -178,7 +209,8 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
           : 'Secure checkout · Helcim (USD) / PayPal (International)'}
       </p>
     </div>
-  ), [tab, amount, customAmount, presetGridClass, isConnected, isVerified, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);
+  );
+  }, [tab, amount, amountError, customAmount, presetGridClass, isConnected, isVerified, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);
 
   return (
     <>

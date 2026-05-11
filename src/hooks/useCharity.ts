@@ -87,9 +87,15 @@ export function useCharity(id: string) {
   const refresh = async () => {
     setLoading(true);
     try {
-      const response = await getCharity(id);
-      if (response.error) throw new Error(response.error.message);
-      setCharity(response.data);
+      const [charityResponse, causesResponse] = await Promise.all([
+        getCharity(id),
+        getCharityCauses(id),
+      ]);
+      if (charityResponse.error)
+        throw new Error(charityResponse.error.message);
+      if (causesResponse.error) throw new Error(causesResponse.error.message);
+      setCharity(charityResponse.data);
+      setCauses(causesResponse.data || []);
     } catch (err) {
       setError(
         err instanceof Error

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useCallback } from 'react';
 
 interface CharityHeroBannerProps {
   bannerImageUrl: string | null | undefined;
@@ -17,6 +17,12 @@ export const CharityHeroBanner: React.FC<CharityHeroBannerProps> = ({
   bannerImageUrl,
   orgName,
 }) => {
+  const [imageError, setImageError] = useState(false);
+
+  const handleImageError = useCallback(() => {
+    setImageError(true);
+  }, []);
+
   const initials = orgName
     .split(/\s+/)
     .slice(0, 3)
@@ -24,13 +30,14 @@ export const CharityHeroBanner: React.FC<CharityHeroBannerProps> = ({
     .join("")
     .toUpperCase();
 
-  if (bannerImageUrl) {
+  if (bannerImageUrl && !imageError) {
     return (
       <div className="relative h-40 md:h-56 w-full rounded-t-xl overflow-hidden">
         <img
           src={bannerImageUrl}
           alt={`${orgName} banner`}
           className="w-full h-full object-cover"
+          onError={handleImageError}
         />
       </div>
     );

@@ -62,6 +62,10 @@ interface CharityOnboardingChecklistProps {
   walletAddress?: string | null;
   /** Called when user clicks an action to navigate to a specific tab */
   onNavigateTab?: (_tab: string) => void;
+  /** The charity's uploaded logo URL — auto-completes upload_logo step when present */
+  logoUrl?: string | null;
+  /** The charity's uploaded banner image URL — auto-completes upload_logo step when present */
+  bannerImageUrl?: string | null;
 }
 
 /**
@@ -71,11 +75,13 @@ interface CharityOnboardingChecklistProps {
  * @param props.profileId - The charity profile ID to store checklist state
  * @param props.walletAddress - The charity's registered wallet address
  * @param props.onNavigateTab - Optional callback to navigate to a portal tab
+ * @param props.logoUrl - The charity's uploaded logo URL
+ * @param props.bannerImageUrl - The charity's uploaded banner image URL
  * @returns The onboarding checklist panel, or null when dismissed/complete
  */
 export const CharityOnboardingChecklist: React.FC<
   CharityOnboardingChecklistProps
-> = ({ profileId, walletAddress, onNavigateTab }) => {
+> = ({ profileId, walletAddress, onNavigateTab, logoUrl, bannerImageUrl }) => {
   const { isConnected, address } = useWeb3();
   const [completedItems, setCompletedItems] = useState<Set<string>>(new Set());
   const [dismissed, setDismissed] = useState(false);
@@ -192,6 +198,19 @@ export const CharityOnboardingChecklist: React.FC<
     },
     [profileId],
   );
+
+  // Auto-mark upload_logo complete when a logo or banner image URL is present
+  useEffect(() => {
+    if (loading) return;
+    const hasImage = Boolean(logoUrl) || Boolean(bannerImageUrl);
+    if (hasImage && !completedItems.has("upload_logo")) {
+      setCompletedItems((prev) => {
+        const next = new Set([...prev, "upload_logo"]);
+        persistState(next, dismissed);
+        return next;
+      });
+    }
+  }, [logoUrl, bannerImageUrl, completedItems, loading, dismissed, persistState]);
 
   const toggleItem = useCallback(
     (itemId: string) => {

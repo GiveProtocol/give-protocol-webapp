@@ -491,6 +491,7 @@ export const CharityPortal: React.FC = () => {
   const [charityBannerImageUrl, setCharityBannerImageUrl] = useState<
     string | null
   >(null);
+  const [charityOrgName, setCharityOrgName] = useState<string | null>(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -507,21 +508,30 @@ export const CharityPortal: React.FC = () => {
     });
   }, [userId]);
 
-  // Fetch charity logo_url and banner_image_url from charity_profiles for dashboard header
+  // Fetch charity name, logo_url and banner_image_url from charity_profiles for dashboard header
   useEffect(() => {
     if (!userId) return;
     supabase
       .from("charity_profiles")
-      .select("logo_url, banner_image_url")
+      .select("name, logo_url, banner_image_url")
       .eq("claimed_by", userId)
       .maybeSingle()
       .then(({ data }) => {
         if (isMountedRef.current) {
+          setCharityOrgName(data?.name ?? null);
           setCharityLogoUrl(data?.logo_url ?? null);
           setCharityBannerImageUrl(data?.banner_image_url ?? null);
         }
       });
   }, [userId]);
+
+  const handleLogoUploaded = useCallback((url: string | null) => {
+    setCharityLogoUrl(url);
+  }, []);
+
+  const handleBannerUploaded = useCallback((url: string | null) => {
+    setCharityBannerImageUrl(url);
+  }, []);
 
   // Helper function to fetch basic statistics data
   const fetchBasicStats = useCallback(
@@ -1013,7 +1023,14 @@ export const CharityPortal: React.FC = () => {
     fetchCharityData();
   }, [fetchCharityData]);
 
+  const lastRefreshTime = useRef<number>(0);
+
   const handleRefresh = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshTime.current < 3000) {
+      return;
+    }
+    lastRefreshTime.current = now;
     fetchCharityData();
   }, [fetchCharityData]);
 
@@ -1240,7 +1257,7 @@ export const CharityPortal: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <CharityPortalHeader
-          displayName={profile?.display_name}
+          displayName={charityOrgName ?? profile?.display_name}
           logoUrl={charityLogoUrl}
           t={t}
         />
@@ -1387,7 +1404,11 @@ export const CharityPortal: React.FC = () => {
 
         {/* Organization Profile */}
         {activeTab === "organization" && profile?.id && (
-          <OrganizationProfileTab profileId={profile.id} />
+          <OrganizationProfileTab
+            profileId={profile.id}
+            onLogoUploaded={handleLogoUploaded}
+            onBannerUploaded={handleBannerUploaded}
+          />
         )}
 
         {/* Export Modal */}

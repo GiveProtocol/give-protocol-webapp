@@ -53,12 +53,12 @@ describe("DonateWidget", () => {
       expect(screen.getByTestId("card")).toBeInTheDocument();
     });
 
-    it("renders preset amount buttons", () => {
+    it("renders crypto preset amount buttons by default", () => {
       renderWidget();
-      expect(screen.getByText("$25")).toBeInTheDocument();
-      expect(screen.getByText("$50")).toBeInTheDocument();
-      expect(screen.getByText("$100")).toBeInTheDocument();
-      expect(screen.getByText("$250")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.01")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.05")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.1")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.5")).toBeInTheDocument();
     });
 
     it("renders custom amount input", () => {
@@ -123,7 +123,6 @@ describe("DonateWidget", () => {
 
   describe("Amount selection", () => {
     it("selects a preset amount on click", () => {
-      renderWidget();
       mockUseWeb3.mockReturnValue({
         provider: null,
         signer: null,
@@ -137,8 +136,8 @@ describe("DonateWidget", () => {
         switchChain: jest.fn(),
       });
       renderWidget();
-      fireEvent.click(screen.getAllByText("$50")[0]);
-      expect(screen.getAllByText(/Donate \$50/)[0]).toBeInTheDocument();
+      fireEvent.click(screen.getByText("Ξ0.05"));
+      expect(screen.getByText(/Donate Ξ0.05/)).toBeInTheDocument();
     });
 
     it("accepts custom amount input", () => {
@@ -156,8 +155,8 @@ describe("DonateWidget", () => {
       });
       renderWidget();
       const input = screen.getByPlaceholderText("Custom amount");
-      fireEvent.change(input, { target: { value: "75" } });
-      expect(screen.getByText(/Donate \$75/)).toBeInTheDocument();
+      fireEvent.change(input, { target: { value: "5" } });
+      expect(screen.getByText(/Donate Ξ5/)).toBeInTheDocument();
     });
 
     it("disables donate button when amount is zero", () => {
@@ -194,7 +193,7 @@ describe("DonateWidget", () => {
   describe("Connect wallet flow", () => {
     it("shows Connect wallet text when not connected on crypto tab", () => {
       renderWidget();
-      fireEvent.click(screen.getByText("$100"));
+      fireEvent.click(screen.getByText("Ξ0.1"));
       expect(screen.getByText("Connect wallet")).toBeInTheDocument();
     });
 
@@ -213,7 +212,7 @@ describe("DonateWidget", () => {
         switchChain: jest.fn(),
       });
       renderWidget();
-      fireEvent.click(screen.getByText("$100"));
+      fireEvent.click(screen.getByText("Ξ0.1"));
       fireEvent.click(screen.getByText("Connect wallet"));
       expect(mockConnect).toHaveBeenCalled();
     });
@@ -234,8 +233,8 @@ describe("DonateWidget", () => {
         switchChain: jest.fn(),
       });
       renderWidget();
-      fireEvent.click(screen.getByText("$50"));
-      fireEvent.click(screen.getByText(/Donate \$/));
+      fireEvent.click(screen.getByText("Ξ0.05"));
+      fireEvent.click(screen.getByText(/Donate Ξ/));
       await waitFor(() => {
         expect(screen.getByTestId("donation-modal")).toBeInTheDocument();
       });
@@ -249,6 +248,96 @@ describe("DonateWidget", () => {
       await waitFor(() => {
         expect(screen.getByTestId("donation-modal")).toBeInTheDocument();
       });
+    });
+  });
+
+  describe("Currency-aware presets", () => {
+    it("renders crypto presets (Ξ) on crypto tab", () => {
+      renderWidget();
+      expect(screen.getByText("Ξ0.01")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.05")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.1")).toBeInTheDocument();
+      expect(screen.getByText("Ξ0.5")).toBeInTheDocument();
+      expect(screen.queryByText("$25")).not.toBeInTheDocument();
+    });
+
+    it("renders fiat presets ($) after switching to fiat tab", () => {
+      renderWidget();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      expect(screen.getByText("$25")).toBeInTheDocument();
+      expect(screen.getByText("$50")).toBeInTheDocument();
+      expect(screen.getByText("$100")).toBeInTheDocument();
+      expect(screen.getByText("$250")).toBeInTheDocument();
+      expect(screen.queryByText("Ξ0.01")).not.toBeInTheDocument();
+    });
+
+    it("shows Ξ symbol in custom input prefix on crypto tab", () => {
+      renderWidget();
+      expect(screen.getByText("Ξ")).toBeInTheDocument();
+    });
+
+    it("shows $ symbol in custom input prefix on fiat tab", () => {
+      renderWidget();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      expect(screen.getByText("$")).toBeInTheDocument();
+    });
+
+    it("resets amount and error when switching tabs", () => {
+      renderWidget();
+      const input = screen.getByPlaceholderText("Custom amount");
+      fireEvent.change(input, { target: { value: "15" } });
+      expect(screen.getByText("Maximum donation is Ξ10")).toBeInTheDocument();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      expect(screen.queryByText(/Maximum donation is/)).not.toBeInTheDocument();
+    });
+  });
+
+  describe("Max donation cap", () => {
+    it("shows error when custom crypto amount exceeds max (10 ETH)", () => {
+      renderWidget();
+      const input = screen.getByPlaceholderText("Custom amount");
+      fireEvent.change(input, { target: { value: "15" } });
+      expect(screen.getByText("Maximum donation is Ξ10")).toBeInTheDocument();
+    });
+
+    it("shows error when custom fiat amount exceeds max ($10000)", () => {
+      renderWidget();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      const input = screen.getByPlaceholderText("Custom amount");
+      fireEvent.change(input, { target: { value: "15000" } });
+      expect(screen.getByText("Maximum donation is $10000")).toBeInTheDocument();
+    });
+
+    it("clears error when a valid amount is entered after an error", () => {
+      renderWidget();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      const input = screen.getByPlaceholderText("Custom amount");
+      fireEvent.change(input, { target: { value: "15000" } });
+      expect(screen.getByText(/Maximum donation is/)).toBeInTheDocument();
+      fireEvent.change(input, { target: { value: "500" } });
+      expect(screen.queryByText(/Maximum donation is/)).not.toBeInTheDocument();
+    });
+
+    it("disables donate button when amount exceeds cap", () => {
+      renderWidget();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      const input = screen.getByPlaceholderText("Custom amount");
+      fireEvent.change(input, { target: { value: "15000" } });
+      const button = screen.getByText("Donate with card");
+      expect(button).toBeDisabled();
+    });
+
+    it("sets max attribute to crypto max on crypto tab", () => {
+      renderWidget();
+      const input = screen.getByPlaceholderText("Custom amount");
+      expect(input).toHaveAttribute("max", "10");
+    });
+
+    it("sets max attribute to fiat max on fiat tab", () => {
+      renderWidget();
+      fireEvent.click(screen.getByText("Fiat (USD)"));
+      const input = screen.getByPlaceholderText("Custom amount");
+      expect(input).toHaveAttribute("max", "10000");
     });
   });
 });
