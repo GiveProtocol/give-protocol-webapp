@@ -315,8 +315,9 @@ function OverviewHeader({
           onClick={onRefresh}
           className="p-2 text-content-secondary hover:bg-surface-sunken rounded-full transition-colors"
           title={t("common.refresh", "Refresh")}
+          aria-label={t("dashboard.refreshData", "Refresh data")}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -326,20 +327,43 @@ function OverviewHeader({
 /** Header for the charity portal with title and action buttons. */
 function CharityPortalHeader({
   displayName,
+  logoUrl,
   t,
 }: {
   displayName?: string;
+  logoUrl?: string | null;
   t: (_key: string, _fallback?: string) => string;
 }) {
+  const name = displayName || t("charity.dashboard", "Charity Dashboard");
+  const initials = name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w: string) => w.charAt(0))
+    .join("")
+    .toUpperCase();
+
   return (
     <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 className="text-3xl font-bold text-content-primary">
-          {displayName || t("charity.dashboard", "Charity Dashboard")}
-        </h1>
-        <p className="mt-1 text-content-secondary">
-          {t("charity.subtitle", "Manage your charity dashboard")}
-        </p>
+      <div className="flex items-center gap-3">
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={`${name} logo`}
+            className="w-10 h-10 rounded-full object-cover border border-white shadow-sm flex-shrink-0"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-sm select-none">
+              {initials}
+            </span>
+          </div>
+        )}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
+          <p className="mt-1 text-gray-600">
+            {t("charity.subtitle", "Manage your charity dashboard")}
+          </p>
+        </div>
       </div>
       <nav className="mt-4 md:mt-0 flex flex-wrap gap-3">
         <Link to="/charity-portal/create-opportunity">
@@ -463,6 +487,10 @@ export const CharityPortal: React.FC = () => {
   const [causes, setCauses] = useState<CharityCause[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [charityLogoUrl, setCharityLogoUrl] = useState<string | null>(null);
+  const [charityBannerImageUrl, setCharityBannerImageUrl] = useState<
+    string | null
+  >(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -477,6 +505,22 @@ export const CharityPortal: React.FC = () => {
     getCharityWalletAddress(userId).then((addr) => {
       if (isMountedRef.current) setCharityWalletAddress(addr);
     });
+  }, [userId]);
+
+  // Fetch charity logo_url and banner_image_url from charity_profiles for dashboard header
+  useEffect(() => {
+    if (!userId) return;
+    supabase
+      .from("charity_profiles")
+      .select("logo_url, banner_image_url")
+      .eq("claimed_by", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (isMountedRef.current) {
+          setCharityLogoUrl(data?.logo_url ?? null);
+          setCharityBannerImageUrl(data?.banner_image_url ?? null);
+        }
+      });
   }, [userId]);
 
   // Helper function to fetch basic statistics data
@@ -1195,7 +1239,11 @@ export const CharityPortal: React.FC = () => {
     <main className="min-h-screen bg-surface-base">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <CharityPortalHeader displayName={profile?.display_name} t={t} />
+        <CharityPortalHeader
+          displayName={profile?.display_name}
+          logoUrl={charityLogoUrl}
+          t={t}
+        />
 
         {/* Verification status banner for pending/rejected/suspended charities */}
         {user?.id && <VerificationStatusBanner userId={user.id} />}
@@ -1228,6 +1276,8 @@ export const CharityPortal: React.FC = () => {
           <CharityOnboardingChecklist
             profileId={profile.id}
             onNavigateTab={handleOnboardingNavigate}
+            logoUrl={charityLogoUrl}
+            bannerImageUrl={charityBannerImageUrl}
           />
         )}
 
