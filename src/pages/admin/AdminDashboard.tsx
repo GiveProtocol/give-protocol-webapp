@@ -287,6 +287,14 @@ const AdminDashboard: React.FC = () => {
     navigate("/admin/content-moderation");
   }, [navigate]);
 
+  const handleNavigatePortfolioFunds = useCallback(() => {
+    navigate("/admin/portfolio-funds");
+  }, [navigate]);
+
+  const handleNavigateCharityRequests = useCallback(() => {
+    navigate("/admin/charity-requests");
+  }, [navigate]);
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">
@@ -327,7 +335,7 @@ const AdminDashboard: React.FC = () => {
       {alerts.length > 0 && (
         <Card className="p-6">
           <h2 className="text-xl font-semibold text-gray-900 mb-4">
-            Alerts
+            Alerts{" "}
             <span className="ml-2 text-sm font-normal text-red-600">
               ({alerts.length} pending)
             </span>
@@ -434,6 +442,16 @@ const AdminDashboard: React.FC = () => {
             title="Content Moderation"
             description="Hide, flag, and review opportunities and causes"
             onClick={handleNavigateContentModeration}
+          />
+          <QuickActionButton
+            title="Portfolio Funds"
+            description="Create and manage curated giving portfolios"
+            onClick={handleNavigatePortfolioFunds}
+          />
+          <QuickActionButton
+            title="Charity Requests"
+            description="Review donor requests for unclaimed charities"
+            onClick={handleNavigateCharityRequests}
           />
         </div>
       </Card>

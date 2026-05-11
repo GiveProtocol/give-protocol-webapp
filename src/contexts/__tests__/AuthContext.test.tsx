@@ -170,6 +170,13 @@ const setupMocks = () => {
     insert: jest.fn().mockResolvedValue({ data: null, error: null }),
   });
 
+  // Mock supabase.functions.invoke for edge function calls
+  mockSupabase.functions = {
+    invoke: jest
+      .fn()
+      .mockResolvedValue({ data: { success: true }, error: null }),
+  };
+
   // Silence console.error for expected errors
   jest.spyOn(console, "error").mockImplementation(() => {
     // Suppress console.error output during tests
@@ -746,13 +753,29 @@ describe("AuthContext", () => {
   });
 
   describe("Username Reminder", () => {
-    it("handles successful username reminder", async () => {
+    it("calls username-reminder edge function with the provided email", async () => {
       renderWithAuthProvider();
 
       await act(() => {
         screen.getByTestId("username-reminder-btn").click();
       });
 
+      await waitFor(() => {
+        expect(mockSupabase.functions.invoke).toHaveBeenCalledWith(
+          "username-reminder",
+          { body: { email: "test@example.com" } },
+        );
+      });
+    });
+
+    it("shows success toast after username reminder", async () => {
+      renderWithAuthProvider();
+
+      await act(() => {
+        screen.getByTestId("username-reminder-btn").click();
+      });
+
+      // sendUsernameReminder always shows success for security (no email enumeration)
       await waitFor(() => {
         expect(mockShowToast).toHaveBeenCalledWith(
           "success",
@@ -762,19 +785,22 @@ describe("AuthContext", () => {
       });
     });
 
-    it("handles username reminder shows success message", async () => {
+    it("shows error toast when edge function invocation throws", async () => {
+      mockSupabase.functions.invoke = jest
+        .fn()
+        .mockRejectedValue(new Error("Network error"));
+
       renderWithAuthProvider();
 
       await act(() => {
         screen.getByTestId("username-reminder-btn").click();
       });
 
-      // sendUsernameReminder always shows success for security
       await waitFor(() => {
         expect(mockShowToast).toHaveBeenCalledWith(
-          "success",
-          "Username reminder sent",
-          "If an account exists with this email, a reminder will be sent",
+          "error",
+          "Username Reminder Error",
+          "Network error",
         );
       });
     });
@@ -889,6 +915,237 @@ describe("AuthContext", () => {
           "error",
           "Authentication Error",
           "Network unavailable",
+        );
+      });
+    });
+
+    it("logs the supabase error when getSession returns an error object", async () => {
+      mockSupabase.auth.getSession.mockResolvedValue({
+        data: { session: null },
+        error: { message: "session lookup failed", status: 500 },
+      });
+
+      renderWithAuthProvider();
+
+      await waitFor(() => {
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          "Get session error",
+          expect.objectContaining({
+            error: "session lookup failed",
+            code: 500,
+          }),
+        );
+      });
+    });
+  });
+
+  describe("Auth state change events", () => {
+    /** Helper that captures the onAuthStateChange callback registered by AuthProvider. */
+    function captureAuthCallback() {
+      let captured: ((_event: string, _session: unknown) => unknown) | null =
+        null;
+      mockSupabase.auth.onAuthStateChange.mockImplementation((cb) => {
+        captured = cb;
+        return { data: { subscription: { unsubscribe: jest.fn() } } };
+      });
+      return () => captured;
+    }
+
+    it("toasts on USER_UPDATED auth events", async () => {
+      const getCallback = captureAuthCallback();
+      renderWithAuthProvider();
+      await waitFor(() =>
+        expect(mockSupabase.auth.onAuthStateChange).toHaveBeenCalled(),
+      );
+
+      const cb = getCallback();
+      expect(cb).not.toBeNull();
+      await act(async () => {
+        await cb?.("USER_UPDATED", { user: MOCK_USER });
+      });
+
+      expect(mockShowToast).toHaveBeenCalledWith(
+        "success",
+        "Profile updated successfully",
+      );
+    });
+  });
+
+  describe("Login with profile-table fallback", () => {
+    it("falls back to the profiles table when user metadata has no type", async () => {
+      const userWithoutMetadata = { ...MOCK_USER, user_metadata: {} };
+      mockSupabase.auth.signInWithPassword.mockResolvedValue({
+        data: {
+          user: userWithoutMetadata,
+          session: { user: userWithoutMetadata },
+        },
+        error: null,
+      });
+
+      mockSupabase.from.mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            single: jest
+              .fn()
+              .mockResolvedValue({ data: { type: "donor" }, error: null }),
+          }),
+        }),
+      });
+
+      renderWithAuthProvider();
+      act(() => screen.getByTestId("login-btn").click());
+
+      await waitFor(() =>
+        expect(mockSupabase.from).toHaveBeenCalledWith("profiles"),
+      );
+    });
+
+    it("rejects donor login when account is registered as charity", async () => {
+      const charityUser = {
+        ...MOCK_USER,
+        user_metadata: { type: "charity" },
+      };
+      mockSupabase.auth.signInWithPassword.mockResolvedValue({
+        data: { user: charityUser, session: { user: charityUser } },
+        error: null,
+      });
+      mockSupabase.auth.signOut.mockResolvedValue({ error: null });
+
+      renderWithAuthProvider();
+      act(() => screen.getByTestId("login-btn").click());
+
+      await waitFor(() => {
+        expect(mockSupabase.auth.signOut).toHaveBeenCalled();
+        expect(mockShowToast).toHaveBeenCalledWith(
+          "error",
+          "Authentication Error",
+          expect.stringMatching(/registered as a charity account/),
+        );
+      });
+    });
+
+    it("rejects charity login when account is registered as donor", async () => {
+      const donorUser = {
+        ...MOCK_USER,
+        user_metadata: { type: "donor" },
+      };
+      mockSupabase.auth.signInWithPassword.mockResolvedValue({
+        data: { user: donorUser, session: { user: donorUser } },
+        error: null,
+      });
+      mockSupabase.auth.signOut.mockResolvedValue({ error: null });
+
+      const TestComponentCharity: React.FC = () => {
+        const auth = useAuth();
+        const handle = useCallback(() => {
+          auth
+            .login("test@example.com", "password", "charity")
+            .catch(() => undefined);
+        }, [auth]);
+        return (
+          <button data-testid="charity-login-btn" onClick={handle}>
+            Login Charity
+          </button>
+        );
+      };
+
+      render(
+        <AuthProvider>
+          <TestComponentCharity />
+        </AuthProvider>,
+      );
+      act(() => screen.getByTestId("charity-login-btn").click());
+
+      await waitFor(() => {
+        expect(mockShowToast).toHaveBeenCalledWith(
+          "error",
+          "Authentication Error",
+          expect.stringMatching(/registered as a donor account/),
+        );
+      });
+    });
+
+    it("falls through to a generic error when user type is unknown", async () => {
+      const unknownUser = { ...MOCK_USER, user_metadata: {} };
+      mockSupabase.auth.signInWithPassword.mockResolvedValue({
+        data: { user: unknownUser, session: { user: unknownUser } },
+        error: null,
+      });
+      mockSupabase.auth.signOut.mockResolvedValue({ error: null });
+
+      mockSupabase.from.mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({ data: null, error: null }),
+          }),
+        }),
+      });
+
+      renderWithAuthProvider();
+      act(() => screen.getByTestId("login-btn").click());
+
+      await waitFor(() => {
+        expect(mockShowToast).toHaveBeenCalledWith(
+          "error",
+          "Authentication Error",
+          expect.stringMatching(/Account not found/),
+        );
+      });
+    });
+  });
+
+  describe("Registration error paths", () => {
+    it("logs and rethrows registration errors that aren't already-registered", async () => {
+      const error = { message: "weak password", status: 422 };
+      mockSupabase.auth.signUp.mockResolvedValue({
+        data: { user: null, session: null },
+        error,
+      });
+
+      renderWithAuthProvider();
+      await act(() => {
+        screen.getByTestId("register-btn").click();
+      });
+
+      await waitFor(() => {
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          "Registration error",
+          expect.objectContaining({ error: "weak password" }),
+        );
+        expect(mockShowToast).toHaveBeenCalledWith(
+          "error",
+          "Registration Error",
+          "Failed to register",
+        );
+      });
+    });
+
+    it("logs and rethrows when profile insertion fails", async () => {
+      mockSupabase.auth.signUp.mockResolvedValue({
+        data: { user: MOCK_USER, session: null },
+        error: null,
+      });
+      mockSupabase.from.mockReturnValue({
+        select: jest.fn().mockReturnValue({
+          eq: jest.fn().mockReturnValue({
+            single: jest.fn().mockResolvedValue({ data: null, error: null }),
+          }),
+        }),
+        insert: jest.fn().mockResolvedValue({
+          data: null,
+          error: { message: "profile fail", code: "23505" },
+        }),
+      });
+
+      renderWithAuthProvider();
+      await act(() => {
+        screen.getByTestId("register-btn").click();
+      });
+
+      await waitFor(() => {
+        expect(mockLogger.error).toHaveBeenCalledWith(
+          "Profile creation error",
+          expect.objectContaining({ error: "profile fail" }),
         );
       });
     });

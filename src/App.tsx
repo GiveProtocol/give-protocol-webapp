@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import * as Sentry from "@sentry/react";
 import { ToastProvider } from "./contexts/ToastContext";
@@ -11,6 +11,7 @@ import { CurrencyProvider } from "./contexts/CurrencyContext";
 import { AppRoutes } from "./routes";
 import { Layout } from "./components/layout";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { SentryFallback } from "./components/SentryFallback";
 import { useSafeAutoConnect } from "./hooks/useSafeAutoConnect";
 import { useWalletAuthSync } from "./hooks/useWalletAuthSync";
 import { MonitoringService } from "./utils/monitoring";
@@ -87,7 +88,11 @@ const AppProviders = ({ children }: { children: React.ReactNode }) => (
 );
 
 // Safe auto-connect wrapper
-const SafeAutoConnectWrapper = ({ children }: { children: React.ReactElement }) => {
+const SafeAutoConnectWrapper = ({
+  children,
+}: {
+  children: React.ReactElement;
+}) => {
   useSafeAutoConnect();
   return children;
 };
@@ -120,32 +125,8 @@ const AppRouter = () => (
  * ```
  */
 function App() {
-  const sentryFallback = useCallback(
-    ({ error, resetError }: { error: Error; resetError: () => void }) => (
-      <ErrorBoundary fallback={null}>
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-          <div className="bg-white rounded-lg shadow-lg p-6 max-w-md w-full text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              Something went wrong
-            </h2>
-            <p className="text-gray-600 mb-6">
-              {error?.message || "An unexpected error occurred"}
-            </p>
-            <button
-              onClick={resetError}
-              className="bg-emerald-600 text-white px-4 py-2 rounded hover:bg-emerald-700"
-            >
-              Try Again
-            </button>
-          </div>
-        </div>
-      </ErrorBoundary>
-    ),
-    [],
-  );
-
   return (
-    <Sentry.ErrorBoundary fallback={sentryFallback} showDialog={false}>
+    <Sentry.ErrorBoundary fallback={SentryFallback} showDialog={false}>
       <ErrorBoundary>
         <AppProviders>
           <AppRouter />

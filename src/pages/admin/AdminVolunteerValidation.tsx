@@ -474,6 +474,13 @@ export default function AdminVolunteerValidation(): React.ReactElement {
       const success = await submitOverride(
         { requestId: selectedRequest.id, newStatus, reason },
         filters,
+        {
+          volunteerId: selectedRequest.volunteerId,
+          volunteerDisplayName: selectedRequest.volunteerDisplayName,
+          orgName: selectedRequest.orgName,
+          hoursReported: selectedRequest.hoursReported,
+          activityDate: selectedRequest.activityDate,
+        },
       );
       if (success) {
         setSelectedRequest(null);

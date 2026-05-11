@@ -610,17 +610,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const sendUsernameReminder = useCallback(
-    (_email: string): Promise<void> => {
+    async (email: string): Promise<void> => {
       try {
         setState((prev) => ({ ...prev, loading: true, error: null }));
-        // In a real app, this would send an email with the username
-        // For this demo, we'll just show a success message
+        await supabase.functions.invoke("username-reminder", {
+          body: { email },
+        });
+        // Always show success regardless of backend result to prevent email enumeration
         showToast(
           "success",
           "Username reminder sent",
           "If an account exists with this email, a reminder will be sent",
         );
-        return Promise.resolve();
       } catch (err) {
         const message =
           err instanceof Error
@@ -631,7 +632,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           ...prev,
           error: err instanceof Error ? err : new Error(message),
         }));
-        return Promise.reject(err);
+        throw err;
       } finally {
         setState((prev) => ({ ...prev, loading: false }));
       }

@@ -9,16 +9,20 @@ import { ProjectCard } from "./ProjectCard";
 import { WhyGiveProtocolRail } from "./WhyGiveProtocolRail";
 import { NewsUpdatesCard } from "./NewsUpdatesCard";
 import { FeaturedCharitiesCarousel } from "./FeaturedCharitiesCarousel";
+import { FeaturedCausesCarousel } from "./FeaturedCausesCarousel";
+import { FeaturedPortfolioFundsCarousel } from "./FeaturedPortfolioFundsCarousel";
+import { DiscoveryTabs, useDiscoveryTab } from "./DiscoveryTabs";
 import { useCharityOrganizationSearch } from "@/hooks/useCharityOrganizationSearch";
 import { useGeographicFilterParams } from "@/hooks/useGeographicFilterParams";
 import { Skeleton } from "@/components/ui/Skeleton";
 
 /**
  * Unauthenticated /browse landing. A split hero with a headline sits above the
- * filter block and a responsive discovery grid.
+ * tab bar, filter block, and a responsive discovery grid.
  * The right rail carries a "Why Give Protocol" explainer plus platform news.
  */
 export const PublicDiscoveryView: React.FC = () => {
+  const [activeTab, setActiveTab] = useDiscoveryTab();
   const [filters, setFilters] = useState<DiscoveryFiltersState>(
     emptyDiscoveryFilters,
   );
@@ -102,14 +106,18 @@ export const PublicDiscoveryView: React.FC = () => {
     </div>
   );
 
-  const main = (
+  const charitiesContent = (
     <>
       <section
         id="discover"
         aria-label="Filter charities"
         className="scroll-mt-8"
       >
-        <DiscoveryFilters value={filters} onChange={handleFiltersChange} />
+        <DiscoveryFilters
+          value={filters}
+          onChange={handleFiltersChange}
+          showViewToggle={false}
+        />
       </section>
 
       {hasActiveFilter ? (
@@ -133,6 +141,16 @@ export const PublicDiscoveryView: React.FC = () => {
       ) : (
         <FeaturedCharitiesCarousel />
       )}
+    </>
+  );
+
+  const main = (
+    <>
+      <DiscoveryTabs activeTab={activeTab} onTabChange={setActiveTab} />
+
+      {activeTab === "charities" && charitiesContent}
+      {activeTab === "causes" && <FeaturedCausesCarousel />}
+      {activeTab === "funds" && <FeaturedPortfolioFundsCarousel />}
     </>
   );
 
