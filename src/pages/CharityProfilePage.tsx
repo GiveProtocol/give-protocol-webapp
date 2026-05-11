@@ -196,6 +196,7 @@ interface ProfileDisplayData {
   nteeCategory: string;
   walletAddress: string | null;
   bannerImageUrl: string | null | undefined;
+  logoUrl: string | null | undefined;
   photo1Url: string | null | undefined;
   photo2Url: string | null | undefined;
   description: string | null | undefined;
@@ -224,6 +225,7 @@ function deriveDisplayData(
     nteeCategory: getNteeCategory(charityRecord?.ntee_cd ?? profile?.ntee_code),
     walletAddress: profile?.wallet_address ?? null,
     bannerImageUrl: profile?.banner_image_url,
+    logoUrl: profile?.logo_url,
     photo1Url: profile?.photo_1_url,
     photo2Url: profile?.photo_2_url,
     description: profile?.description,
@@ -300,6 +302,7 @@ function ProfileHeaderCard({
   onDonate,
   onShare,
   copied,
+  logoUrl,
 }: {
   orgName: string;
   ein: string;
@@ -312,10 +315,33 @@ function ProfileHeaderCard({
   onDonate: () => void;
   onShare: () => void;
   copied: boolean;
+  logoUrl: string | null | undefined;
 }) {
+  const initials = orgName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w) => w.charAt(0))
+    .join("")
+    .toUpperCase();
+
   return (
-    <Card hover={false} className="rounded-t-none border-t-0 p-5 md:p-6">
-      <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+    <Card hover={false} className="relative rounded-t-none border-t-0 p-5 md:p-6">
+      <div className="absolute -top-8 md:-top-10 left-4 md:left-6">
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={`${orgName} logo`}
+            className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-white shadow-sm"
+          />
+        ) : (
+          <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-emerald-600 border-2 border-white shadow-sm flex items-center justify-center">
+            <span className="text-white font-serif font-bold text-xl md:text-2xl select-none">
+              {initials}
+            </span>
+          </div>
+        )}
+      </div>
+      <div className="pt-10 md:pt-0 md:pl-28 flex flex-col md:flex-row md:items-start md:justify-between gap-4">
         <HeaderInfo
           orgName={orgName}
           ein={ein}
@@ -590,6 +616,7 @@ function CharityProfilePage() {
           onDonate={handleOpenDonate}
           onShare={handleShare}
           copied={copied}
+          logoUrl={display.logoUrl}
         />
       </div>
 
