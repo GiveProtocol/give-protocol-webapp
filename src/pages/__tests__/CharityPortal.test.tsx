@@ -122,6 +122,7 @@ jest.mock("@/lib/supabase", () => {
       eq: jest.fn(() => makeThenable(response)),
       order: jest.fn(() => Promise.resolve(response)),
       single: jest.fn(() => Promise.resolve(response)),
+      maybeSingle: jest.fn(() => Promise.resolve(response)),
       in: jest.fn(() => makeThenable(response)),
       then: (resolve: (v: unknown) => void, reject?: (e: unknown) => void) =>
         Promise.resolve(response).then(resolve, reject),
@@ -306,6 +307,19 @@ describe("CharityPortal", () => {
       await act(async () => {
         renderWithRouter();
         await new Promise<void>((resolve) => setTimeout(resolve, 0));
+      });
+    });
+  });
+
+  describe("Accessibility", () => {
+    it("refresh button has aria-label", async () => {
+      renderWithRouter();
+
+      await waitFor(() => {
+        const refreshBtn = screen.getByRole("button", {
+          name: /refresh data/i,
+        });
+        expect(refreshBtn).toBeInTheDocument();
       });
     });
   });

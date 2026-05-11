@@ -37,7 +37,11 @@ export const CharityHeroBanner: React.FC<CharityHeroBannerProps> = ({
   }
 
   return (
-    <div className="relative h-40 md:h-56 w-full rounded-t-xl overflow-hidden bg-gradient-to-br from-emerald-600 to-emerald-800">
+    <div
+      className="relative h-40 md:h-56 w-full rounded-t-xl overflow-hidden bg-gradient-to-br from-emerald-600 to-emerald-800"
+      role="img"
+      aria-label={`${orgName} banner placeholder`}
+    >
       {/* Grid pattern overlay */}
       <div
         className="absolute inset-0 pointer-events-none opacity-10"

@@ -242,6 +242,7 @@ export const ImpactProfileForm: React.FC<ImpactProfileFormProps> = ({
               "Our mission is to...",
             )}
             maxLength={MISSION_MAX_LENGTH}
+            aria-label={t("impact.missionStatement", "Mission Statement")}
           />
           <p className="text-xs text-gray-400 mt-1 text-right">
             {formData.missionStatement.length}/{MISSION_MAX_LENGTH}
@@ -270,6 +271,7 @@ export const ImpactProfileForm: React.FC<ImpactProfileFormProps> = ({
                   value={highlight}
                   onChange={handleHighlightChange}
                   data-index={index}
+                  aria-label={`${t("impact.highlight", "Impact highlight")} ${String(index + 1)}`}
                   placeholder={t(
                     "impact.highlightPlaceholder",
                     "e.g., Built 50 homes for families in need",
