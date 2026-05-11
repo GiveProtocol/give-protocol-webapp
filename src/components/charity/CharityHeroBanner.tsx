@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface CharityHeroBannerProps {
   bannerImageUrl: string | null | undefined;
@@ -21,7 +21,7 @@ export const CharityHeroBanner: React.FC<CharityHeroBannerProps> = ({
     .split(/\s+/)
     .slice(0, 3)
     .map((w) => w.charAt(0))
-    .join('')
+    .join("")
     .toUpperCase();
 
   if (bannerImageUrl) {
@@ -47,8 +47,8 @@ export const CharityHeroBanner: React.FC<CharityHeroBannerProps> = ({
         className="absolute inset-0 pointer-events-none opacity-10"
         style={{
           backgroundImage:
-            'linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)',
-          backgroundSize: '32px 32px',
+            "linear-gradient(rgba(255,255,255,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.15) 1px, transparent 1px)",
+          backgroundSize: "32px 32px",
         }}
       />
       <div className="absolute inset-0 flex flex-col items-center justify-center">

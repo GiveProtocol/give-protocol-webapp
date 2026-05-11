@@ -485,7 +485,9 @@ export const CharityPortal: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [charityLogoUrl, setCharityLogoUrl] = useState<string | null>(null);
-  const [charityBannerImageUrl, setCharityBannerImageUrl] = useState<string | null>(null);
+  const [charityBannerImageUrl, setCharityBannerImageUrl] = useState<
+    string | null
+  >(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -1226,7 +1228,11 @@ export const CharityPortal: React.FC = () => {
     <main className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <CharityPortalHeader displayName={profile?.display_name} logoUrl={charityLogoUrl} t={t} />
+        <CharityPortalHeader
+          displayName={profile?.display_name}
+          logoUrl={charityLogoUrl}
+          t={t}
+        />
 
         {/* Verification status banner for pending/rejected/suspended charities */}
         {user?.id && <VerificationStatusBanner userId={user.id} />}

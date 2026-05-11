@@ -18,9 +18,7 @@ describe("CharityHeroBanner", () => {
 
   describe("without banner image (placeholder)", () => {
     it("placeholder has role=img with aria-label", () => {
-      render(
-        <CharityHeroBanner bannerImageUrl={null} orgName="Test Org" />,
-      );
+      render(<CharityHeroBanner bannerImageUrl={null} orgName="Test Org" />);
       const placeholder = screen.getByRole("img", {
         name: /test org banner placeholder/i,
       });
@@ -29,7 +27,10 @@ describe("CharityHeroBanner", () => {
 
     it("placeholder aria-label includes org name", () => {
       render(
-        <CharityHeroBanner bannerImageUrl={undefined} orgName="Give Foundation" />,
+        <CharityHeroBanner
+          bannerImageUrl={undefined}
+          orgName="Give Foundation"
+        />,
       );
       const placeholder = screen.getByRole("img", {
         name: /give foundation banner placeholder/i,

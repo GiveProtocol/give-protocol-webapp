@@ -4,7 +4,9 @@ export const CharityHeroBanner = ({ orgName, bannerImageUrl }) => (
   <div
     data-testid="charity-hero-banner"
     role="img"
-    aria-label={bannerImageUrl ? `${orgName} banner` : `${orgName} banner placeholder`}
+    aria-label={
+      bannerImageUrl ? `${orgName} banner` : `${orgName} banner placeholder`
+    }
   >
     {orgName}
   </div>

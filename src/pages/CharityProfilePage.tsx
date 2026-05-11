@@ -325,7 +325,10 @@ function ProfileHeaderCard({
     .toUpperCase();
 
   return (
-    <Card hover={false} className="relative rounded-t-none border-t-0 p-5 md:p-6">
+    <Card
+      hover={false}
+      className="relative rounded-t-none border-t-0 p-5 md:p-6"
+    >
       <div className="absolute -top-8 md:-top-10 left-4 md:left-6">
         {logoUrl ? (
           <img
