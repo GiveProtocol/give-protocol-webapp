@@ -1,21 +1,39 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Building2 } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
+import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
 import { OrganizationProfileForm } from "./OrganizationProfileForm";
+import { LogoBannerUploadCard } from "@/components/charity/LogoBannerUploadCard";
 import type { OrganizationProfile } from "@/types/charity";
+
+interface CharityProfileSnapshot {
+  ein: string;
+  logoUrl: string | null;
+  bannerImageUrl: string | null;
+  claimedByUserId: string | null;
+}
 
 interface OrganizationProfileTabProps {
   profileId: string;
+  /** Called with the new URL when a logo is successfully uploaded or removed */
+  onLogoUploaded?: (_url: string | null) => void;
+  /** Called with the new URL when a banner is successfully uploaded or removed */
+  onBannerUploaded?: (_url: string | null) => void;
 }
 
 /** Tab panel for viewing and editing the organization's public profile. */
 export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   profileId,
+  onLogoUploaded,
+  onBannerUploaded,
 }) => {
   const { t } = useTranslation();
+  const { user } = useAuth();
   const [profile, setProfile] = useState<OrganizationProfile | null>(null);
+  const [charityProfile, setCharityProfile] =
+    useState<CharityProfileSnapshot | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +65,50 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
 
     fetchProfile();
   }, [profileId, t]);
+
+  useEffect(() => {
+    if (!user?.id) return;
+
+    /** Fetches the charity_profiles row claimed by the current user. */
+    const fetchCharityProfile = async () => {
+      try {
+        const { data, error: fetchError } = await supabase
+          .from("charity_profiles")
+          .select("ein, logo_url, banner_image_url, claimed_by")
+          .eq("claimed_by", user.id)
+          .maybeSingle();
+
+        if (fetchError) throw fetchError;
+
+        if (data) {
+          setCharityProfile({
+            ein: data.ein,
+            logoUrl: data.logo_url ?? null,
+            bannerImageUrl: data.banner_image_url ?? null,
+            claimedByUserId: data.claimed_by ?? null,
+          });
+        }
+      } catch (err) {
+        Logger.error("Error fetching charity profile for upload card", {
+          error: err,
+        });
+      }
+    };
+
+    fetchCharityProfile();
+  }, [user?.id]);
+
+  const handleLogoUploaded = useCallback((url: string | null) => {
+    setCharityProfile((prev) =>
+      prev ? { ...prev, logoUrl: url } : prev,
+    );
+  }, []);
+
+  const handleBannerUploaded = useCallback((url: string | null) => {
+    setCharityProfile((prev) =>
+      prev ? { ...prev, bannerImageUrl: url } : prev,
+    );
+  }, []);
 
   const handleSave = useCallback(
     async (data: OrganizationProfile) => {
@@ -142,6 +204,19 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
           </p>
         </div>
       </div>
+
+      {charityProfile !== null && (
+        <div className="mb-6">
+          <LogoBannerUploadCard
+            ein={charityProfile.ein}
+            logoUrl={charityProfile.logoUrl}
+            bannerImageUrl={charityProfile.bannerImageUrl}
+            claimedByUserId={charityProfile.claimedByUserId}
+            onLogoUploaded={handleLogoUploaded}
+            onBannerUploaded={handleBannerUploaded}
+          />
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
         {error && (
