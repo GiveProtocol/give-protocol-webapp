@@ -165,7 +165,9 @@ describe("charityProfileService", () => {
         data: { wallet_address: "0xabc123" },
         error: null,
       });
-      const mockEq = jest.fn().mockReturnValue({ maybeSingle: mockMaybeSingle });
+      const mockEq = jest
+        .fn()
+        .mockReturnValue({ maybeSingle: mockMaybeSingle });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       mockFrom.mockReturnValueOnce({ select: mockSelect });
 

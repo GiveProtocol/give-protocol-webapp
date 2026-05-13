@@ -82,9 +82,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   }, [user?.id]);
 
   const handleLogoUploaded = useCallback((url: string | null) => {
-    setCharityProfile((prev) =>
-      prev ? { ...prev, logoUrl: url } : prev,
-    );
+    setCharityProfile((prev) => (prev ? { ...prev, logoUrl: url } : prev));
   }, []);
 
   const handleBannerUploaded = useCallback((url: string | null) => {
