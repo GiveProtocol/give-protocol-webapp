@@ -1385,7 +1385,11 @@ export const CharityPortal: React.FC = () => {
 
         {/* Organization Profile */}
         {activeTab === "organization" && profile?.id && (
-          <OrganizationProfileTab profileId={profile.id} />
+          <OrganizationProfileTab
+            profileId={profile.id}
+            onLogoUploaded={setCharityLogoUrl}
+            onBannerUploaded={setCharityBannerImageUrl}
+          />
         )}
 
         {/* Export Modal */}

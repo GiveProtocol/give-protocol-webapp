@@ -168,11 +168,12 @@ interface AssetRow {
 /** Returns true when a PostgREST error indicates an unknown column. */
 function isUndefinedColumnError(err: unknown): boolean {
   if (typeof err !== "object" || err === null) return false;
-  const e = err as { code?: string; message?: string };
-  if (e.code === "42703") return true;
-  return Boolean(e.message && e.message.includes("banner_image_url"));
+  const errorObj = err as { code?: string; message?: string };
+  if (errorObj.code === "42703") return true;
+  return Boolean(errorObj.message?.includes("banner_image_url"));
 }
 
+/** Maps a charity_profiles DB row into the public CharityProfileAssets shape. */
 function toAssets(row: AssetRow): CharityProfileAssets {
   return {
     ein: row.ein,
