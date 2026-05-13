@@ -24,6 +24,7 @@ import { Logger } from "@/utils/logger";
 import { CharityOnboardingChecklist } from "@/components/charity/CharityOnboardingChecklist";
 import { VerificationStatusBanner } from "@/components/charity/VerificationStatusBanner";
 import {
+  fetchCharityProfileAssets,
   getCharityWalletAddress,
   updateCharityWalletAddress,
 } from "@/services/charityProfileService";
@@ -507,20 +508,17 @@ export const CharityPortal: React.FC = () => {
     });
   }, [userId]);
 
-  // Fetch charity logo_url and banner_image_url from charity_profiles for dashboard header
+  // Fetch charity logo_url and banner_image_url from charity_profiles for dashboard header.
+  // Uses fetchCharityProfileAssets so the page degrades gracefully when the
+  // banner_image_url column hasn't been deployed to the database yet.
   useEffect(() => {
     if (!userId) return;
-    supabase
-      .from("charity_profiles")
-      .select("logo_url, banner_image_url")
-      .eq("claimed_by", userId)
-      .maybeSingle()
-      .then(({ data }) => {
-        if (isMountedRef.current) {
-          setCharityLogoUrl(data?.logo_url ?? null);
-          setCharityBannerImageUrl(data?.banner_image_url ?? null);
-        }
-      });
+    fetchCharityProfileAssets(userId).then((assets) => {
+      if (isMountedRef.current) {
+        setCharityLogoUrl(assets?.logoUrl ?? null);
+        setCharityBannerImageUrl(assets?.bannerImageUrl ?? null);
+      }
+    });
   }, [userId]);
 
   // Helper function to fetch basic statistics data

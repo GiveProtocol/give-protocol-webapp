@@ -6,6 +6,7 @@ import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
 import { OrganizationProfileForm } from "./OrganizationProfileForm";
 import { LogoBannerUploadCard } from "@/components/charity/LogoBannerUploadCard";
+import { fetchCharityProfileAssets } from "@/services/charityProfileService";
 import type { OrganizationProfile } from "@/types/charity";
 
 interface CharityProfileSnapshot {
@@ -71,27 +72,9 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
 
     /** Fetches the charity_profiles row claimed by the current user. */
     const fetchCharityProfile = async () => {
-      try {
-        const { data, error: fetchError } = await supabase
-          .from("charity_profiles")
-          .select("ein, logo_url, banner_image_url, claimed_by")
-          .eq("claimed_by", user.id)
-          .maybeSingle();
-
-        if (fetchError) throw fetchError;
-
-        if (data) {
-          setCharityProfile({
-            ein: data.ein,
-            logoUrl: data.logo_url ?? null,
-            bannerImageUrl: data.banner_image_url ?? null,
-            claimedByUserId: data.claimed_by ?? null,
-          });
-        }
-      } catch (err) {
-        Logger.error("Error fetching charity profile for upload card", {
-          error: err,
-        });
+      const assets = await fetchCharityProfileAssets(user.id);
+      if (assets) {
+        setCharityProfile(assets);
       }
     };
 
