@@ -68,11 +68,13 @@ describe("LogoBannerUploadCard", () => {
     onBannerUploaded = jest.fn();
   });
 
-  const renderCard = (overrides: Partial<{
-    logoUrl: string | null;
-    bannerImageUrl: string | null;
-    claimedByUserId: string | null;
-  }> = {}) =>
+  const renderCard = (
+    overrides: Partial<{
+      logoUrl: string | null;
+      bannerImageUrl: string | null;
+      claimedByUserId: string | null;
+    }> = {},
+  ) =>
     render(
       <LogoBannerUploadCard
         ein="12-3456789"
@@ -87,7 +89,9 @@ describe("LogoBannerUploadCard", () => {
   it("renders heading and upload prompts for the owner with no images", () => {
     renderCard();
     expect(screen.getByText(/logo & banner/i)).toBeInTheDocument();
-    expect(screen.getByText(/click an image to replace it/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/click an image to replace it/i),
+    ).toBeInTheDocument();
     expect(screen.getByText("Upload")).toBeInTheDocument();
     expect(screen.getByText("Upload banner")).toBeInTheDocument();
   });
@@ -99,7 +103,9 @@ describe("LogoBannerUploadCard", () => {
     });
 
     const logo = screen.getByAltText("Organization logo") as HTMLImageElement;
-    const banner = screen.getByAltText("Organization banner") as HTMLImageElement;
+    const banner = screen.getByAltText(
+      "Organization banner",
+    ) as HTMLImageElement;
     expect(logo.src).toBe("https://example.com/logo.png");
     expect(banner.src).toBe("https://example.com/banner.png");
   });
