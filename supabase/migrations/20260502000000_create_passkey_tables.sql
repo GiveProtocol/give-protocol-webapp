@@ -39,18 +39,22 @@ CREATE INDEX IF NOT EXISTS idx_passkey_challenges_challenge
 -- RLS for user_passkeys
 ALTER TABLE public.user_passkeys ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Users can view own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can view own passkeys"
   ON public.user_passkeys FOR SELECT
   USING (user_id = (SELECT auth.uid()));
 
+DROP POLICY IF EXISTS "Users can delete own passkeys" ON public.user_passkeys;
 CREATE POLICY "Users can delete own passkeys"
   ON public.user_passkeys FOR DELETE
   USING (user_id = (SELECT auth.uid()));
 
+DROP POLICY IF EXISTS "Service role can insert passkeys" ON public.user_passkeys;
 CREATE POLICY "Service role can insert passkeys"
   ON public.user_passkeys FOR INSERT
   WITH CHECK (true);
 
+DROP POLICY IF EXISTS "Service role can update passkeys" ON public.user_passkeys;
 CREATE POLICY "Service role can update passkeys"
   ON public.user_passkeys FOR UPDATE
   USING (true);
@@ -58,6 +62,7 @@ CREATE POLICY "Service role can update passkeys"
 -- RLS for passkey_challenges (service role only)
 ALTER TABLE public.passkey_challenges ENABLE ROW LEVEL SECURITY;
 
+DROP POLICY IF EXISTS "Service role can manage challenges" ON public.passkey_challenges;
 CREATE POLICY "Service role can manage challenges"
   ON public.passkey_challenges FOR ALL
   USING (true);
