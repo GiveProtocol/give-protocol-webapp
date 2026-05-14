@@ -184,6 +184,59 @@ function toAssets(row: AssetRow): CharityProfileAssets {
 }
 
 /**
+ * Runs a tolerant select on charity_profiles that handles missing
+ * `banner_image_url` column by falling back to a narrower select.
+ * @param filterColumn - Column to filter by ('claimed_by' or 'ein')
+ * @param filterValue - Value to match
+ * @returns The asset record, or null when no row exists or on error
+ */
+async function fetchAssetsByColumn(
+  filterColumn: "claimed_by" | "ein",
+  filterValue: string,
+): Promise<CharityProfileAssets | null> {
+  const full = await supabase
+    .from("charity_profiles")
+    .select("ein, logo_url, banner_image_url, claimed_by")
+    .eq(filterColumn, filterValue)
+    .maybeSingle();
+
+  if (!full.error) {
+    return full.data ? toAssets(full.data as AssetRow) : null;
+  }
+
+  if (!isUndefinedColumnError(full.error)) {
+    Logger.error("Charity profile assets fetch failed", {
+      error: full.error,
+      filterColumn,
+      filterValue,
+    });
+    return null;
+  }
+
+  Logger.warn(
+    "charity_profiles.banner_image_url missing; falling back to logo-only select",
+    { filterColumn, filterValue },
+  );
+
+  const fallback = await supabase
+    .from("charity_profiles")
+    .select("ein, logo_url, claimed_by")
+    .eq(filterColumn, filterValue)
+    .maybeSingle();
+
+  if (fallback.error) {
+    Logger.error("Charity profile assets fallback fetch failed", {
+      error: fallback.error,
+      filterColumn,
+      filterValue,
+    });
+    return null;
+  }
+
+  return fallback.data ? toAssets(fallback.data as AssetRow) : null;
+}
+
+/**
  * Fetches the logo, banner and identity metadata for the charity profile claimed
  * by the given user. Tolerates a missing `banner_image_url` column in production
  * (when the column-add migration has not been deployed) by retrying the query
@@ -197,48 +250,34 @@ export async function fetchCharityProfileAssets(
   if (!userId) return null;
 
   try {
-    const full = await supabase
-      .from("charity_profiles")
-      .select("ein, logo_url, banner_image_url, claimed_by")
-      .eq("claimed_by", userId)
-      .maybeSingle();
-
-    if (!full.error) {
-      return full.data ? toAssets(full.data as AssetRow) : null;
-    }
-
-    if (!isUndefinedColumnError(full.error)) {
-      Logger.error("Charity profile assets fetch failed", {
-        error: full.error,
-        userId,
-      });
-      return null;
-    }
-
-    Logger.warn(
-      "charity_profiles.banner_image_url missing; falling back to logo-only select",
-      { userId },
-    );
-
-    const fallback = await supabase
-      .from("charity_profiles")
-      .select("ein, logo_url, claimed_by")
-      .eq("claimed_by", userId)
-      .maybeSingle();
-
-    if (fallback.error) {
-      Logger.error("Charity profile assets fallback fetch failed", {
-        error: fallback.error,
-        userId,
-      });
-      return null;
-    }
-
-    return fallback.data ? toAssets(fallback.data as AssetRow) : null;
+    return await fetchAssetsByColumn("claimed_by", userId);
   } catch (err) {
     Logger.error("Charity profile assets fetch threw", {
       error: err instanceof Error ? err.message : String(err),
       userId,
+    });
+    return null;
+  }
+}
+
+/**
+ * Fetches charity profile assets by EIN. Used as a fallback when the
+ * `claimed_by` lookup returns nothing (e.g. claim RPC failed).
+ * @param ein - The charity EIN to look up
+ * @returns The asset record, or null when no row exists
+ */
+export async function fetchCharityProfileAssetsByEin(
+  ein: string,
+): Promise<CharityProfileAssets | null> {
+  const trimmed = ein?.trim();
+  if (!trimmed) return null;
+
+  try {
+    return await fetchAssetsByColumn("ein", trimmed);
+  } catch (err) {
+    Logger.error("Charity profile assets by EIN fetch threw", {
+      error: err instanceof Error ? err.message : String(err),
+      ein: trimmed,
     });
     return null;
   }

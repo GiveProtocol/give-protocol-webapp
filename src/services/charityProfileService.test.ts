@@ -6,6 +6,7 @@ import {
   getCharityWalletAddress,
   updateCharityWalletAddress,
   fetchCharityProfileAssets,
+  fetchCharityProfileAssetsByEin,
 } from "./charityProfileService";
 
 describe("charityProfileService", () => {
@@ -420,6 +421,72 @@ describe("charityProfileService", () => {
         throw new Error("network");
       });
       const result = await fetchCharityProfileAssets("user-1");
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("fetchCharityProfileAssetsByEin", () => {
+    type JestFn = ReturnType<typeof jest.fn>;
+    let mockFrom: JestFn;
+
+    function mockOnce(result: { data: unknown; error: unknown }) {
+      const maybeSingle = jest.fn().mockResolvedValue(result);
+      const eq = jest.fn().mockReturnValue({ maybeSingle });
+      const select = jest.fn().mockReturnValue({ eq });
+      mockFrom.mockReturnValueOnce({ select });
+      return { select, eq };
+    }
+
+    beforeEach(() => {
+      mockFrom = supabase.from as JestFn;
+      mockFrom.mockReset();
+    });
+
+    it("returns null for empty ein", async () => {
+      const result = await fetchCharityProfileAssetsByEin("");
+      expect(result).toBeNull();
+      expect(mockFrom).not.toHaveBeenCalled();
+    });
+
+    it("returns null for whitespace-only ein", async () => {
+      const result = await fetchCharityProfileAssetsByEin("   ");
+      expect(result).toBeNull();
+      expect(mockFrom).not.toHaveBeenCalled();
+    });
+
+    it("returns mapped assets when found by EIN", async () => {
+      const chain = mockOnce({
+        data: {
+          ein: "98-7654321",
+          logo_url: "https://l.test/logo.png",
+          banner_image_url: null,
+          claimed_by: null,
+        },
+        error: null,
+      });
+
+      const result = await fetchCharityProfileAssetsByEin("98-7654321");
+
+      expect(result).toEqual({
+        ein: "98-7654321",
+        logoUrl: "https://l.test/logo.png",
+        bannerImageUrl: null,
+        claimedByUserId: null,
+      });
+      expect(chain.eq).toHaveBeenCalledWith("ein", "98-7654321");
+    });
+
+    it("returns null when no row found", async () => {
+      mockOnce({ data: null, error: null });
+      const result = await fetchCharityProfileAssetsByEin("00-0000000");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when supabase.from throws", async () => {
+      mockFrom.mockImplementationOnce(() => {
+        throw new Error("network");
+      });
+      const result = await fetchCharityProfileAssetsByEin("12-3456789");
       expect(result).toBeNull();
     });
   });

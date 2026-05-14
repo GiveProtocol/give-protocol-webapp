@@ -6,7 +6,10 @@ import { supabase } from "@/lib/supabase";
 import { Logger } from "@/utils/logger";
 import { OrganizationProfileForm } from "./OrganizationProfileForm";
 import { LogoBannerUploadCard } from "@/components/charity/LogoBannerUploadCard";
-import { fetchCharityProfileAssets } from "@/services/charityProfileService";
+import {
+  fetchCharityProfileAssets,
+  fetchCharityProfileAssetsByEin,
+} from "@/services/charityProfileService";
 import type { OrganizationProfile } from "@/types/charity";
 
 interface CharityProfileSnapshot {
@@ -74,17 +77,39 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       return;
     }
 
-    /** Fetches the charity_profiles row claimed by the current user. */
+    /** Fetches the charity_profiles row for the current user, with EIN fallback. */
     const fetchCharityProfile = async () => {
+      // Primary lookup: charity_profiles.claimed_by = user.id
       const assets = await fetchCharityProfileAssets(user.id);
       if (assets) {
         setCharityProfile(assets);
+        setCharityProfileLoading(false);
+        return;
       }
+
+      // Fallback: look up by EIN from user metadata (covers cases where
+      // claimed_by was not set, e.g. claim RPC parameter mismatch)
+      const userEin = (user.user_metadata as Record<string, unknown>)
+        ?.ein as string | undefined;
+      if (userEin) {
+        const einAssets = await fetchCharityProfileAssetsByEin(userEin);
+        if (einAssets) {
+          // User is in the charity portal viewing their own profile, so
+          // treat them as the owner even when claimed_by is unset
+          setCharityProfile({
+            ...einAssets,
+            claimedByUserId: einAssets.claimedByUserId ?? user.id,
+          });
+          setCharityProfileLoading(false);
+          return;
+        }
+      }
+
       setCharityProfileLoading(false);
     };
 
     fetchCharityProfile();
-  }, [user?.id]);
+  }, [user?.id, user?.user_metadata]);
 
   const handleLogoUploaded = useCallback(
     (url: string | null) => {
