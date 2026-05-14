@@ -89,8 +89,9 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
 
       // Fallback: look up by EIN from user metadata (covers cases where
       // claimed_by was not set, e.g. claim RPC parameter mismatch)
-      const userEin = (user.user_metadata as Record<string, unknown>)
-        ?.ein as string | undefined;
+      const userEin = (user.user_metadata as Record<string, unknown>)?.ein as
+        | string
+        | undefined;
       if (userEin) {
         const einAssets = await fetchCharityProfileAssetsByEin(userEin);
         if (einAssets) {
