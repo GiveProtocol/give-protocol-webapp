@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { CharityHeroBanner } from "../CharityHeroBanner";
 
 describe("CharityHeroBanner", () => {
@@ -13,6 +13,22 @@ describe("CharityHeroBanner", () => {
       );
       const img = screen.getByRole("img", { name: /test org banner/i });
       expect(img).toBeInTheDocument();
+    });
+
+    it("falls back to gradient placeholder when image fails to load", () => {
+      render(
+        <CharityHeroBanner
+          bannerImageUrl="https://example.com/broken.jpg"
+          orgName="Test Org"
+        />,
+      );
+      const img = screen.getByRole("img", { name: /test org banner/i });
+      fireEvent.error(img);
+
+      const placeholder = screen.getByRole("img", {
+        name: /test org banner placeholder/i,
+      });
+      expect(placeholder).toBeInTheDocument();
     });
   });
 

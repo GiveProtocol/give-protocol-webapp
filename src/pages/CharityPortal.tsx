@@ -447,6 +447,21 @@ function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
   );
 }
 
+/**
+ * Formats a date as a human-readable relative timestamp.
+ * @param date - The date to format
+ * @returns A string like "Just now", "1 minute ago", "5 minutes ago", or a locale time string
+ */
+function formatLastUpdated(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "Just now";
+  if (diffMins === 1) return "1 minute ago";
+  if (diffMins < 60) return `${diffMins} minutes ago`;
+  return date.toLocaleTimeString();
+}
+
 /** Charity management dashboard with tabs for transactions, volunteer hours, applications, opportunities, causes, and organization settings. */
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
@@ -492,6 +507,7 @@ export const CharityPortal: React.FC = () => {
   const [charityBannerImageUrl, setCharityBannerImageUrl] = useState<
     string | null
   >(null);
+  const [charityOrgName, setCharityOrgName] = useState<string | null>(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -500,26 +516,33 @@ export const CharityPortal: React.FC = () => {
     };
   }, []);
 
-  // Fetch charity wallet address on mount
+  // Fetch wallet address and charity profile header data whenever the user changes
   useEffect(() => {
     if (!userId) return;
     getCharityWalletAddress(userId).then((addr) => {
       if (isMountedRef.current) setCharityWalletAddress(addr);
     });
+    supabase
+      .from("charity_profiles")
+      .select("name, logo_url, banner_image_url")
+      .eq("claimed_by", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (isMountedRef.current) {
+          setCharityOrgName(data?.name ?? null);
+          setCharityLogoUrl(data?.logo_url ?? null);
+          setCharityBannerImageUrl(data?.banner_image_url ?? null);
+        }
+      });
   }, [userId]);
 
-  // Fetch charity logo_url and banner_image_url from charity_profiles for dashboard header.
-  // Uses fetchCharityProfileAssets so the page degrades gracefully when the
-  // banner_image_url column hasn't been deployed to the database yet.
-  useEffect(() => {
-    if (!userId) return;
-    fetchCharityProfileAssets(userId).then((assets) => {
-      if (isMountedRef.current) {
-        setCharityLogoUrl(assets?.logoUrl ?? null);
-        setCharityBannerImageUrl(assets?.bannerImageUrl ?? null);
-      }
-    });
-  }, [userId]);
+  const handleLogoUploaded = useCallback((url: string | null) => {
+    setCharityLogoUrl(url);
+  }, []);
+
+  const handleBannerUploaded = useCallback((url: string | null) => {
+    setCharityBannerImageUrl(url);
+  }, []);
 
   // Helper function to fetch basic statistics data
   const fetchBasicStats = useCallback(
@@ -1011,7 +1034,14 @@ export const CharityPortal: React.FC = () => {
     fetchCharityData();
   }, [fetchCharityData]);
 
+  const lastRefreshTime = useRef<number>(0);
+
   const handleRefresh = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshTime.current < 3000) {
+      return;
+    }
+    lastRefreshTime.current = now;
     fetchCharityData();
   }, [fetchCharityData]);
 
@@ -1217,18 +1247,6 @@ export const CharityPortal: React.FC = () => {
     return <Navigate to="/give-dashboard" />;
   }
 
-  // Format last updated time
-  const formatLastUpdated = () => {
-    if (!lastUpdated) return "";
-    const now = new Date();
-    const diffMs = now.getTime() - lastUpdated.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return "Just now";
-    if (diffMins === 1) return "1 minute ago";
-    if (diffMins < 60) return `${diffMins} minutes ago`;
-    return lastUpdated.toLocaleTimeString();
-  };
-
   // Get pending counts for tab badges
   const pendingApplicationsCount = pendingApplications.length;
   const pendingHoursCount = pendingHours.length;
@@ -1238,13 +1256,13 @@ export const CharityPortal: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
         <CharityPortalHeader
-          displayName={profile?.display_name}
+          displayName={charityOrgName ?? profile?.display_name}
           logoUrl={charityLogoUrl}
           t={t}
         />
 
         {/* Verification status banner for pending/rejected/suspended charities */}
-        {user?.id && <VerificationStatusBanner userId={user.id} />}
+        <VerificationStatusBanner userId={user.id} />
 
         {/* Wallet setup banner when no receiving wallet is configured */}
         {charityWalletAddress === null && (
@@ -1253,7 +1271,7 @@ export const CharityPortal: React.FC = () => {
 
         {/* Stats Row with Last Updated */}
         <OverviewHeader
-          lastUpdatedText={lastUpdated ? formatLastUpdated() : ""}
+          lastUpdatedText={lastUpdated ? formatLastUpdated(lastUpdated) : ""}
           onRefresh={handleRefresh}
           t={t}
         />
@@ -1387,8 +1405,8 @@ export const CharityPortal: React.FC = () => {
         {activeTab === "organization" && profile?.id && (
           <OrganizationProfileTab
             profileId={profile.id}
-            onLogoUploaded={setCharityLogoUrl}
-            onBannerUploaded={setCharityBannerImageUrl}
+            onLogoUploaded={handleLogoUploaded}
+            onBannerUploaded={handleBannerUploaded}
           />
         )}
 

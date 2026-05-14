@@ -1,14 +1,12 @@
 import React, { useCallback, useRef } from "react";
-import { Image as ImageIcon, Upload } from "lucide-react";
+import { Camera, X } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/useToast";
 import { Logger } from "@/utils/logger";
 
-type Slot = "logo" | "banner";
-
-interface LogoBannerUploadCardProps {
+export interface LogoBannerUploadCardProps {
   ein: string;
   logoUrl: string | null | undefined;
   bannerImageUrl: string | null | undefined;
@@ -19,20 +17,21 @@ interface LogoBannerUploadCardProps {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const STORAGE_BUCKET = "charity-assets";
-const SLOT_COLUMN: Record<Slot, "logo_url" | "banner_image_url"> = {
-  logo: "logo_url",
-  banner: "banner_image_url",
-};
-const SLOT_LABEL: Record<Slot, string> = {
-  logo: "Logo",
-  banner: "Banner",
-};
 
 /**
- * Card that lets a claimed charity owner upload or replace their logo
- * and banner image. Stores files in the charity-assets bucket and
- * updates the corresponding column on charity_profiles.
+ * Returns the first two characters of an EIN (dashes removed) as uppercase initials.
+ * @param ein - The charity EIN number
+ * @returns Two uppercase characters for use as a logo placeholder
+ */
+function getInitials(ein: string): string {
+  return ein.replace(/-/g, "").slice(0, 2).toUpperCase();
+}
+
+/**
+ * Logo and banner upload card for the charity profile.
+ * Only visible to the profile owner (claimed_by = auth.uid()).
+ * @param props - Component props
+ * @returns The rendered logo/banner upload card, or null when user is not the owner
  */
 export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
   ein,
@@ -51,8 +50,8 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
     user?.id && claimedByUserId && user.id === claimedByUserId,
   );
 
-  const handleUpload = useCallback(
-    async (file: File, slot: Slot) => {
+  const uploadFile = useCallback(
+    async (file: File, kind: "logo" | "banner"): Promise<void> => {
       if (!ALLOWED_TYPES.has(file.type)) {
         showToast(
           "error",
@@ -67,175 +66,182 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
       }
 
       const ext = file.name.split(".").pop() ?? "jpg";
-      const path = `${ein}/${slot}.${ext}`;
+      const path = `${ein}/${kind}.${ext}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from(STORAGE_BUCKET)
+      const { error } = await supabase.storage
+        .from("charity-assets")
         .upload(path, file, { cacheControl: "3600", upsert: true });
 
-      if (uploadError) {
-        Logger.error("Charity asset upload failed", {
-          error: uploadError,
-          ein,
-          slot,
-        });
+      if (error) {
+        Logger.error("Logo/banner upload failed", { error, ein, kind });
         showToast("error", "Upload failed", "Please try again.");
         return;
       }
 
       const { data: urlData } = supabase.storage
-        .from(STORAGE_BUCKET)
+        .from("charity-assets")
         .getPublicUrl(path);
+      const column = kind === "logo" ? "logo_url" : "banner_image_url";
 
-      const column = SLOT_COLUMN[slot];
-      const { error: updateError } = await supabase
+      await supabase
         .from("charity_profiles")
         .update({ [column]: urlData.publicUrl })
         .eq("ein", ein);
 
-      if (updateError) {
-        Logger.error("Charity asset URL save failed", {
-          error: updateError,
-          ein,
-          slot,
-        });
-        showToast("error", "Save failed", "Please try again.");
-        return;
-      }
-
-      if (slot === "logo") {
+      if (kind === "logo") {
         onLogoUploaded(urlData.publicUrl);
       } else {
         onBannerUploaded(urlData.publicUrl);
       }
-      showToast("success", `${SLOT_LABEL[slot]} uploaded`);
+      showToast("success", `${kind === "logo" ? "Logo" : "Banner"} uploaded`);
     },
     [ein, showToast, onLogoUploaded, onBannerUploaded],
   );
 
-  const handleLogoChange = useCallback(
+  const handleLogoFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file) handleUpload(file, "logo");
+      if (file) {
+        uploadFile(file, "logo");
+      }
     },
-    [handleUpload],
+    [uploadFile],
   );
 
-  const handleBannerChange = useCallback(
+  const handleBannerFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
-      if (file) handleUpload(file, "banner");
+      if (file) {
+        uploadFile(file, "banner");
+      }
     },
-    [handleUpload],
+    [uploadFile],
   );
 
   const handleLogoClick = useCallback(() => {
-    if (!isOwner) return;
     logoInputRef.current?.click();
-  }, [isOwner]);
+  }, []);
 
   const handleBannerClick = useCallback(() => {
-    if (!isOwner) return;
     bannerInputRef.current?.click();
-  }, [isOwner]);
+  }, []);
+
+  const handleRemoveLogo = useCallback(async () => {
+    await supabase
+      .from("charity_profiles")
+      .update({ logo_url: null })
+      .eq("ein", ein);
+    onLogoUploaded(null);
+    showToast("success", "Logo removed");
+  }, [ein, onLogoUploaded, showToast]);
+
+  const handleRemoveBanner = useCallback(async () => {
+    await supabase
+      .from("charity_profiles")
+      .update({ banner_image_url: null })
+      .eq("ein", ein);
+    onBannerUploaded(null);
+    showToast("success", "Banner removed");
+  }, [ein, onBannerUploaded, showToast]);
+
+  if (!isOwner) return null;
+
+  const initials = getInitials(ein);
 
   return (
     <Card hover={false} className="p-5">
-      <div className="flex items-baseline justify-between mb-3">
-        <h3 className="text-sm font-semibold text-gray-900">Logo & Banner</h3>
-        <span className="text-xs text-gray-400">
-          {isOwner ? "Click an image to replace it" : "Managed by owner"}
-        </span>
-      </div>
+      <h3 className="text-sm font-semibold text-gray-900 mb-4">
+        Logo &amp; Banner
+      </h3>
 
-      <div className="space-y-4">
-        <div>
-          <p className="text-xs font-medium text-gray-500 mb-1.5">Logo</p>
-          {logoUrl ? (
-            <button
-              type="button"
-              onClick={handleLogoClick}
-              disabled={!isOwner}
-              className={`block ${isOwner ? "cursor-pointer" : "cursor-default"}`}
-              aria-label="Replace logo"
-            >
-              <img
-                src={logoUrl}
-                alt="Organization logo"
-                className="rounded-lg object-cover h-24 w-24"
-              />
-            </button>
-          ) : (
-            <button
-              type="button"
-              onClick={handleLogoClick}
-              disabled={!isOwner}
-              className={`h-24 w-24 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors ${
-                isOwner
-                  ? "border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 cursor-pointer"
-                  : "border-gray-200 cursor-default"
-              }`}
-            >
-              <ImageIcon className="h-5 w-5 text-gray-400" />
-              <span className="text-xs text-gray-400">
-                {isOwner ? "Upload" : "No logo"}
-              </span>
-            </button>
-          )}
-          {isOwner && (
-            <input
-              ref={logoInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={handleLogoChange}
-            />
-          )}
-        </div>
-
-        <div>
-          <p className="text-xs font-medium text-gray-500 mb-1.5">Banner</p>
+      {/* Banner zone */}
+      <div className="mb-4">
+        <p className="text-xs text-gray-500 mb-2">Banner</p>
+        <div className="relative w-full h-40 rounded-lg overflow-hidden">
           {bannerImageUrl ? (
-            <button
-              type="button"
-              onClick={handleBannerClick}
-              disabled={!isOwner}
-              className={`block w-full ${isOwner ? "cursor-pointer" : "cursor-default"}`}
-              aria-label="Replace banner"
-            >
+            <>
               <img
                 src={bannerImageUrl}
                 alt="Organization banner"
-                className="rounded-lg object-cover h-32 w-full"
+                className="w-full h-full object-cover"
               />
-            </button>
+              <button
+                type="button"
+                onClick={handleRemoveBanner}
+                aria-label="Remove banner"
+                className="absolute top-2 right-2 bg-white/80 rounded-full p-1 hover:bg-white transition-colors"
+              >
+                <X className="h-4 w-4 text-gray-600" />
+              </button>
+            </>
           ) : (
             <button
               type="button"
               onClick={handleBannerClick}
-              disabled={!isOwner}
-              className={`w-full h-32 rounded-lg border-2 border-dashed flex flex-col items-center justify-center gap-1 transition-colors ${
-                isOwner
-                  ? "border-gray-300 hover:border-emerald-400 hover:bg-emerald-50 cursor-pointer"
-                  : "border-gray-200 cursor-default"
-              }`}
+              className="w-full h-full bg-gradient-to-br from-emerald-600 to-emerald-800 flex flex-col items-center justify-center gap-2 hover:opacity-90 transition-opacity cursor-pointer"
             >
-              <Upload className="h-5 w-5 text-gray-400" />
-              <span className="text-xs text-gray-400">
-                {isOwner ? "Upload banner" : "No banner"}
-              </span>
+              <Camera className="h-6 w-6 text-white/70" />
+              <span className="text-xs text-white/70">Upload banner</span>
             </button>
           )}
-          {isOwner && (
-            <input
-              ref={bannerInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              className="hidden"
-              onChange={handleBannerChange}
-            />
-          )}
         </div>
+        <input
+          ref={bannerInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleBannerFileChange}
+        />
+      </div>
+
+      {/* Logo zone */}
+      <div>
+        <p className="text-xs text-gray-500 mb-2">Logo</p>
+        <div className="flex items-center gap-4">
+          <div className="relative w-32 h-32 flex-shrink-0">
+            {logoUrl ? (
+              <>
+                <img
+                  src={logoUrl}
+                  alt="Organization logo"
+                  className="w-32 h-32 rounded-full object-cover border-2 border-white shadow-md"
+                />
+                <button
+                  type="button"
+                  onClick={handleRemoveLogo}
+                  aria-label="Remove logo"
+                  className="absolute top-0 right-0 bg-white/80 rounded-full p-1 hover:bg-white transition-colors"
+                >
+                  <X className="h-3 w-3 text-gray-600" />
+                </button>
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={handleLogoClick}
+                className="w-32 h-32 rounded-full bg-emerald-600 flex flex-col items-center justify-center gap-1 hover:bg-emerald-700 transition-colors cursor-pointer group"
+              >
+                <span className="text-2xl font-bold text-white group-hover:hidden">
+                  {initials}
+                </span>
+                <Camera className="h-6 w-6 text-white hidden group-hover:block" />
+                <span className="text-xs text-white/80 hidden group-hover:block">
+                  Upload logo
+                </span>
+              </button>
+            )}
+          </div>
+          <p className="text-xs text-gray-400">
+            JPEG, PNG or WebP · max 5 MB · displayed as a circle
+          </p>
+        </div>
+        <input
+          ref={logoInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          className="hidden"
+          onChange={handleLogoFileChange}
+        />
       </div>
     </Card>
   );

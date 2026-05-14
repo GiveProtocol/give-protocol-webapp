@@ -64,12 +64,17 @@ export const ImpactProfileTab: React.FC<ImpactProfileTabProps> = ({
       try {
         const { error: updateError } = await supabase
           .from("charity_details")
-          .update({
-            mission_statement: saveData.mission_statement,
-            impact_stats: saveData.impact_stats,
-            impact_highlights: saveData.impact_highlights,
-          })
-          .eq("profile_id", profileId);
+          .upsert(
+            [
+              {
+                profile_id: profileId,
+                mission_statement: saveData.mission_statement,
+                impact_stats: saveData.impact_stats,
+                impact_highlights: saveData.impact_highlights,
+              },
+            ],
+            { onConflict: "profile_id" },
+          );
 
         if (updateError) throw updateError;
 
