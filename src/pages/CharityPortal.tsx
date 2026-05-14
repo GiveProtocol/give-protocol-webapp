@@ -24,6 +24,7 @@ import { Logger } from "@/utils/logger";
 import { CharityOnboardingChecklist } from "@/components/charity/CharityOnboardingChecklist";
 import { VerificationStatusBanner } from "@/components/charity/VerificationStatusBanner";
 import {
+  fetchCharityProfileAssets,
   getCharityWalletAddress,
   updateCharityWalletAddress,
 } from "@/services/charityProfileService";

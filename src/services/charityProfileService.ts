@@ -61,7 +61,7 @@ export async function getCharityWalletAddress(
       .from("charity_profiles")
       .select("wallet_address")
       .eq("claimed_by", userId)
-      .single();
+      .maybeSingle();
 
     if (error || !data) {
       return null;
@@ -141,6 +141,104 @@ export async function getCharityProfileByEin(
     Logger.error("Charity profile fetch failed", {
       error: error instanceof Error ? error.message : String(error),
       ein: trimmed,
+    });
+    return null;
+  }
+}
+
+/**
+ * Public-facing asset record for the claimed charity profile of a given user.
+ * `bannerImageUrl` is null when the column has not yet been deployed in the
+ * underlying database, allowing callers to render without error.
+ */
+export interface CharityProfileAssets {
+  ein: string;
+  logoUrl: string | null;
+  bannerImageUrl: string | null;
+  claimedByUserId: string | null;
+}
+
+interface AssetRow {
+  ein: string;
+  logo_url: string | null;
+  banner_image_url?: string | null;
+  claimed_by: string | null;
+}
+
+/** Returns true when a PostgREST error indicates an unknown column. */
+function isUndefinedColumnError(err: unknown): boolean {
+  if (typeof err !== "object" || err === null) return false;
+  const errorObj = err as { code?: string; message?: string };
+  if (errorObj.code === "42703") return true;
+  return Boolean(errorObj.message?.includes("banner_image_url"));
+}
+
+/** Maps a charity_profiles DB row into the public CharityProfileAssets shape. */
+function toAssets(row: AssetRow): CharityProfileAssets {
+  return {
+    ein: row.ein,
+    logoUrl: row.logo_url ?? null,
+    bannerImageUrl: row.banner_image_url ?? null,
+    claimedByUserId: row.claimed_by ?? null,
+  };
+}
+
+/**
+ * Fetches the logo, banner and identity metadata for the charity profile claimed
+ * by the given user. Tolerates a missing `banner_image_url` column in production
+ * (when the column-add migration has not been deployed) by retrying the query
+ * with a narrower column list and returning `bannerImageUrl: null`.
+ * @param userId - The authenticated user's id, matched against claimed_by
+ * @returns The asset record, or null when no charity_profiles row exists
+ */
+export async function fetchCharityProfileAssets(
+  userId: string,
+): Promise<CharityProfileAssets | null> {
+  if (!userId) return null;
+
+  try {
+    const full = await supabase
+      .from("charity_profiles")
+      .select("ein, logo_url, banner_image_url, claimed_by")
+      .eq("claimed_by", userId)
+      .maybeSingle();
+
+    if (!full.error) {
+      return full.data ? toAssets(full.data as AssetRow) : null;
+    }
+
+    if (!isUndefinedColumnError(full.error)) {
+      Logger.error("Charity profile assets fetch failed", {
+        error: full.error,
+        userId,
+      });
+      return null;
+    }
+
+    Logger.warn(
+      "charity_profiles.banner_image_url missing; falling back to logo-only select",
+      { userId },
+    );
+
+    const fallback = await supabase
+      .from("charity_profiles")
+      .select("ein, logo_url, claimed_by")
+      .eq("claimed_by", userId)
+      .maybeSingle();
+
+    if (fallback.error) {
+      Logger.error("Charity profile assets fallback fetch failed", {
+        error: fallback.error,
+        userId,
+      });
+      return null;
+    }
+
+    return fallback.data ? toAssets(fallback.data as AssetRow) : null;
+  } catch (err) {
+    Logger.error("Charity profile assets fetch threw", {
+      error: err instanceof Error ? err.message : String(err),
+      userId,
     });
     return null;
   }
