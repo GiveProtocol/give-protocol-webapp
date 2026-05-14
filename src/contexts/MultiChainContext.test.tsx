@@ -91,7 +91,7 @@ describe("MultiChainContext", () => {
         <TestConsumer />
       </MultiChainProvider>,
     );
-    await act(async () => {
+    await act(() => {
       screen.getByTestId("connect-btn").click();
     });
     await waitFor(() => {
@@ -105,13 +105,13 @@ describe("MultiChainContext", () => {
         <TestConsumer />
       </MultiChainProvider>,
     );
-    await act(async () => {
+    await act(() => {
       screen.getByTestId("connect-btn").click();
     });
     await waitFor(() => {
       expect(screen.getByTestId("connected")).toHaveTextContent("true");
     });
-    await act(async () => {
+    await act(() => {
       screen.getByTestId("disconnect-btn").click();
     });
     await waitFor(() => {
@@ -125,7 +125,7 @@ describe("MultiChainContext", () => {
         <TestConsumer />
       </MultiChainProvider>,
     );
-    await act(async () => {
+    await act(() => {
       screen.getByTestId("clear-error-btn").click();
     });
     expect(screen.getByTestId("error")).toHaveTextContent("none");
@@ -193,7 +193,7 @@ describe("useMultiChainSigner", () => {
     );
   }
 
-  it("throws when signing without connected wallet", async () => {
+  it("throws when signing without connected wallet", () => {
     render(
       <MultiChainProvider>
         <SignerConsumer />
