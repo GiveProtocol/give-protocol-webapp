@@ -4,10 +4,12 @@ import { render, screen, act, waitFor } from "@testing-library/react";
 import {
   MultiChainProvider,
   useMultiChainContext,
-  useMultiChainEVM,
-  useMultiChainSigner,
 } from "./MultiChainContext";
 import type { UnifiedWalletProvider, UnifiedAccount } from "@/types/wallet";
+
+// Dynamic imports to avoid ESM named-export linking failures in CI
+const { useMultiChainEVM } = await import("./MultiChainContext");
+const { useMultiChainSigner } = await import("./MultiChainContext");
 
 // Helper component to access context
 function TestConsumer() {
