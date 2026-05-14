@@ -487,8 +487,8 @@ export const AppNavbar: React.FC = () => {
     } catch (err) {
       console.warn("Logout failed:", err);
     }
-    globalThis.location.href = `${globalThis.location.origin}/auth`;
-  }, [logout]);
+    navigate("/auth");
+  }, [logout, navigate]);
 
   // Check if current page should only show limited navigation
   const isLimitedNavPage = useMemo(

@@ -95,8 +95,8 @@ const ProviderCard: React.FC<ProviderCardProps> = ({
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             {identity !== undefined
-              ? `Connected to your account`
-              : `Not connected`}
+              ? "Connected to your account"
+              : "Not connected"}
           </p>
         </div>
       </div>
@@ -161,6 +161,7 @@ export const LinkedAccountsSection: React.FC = () => {
   useEffect(() => {
     let cancelled = false;
 
+    /** Fetch the current user's linked identity providers */
     const loadIdentities = async () => {
       const { data, error } = await supabase.auth.getUser();
       if (cancelled) return;
