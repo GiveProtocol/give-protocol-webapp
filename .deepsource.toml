@@ -13,7 +13,8 @@ exclude_patterns = [
   "**/*.min.js",
   "**/*.min.css",
   "**/vendor/**",
-  "docs/_site/**"
+  "docs/_site/**",
+  "supabase/functions/**"
 ]
 
 [[analyzers]]
