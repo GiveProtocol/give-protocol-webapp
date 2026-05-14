@@ -35,6 +35,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   const [profile, setProfile] = useState<OrganizationProfile | null>(null);
   const [charityProfile, setCharityProfile] =
     useState<CharityProfileSnapshot | null>(null);
+  const [charityProfileLoading, setCharityProfileLoading] = useState(true);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -68,7 +69,10 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
   }, [profileId, t]);
 
   useEffect(() => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      setCharityProfileLoading(false);
+      return;
+    }
 
     /** Fetches the charity_profiles row claimed by the current user. */
     const fetchCharityProfile = async () => {
@@ -76,6 +80,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       if (assets) {
         setCharityProfile(assets);
       }
+      setCharityProfileLoading(false);
     };
 
     fetchCharityProfile();
@@ -194,7 +199,13 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
         </div>
       </div>
 
-      {charityProfile !== null && (
+      {charityProfileLoading ? (
+        <div
+          className="mb-6 h-40 bg-gray-100 rounded-xl animate-pulse"
+          aria-busy="true"
+          aria-label="Loading logo and banner upload"
+        />
+      ) : charityProfile !== null ? (
         <div className="mb-6">
           <LogoBannerUploadCard
             ein={charityProfile.ein}
@@ -205,7 +216,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
             onBannerUploaded={handleBannerUploaded}
           />
         </div>
-      )}
+      ) : null}
 
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
         {error && (
