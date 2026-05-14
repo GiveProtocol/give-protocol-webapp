@@ -34,9 +34,11 @@ describe("useFeaturedPortfolioFunds", () => {
     resetMockState();
   });
 
-  it("returns loading: true on initial mount", () => {
+  it("returns loading: true on initial mount", async () => {
     const { result } = renderHook(() => useFeaturedPortfolioFunds());
     expect(result.current.loading).toBe(true);
+    // Let the effect resolve so the post-test setState doesn't trigger an act warning.
+    await waitFor(() => expect(result.current.loading).toBe(false));
   });
 
   it("returns funds and loading: false after successful fetch", async () => {

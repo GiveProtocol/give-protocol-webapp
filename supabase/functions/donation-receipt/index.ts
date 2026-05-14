@@ -4,8 +4,9 @@
  * @description Sends a donation acknowledgement email to the donor after a
  * successful payment via Helcim or PayPal. This letter serves as an official
  * record for the donor's charitable contribution and may be used for tax
- * purposes. Called fire-and-forget from helcim-payment and
- * paypal-capture-order after the donation is persisted.
+ * purposes. Called fire-and-forget from helcim-validate (primary live path),
+ * helcim-payment (legacy direct API), and paypal-capture-order after the
+ * donation is persisted.
  * @version 1
  */
 
@@ -40,9 +41,34 @@ function escapeHtml(text: string): string {
   return text.replace(/[<>]/g, (char) => (char === "<" ? "&lt;" : "&gt;"));
 }
 
+/**
+ * Zero-decimal currencies where amountCents already represents major units.
+ * Must stay in sync with paypal-capture-order/index.ts.
+ */
+const ZERO_DECIMAL_CURRENCIES = [
+  "BIF",
+  "CLP",
+  "DJF",
+  "GNF",
+  "JPY",
+  "KMF",
+  "KRW",
+  "MGA",
+  "PYG",
+  "RWF",
+  "UGX",
+  "VND",
+  "VUV",
+  "XAF",
+  "XOF",
+  "XPF",
+];
+
 /** Format cents as a localised currency string e.g. "$50.00" */
 function formatAmount(cents: number, currency: string): string {
-  const major = cents / 100;
+  const major = ZERO_DECIMAL_CURRENCIES.includes(currency.toUpperCase())
+    ? cents
+    : cents / 100;
   try {
     return new Intl.NumberFormat("en-US", {
       style: "currency",

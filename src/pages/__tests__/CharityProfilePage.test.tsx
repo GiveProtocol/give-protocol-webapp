@@ -449,4 +449,27 @@ describe("CharityProfilePage", () => {
       });
     });
   });
+
+  describe("Logo avatar", () => {
+    it("renders logo image when logo_url is provided", async () => {
+      const profileWithLogo: CharityProfile = {
+        ...mockProfile,
+        logo_url: "https://example.com/logo.png",
+      };
+      mockGetProfile.mockResolvedValue(profileWithLogo);
+      renderWithRoute();
+      await waitFor(() => {
+        const logo = screen.getByAltText("Test Charity Foundation logo");
+        expect(logo).toBeInTheDocument();
+        expect(logo).toHaveAttribute("src", "https://example.com/logo.png");
+      });
+    });
+
+    it("renders initials avatar when logo_url is null", async () => {
+      renderWithRoute();
+      await waitFor(() => {
+        expect(screen.getByText("TC")).toBeInTheDocument();
+      });
+    });
+  });
 });

@@ -5,6 +5,8 @@ import {
   claimCharityProfile,
   getCharityWalletAddress,
   updateCharityWalletAddress,
+  fetchCharityProfileAssets,
+  fetchCharityProfileAssetsByEin,
 } from "./charityProfileService";
 
 describe("charityProfileService", () => {
@@ -160,11 +162,13 @@ describe("charityProfileService", () => {
     });
 
     it("should return wallet address when found", async () => {
-      const mockSingle = jest.fn().mockResolvedValue({
+      const mockMaybeSingle = jest.fn().mockResolvedValue({
         data: { wallet_address: "0xabc123" },
         error: null,
       });
-      const mockEq = jest.fn().mockReturnValue({ single: mockSingle });
+      const mockEq = jest
+        .fn()
+        .mockReturnValue({ maybeSingle: mockMaybeSingle });
       const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
       mockFrom.mockReturnValueOnce({ select: mockSelect });
 
@@ -177,13 +181,13 @@ describe("charityProfileService", () => {
     });
 
     it("should return null when wallet_address is null", async () => {
-      const mockSingle = jest.fn().mockResolvedValue({
+      const mockMaybeSingle = jest.fn().mockResolvedValue({
         data: { wallet_address: null },
         error: null,
       });
       mockFrom.mockReturnValueOnce({
         select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({ single: mockSingle }),
+          eq: jest.fn().mockReturnValue({ maybeSingle: mockMaybeSingle }),
         }),
       });
 
@@ -192,12 +196,12 @@ describe("charityProfileService", () => {
     });
 
     it("should return null when no profile found", async () => {
-      const mockSingle = jest
+      const mockMaybeSingle = jest
         .fn()
         .mockResolvedValue({ data: null, error: null });
       mockFrom.mockReturnValueOnce({
         select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({ single: mockSingle }),
+          eq: jest.fn().mockReturnValue({ maybeSingle: mockMaybeSingle }),
         }),
       });
 
@@ -206,13 +210,13 @@ describe("charityProfileService", () => {
     });
 
     it("should return null on Supabase error", async () => {
-      const mockSingle = jest.fn().mockResolvedValue({
+      const mockMaybeSingle = jest.fn().mockResolvedValue({
         data: null,
         error: { message: "DB error" },
       });
       mockFrom.mockReturnValueOnce({
         select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({ single: mockSingle }),
+          eq: jest.fn().mockReturnValue({ maybeSingle: mockMaybeSingle }),
         }),
       });
 
@@ -271,6 +275,219 @@ describe("charityProfileService", () => {
 
       const result = await updateCharityWalletAddress("user-1", "0xabc123");
       expect(result).toBe(false);
+    });
+  });
+
+  describe("fetchCharityProfileAssets", () => {
+    type JestFn = ReturnType<typeof jest.fn>;
+    let mockFrom: JestFn;
+
+    function mockOnce(result: { data: unknown; error: unknown }) {
+      const maybeSingle = jest.fn().mockResolvedValue(result);
+      const eq = jest.fn().mockReturnValue({ maybeSingle });
+      const select = jest.fn().mockReturnValue({ eq });
+      mockFrom.mockReturnValueOnce({ select });
+      return { select, eq, maybeSingle };
+    }
+
+    beforeEach(() => {
+      mockFrom = supabase.from as JestFn;
+      mockFrom.mockReset();
+    });
+
+    it("returns null for empty userId without calling supabase", async () => {
+      const result = await fetchCharityProfileAssets("");
+      expect(result).toBeNull();
+      expect(mockFrom).not.toHaveBeenCalled();
+    });
+
+    it("returns mapped assets when the full select succeeds", async () => {
+      const chain = mockOnce({
+        data: {
+          ein: "12-3456789",
+          logo_url: "https://l.test/l.png",
+          banner_image_url: "https://l.test/b.png",
+          claimed_by: "user-1",
+        },
+        error: null,
+      });
+
+      const result = await fetchCharityProfileAssets("user-1");
+
+      expect(result).toEqual({
+        ein: "12-3456789",
+        logoUrl: "https://l.test/l.png",
+        bannerImageUrl: "https://l.test/b.png",
+        claimedByUserId: "user-1",
+      });
+      expect(chain.select).toHaveBeenCalledWith(
+        "ein, logo_url, banner_image_url, claimed_by",
+      );
+    });
+
+    it("returns null when no row exists and there is no error", async () => {
+      mockOnce({ data: null, error: null });
+      const result = await fetchCharityProfileAssets("user-1");
+      expect(result).toBeNull();
+    });
+
+    it("falls back to the narrower select on a 42703 undefined-column error", async () => {
+      const firstChain = mockOnce({
+        data: null,
+        error: {
+          code: "42703",
+          message: "column banner_image_url does not exist",
+        },
+      });
+      const fallbackChain = mockOnce({
+        data: {
+          ein: "12-3456789",
+          logo_url: "https://l.test/l.png",
+          claimed_by: "user-1",
+        },
+        error: null,
+      });
+
+      const result = await fetchCharityProfileAssets("user-1");
+
+      expect(result).toEqual({
+        ein: "12-3456789",
+        logoUrl: "https://l.test/l.png",
+        bannerImageUrl: null,
+        claimedByUserId: "user-1",
+      });
+      expect(firstChain.select).toHaveBeenCalledWith(
+        "ein, logo_url, banner_image_url, claimed_by",
+      );
+      expect(fallbackChain.select).toHaveBeenCalledWith(
+        "ein, logo_url, claimed_by",
+      );
+    });
+
+    it("falls back when the error message mentions banner_image_url without a 42703 code", async () => {
+      mockOnce({
+        data: null,
+        error: { message: "PostgREST: banner_image_url problem" },
+      });
+      mockOnce({
+        data: {
+          ein: "12-3456789",
+          logo_url: null,
+          claimed_by: "user-1",
+        },
+        error: null,
+      });
+
+      const result = await fetchCharityProfileAssets("user-1");
+      expect(result?.bannerImageUrl).toBeNull();
+      expect(result?.logoUrl).toBeNull();
+    });
+
+    it("returns null when the fallback select also errors", async () => {
+      mockOnce({
+        data: null,
+        error: { code: "42703", message: "x" },
+      });
+      mockOnce({
+        data: null,
+        error: { message: "still broken" },
+      });
+
+      const result = await fetchCharityProfileAssets("user-1");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when the fallback select finds no row", async () => {
+      mockOnce({
+        data: null,
+        error: { code: "42703", message: "x" },
+      });
+      mockOnce({ data: null, error: null });
+
+      const result = await fetchCharityProfileAssets("user-1");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when the initial error is unrelated", async () => {
+      mockOnce({ data: null, error: { code: "PGRST500", message: "boom" } });
+      const result = await fetchCharityProfileAssets("user-1");
+      expect(result).toBeNull();
+      // Should not retry on an unrelated error
+      expect(mockFrom).toHaveBeenCalledTimes(1);
+    });
+
+    it("returns null when supabase.from throws", async () => {
+      mockFrom.mockImplementationOnce(() => {
+        throw new Error("network");
+      });
+      const result = await fetchCharityProfileAssets("user-1");
+      expect(result).toBeNull();
+    });
+  });
+
+  describe("fetchCharityProfileAssetsByEin", () => {
+    type JestFn = ReturnType<typeof jest.fn>;
+    let mockFrom: JestFn;
+
+    function mockOnce(result: { data: unknown; error: unknown }) {
+      const maybeSingle = jest.fn().mockResolvedValue(result);
+      const eq = jest.fn().mockReturnValue({ maybeSingle });
+      const select = jest.fn().mockReturnValue({ eq });
+      mockFrom.mockReturnValueOnce({ select });
+      return { select, eq };
+    }
+
+    beforeEach(() => {
+      mockFrom = supabase.from as JestFn;
+      mockFrom.mockReset();
+    });
+
+    it("returns null for empty ein", async () => {
+      const result = await fetchCharityProfileAssetsByEin("");
+      expect(result).toBeNull();
+      expect(mockFrom).not.toHaveBeenCalled();
+    });
+
+    it("returns null for whitespace-only ein", async () => {
+      const result = await fetchCharityProfileAssetsByEin("   ");
+      expect(result).toBeNull();
+      expect(mockFrom).not.toHaveBeenCalled();
+    });
+
+    it("returns mapped assets when found by EIN", async () => {
+      const chain = mockOnce({
+        data: {
+          ein: "98-7654321",
+          logo_url: "https://l.test/logo.png",
+          banner_image_url: null,
+          claimed_by: null,
+        },
+        error: null,
+      });
+
+      const result = await fetchCharityProfileAssetsByEin("98-7654321");
+
+      expect(result).toEqual({
+        ein: "98-7654321",
+        logoUrl: "https://l.test/logo.png",
+        bannerImageUrl: null,
+        claimedByUserId: null,
+      });
+      expect(chain.eq).toHaveBeenCalledWith("ein", "98-7654321");
+    });
+
+    it("returns null when no row found", async () => {
+      mockOnce({ data: null, error: null });
+      const result = await fetchCharityProfileAssetsByEin("00-0000000");
+      expect(result).toBeNull();
+    });
+
+    it("returns null when supabase.from throws", async () => {
+      mockFrom.mockImplementationOnce(() => {
+        throw new Error("network");
+      });
+      const result = await fetchCharityProfileAssetsByEin("12-3456789");
+      expect(result).toBeNull();
     });
   });
 });

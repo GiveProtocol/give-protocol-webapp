@@ -1,46 +1,8 @@
 import React from "react";
+import { jest } from "@jest/globals";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { ValidationResponseModal } from "./ValidationResponseModal";
-
-// Mock RejectionReasonSelect
-jest.mock("./RejectionReasonSelect", () => ({
-  RejectionReasonSelect: ({
-    value,
-    onReasonChange,
-    onNotesChange,
-    error,
-  }: {
-    value: string;
-    notes: string;
-    onReasonChange: (_reason: string) => void;
-    onNotesChange: (_notes: string) => void;
-    error: string;
-  }) => (
-    <div data-testid="rejection-reason-select">
-      <select
-        data-testid="reason-select"
-        value={value}
-        onChange={(e) => onReasonChange(e.target.value)}
-      >
-        <option value="">Select reason</option>
-        <option value="insufficient_evidence">Insufficient Evidence</option>
-      </select>
-      <input
-        data-testid="notes-input"
-        onChange={(e) => onNotesChange(e.target.value)}
-      />
-      {error && <span data-testid="error-msg">{error}</span>}
-    </div>
-  ),
-}));
-
-// Mock types
-jest.mock("@/types/selfReportedHours", () => ({
-  ACTIVITY_TYPE_LABELS: {
-    community_service: "Community Service",
-    tutoring: "Tutoring",
-  },
-}));
+import { ActivityType } from "@/types/selfReportedHours";
 
 describe("ValidationResponseModal", () => {
   const mockItem = {
@@ -49,7 +11,7 @@ describe("ValidationResponseModal", () => {
     volunteerEmail: "jane@example.com",
     activityDate: "2024-03-15",
     hours: 4,
-    activityType: "community_service",
+    activityType: ActivityType.DIRECT_SERVICE,
     description: "Helped organize community event",
     location: "Downtown Center",
     createdAt: "2024-03-16T10:00:00Z",
@@ -61,8 +23,8 @@ describe("ValidationResponseModal", () => {
     item: mockItem,
     isOpen: true,
     onClose: jest.fn(),
-    onApprove: jest.fn().mockResolvedValue(true),
-    onReject: jest.fn().mockResolvedValue(true),
+    onApprove: jest.fn<() => Promise<boolean>>().mockResolvedValue(true),
+    onReject: jest.fn<() => Promise<boolean>>().mockResolvedValue(true),
   };
 
   beforeEach(() => {
@@ -85,7 +47,7 @@ describe("ValidationResponseModal", () => {
   it("renders activity details", () => {
     render(<ValidationResponseModal {...defaultProps} />);
     expect(screen.getByText("4 hours")).toBeInTheDocument();
-    expect(screen.getByText("Community Service")).toBeInTheDocument();
+    expect(screen.getByText("Direct Service")).toBeInTheDocument();
     expect(screen.getByText("Downtown Center")).toBeInTheDocument();
   });
 
@@ -125,7 +87,7 @@ describe("ValidationResponseModal", () => {
     render(<ValidationResponseModal {...defaultProps} />);
     fireEvent.click(screen.getByText("Reject"));
     expect(screen.getByText("Reject Validation Request")).toBeInTheDocument();
-    expect(screen.getByTestId("rejection-reason-select")).toBeInTheDocument();
+    expect(screen.getByLabelText(/Rejection Reason/)).toBeInTheDocument();
   });
 
   it("goes back from reject mode when Back button is clicked", () => {

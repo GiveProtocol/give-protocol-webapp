@@ -32,6 +32,16 @@ export default {
     ],
   },
   moduleNameMapper: {
+    // Test escape-hatch: importing "@/contexts/<Name>.real" bypasses the
+    // global mock and loads the actual context source. Used by tests in
+    // src/contexts/__tests__/ to exercise context logic directly.
+    "^@/contexts/ToastContext\\.real$":
+      "<rootDir>/src/contexts/ToastContext.tsx",
+    "^@/contexts/SettingsContext\\.real$":
+      "<rootDir>/src/contexts/SettingsContext.tsx",
+    "^@/contexts/MultiChainContext\\.real$":
+      "<rootDir>/src/contexts/MultiChainContext.tsx",
+    "^@/contexts/Web3Context\\.real$": "<rootDir>/src/contexts/Web3Context.tsx",
     // Config and library mocks
     "^@/config/env$": "<rootDir>/src/test-utils/envMock.js",
     "^@/config/docs$": "<rootDir>/src/test-utils/docsMock.js",
@@ -90,11 +100,21 @@ export default {
       "<rootDir>/src/test-utils/multiChainContextMock.js",
     "(.*)/contexts/MultiChainContext(\\.tsx?)?$":
       "<rootDir>/src/test-utils/multiChainContextMock.js",
+    // Web3Context.tsx imports MultiChainContext via "./MultiChainContext"
+    // (no /contexts/ in the specifier). Catch that form so the real
+    // Web3Context source can be tested with a controllable MultiChain mock.
+    "^\\./MultiChainContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/multiChainContextMock.js",
     "^@/contexts/Web3Context$": "<rootDir>/src/test-utils/web3ContextMock.js",
     "(.*)/contexts/Web3Context(\\.tsx?)?$":
       "<rootDir>/src/test-utils/web3ContextMock.js",
     "^@/contexts/ChainContext$": "<rootDir>/src/test-utils/chainContextMock.js",
     "(.*)/contexts/ChainContext(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/chainContextMock.js",
+    // Web3Context.tsx imports ChainContext via "./ChainContext"
+    // (no /contexts/ in the specifier). Catch that exact form so the real
+    // Web3Context source loads the mocked ChainContext during tests.
+    "^\\./ChainContext(\\.tsx?)?$":
       "<rootDir>/src/test-utils/chainContextMock.js",
     "^@/contexts/CurrencyContext$":
       "<rootDir>/src/test-utils/currencyContextMock.js",
@@ -368,6 +388,10 @@ export default {
       "<rootDir>/src/test-utils/charityPageTemplateMock.js",
     "(.*)/components/charity/CharityPageTemplate(\\.tsx?)?$":
       "<rootDir>/src/test-utils/charityPageTemplateMock.js",
+    "^@/components/charity/CausePageTemplate$":
+      "<rootDir>/src/test-utils/causePageTemplateMock.js",
+    "(.*)/components/charity/CausePageTemplate(\\.tsx?)?$":
+      "<rootDir>/src/test-utils/causePageTemplateMock.js",
     "^@/components/charity/CharityHeroBanner$":
       "<rootDir>/src/test-utils/charityHeroBannerMock.js",
     "(.*)/components/charity/CharityHeroBanner(\\.tsx?)?$":

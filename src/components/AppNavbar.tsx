@@ -12,6 +12,11 @@ import { ClientOnly } from "./ClientOnly";
 import { SettingsMenu } from "./SettingsMenu";
 import { WalletButton, NetworkSelector } from "./Wallet";
 import type { NetworkType, WalletProviderType } from "./Wallet";
+import {
+  switchEvmNetwork,
+  switchSolanaNetwork,
+  switchPolkadotNetwork,
+} from "./appNavbarHelpers";
 import { Menu, X, LogOut } from "lucide-react";
 import { useTranslation } from "@/hooks/useTranslation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -281,12 +286,14 @@ const NavActions: React.FC<{
   onDisconnect,
   onSignOut,
 }) => {
-  // Determine wallet provider from window.ethereum
+  // Determine wallet provider from globalThis.ethereum
   const getWalletProvider = useCallback((): WalletProviderType => {
-    if (typeof window === "undefined" || !window.ethereum) return "metamask";
-    if (window.ethereum.isMetaMask) return "metamask";
-    if (window.ethereum.isTalisman) return "talisman";
-    if (window.ethereum.isSubWallet) return "subwallet";
+    const browserGlobal = globalThis as typeof globalThis & Window;
+    if (typeof browserGlobal.window === "undefined" || !browserGlobal.ethereum)
+      return "metamask";
+    if (browserGlobal.ethereum.isMetaMask) return "metamask";
+    if (browserGlobal.ethereum.isTalisman) return "talisman";
+    if (browserGlobal.ethereum.isSubWallet) return "subwallet";
     return "metamask";
   }, []);
 
@@ -436,43 +443,19 @@ export const AppNavbar: React.FC = () => {
         setNetwork(_network);
         return;
       }
-
+      const deps = {
+        evmChainIds,
+        isConnected,
+        setNetwork,
+        switchChain,
+        multiChain,
+      };
       if (networkConfig.chainType === "evm") {
-        // EVM switching via Web3Context
-        const targetChainId = evmChainIds[_network];
-        if (targetChainId && isConnected) {
-          try {
-            // Ensure multiChain is on EVM chain type
-            if (multiChain.activeChainType !== "evm") {
-              multiChain.switchChainType("evm");
-            }
-            await switchChain(targetChainId);
-            setNetwork(_network);
-          } catch (err) {
-            console.error("Failed to switch network:", err);
-          }
-        } else {
-          setNetwork(_network);
-        }
+        await switchEvmNetwork(_network, deps);
       } else if (networkConfig.chainType === "solana") {
-        // Solana switching via MultiChainContext
-        try {
-          multiChain.switchChainType("solana");
-          setNetwork(_network);
-        } catch (err) {
-          console.error("Failed to switch to Solana:", err);
-        }
+        switchSolanaNetwork(_network, deps);
       } else if (networkConfig.chainType === "polkadot") {
-        // Polkadot/Kusama switching via MultiChainContext
-        try {
-          multiChain.switchChainType("polkadot");
-          if (multiChain.wallet) {
-            await multiChain.switchChain(_network, "polkadot");
-          }
-          setNetwork(_network);
-        } catch (err) {
-          console.error("Failed to switch to Polkadot network:", err);
-        }
+        await switchPolkadotNetwork(_network, deps);
       }
     },
     [isConnected, switchChain, multiChain, evmChainIds],

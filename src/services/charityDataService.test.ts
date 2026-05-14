@@ -235,6 +235,28 @@ describe("charityDataService", () => {
 
       supabase.from = originalFrom;
     });
+
+    it("should return true without inserting when duplicate request exists", async () => {
+      setMockResult("charity_requests", {
+        data: [{ id: "existing-req-id" }],
+        error: null,
+      });
+
+      const result = await submitCharityRequest("123456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
+
+    it("should return true without inserting for hyphenated duplicate EIN", async () => {
+      setMockResult("charity_requests", {
+        data: [{ id: "existing-req-id" }],
+        error: null,
+      });
+
+      const result = await submitCharityRequest("12-3456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
   });
 
   describe("hasUserRequestedCharity", () => {

@@ -315,8 +315,9 @@ function OverviewHeader({
           onClick={onRefresh}
           className="p-2 text-content-secondary hover:bg-surface-sunken rounded-full transition-colors"
           title={t("common.refresh", "Refresh")}
+          aria-label={t("dashboard.refreshData", "Refresh data")}
         >
-          <RefreshCw className="h-4 w-4" />
+          <RefreshCw className="h-4 w-4" aria-hidden="true" />
         </button>
       </div>
     </div>
@@ -326,20 +327,43 @@ function OverviewHeader({
 /** Header for the charity portal with title and action buttons. */
 function CharityPortalHeader({
   displayName,
+  logoUrl,
   t,
 }: {
   displayName?: string;
+  logoUrl?: string | null;
   t: (_key: string, _fallback?: string) => string;
 }) {
+  const name = displayName || t("charity.dashboard", "Charity Dashboard");
+  const initials = name
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((w: string) => w.charAt(0))
+    .join("")
+    .toUpperCase();
+
   return (
     <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
-      <div>
-        <h1 className="text-3xl font-bold text-content-primary">
-          {displayName || t("charity.dashboard", "Charity Dashboard")}
-        </h1>
-        <p className="mt-1 text-content-secondary">
-          {t("charity.subtitle", "Manage your charity dashboard")}
-        </p>
+      <div className="flex items-center gap-3">
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            alt={`${name} logo`}
+            className="w-10 h-10 rounded-full object-cover border border-white shadow-sm flex-shrink-0"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-emerald-600 flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-sm select-none">
+              {initials}
+            </span>
+          </div>
+        )}
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900">{name}</h1>
+          <p className="mt-1 text-gray-600">
+            {t("charity.subtitle", "Manage your charity dashboard")}
+          </p>
+        </div>
       </div>
       <nav className="mt-4 md:mt-0 flex flex-wrap gap-3">
         <Link to="/charity-portal/create-opportunity">
@@ -422,6 +446,21 @@ function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
   );
 }
 
+/**
+ * Formats a date as a human-readable relative timestamp.
+ * @param date - The date to format
+ * @returns A string like "Just now", "1 minute ago", "5 minutes ago", or a locale time string
+ */
+function formatLastUpdated(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "Just now";
+  if (diffMins === 1) return "1 minute ago";
+  if (diffMins < 60) return `${diffMins} minutes ago`;
+  return date.toLocaleTimeString();
+}
+
 /** Charity management dashboard with tabs for transactions, volunteer hours, applications, opportunities, causes, and organization settings. */
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
@@ -463,6 +502,11 @@ export const CharityPortal: React.FC = () => {
   const [causes, setCauses] = useState<CharityCause[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [charityLogoUrl, setCharityLogoUrl] = useState<string | null>(null);
+  const [charityBannerImageUrl, setCharityBannerImageUrl] = useState<
+    string | null
+  >(null);
+  const [charityOrgName, setCharityOrgName] = useState<string | null>(null);
   const isMountedRef = useRef(true);
 
   useEffect(() => {
@@ -471,13 +515,33 @@ export const CharityPortal: React.FC = () => {
     };
   }, []);
 
-  // Fetch charity wallet address on mount
+  // Fetch wallet address and charity profile header data whenever the user changes
   useEffect(() => {
     if (!userId) return;
     getCharityWalletAddress(userId).then((addr) => {
       if (isMountedRef.current) setCharityWalletAddress(addr);
     });
+    supabase
+      .from("charity_profiles")
+      .select("name, logo_url, banner_image_url")
+      .eq("claimed_by", userId)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (isMountedRef.current) {
+          setCharityOrgName(data?.name ?? null);
+          setCharityLogoUrl(data?.logo_url ?? null);
+          setCharityBannerImageUrl(data?.banner_image_url ?? null);
+        }
+      });
   }, [userId]);
+
+  const handleLogoUploaded = useCallback((url: string | null) => {
+    setCharityLogoUrl(url);
+  }, []);
+
+  const handleBannerUploaded = useCallback((url: string | null) => {
+    setCharityBannerImageUrl(url);
+  }, []);
 
   // Helper function to fetch basic statistics data
   const fetchBasicStats = useCallback(
@@ -969,7 +1033,14 @@ export const CharityPortal: React.FC = () => {
     fetchCharityData();
   }, [fetchCharityData]);
 
+  const lastRefreshTime = useRef<number>(0);
+
   const handleRefresh = useCallback(() => {
+    const now = Date.now();
+    if (now - lastRefreshTime.current < 3000) {
+      return;
+    }
+    lastRefreshTime.current = now;
     fetchCharityData();
   }, [fetchCharityData]);
 
@@ -1045,6 +1116,14 @@ export const CharityPortal: React.FC = () => {
     ];
     if (validTabs.includes(tab as TabKey)) {
       setActiveTab(tab as TabKey);
+      if (tab === "organization") {
+        // Wait for the tab panel to mount before scrolling.
+        requestAnimationFrame(() => {
+          document
+            .getElementById("organization-profile")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+      }
     }
   }, []);
 
@@ -1167,18 +1246,6 @@ export const CharityPortal: React.FC = () => {
     return <Navigate to="/give-dashboard" />;
   }
 
-  // Format last updated time
-  const formatLastUpdated = () => {
-    if (!lastUpdated) return "";
-    const now = new Date();
-    const diffMs = now.getTime() - lastUpdated.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return "Just now";
-    if (diffMins === 1) return "1 minute ago";
-    if (diffMins < 60) return `${diffMins} minutes ago`;
-    return lastUpdated.toLocaleTimeString();
-  };
-
   // Get pending counts for tab badges
   const pendingApplicationsCount = pendingApplications.length;
   const pendingHoursCount = pendingHours.length;
@@ -1187,10 +1254,14 @@ export const CharityPortal: React.FC = () => {
     <main className="min-h-screen bg-surface-base">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Page Header */}
-        <CharityPortalHeader displayName={profile?.display_name} t={t} />
+        <CharityPortalHeader
+          displayName={charityOrgName ?? profile?.display_name}
+          logoUrl={charityLogoUrl}
+          t={t}
+        />
 
         {/* Verification status banner for pending/rejected/suspended charities */}
-        {user?.id && <VerificationStatusBanner userId={user.id} />}
+        <VerificationStatusBanner userId={user.id} />
 
         {/* Wallet setup banner when no receiving wallet is configured */}
         {charityWalletAddress === null && (
@@ -1199,7 +1270,7 @@ export const CharityPortal: React.FC = () => {
 
         {/* Stats Row with Last Updated */}
         <OverviewHeader
-          lastUpdatedText={lastUpdated ? formatLastUpdated() : ""}
+          lastUpdatedText={lastUpdated ? formatLastUpdated(lastUpdated) : ""}
           onRefresh={handleRefresh}
           t={t}
         />
@@ -1220,6 +1291,8 @@ export const CharityPortal: React.FC = () => {
           <CharityOnboardingChecklist
             profileId={profile.id}
             onNavigateTab={handleOnboardingNavigate}
+            logoUrl={charityLogoUrl}
+            bannerImageUrl={charityBannerImageUrl}
           />
         )}
 
@@ -1329,7 +1402,11 @@ export const CharityPortal: React.FC = () => {
 
         {/* Organization Profile */}
         {activeTab === "organization" && profile?.id && (
-          <OrganizationProfileTab profileId={profile.id} />
+          <OrganizationProfileTab
+            profileId={profile.id}
+            onLogoUploaded={handleLogoUploaded}
+            onBannerUploaded={handleBannerUploaded}
+          />
         )}
 
         {/* Export Modal */}

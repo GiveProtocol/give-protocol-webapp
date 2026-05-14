@@ -111,9 +111,32 @@ export async function submitCharityRequest(
   userId: string,
 ): Promise<boolean> {
   try {
+    const normalizedEin = ein.replace(/-/g, "");
+
+    // Check for existing row first to prevent duplicate submissions
+    const { data: existing, error: checkError } = await supabase
+      .from("charity_requests")
+      .select("id")
+      .eq("ein", normalizedEin)
+      .eq("user_id", userId)
+      .limit(1);
+
+    if (checkError) {
+      Logger.error("Error checking existing charity request", {
+        error: checkError,
+        ein,
+      });
+      return false;
+    }
+
+    // Already requested — idempotent success
+    if (Array.isArray(existing) && existing.length > 0) {
+      return true;
+    }
+
     const { error } = await supabase
       .from("charity_requests")
-      .insert({ ein: ein.replace(/-/g, ""), user_id: userId });
+      .insert({ ein: normalizedEin, user_id: userId });
 
     if (error) {
       Logger.error("Error submitting charity request", { error, ein });

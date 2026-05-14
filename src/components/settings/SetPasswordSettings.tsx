@@ -20,6 +20,7 @@ export const SetPasswordSettings: React.FC = () => {
   useEffect(() => {
     let cancelled = false;
 
+    /** Determine whether the current user has an email identity attached. */
     const checkIdentities = async () => {
       const { data } = await supabase.auth.getUser();
       if (cancelled) return;
