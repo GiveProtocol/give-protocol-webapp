@@ -1262,7 +1262,7 @@ export const CharityPortal: React.FC = () => {
         />
 
         {/* Verification status banner for pending/rejected/suspended charities */}
-        {user?.id && <VerificationStatusBanner userId={user.id} />}
+        <VerificationStatusBanner userId={user.id} />
 
         {/* Wallet setup banner when no receiving wallet is configured */}
         {charityWalletAddress === null && (
