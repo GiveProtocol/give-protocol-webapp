@@ -1,10 +1,7 @@
 import { jest } from "@jest/globals";
 import React from "react";
 import { render, screen, act, waitFor } from "@testing-library/react";
-import {
-  MultiChainProvider,
-  useMultiChainContext,
-} from "./MultiChainContext";
+import { MultiChainProvider, useMultiChainContext } from "./MultiChainContext";
 import type { UnifiedWalletProvider, UnifiedAccount } from "@/types/wallet";
 
 // Dynamic imports to avoid ESM named-export linking failures in CI
