@@ -41,6 +41,7 @@ export function useCharity(id: string) {
   useEffect(() => {
     let mounted = true;
 
+    /** Fetches charity and causes data and updates state if still mounted. */
     const fetchData = async () => {
       try {
         setLoading(true);
@@ -84,6 +85,7 @@ export function useCharity(id: string) {
     };
   }, [id]);
 
+  /** Manually re-fetches charity and causes data and updates component state. */
   const refresh = async () => {
     setLoading(true);
     try {

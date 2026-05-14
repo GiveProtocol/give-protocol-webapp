@@ -446,6 +446,21 @@ function CharityWalletBanner({ onOpen }: { onOpen: () => void }) {
   );
 }
 
+/**
+ * Formats a date as a human-readable relative timestamp.
+ * @param date - The date to format
+ * @returns A string like "Just now", "1 minute ago", "5 minutes ago", or a locale time string
+ */
+function formatLastUpdated(date: Date): string {
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  if (diffMins < 1) return "Just now";
+  if (diffMins === 1) return "1 minute ago";
+  if (diffMins < 60) return `${diffMins} minutes ago`;
+  return date.toLocaleTimeString();
+}
+
 /** Charity management dashboard with tabs for transactions, volunteer hours, applications, opportunities, causes, and organization settings. */
 export const CharityPortal: React.FC = () => {
   const { user, userType } = useAuth();
@@ -1236,18 +1251,6 @@ export const CharityPortal: React.FC = () => {
     return <Navigate to="/give-dashboard" />;
   }
 
-  // Format last updated time
-  const formatLastUpdated = () => {
-    if (!lastUpdated) return "";
-    const now = new Date();
-    const diffMs = now.getTime() - lastUpdated.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return "Just now";
-    if (diffMins === 1) return "1 minute ago";
-    if (diffMins < 60) return `${diffMins} minutes ago`;
-    return lastUpdated.toLocaleTimeString();
-  };
-
   // Get pending counts for tab badges
   const pendingApplicationsCount = pendingApplications.length;
   const pendingHoursCount = pendingHours.length;
@@ -1272,7 +1275,7 @@ export const CharityPortal: React.FC = () => {
 
         {/* Stats Row with Last Updated */}
         <OverviewHeader
-          lastUpdatedText={lastUpdated ? formatLastUpdated() : ""}
+          lastUpdatedText={lastUpdated ? formatLastUpdated(lastUpdated) : ""}
           onRefresh={handleRefresh}
           t={t}
         />

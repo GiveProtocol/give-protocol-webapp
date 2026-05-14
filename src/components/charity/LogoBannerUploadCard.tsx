@@ -18,6 +18,11 @@ export interface LogoBannerUploadCardProps {
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
+/**
+ * Returns the first two characters of an EIN (dashes removed) as uppercase initials.
+ * @param ein - The charity EIN number
+ * @returns Two uppercase characters for use as a logo placeholder
+ */
 function getInitials(ein: string): string {
   return ein.replace(/-/g, "").slice(0, 2).toUpperCase();
 }

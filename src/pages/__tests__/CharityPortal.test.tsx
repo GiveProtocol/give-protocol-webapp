@@ -469,7 +469,7 @@ describe("CharityPortal", () => {
         .mockReturnValueOnce(0)
         .mockReturnValueOnce(4000); // Second click 4s later (past cooldown)
 
-      await act(async () => {
+      await act(() => {
         screen.getByRole("button", { name: /refresh data/i }).click();
       });
 
