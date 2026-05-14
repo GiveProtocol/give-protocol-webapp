@@ -515,17 +515,12 @@ export const CharityPortal: React.FC = () => {
     };
   }, []);
 
-  // Fetch charity wallet address on mount
+  // Fetch wallet address and charity profile header data whenever the user changes
   useEffect(() => {
     if (!userId) return;
     getCharityWalletAddress(userId).then((addr) => {
       if (isMountedRef.current) setCharityWalletAddress(addr);
     });
-  }, [userId]);
-
-  // Fetch charity name, logo_url and banner_image_url from charity_profiles for dashboard header
-  useEffect(() => {
-    if (!userId) return;
     supabase
       .from("charity_profiles")
       .select("name, logo_url, banner_image_url")
