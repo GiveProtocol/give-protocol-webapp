@@ -197,13 +197,14 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
           });
         }
 
-        // 4. Claim the charity profile
+        // 4. Claim the charity profile (p_signer_phone required by SQL function)
         const { error: claimError } = await supabase.rpc(
           "claim_charity_profile",
           {
             p_ein: organization.ein,
             p_signer_name: formData.contactName,
             p_signer_email: formData.contactEmail,
+            p_signer_phone: null,
           },
         );
 
