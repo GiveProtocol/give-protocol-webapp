@@ -98,19 +98,23 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
     fetchCharityProfile();
   }, [user?.id]);
 
-  const handleLogoUploaded = useCallback((url: string | null) => {
-    setCharityProfile((prev) =>
-      prev ? { ...prev, logoUrl: url } : prev,
-    );
-    onLogoUploaded?.(url);
-  }, [onLogoUploaded]);
+  const handleLogoUploaded = useCallback(
+    (url: string | null) => {
+      setCharityProfile((prev) => (prev ? { ...prev, logoUrl: url } : prev));
+      onLogoUploaded?.(url);
+    },
+    [onLogoUploaded],
+  );
 
-  const handleBannerUploaded = useCallback((url: string | null) => {
-    setCharityProfile((prev) =>
-      prev ? { ...prev, bannerImageUrl: url } : prev,
-    );
-    onBannerUploaded?.(url);
-  }, [onBannerUploaded]);
+  const handleBannerUploaded = useCallback(
+    (url: string | null) => {
+      setCharityProfile((prev) =>
+        prev ? { ...prev, bannerImageUrl: url } : prev,
+      );
+      onBannerUploaded?.(url);
+    },
+    [onBannerUploaded],
+  );
 
   const handleSave = useCallback(
     async (data: OrganizationProfile) => {

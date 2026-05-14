@@ -210,7 +210,14 @@ export const CharityOnboardingChecklist: React.FC<
         return next;
       });
     }
-  }, [logoUrl, bannerImageUrl, completedItems, loading, dismissed, persistState]);
+  }, [
+    logoUrl,
+    bannerImageUrl,
+    completedItems,
+    loading,
+    dismissed,
+    persistState,
+  ]);
 
   const toggleItem = useCallback(
     (itemId: string) => {

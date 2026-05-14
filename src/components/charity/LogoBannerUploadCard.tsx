@@ -1,10 +1,10 @@
-import React, { useCallback, useRef } from 'react';
-import { Camera, X } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/lib/supabase';
-import { useToast } from '@/hooks/useToast';
-import { Logger } from '@/utils/logger';
+import React, { useCallback, useRef } from "react";
+import { Camera, X } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/useToast";
+import { Logger } from "@/utils/logger";
 
 export interface LogoBannerUploadCardProps {
   ein: string;
@@ -16,10 +16,10 @@ export interface LogoBannerUploadCardProps {
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
-const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
 function getInitials(ein: string): string {
-  return ein.replace(/-/g, '').slice(0, 2).toUpperCase();
+  return ein.replace(/-/g, "").slice(0, 2).toUpperCase();
 }
 
 /**
@@ -41,46 +41,54 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
   const logoInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
-  const isOwner = Boolean(user?.id && claimedByUserId && user.id === claimedByUserId);
+  const isOwner = Boolean(
+    user?.id && claimedByUserId && user.id === claimedByUserId,
+  );
 
   const uploadFile = useCallback(
-    async (file: File, kind: 'logo' | 'banner'): Promise<void> => {
+    async (file: File, kind: "logo" | "banner"): Promise<void> => {
       if (!ALLOWED_TYPES.has(file.type)) {
-        showToast('error', 'Invalid file type', 'Please upload a JPEG, PNG, or WebP image.');
+        showToast(
+          "error",
+          "Invalid file type",
+          "Please upload a JPEG, PNG, or WebP image.",
+        );
         return;
       }
       if (file.size > MAX_FILE_SIZE) {
-        showToast('error', 'File too large', 'Maximum file size is 5 MB.');
+        showToast("error", "File too large", "Maximum file size is 5 MB.");
         return;
       }
 
-      const ext = file.name.split('.').pop() ?? 'jpg';
+      const ext = file.name.split(".").pop() ?? "jpg";
       const path = `${ein}/${kind}.${ext}`;
 
       const { error } = await supabase.storage
-        .from('charity-assets')
-        .upload(path, file, { cacheControl: '3600', upsert: true });
+        .from("charity-assets")
+        .upload(path, file, { cacheControl: "3600", upsert: true });
 
       if (error) {
-        Logger.error('Logo/banner upload failed', { error, ein, kind });
-        showToast('error', 'Upload failed', 'Please try again.');
+        Logger.error("Logo/banner upload failed", { error, ein, kind });
+        showToast("error", "Upload failed", "Please try again.");
         return;
       }
 
-      const { data: urlData } = supabase.storage.from('charity-assets').getPublicUrl(path);
-      const column = kind === 'logo' ? 'logo_url' : 'banner_image_url';
+      const { data: urlData } = supabase.storage
+        .from("charity-assets")
+        .getPublicUrl(path);
+      const column = kind === "logo" ? "logo_url" : "banner_image_url";
 
       await supabase
-        .from('charity_profiles')
+        .from("charity_profiles")
         .update({ [column]: urlData.publicUrl })
-        .eq('ein', ein);
+        .eq("ein", ein);
 
-      if (kind === 'logo') {
+      if (kind === "logo") {
         onLogoUploaded(urlData.publicUrl);
       } else {
         onBannerUploaded(urlData.publicUrl);
       }
-      showToast('success', `${kind === 'logo' ? 'Logo' : 'Banner'} uploaded`);
+      showToast("success", `${kind === "logo" ? "Logo" : "Banner"} uploaded`);
     },
     [ein, showToast, onLogoUploaded, onBannerUploaded],
   );
@@ -89,7 +97,7 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        uploadFile(file, 'logo');
+        uploadFile(file, "logo");
       }
     },
     [uploadFile],
@@ -99,7 +107,7 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) {
-        uploadFile(file, 'banner');
+        uploadFile(file, "banner");
       }
     },
     [uploadFile],
@@ -115,20 +123,20 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
 
   const handleRemoveLogo = useCallback(async () => {
     await supabase
-      .from('charity_profiles')
+      .from("charity_profiles")
       .update({ logo_url: null })
-      .eq('ein', ein);
+      .eq("ein", ein);
     onLogoUploaded(null);
-    showToast('success', 'Logo removed');
+    showToast("success", "Logo removed");
   }, [ein, onLogoUploaded, showToast]);
 
   const handleRemoveBanner = useCallback(async () => {
     await supabase
-      .from('charity_profiles')
+      .from("charity_profiles")
       .update({ banner_image_url: null })
-      .eq('ein', ein);
+      .eq("ein", ein);
     onBannerUploaded(null);
-    showToast('success', 'Banner removed');
+    showToast("success", "Banner removed");
   }, [ein, onBannerUploaded, showToast]);
 
   if (!isOwner) return null;
@@ -137,7 +145,9 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
 
   return (
     <Card hover={false} className="p-5">
-      <h3 className="text-sm font-semibold text-gray-900 mb-4">Logo &amp; Banner</h3>
+      <h3 className="text-sm font-semibold text-gray-900 mb-4">
+        Logo &amp; Banner
+      </h3>
 
       {/* Banner zone */}
       <div className="mb-4">
@@ -210,7 +220,9 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
                   {initials}
                 </span>
                 <Camera className="h-6 w-6 text-white hidden group-hover:block" />
-                <span className="text-xs text-white/80 hidden group-hover:block">Upload logo</span>
+                <span className="text-xs text-white/80 hidden group-hover:block">
+                  Upload logo
+                </span>
               </button>
             )}
           </div>

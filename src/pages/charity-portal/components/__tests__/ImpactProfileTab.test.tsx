@@ -22,7 +22,9 @@ describe("ImpactProfileTab", () => {
 
   it("renders impact profile form after loading", async () => {
     render(<ImpactProfileTab profileId="profile-123" />);
-    const saveBtn = await screen.findByRole("button", { name: /save changes/i });
+    const saveBtn = await screen.findByRole("button", {
+      name: /save changes/i,
+    });
     expect(saveBtn).toBeInTheDocument();
   });
 
@@ -30,7 +32,9 @@ describe("ImpactProfileTab", () => {
     render(<ImpactProfileTab profileId="profile-123" />);
 
     // Wait for form to appear after initial data fetch
-    const saveBtn = await screen.findByRole("button", { name: /save changes/i });
+    const saveBtn = await screen.findByRole("button", {
+      name: /save changes/i,
+    });
     const preCallCount = mockFrom.mock.calls.length;
 
     // Click the submit button (triggers form onSubmit)
@@ -52,7 +56,9 @@ describe("ImpactProfileTab", () => {
   it("includes all impact fields in the upsert payload", async () => {
     render(<ImpactProfileTab profileId="profile-456" />);
 
-    const saveBtn = await screen.findByRole("button", { name: /save changes/i });
+    const saveBtn = await screen.findByRole("button", {
+      name: /save changes/i,
+    });
     const preCallCount = mockFrom.mock.calls.length;
 
     fireEvent.click(saveBtn);

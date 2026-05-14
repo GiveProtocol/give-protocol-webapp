@@ -1,18 +1,18 @@
-import React, { useState, useCallback, useMemo } from 'react';
-import { Heart, AlertTriangle } from 'lucide-react';
-import { Card } from '@/components/ui/Card';
-import { Button } from '@/components/ui/Button';
-import { useWeb3 } from '@/contexts/Web3Context';
-import { DonationModal } from '@/components/web3/donation/DonationModal';
+import React, { useState, useCallback, useMemo } from "react";
+import { Heart, AlertTriangle } from "lucide-react";
+import { Card } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
+import { useWeb3 } from "@/contexts/Web3Context";
+import { DonationModal } from "@/components/web3/donation/DonationModal";
 
-type PaymentTab = 'crypto' | 'fiat';
+type PaymentTab = "crypto" | "fiat";
 
 interface DonateWidgetProps {
   ein: string;
   charityName: string;
   walletAddress: string | null | undefined;
   charityId: string;
-  mode: 'sidebar' | 'modal';
+  mode: "sidebar" | "modal";
   isVerified?: boolean;
   onClose?: () => void;
 }
@@ -36,9 +36,9 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
   isVerified = false,
   onClose,
 }) => {
-  const [tab, setTab] = useState<PaymentTab>('crypto');
+  const [tab, setTab] = useState<PaymentTab>("crypto");
   const [amount, setAmount] = useState(0);
-  const [customAmount, setCustomAmount] = useState('');
+  const [customAmount, setCustomAmount] = useState("");
   const [amountError, setAmountError] = useState<string | null>(null);
   const [showDonationModal, setShowDonationModal] = useState(false);
   const { isConnected, connect } = useWeb3();
@@ -47,7 +47,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
     (newTab: PaymentTab) => () => {
       setTab(newTab);
       setAmount(0);
-      setCustomAmount('');
+      setCustomAmount("");
       setAmountError(null);
     },
     [],
@@ -56,7 +56,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
   const handlePresetClick = useCallback(
     (preset: number) => () => {
       setAmount(preset);
-      setCustomAmount('');
+      setCustomAmount("");
     },
     [],
   );
@@ -75,8 +75,8 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
         setAmount(0);
         return;
       }
-      const max = tab === 'crypto' ? MAX_CRYPTO_DONATION : MAX_FIAT_DONATION;
-      const symbol = tab === 'crypto' ? 'Ξ' : '$';
+      const max = tab === "crypto" ? MAX_CRYPTO_DONATION : MAX_FIAT_DONATION;
+      const symbol = tab === "crypto" ? "Ξ" : "$";
       if (parsed > max) {
         setAmountError(`Maximum donation is ${symbol}${max}`);
         setAmount(0);
@@ -89,7 +89,7 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
   );
 
   const handleDonate = useCallback(() => {
-    if (tab === 'crypto' && !isConnected) {
+    if (tab === "crypto" && !isConnected) {
       connect();
       return;
     }
@@ -101,120 +101,138 @@ export const DonateWidget: React.FC<DonateWidgetProps> = ({
     onClose?.();
   }, [onClose]);
 
-  const resolvedAddress = walletAddress ?? '';
+  const resolvedAddress = walletAddress ?? "";
   const hasWallet = Boolean(walletAddress);
 
-  const presetGridClass = mode === 'sidebar' ? 'grid-cols-2' : 'grid-cols-4';
+  const presetGridClass = mode === "sidebar" ? "grid-cols-2" : "grid-cols-4";
 
   const content = useMemo(() => {
-    const currencySymbol = tab === 'crypto' ? 'Ξ' : '$';
-    const presets = tab === 'crypto' ? CRYPTO_PRESETS : FIAT_PRESETS;
-    const maxDonation = tab === 'crypto' ? MAX_CRYPTO_DONATION : MAX_FIAT_DONATION;
+    const currencySymbol = tab === "crypto" ? "Ξ" : "$";
+    const presets = tab === "crypto" ? CRYPTO_PRESETS : FIAT_PRESETS;
+    const maxDonation =
+      tab === "crypto" ? MAX_CRYPTO_DONATION : MAX_FIAT_DONATION;
     return (
-    <div className="space-y-4">
-      {/* Crypto / Fiat toggle — hidden for verified charities */}
-      {!isVerified && (
-        <div className="flex rounded-lg bg-gray-100 p-0.5">
-          <button
-            type="button"
-            onClick={handleTabChange('crypto')}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
-              tab === 'crypto'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Crypto
-          </button>
-          <button
-            type="button"
-            onClick={handleTabChange('fiat')}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
-              tab === 'fiat'
-                ? 'bg-emerald-600 text-white shadow-sm'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-          >
-            Fiat (USD)
-          </button>
+      <div className="space-y-4">
+        {/* Crypto / Fiat toggle — hidden for verified charities */}
+        {!isVerified && (
+          <div className="flex rounded-lg bg-gray-100 p-0.5">
+            <button
+              type="button"
+              onClick={handleTabChange("crypto")}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+                tab === "crypto"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Crypto
+            </button>
+            <button
+              type="button"
+              onClick={handleTabChange("fiat")}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-md transition-all ${
+                tab === "fiat"
+                  ? "bg-emerald-600 text-white shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              Fiat (USD)
+            </button>
+          </div>
+        )}
+
+        {/* Amount presets */}
+        <div className={`grid ${presetGridClass} gap-2`}>
+          {presets.map((preset) => (
+            <button
+              key={preset}
+              type="button"
+              onClick={handlePresetClick(preset)}
+              className={`py-2 rounded-lg text-sm font-medium transition-all border ${
+                amount === preset && !customAmount
+                  ? "bg-emerald-600 text-white border-emerald-600"
+                  : "bg-white text-gray-700 border-gray-200 hover:border-emerald-300"
+              }`}
+            >
+              {currencySymbol}
+              {preset}
+            </button>
+          ))}
         </div>
-      )}
 
-      {/* Amount presets */}
-      <div className={`grid ${presetGridClass} gap-2`}>
-        {presets.map((preset) => (
-          <button
-            key={preset}
-            type="button"
-            onClick={handlePresetClick(preset)}
-            className={`py-2 rounded-lg text-sm font-medium transition-all border ${
-              amount === preset && !customAmount
-                ? 'bg-emerald-600 text-white border-emerald-600'
-                : 'bg-white text-gray-700 border-gray-200 hover:border-emerald-300'
-            }`}
-          >
-            {currencySymbol}{preset}
-          </button>
-        ))}
-      </div>
-
-      {/* Custom input */}
-      <div className="relative">
-        <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">{currencySymbol}</span>
-        <input
-          type="number"
-          value={customAmount}
-          onChange={handleCustomChange}
-          onFocus={handleCustomFocus}
-          placeholder="Custom amount"
-          min="1"
-          max={maxDonation}
-          className="w-full pl-7 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
-        />
-      </div>
-      {amountError && (
-        <p className="text-xs text-red-600 -mt-2">{amountError}</p>
-      )}
-
-      {/* Wallet warning for crypto */}
-      {tab === 'crypto' && !hasWallet && (
-        <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
-          <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
-          <p className="text-xs text-amber-700">
-            This charity hasn&apos;t set up a wallet yet — your donation will be held by
-            Give Protocol Foundation until claimed.
-          </p>
+        {/* Custom input */}
+        <div className="relative">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
+            {currencySymbol}
+          </span>
+          <input
+            type="number"
+            value={customAmount}
+            onChange={handleCustomChange}
+            onFocus={handleCustomFocus}
+            placeholder="Custom amount"
+            min="1"
+            max={maxDonation}
+            className="w-full pl-7 pr-3 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500"
+          />
         </div>
-      )}
+        {amountError && (
+          <p className="text-xs text-red-600 -mt-2">{amountError}</p>
+        )}
 
-      {/* Donate button */}
-      <Button
-        fullWidth
-        onClick={handleDonate}
-        disabled={amount <= 0}
-        icon={<Heart className="h-4 w-4" />}
-      >
-        {(() => {
-          if (tab === 'crypto' && !isConnected) return 'Connect wallet';
-          if (tab === 'fiat') return 'Donate with card';
-          const displayAmount = amount > 0 ? amount : '';
-          return `Donate ${currencySymbol}${displayAmount}`;
-        })()}
-      </Button>
+        {/* Wallet warning for crypto */}
+        {tab === "crypto" && !hasWallet && (
+          <div className="flex items-start gap-2 p-2.5 bg-amber-50 border border-amber-200 rounded-lg">
+            <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-xs text-amber-700">
+              This charity hasn&apos;t set up a wallet yet — your donation will
+              be held by Give Protocol Foundation until claimed.
+            </p>
+          </div>
+        )}
 
-      {/* Fee disclosure */}
-      <p className="text-xs text-gray-400 text-center">
-        {tab === 'crypto'
-          ? '0% platform fee on direct donations. Network gas fees apply.'
-          : 'Secure checkout · Helcim (USD) / PayPal (International)'}
-      </p>
-    </div>
-  );
-  }, [tab, amount, amountError, customAmount, presetGridClass, isConnected, isVerified, hasWallet, handleTabChange, handlePresetClick, handleCustomChange, handleCustomFocus, handleDonate]);
+        {/* Donate button */}
+        <Button
+          fullWidth
+          onClick={handleDonate}
+          disabled={amount <= 0}
+          icon={<Heart className="h-4 w-4" />}
+        >
+          {(() => {
+            if (tab === "crypto" && !isConnected) return "Connect wallet";
+            if (tab === "fiat") return "Donate with card";
+            const displayAmount = amount > 0 ? amount : "";
+            return `Donate ${currencySymbol}${displayAmount}`;
+          })()}
+        </Button>
+
+        {/* Fee disclosure */}
+        <p className="text-xs text-gray-400 text-center">
+          {tab === "crypto"
+            ? "0% platform fee on direct donations. Network gas fees apply."
+            : "Secure checkout · Helcim (USD) / PayPal (International)"}
+        </p>
+      </div>
+    );
+  }, [
+    tab,
+    amount,
+    amountError,
+    customAmount,
+    presetGridClass,
+    isConnected,
+    isVerified,
+    hasWallet,
+    handleTabChange,
+    handlePresetClick,
+    handleCustomChange,
+    handleCustomFocus,
+    handleDonate,
+  ]);
 
   return (
     <>
-      {mode === 'sidebar' ? (
+      {mode === "sidebar" ? (
         <Card hover={false} className="p-5">
           <h3 className="text-sm font-semibold text-gray-900 mb-3">
             Support {charityName}

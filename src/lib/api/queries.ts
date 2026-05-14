@@ -11,9 +11,7 @@ interface ApiResult<T> {
  * @param id - The charity profile UUID
  * @returns Charity data or null, with error on failure
  */
-export async function getCharity(
-  id: string,
-): Promise<ApiResult<CharityData>> {
+export async function getCharity(id: string): Promise<ApiResult<CharityData>> {
   const { data, error } = await supabase
     .from("charity_profiles")
     .select("*")

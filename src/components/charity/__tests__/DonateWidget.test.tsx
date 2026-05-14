@@ -109,9 +109,7 @@ describe("DonateWidget", () => {
     it("shows fiat fee disclosure after switching to fiat tab", () => {
       renderWidget();
       fireEvent.click(screen.getByText("Fiat (USD)"));
-      expect(
-        screen.getByText(/Secure checkout/),
-      ).toBeInTheDocument();
+      expect(screen.getByText(/Secure checkout/)).toBeInTheDocument();
     });
 
     it("shows Donate with card button after switching to fiat tab", () => {
@@ -305,7 +303,9 @@ describe("DonateWidget", () => {
       fireEvent.click(screen.getByText("Fiat (USD)"));
       const input = screen.getByPlaceholderText("Custom amount");
       fireEvent.change(input, { target: { value: "15000" } });
-      expect(screen.getByText("Maximum donation is $10000")).toBeInTheDocument();
+      expect(
+        screen.getByText("Maximum donation is $10000"),
+      ).toBeInTheDocument();
     });
 
     it("clears error when a valid amount is entered after an error", () => {

@@ -91,8 +91,7 @@ export function useCharity(id: string) {
         getCharity(id),
         getCharityCauses(id),
       ]);
-      if (charityResponse.error)
-        throw new Error(charityResponse.error.message);
+      if (charityResponse.error) throw new Error(charityResponse.error.message);
       if (causesResponse.error) throw new Error(causesResponse.error.message);
       setCharity(charityResponse.data);
       setCauses(causesResponse.data || []);
