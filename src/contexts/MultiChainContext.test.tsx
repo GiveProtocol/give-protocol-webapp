@@ -28,28 +28,41 @@ function TestConsumer() {
             supportedChainTypes: ["evm", "solana"],
             providers: { evm: {} },
             isInstalled: () => true,
-            connect: jest.fn<() => Promise<UnifiedAccount[]>>().mockResolvedValue([
-              {
-                id: "evm-1",
-                address: "0x123",
-                chainType: "evm",
-                chainId: 1,
-                chainName: "Ethereum",
-                source: "TestWallet",
-              },
-            ]),
+            connect: jest
+              .fn<() => Promise<UnifiedAccount[]>>()
+              .mockResolvedValue([
+                {
+                  id: "evm-1",
+                  address: "0x123",
+                  chainType: "evm",
+                  chainId: 1,
+                  chainName: "Ethereum",
+                  source: "TestWallet",
+                },
+              ]),
             disconnect: jest.fn<() => Promise<void>>().mockResolvedValue(),
-            getAccounts: jest.fn<() => Promise<UnifiedAccount[]>>().mockResolvedValue([]),
+            getAccounts: jest
+              .fn<() => Promise<UnifiedAccount[]>>()
+              .mockResolvedValue([]),
             switchChain: jest.fn<() => Promise<void>>().mockResolvedValue(),
-            signTransaction: jest.fn<() => Promise<string>>().mockResolvedValue("0xsig"),
-            signMessage: jest.fn<() => Promise<string>>().mockResolvedValue("0xmsg"),
+            signTransaction: jest
+              .fn<() => Promise<string>>()
+              .mockResolvedValue("0xsig"),
+            signMessage: jest
+              .fn<() => Promise<string>>()
+              .mockResolvedValue("0xmsg"),
           };
           ctx.connect(mockWallet, "evm").catch(() => {
             // Expected in some tests
           });
         }}
       />
-      <button data-testid="disconnect-btn" onClick={() => { ctx.disconnect(); }} />
+      <button
+        data-testid="disconnect-btn"
+        onClick={() => {
+          ctx.disconnect();
+        }}
+      />
       <button data-testid="clear-error-btn" onClick={ctx.clearError} />
     </div>
   );
