@@ -63,6 +63,8 @@ describe("CharityOnboardingChecklist", () => {
     props: {
       onNavigateTab?: (tab: string) => void;
       walletAddress?: string | null;
+      logoUrl?: string | null;
+      bannerImageUrl?: string | null;
     } = {},
   ) => render(<CharityOnboardingChecklist profileId={PROFILE_ID} {...props} />);
 
@@ -323,6 +325,47 @@ describe("CharityOnboardingChecklist", () => {
     );
     await waitFor(() => {
       expect(fromMock.mock.calls.length).toBeGreaterThan(callsBefore);
+    });
+  });
+
+  it("auto-marks upload_logo complete when logoUrl prop is provided", async () => {
+    renderChecklist({ logoUrl: "https://example.com/logo.png" });
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: /uncheck upload logo or banner image/i,
+        }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("auto-marks upload_logo complete when bannerImageUrl prop is provided", async () => {
+    renderChecklist({ bannerImageUrl: "https://example.com/banner.png" });
+    await waitFor(() => {
+      expect(
+        screen.getByRole("button", {
+          name: /uncheck upload logo or banner image/i,
+        }),
+      ).toBeInTheDocument();
+    });
+  });
+
+  it("does not auto-mark upload_logo complete when neither logoUrl nor bannerImageUrl is provided", async () => {
+    renderChecklist();
+    await waitFor(() => {
+      expect(screen.getByText("0 of 5 steps complete")).toBeInTheDocument();
+    });
+    expect(
+      screen.queryByRole("button", {
+        name: /uncheck upload logo or banner image/i,
+      }),
+    ).not.toBeInTheDocument();
+  });
+
+  it("counts upload_logo in completion total when logoUrl is provided", async () => {
+    renderChecklist({ logoUrl: "https://example.com/logo.png" });
+    await waitFor(() => {
+      expect(screen.getByText("1 of 5 steps complete")).toBeInTheDocument();
     });
   });
 });
