@@ -1,6 +1,6 @@
-import React from 'react';
-import { DivideIcon as LucideIcon } from 'lucide-react';
-import { CurrencyDisplay } from '@/components/CurrencyDisplay';
+import React from "react";
+import { DivideIcon as LucideIcon } from "lucide-react";
+import { CurrencyDisplay } from "@/components/CurrencyDisplay";
 
 interface StatCardProps {
   icon: LucideIcon;

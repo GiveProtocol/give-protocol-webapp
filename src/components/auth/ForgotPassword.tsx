@@ -1,5 +1,5 @@
-import React from 'react';
-import { ForgotCredentials } from './ForgotCredentials';
+import React from "react";
+import { ForgotCredentials } from "./ForgotCredentials";
 
 interface ForgotPasswordProps {
   onBack: () => void;
