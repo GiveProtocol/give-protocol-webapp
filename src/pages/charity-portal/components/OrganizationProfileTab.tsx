@@ -9,6 +9,7 @@ import { LogoBannerUploadCard } from "@/components/charity/LogoBannerUploadCard"
 import {
   fetchCharityProfileAssets,
   fetchCharityProfileAssetsByEin,
+  fetchCharityProfileBySignerEmail,
 } from "@/services/charityProfileService";
 import type { OrganizationProfile } from "@/types/charity";
 
@@ -77,7 +78,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       return;
     }
 
-    /** Fetches the charity_profiles row for the current user, with EIN fallback. */
+    /** Fetches the charity_profiles row for the current user with three fallback tiers. */
     const fetchCharityProfile = async () => {
       // Primary lookup: charity_profiles.claimed_by = user.id
       const assets = await fetchCharityProfileAssets(user.id);
@@ -87,7 +88,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
         return;
       }
 
-      // Fallback: look up by EIN from user metadata (covers cases where
+      // Fallback 1: look up by EIN from user metadata (covers cases where
       // claimed_by was not set, e.g. claim RPC parameter mismatch)
       const userEin = (user.user_metadata as Record<string, unknown>)?.ein as
         | string
@@ -106,6 +107,25 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
         }
       }
 
+      // Fallback 2: look up by authorized_signer_email matching user email
+      // (covers accounts where claimed_by is NULL and EIN not in metadata)
+      if (user.email) {
+        const emailAssets = await fetchCharityProfileBySignerEmail(user.email);
+        if (emailAssets) {
+          setCharityProfile({
+            ...emailAssets,
+            claimedByUserId: emailAssets.claimedByUserId ?? user.id,
+          });
+          setCharityProfileLoading(false);
+          return;
+        }
+      }
+
+      Logger.warn("All charity profile lookups failed for upload card", {
+        userId: user.id,
+        hasEin: Boolean(userEin),
+        hasEmail: Boolean(user.email),
+      });
       setCharityProfileLoading(false);
     };
 
@@ -238,11 +258,30 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
             logoUrl={charityProfile.logoUrl}
             bannerImageUrl={charityProfile.bannerImageUrl}
             claimedByUserId={charityProfile.claimedByUserId}
+            portalContext
             onLogoUploaded={handleLogoUploaded}
             onBannerUploaded={handleBannerUploaded}
           />
         </div>
-      ) : null}
+      ) : (
+        <div
+          className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800"
+          role="alert"
+        >
+          <p className="font-medium">
+            {t(
+              "organization.brandingUnavailable",
+              "Logo & banner upload is not available yet.",
+            )}
+          </p>
+          <p className="mt-1 text-amber-600">
+            {t(
+              "organization.brandingUnavailableHint",
+              "Your charity profile could not be linked. Please try refreshing the page, or contact support if this persists.",
+            )}
+          </p>
+        </div>
+      )}
 
       <div className="bg-white rounded-xl shadow-md border border-gray-200 p-6">
         {error && (
