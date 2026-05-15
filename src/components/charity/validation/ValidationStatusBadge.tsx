@@ -17,6 +17,10 @@ export const ValidationStatusBadge: React.FC<ValidationStatusBadgeProps> = ({
   status,
   daysRemaining,
 }) => {
+  /**
+   * Resolves the styling, icon, and label for the current validation status.
+   * @returns Badge presentation properties for the current status
+   */
   const getBadgeStyles = () => {
     switch (status) {
       case 'pending':

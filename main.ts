@@ -7,14 +7,14 @@ console.log(`HTTP server running on http://localhost:${PORT}`);
 
 // For development, serve the static files from the dist directory
 // In production, these files would be served by a CDN or static file server
-await serve(async (req) => {
+await serve((req) => {
   const url = new URL(req.url);
-  
+
   // API routes would go here
   if (url.pathname.startsWith("/api/")) {
     return new Response("API endpoint", { status: 200 });
   }
-  
+
   // Serve static files from the dist directory
   return serveDir(req, {
     fsRoot: "dist",

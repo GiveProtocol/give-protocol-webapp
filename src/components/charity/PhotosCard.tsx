@@ -117,7 +117,7 @@ export const PhotosCard: React.FC<PhotosCardProps> = ({
             {url ? (
               <img
                 src={url}
-                alt={`Organization photo ${slot}`}
+                alt={`Organization ${slot}`}
                 className="rounded-lg object-cover h-36 w-full"
               />
             ) : (
