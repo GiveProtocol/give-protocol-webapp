@@ -320,6 +320,7 @@ describe("CharityClaimForm", () => {
           p_ein: "12-3456789",
           p_signer_name: "Jane Doe",
           p_signer_email: "jane@example.com",
+          p_signer_phone: null,
         });
       });
     });
