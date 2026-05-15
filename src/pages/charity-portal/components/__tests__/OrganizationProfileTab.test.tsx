@@ -6,12 +6,14 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   fetchCharityProfileAssets,
   fetchCharityProfileAssetsByEin,
+  fetchCharityProfileBySignerEmail,
 } from "@/services/charityProfileService";
 import { OrganizationProfileTab } from "../OrganizationProfileTab";
 
 const mockUseAuth = jest.mocked(useAuth);
 const mockFetchCharityProfileAssets = jest.mocked(fetchCharityProfileAssets);
 const mockFetchByEin = jest.mocked(fetchCharityProfileAssetsByEin);
+const mockFetchByEmail = jest.mocked(fetchCharityProfileBySignerEmail);
 
 const USER_ID = "user-abc";
 
@@ -43,6 +45,7 @@ describe("OrganizationProfileTab", () => {
       claimedByUserId: USER_ID,
     });
     mockFetchByEin.mockResolvedValue(null);
+    mockFetchByEmail.mockResolvedValue(null);
   });
 
   it("renders OrganizationProfileForm after loading", async () => {
@@ -60,11 +63,13 @@ describe("OrganizationProfileTab", () => {
     });
   });
 
-  it("does not render LogoBannerUploadCard when no charity_profiles row", async () => {
+  it("shows warning when no charity_profiles row found", async () => {
     mockFetchCharityProfileAssets.mockResolvedValue(null);
     render(<OrganizationProfileTab profileId="profile-123" />);
     await screen.findByRole("button", { name: /save changes/i });
-    expect(screen.queryByText(/logo & banner/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/logo & banner upload is not available yet/i),
+    ).toBeInTheDocument();
   });
 
   it("falls back to EIN lookup when claimed_by returns nothing", async () => {
@@ -89,14 +94,40 @@ describe("OrganizationProfileTab", () => {
     expect(mockFetchByEin).toHaveBeenCalledWith("98-7654321");
   });
 
-  it("does not render LogoBannerUploadCard when no user is logged in", async () => {
+  it("falls back to signer email when both claimed_by and EIN fail", async () => {
+    mockFetchCharityProfileAssets.mockResolvedValue(null);
+    mockFetchByEin.mockResolvedValue(null);
+    mockFetchByEmail.mockResolvedValue({
+      ein: "55-1234567",
+      logoUrl: null,
+      bannerImageUrl: null,
+      claimedByUserId: null,
+    });
+    mockUseAuth.mockReturnValue({
+      ...ownerAuthState,
+      user: {
+        id: USER_ID,
+        email: "signer@example.com",
+        user_metadata: {},
+      } as ReturnType<typeof useAuth>["user"],
+    });
+    render(<OrganizationProfileTab profileId="profile-123" />);
+    await waitFor(() => {
+      expect(screen.getByText(/logo & banner/i)).toBeInTheDocument();
+    });
+    expect(mockFetchByEmail).toHaveBeenCalledWith("signer@example.com");
+  });
+
+  it("shows warning instead of upload card when no user is logged in", async () => {
     mockUseAuth.mockReturnValue({
       ...ownerAuthState,
       user: null,
     });
     render(<OrganizationProfileTab profileId="profile-123" />);
     await screen.findByRole("button", { name: /save changes/i });
-    expect(screen.queryByText(/logo & banner/i)).not.toBeInTheDocument();
+    expect(
+      screen.getByText(/logo & banner upload is not available yet/i),
+    ).toBeInTheDocument();
     expect(mockFetchCharityProfileAssets).not.toHaveBeenCalled();
   });
 });

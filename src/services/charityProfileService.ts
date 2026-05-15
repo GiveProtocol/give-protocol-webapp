@@ -191,7 +191,7 @@ function toAssets(row: AssetRow): CharityProfileAssets {
  * @returns The asset record, or null when no row exists or on error
  */
 async function fetchAssetsByColumn(
-  filterColumn: "claimed_by" | "ein",
+  filterColumn: "claimed_by" | "ein" | "authorized_signer_email",
   filterValue: string,
 ): Promise<CharityProfileAssets | null> {
   const full = await supabase
@@ -278,6 +278,30 @@ export async function fetchCharityProfileAssetsByEin(
     Logger.error("Charity profile assets by EIN fetch threw", {
       error: err instanceof Error ? err.message : String(err),
       ein: trimmed,
+    });
+    return null;
+  }
+}
+
+/**
+ * Fetches charity profile assets by authorized signer email. Used as a
+ * last-resort fallback when both claimed_by and EIN lookups fail (e.g.
+ * claimed_by is NULL and EIN is not in user_metadata).
+ * @param email - The authorized signer email to match
+ * @returns The asset record, or null when no row exists
+ */
+export async function fetchCharityProfileBySignerEmail(
+  email: string,
+): Promise<CharityProfileAssets | null> {
+  const trimmed = email?.trim().toLowerCase();
+  if (!trimmed) return null;
+
+  try {
+    return await fetchAssetsByColumn("authorized_signer_email", trimmed);
+  } catch (err) {
+    Logger.error("Charity profile assets by signer email fetch threw", {
+      error: err instanceof Error ? err.message : String(err),
+      email: trimmed,
     });
     return null;
   }

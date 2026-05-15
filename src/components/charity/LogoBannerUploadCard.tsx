@@ -11,6 +11,8 @@ export interface LogoBannerUploadCardProps {
   logoUrl: string | null | undefined;
   bannerImageUrl: string | null | undefined;
   claimedByUserId: string | null | undefined;
+  /** When true, skip the ownership check — the portal already gates access. */
+  portalContext?: boolean;
   onLogoUploaded: (_url: string | null) => void;
   onBannerUploaded: (_url: string | null) => void;
 }
@@ -38,6 +40,7 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
   logoUrl,
   bannerImageUrl,
   claimedByUserId,
+  portalContext = false,
   onLogoUploaded,
   onBannerUploaded,
 }) => {
@@ -46,9 +49,10 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
   const logoInputRef = useRef<HTMLInputElement>(null);
   const bannerInputRef = useRef<HTMLInputElement>(null);
 
-  const isOwner = Boolean(
-    user?.id && claimedByUserId && user.id === claimedByUserId,
-  );
+  // In portal context the charity portal already gates access, so skip ownership check
+  const isOwner =
+    portalContext ||
+    Boolean(user?.id && claimedByUserId && user.id === claimedByUserId);
 
   const uploadFile = useCallback(
     async (file: File, kind: "logo" | "banner"): Promise<void> => {
