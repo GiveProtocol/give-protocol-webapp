@@ -7,6 +7,8 @@ import {
   fetchCharityProfileAssets,
   fetchCharityProfileAssetsByEin,
   fetchCharityProfileBySignerEmail,
+  fetchCharityProfileByName,
+  repairClaimedBy,
 } from "@/services/charityProfileService";
 import { OrganizationProfileTab } from "../OrganizationProfileTab";
 
@@ -14,6 +16,8 @@ const mockUseAuth = jest.mocked(useAuth);
 const mockFetchCharityProfileAssets = jest.mocked(fetchCharityProfileAssets);
 const mockFetchByEin = jest.mocked(fetchCharityProfileAssetsByEin);
 const mockFetchByEmail = jest.mocked(fetchCharityProfileBySignerEmail);
+const mockFetchByName = jest.mocked(fetchCharityProfileByName);
+const _mockRepair = jest.mocked(repairClaimedBy);
 
 const USER_ID = "user-abc";
 
@@ -46,6 +50,7 @@ describe("OrganizationProfileTab", () => {
     });
     mockFetchByEin.mockResolvedValue(null);
     mockFetchByEmail.mockResolvedValue(null);
+    mockFetchByName.mockResolvedValue(null);
   });
 
   it("renders OrganizationProfileForm after loading", async () => {
@@ -116,6 +121,31 @@ describe("OrganizationProfileTab", () => {
       expect(screen.getByText(/logo & banner/i)).toBeInTheDocument();
     });
     expect(mockFetchByEmail).toHaveBeenCalledWith("signer@example.com");
+  });
+
+  it("falls back to org name when all other lookups fail", async () => {
+    mockFetchCharityProfileAssets.mockResolvedValue(null);
+    mockFetchByEin.mockResolvedValue(null);
+    mockFetchByEmail.mockResolvedValue(null);
+    mockFetchByName.mockResolvedValue({
+      ein: "77-9999999",
+      logoUrl: null,
+      bannerImageUrl: null,
+      claimedByUserId: null,
+    });
+    mockUseAuth.mockReturnValue({
+      ...ownerAuthState,
+      user: {
+        id: USER_ID,
+        email: "test@example.com",
+        user_metadata: { organizationName: "Test Charity" },
+      } as ReturnType<typeof useAuth>["user"],
+    });
+    render(<OrganizationProfileTab profileId="profile-123" />);
+    await waitFor(() => {
+      expect(screen.getByText(/logo & banner/i)).toBeInTheDocument();
+    });
+    expect(mockFetchByName).toHaveBeenCalledWith("Test Charity");
   });
 
   it("shows warning instead of upload card when no user is logged in", async () => {

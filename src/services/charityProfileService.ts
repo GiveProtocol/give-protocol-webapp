@@ -191,7 +191,7 @@ function toAssets(row: AssetRow): CharityProfileAssets {
  * @returns The asset record, or null when no row exists or on error
  */
 async function fetchAssetsByColumn(
-  filterColumn: "claimed_by" | "ein" | "authorized_signer_email",
+  filterColumn: "claimed_by" | "ein" | "authorized_signer_email" | "name",
   filterValue: string,
 ): Promise<CharityProfileAssets | null> {
   const full = await supabase
@@ -304,5 +304,67 @@ export async function fetchCharityProfileBySignerEmail(
       email: trimmed,
     });
     return null;
+  }
+}
+
+/**
+ * Fetches charity profile assets by organization name. Used as a final
+ * fallback when claimed_by, EIN, and signer email all fail.
+ * @param name - The organization name to match
+ * @returns The asset record, or null when no row exists
+ */
+export async function fetchCharityProfileByName(
+  name: string,
+): Promise<CharityProfileAssets | null> {
+  const trimmed = name?.trim();
+  if (!trimmed) return null;
+
+  try {
+    return await fetchAssetsByColumn("name", trimmed);
+  } catch (err) {
+    Logger.error("Charity profile assets by name fetch threw", {
+      error: err instanceof Error ? err.message : String(err),
+      name: trimmed,
+    });
+    return null;
+  }
+}
+
+/**
+ * Self-repair: sets claimed_by and authorized_signer_email on a charity
+ * profile that was left unlinked (e.g. because the claim RPC failed during
+ * onboarding). Only updates rows where claimed_by is currently NULL.
+ * @param ein - The charity EIN identifying the row to repair
+ * @param userId - The auth user ID to set as claimed_by
+ * @param email - The user email to set as authorized_signer_email
+ */
+export async function repairClaimedBy(
+  ein: string,
+  userId: string,
+  email?: string | null,
+): Promise<void> {
+  try {
+    const updateFields: Record<string, string> = { claimed_by: userId };
+    if (email) {
+      updateFields.authorized_signer_email = email;
+    }
+
+    const { error } = await supabase
+      .from("charity_profiles")
+      .update(updateFields)
+      .eq("ein", ein)
+      .is("claimed_by", null);
+
+    if (error) {
+      Logger.warn("Self-repair claimed_by failed", { error, ein, userId });
+    } else {
+      Logger.info("Self-repair: linked charity profile", { ein, userId });
+    }
+  } catch (err) {
+    Logger.warn("Self-repair claimed_by threw", {
+      error: err instanceof Error ? err.message : String(err),
+      ein,
+      userId,
+    });
   }
 }
