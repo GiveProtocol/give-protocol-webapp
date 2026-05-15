@@ -24,9 +24,7 @@ interface CurrencyContextType {
   convertFromFiat: (_fiatAmount: number, _tokenCoingeckoId: string) => number;
 }
 
-const CurrencyContext = createContext<CurrencyContextType | undefined>(
-  undefined,
-);
+const CurrencyContext = createContext<CurrencyContextType | undefined>();
 
 interface CurrencyProviderProps {
   children: React.ReactNode;

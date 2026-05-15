@@ -38,13 +38,13 @@ function makeWallet(
       .mockResolvedValue([makeAccount()]),
     disconnect: jest
       .fn<UnifiedWalletProvider["disconnect"]>()
-      .mockResolvedValue(undefined),
+      .mockResolvedValue(),
     getAccounts: jest
       .fn<UnifiedWalletProvider["getAccounts"]>()
       .mockResolvedValue([makeAccount()]),
     switchChain: jest
       .fn<UnifiedWalletProvider["switchChain"]>()
-      .mockResolvedValue(undefined),
+      .mockResolvedValue(),
     signTransaction: jest
       .fn<UnifiedWalletProvider["signTransaction"]>()
       .mockResolvedValue("0xsig"),
