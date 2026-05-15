@@ -14,4 +14,4 @@ export const fetchCharityProfileBySignerEmail = jest.fn(() =>
   Promise.resolve(null),
 );
 export const fetchCharityProfileByName = jest.fn(() => Promise.resolve(null));
-export const repairClaimedBy = jest.fn(() => Promise.resolve(undefined));
+export const repairClaimedBy = jest.fn(() => Promise.resolve());
