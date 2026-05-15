@@ -209,9 +209,32 @@ export const CharityClaimForm: React.FC<CharityClaimFormProps> = ({
         );
 
         if (claimError) {
-          Logger.error("Failed to claim charity profile", {
+          Logger.error("Failed to claim charity profile via RPC", {
             error: claimError,
           });
+          // Direct-update fallback: link the profile row when the RPC fails
+          // (e.g. due to SQL function parameter issues). Only updates rows
+          // where claimed_by is currently NULL to prevent hijacking.
+          const { error: fallbackError } = await supabase
+            .from("charity_profiles")
+            .update({
+              claimed_by: userId,
+              authorized_signer_name: formData.contactName,
+              authorized_signer_email: formData.contactEmail,
+              status: "claimed-pending",
+            })
+            .eq("ein", organization.ein)
+            .is("claimed_by", null);
+
+          if (fallbackError) {
+            Logger.error("Claim fallback direct update also failed", {
+              error: fallbackError,
+            });
+          } else {
+            Logger.info("Claim fallback succeeded via direct update", {
+              ein: organization.ein,
+            });
+          }
         }
 
         showToast(

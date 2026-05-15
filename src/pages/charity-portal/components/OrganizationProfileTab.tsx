@@ -10,6 +10,8 @@ import {
   fetchCharityProfileAssets,
   fetchCharityProfileAssetsByEin,
   fetchCharityProfileBySignerEmail,
+  fetchCharityProfileByName,
+  repairClaimedBy,
 } from "@/services/charityProfileService";
 import type { OrganizationProfile } from "@/types/charity";
 
@@ -78,8 +80,11 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       return;
     }
 
-    /** Fetches the charity_profiles row for the current user with three fallback tiers. */
+    /** Fetches the charity_profiles row for the current user with three fallback tiers and self-repair. */
     const fetchCharityProfile = async () => {
+      const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+      const userEin = (meta.ein as string | undefined)?.trim();
+
       // Primary lookup: charity_profiles.claimed_by = user.id
       const assets = await fetchCharityProfileAssets(user.id);
       if (assets) {
@@ -90,14 +95,13 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
 
       // Fallback 1: look up by EIN from user metadata (covers cases where
       // claimed_by was not set, e.g. claim RPC parameter mismatch)
-      const userEin = (user.user_metadata as Record<string, unknown>)?.ein as
-        | string
-        | undefined;
       if (userEin) {
         const einAssets = await fetchCharityProfileAssetsByEin(userEin);
         if (einAssets) {
-          // User is in the charity portal viewing their own profile, so
-          // treat them as the owner even when claimed_by is unset
+          // Self-repair: link this user to the charity_profiles row
+          if (!einAssets.claimedByUserId) {
+            await repairClaimedBy(userEin, user.id, user.email);
+          }
           setCharityProfile({
             ...einAssets,
             claimedByUserId: einAssets.claimedByUserId ?? user.id,
@@ -108,13 +112,33 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
       }
 
       // Fallback 2: look up by authorized_signer_email matching user email
-      // (covers accounts where claimed_by is NULL and EIN not in metadata)
       if (user.email) {
         const emailAssets = await fetchCharityProfileBySignerEmail(user.email);
         if (emailAssets) {
+          // Self-repair: link this user to the charity_profiles row
+          if (!emailAssets.claimedByUserId) {
+            await repairClaimedBy(emailAssets.ein, user.id, user.email);
+          }
           setCharityProfile({
             ...emailAssets,
             claimedByUserId: emailAssets.claimedByUserId ?? user.id,
+          });
+          setCharityProfileLoading(false);
+          return;
+        }
+      }
+
+      // Fallback 3: look up by organization name from user metadata
+      const orgName = meta.organizationName as string | undefined;
+      if (orgName) {
+        const nameAssets = await fetchCharityProfileByName(orgName);
+        if (nameAssets) {
+          if (!nameAssets.claimedByUserId) {
+            await repairClaimedBy(nameAssets.ein, user.id, user.email);
+          }
+          setCharityProfile({
+            ...nameAssets,
+            claimedByUserId: nameAssets.claimedByUserId ?? user.id,
           });
           setCharityProfileLoading(false);
           return;
@@ -125,6 +149,7 @@ export const OrganizationProfileTab: React.FC<OrganizationProfileTabProps> = ({
         userId: user.id,
         hasEin: Boolean(userEin),
         hasEmail: Boolean(user.email),
+        hasOrgName: Boolean(orgName),
       });
       setCharityProfileLoading(false);
     };
