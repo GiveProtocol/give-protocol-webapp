@@ -173,7 +173,8 @@ describe("CacheManager", () => {
   describe("edge cases", () => {
     it("handles null and undefined values", () => {
       cache.set("null-key", null);
-      cache.set("undefined-key", undefined);
+      const undef: undefined = void 0;
+      cache.set("undefined-key", undef);
 
       expect(cache.get("null-key")).toBeNull();
       expect(cache.get("undefined-key")).toBeUndefined();
