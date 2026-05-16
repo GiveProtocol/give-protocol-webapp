@@ -306,9 +306,9 @@ export class SecurityManager {
    * @param req - The HTTP request to validate
    * @returns Promise that resolves to true if the request passes all security checks
    */
-  public async validateRequest(req: Request): Promise<boolean> {
+  public validateRequest(req: Request): boolean {
     return (
-      (await this.csrf.validate(req.headers.get("X-CSRF-Token") || "")) &&
+      this.csrf.validate(req.headers.get("X-CSRF-Token") || "") &&
       !this.rateLimiter.isRateLimited(
         req.headers.get("X-Forwarded-For") || "unknown",
       ) &&

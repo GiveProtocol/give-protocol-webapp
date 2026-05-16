@@ -117,7 +117,7 @@ export class CSRFProtection {
     }
 
     // Use constant-time comparison to prevent timing attacks
-    return await this.timingSafeEqual(token, this.token);
+    return this.timingSafeEqual(token, this.token);
   }
 
   /**

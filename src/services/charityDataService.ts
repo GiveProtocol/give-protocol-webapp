@@ -104,11 +104,13 @@ export async function submitRemovalRequest(
  * Records the user's interest so the platform can prioritize outreach.
  * @param ein - The EIN of the organization
  * @param userId - The authenticated user's ID
+ * @param contactEmail - Optional contact email for follow-up confirmation
  * @returns True if submitted successfully, false on error or duplicate
  */
 export async function submitCharityRequest(
   ein: string,
   userId: string,
+  contactEmail?: string,
 ): Promise<boolean> {
   try {
     const normalizedEin = ein.replace(/-/g, "");
@@ -134,9 +136,12 @@ export async function submitCharityRequest(
       return true;
     }
 
-    const { error } = await supabase
-      .from("charity_requests")
-      .insert({ ein: normalizedEin, user_id: userId });
+    const row: Record<string, string> = { ein: normalizedEin, user_id: userId };
+    if (contactEmail) {
+      row.contact_email = contactEmail;
+    }
+
+    const { error } = await supabase.from("charity_requests").insert(row);
 
     if (error) {
       Logger.error("Error submitting charity request", { error, ein });
