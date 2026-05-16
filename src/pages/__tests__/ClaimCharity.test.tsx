@@ -258,6 +258,7 @@ describe("ClaimCharity", () => {
         expect(mockSubmitRequest).toHaveBeenCalledWith(
           "12-3456789",
           "user-123",
+          "user@charity.org",
         );
       });
     });

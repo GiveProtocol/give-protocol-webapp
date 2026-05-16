@@ -1,17 +1,18 @@
 /**
  * Supabase Edge Function: charity-request-notify
  * @module charity-request-notify
- * @description Sends an email to the platform admin distribution list
- * whenever a donor requests an unclaimed charity. Invoked by the
- * trg_charity_requests_notify trigger via pg_net after a row is inserted
- * into charity_requests.
+ * @description Sends two emails on each new charity_requests row:
+ *   1. Admin alert to the platform admin distribution list.
+ *   2. Confirmation to the requester (via contactEmail if provided, else auth email).
+ * Invoked by the trg_charity_requests_notify trigger via pg_net after a row is
+ * inserted into charity_requests.
  *
  * Required env:
  *   - SUPABASE_URL
  *   - SUPABASE_SERVICE_ROLE_KEY
  *   - RESEND_API_KEY            (optional; if missing the function no-ops)
  *   - ADMIN_ALERT_EMAIL         (optional; defaults to support@giveprotocol.io)
- * @version 1
+ * @version 2
  */
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -26,11 +27,13 @@ const corsHeaders = {
 
 const DEFAULT_ADMIN_EMAIL = "support@giveprotocol.io";
 const ADMIN_REVIEW_URL = "https://giveprotocol.io/admin/charity-requests";
+const SUPPORT_EMAIL = "support@giveprotocol.io";
 
 interface NotifyRequest {
   requestId: string;
   ein: string;
   userId: string | null;
+  contactEmail: string | null;
 }
 
 /**
@@ -57,6 +60,44 @@ function escapeHtml(text: string): string {
     if (char === ">") return "&gt;";
     return "&amp;";
   });
+}
+
+/**
+ * Sends an email via the Resend API.
+ * @param resendApiKey - Resend API key
+ * @param to - Recipient address
+ * @param subject - Email subject
+ * @param html - Email HTML body
+ * @returns The Resend email ID on success, or null on failure
+ */
+async function sendEmail(
+  resendApiKey: string,
+  to: string,
+  subject: string,
+  html: string,
+): Promise<string | null> {
+  const sendResponse = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${resendApiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from: "Give Protocol <notifications@giveprotocol.io>",
+      to: [to],
+      subject,
+      html,
+    }),
+  });
+
+  if (!sendResponse.ok) {
+    const errText = await sendResponse.text();
+    console.error(`Resend API error ${sendResponse.status} sending to ${to}:`, errText);
+    return null;
+  }
+
+  const result = (await sendResponse.json()) as Record<string, unknown>;
+  return typeof result.id === "string" ? result.id : null;
 }
 
 serve(async (req: Request) => {
@@ -106,6 +147,8 @@ serve(async (req: Request) => {
     requestId: reqObj.requestId,
     ein: reqObj.ein,
     userId: typeof reqObj.userId === "string" ? reqObj.userId : null,
+    contactEmail:
+      typeof reqObj.contactEmail === "string" ? reqObj.contactEmail : null,
   };
 
   if (!resendApiKey) {
@@ -122,13 +165,13 @@ serve(async (req: Request) => {
     auth: { autoRefreshToken: false, persistSession: false },
   });
 
-  // Look up requester email and total request count for this EIN
-  let requesterEmail: string | null = null;
+  // Look up requester auth email and total request count for this EIN
+  let requesterAuthEmail: string | null = null;
   if (payload.userId) {
     const { data: userData } = await supabase.auth.admin.getUserById(
       payload.userId,
     );
-    requesterEmail = userData.user?.email ?? null;
+    requesterAuthEmail = userData.user?.email ?? null;
   }
 
   const { count: requestCount } = await supabase
@@ -137,22 +180,25 @@ serve(async (req: Request) => {
     .eq("ein", payload.ein);
 
   const safeEin = escapeHtml(payload.ein);
-  const safeRequester = requesterEmail
-    ? escapeHtml(requesterEmail)
+  // Use contactEmail for display in admin alert; fall back to auth email
+  const displayEmail = payload.contactEmail ?? requesterAuthEmail;
+  const safeRequester = displayEmail
+    ? escapeHtml(displayEmail)
     : "(anonymous user)";
   const totalRequests = requestCount ?? 1;
 
-  const subject = `New charity request: EIN ${safeEin}`;
-  const html = `<!DOCTYPE html>
+  // ── 1. Admin alert email ──────────────────────────────────────────────────
+  const adminSubject = `New charity request: EIN ${safeEin}`;
+  const adminHtml = `<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>${subject}</title></head>
+<head><meta charset="utf-8"><title>${adminSubject}</title></head>
 <body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#333;">
   <div style="background:#10b981;padding:20px;border-radius:8px 8px 0 0;">
     <h1 style="color:white;margin:0;font-size:20px;">Give Protocol — Admin Alert</h1>
   </div>
   <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
     <h2 style="color:#111827;">New unclaimed charity request</h2>
-    <p>A donor has asked us to reach out to an unclaimed charity.</p>
+    <p>A user has asked us to reach out to an unclaimed charity.</p>
     <ul>
       <li><strong>EIN:</strong> ${safeEin}</li>
       <li><strong>Requester:</strong> ${safeRequester}</li>
@@ -167,34 +213,71 @@ serve(async (req: Request) => {
 </body>
 </html>`;
 
-  const sendResponse = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${resendApiKey}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      from: "Give Protocol <notifications@giveprotocol.io>",
-      to: [adminEmail],
-      subject,
-      html,
-    }),
-  });
-
-  if (!sendResponse.ok) {
-    const errText = await sendResponse.text();
-    console.error(`Resend API error ${sendResponse.status}:`, errText);
+  const adminEmailId = await sendEmail(
+    resendApiKey,
+    adminEmail,
+    adminSubject,
+    adminHtml,
+  );
+  if (adminEmailId === null) {
     return jsonResponse(
-      { success: false, error: "Email delivery failed" },
+      { success: false, error: "Admin email delivery failed" },
       500,
     );
   }
-
-  const sendResult = (await sendResponse.json()) as Record<string, unknown>;
   console.log(
     `Charity request alert sent to ${adminEmail} for EIN ${payload.ein}, emailId:`,
-    sendResult.id,
+    adminEmailId,
   );
 
-  return jsonResponse({ success: true, emailId: sendResult.id }, 200);
+  // ── 2. Requester confirmation email ───────────────────────────────────────
+  // Prefer the contactEmail submitted via the claim form; fall back to the
+  // requester's registered auth email. Skip wallet placeholder addresses.
+  const confirmationTarget = payload.contactEmail ?? requesterAuthEmail;
+
+  if (
+    confirmationTarget &&
+    !confirmationTarget.endsWith("@wallet.giveprotocol.io")
+  ) {
+    const safeTarget = escapeHtml(confirmationTarget);
+    const confirmSubject = "We received your claim request — Give Protocol";
+    const confirmHtml = `<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>${confirmSubject}</title></head>
+<body style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:24px;color:#333;">
+  <div style="background:#10b981;padding:20px;border-radius:8px 8px 0 0;">
+    <h1 style="color:white;margin:0;font-size:20px;">Give Protocol</h1>
+  </div>
+  <div style="border:1px solid #e5e7eb;border-top:none;padding:24px;border-radius:0 0 8px 8px;">
+    <h2 style="color:#111827;">We received your claim request</h2>
+    <p>Thank you for reaching out. We have received your request to claim the organization with EIN <strong>${safeEin}</strong> on Give Protocol.</p>
+    <p>Our team will review your claim and follow up at <strong>${safeTarget}</strong> within a few business days.</p>
+    <p>In the meantime, if you have any questions please contact us at
+      <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>.
+    </p>
+    <hr style="border:none;border-top:1px solid #e5e7eb;margin:24px 0;">
+    <p style="font-size:12px;color:#6b7280;">
+      EIN: ${safeEin}<br>
+      Questions? <a href="mailto:${SUPPORT_EMAIL}">${SUPPORT_EMAIL}</a>
+    </p>
+  </div>
+</body>
+</html>`;
+
+    const confirmEmailId = await sendEmail(
+      resendApiKey,
+      confirmationTarget,
+      confirmSubject,
+      confirmHtml,
+    );
+    if (confirmEmailId !== null) {
+      console.log(
+        `Confirmation email sent to ${confirmationTarget} for EIN ${payload.ein}, emailId:`,
+        confirmEmailId,
+      );
+    }
+    // Confirmation failure is non-fatal — admin alert already succeeded
+  }
+
+  return jsonResponse({ success: true, emailId: adminEmailId }, 200);
 });

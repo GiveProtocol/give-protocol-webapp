@@ -199,7 +199,7 @@ function ClaimCharity() {
     }
     setSubmitting(true);
     setSubmitError(null);
-    const ok = await submitCharityRequest(ein, user.id);
+    const ok = await submitCharityRequest(ein, user.id, email || undefined);
     setSubmitting(false);
     if (ok) {
       setSubmitted(true);
