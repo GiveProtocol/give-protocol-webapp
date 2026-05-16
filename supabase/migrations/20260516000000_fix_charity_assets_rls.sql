@@ -12,6 +12,12 @@ DROP POLICY IF EXISTS "Charities can update own assets" ON storage.objects;
 DROP POLICY IF EXISTS "Charities can delete own assets" ON storage.objects;
 DROP POLICY IF EXISTS "Anyone can view charity assets" ON storage.objects;
 
+-- Drop the new policies too in case of re-run or prior partial apply
+DROP POLICY IF EXISTS "Authenticated users can upload charity assets" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can update charity assets" ON storage.objects;
+DROP POLICY IF EXISTS "Authenticated users can delete charity assets" ON storage.objects;
+DROP POLICY IF EXISTS "Public can view charity assets" ON storage.objects;
+
 -- INSERT: Any authenticated user can upload to this bucket.
 -- Security is enforced by the bucket's allowed_mime_types + file_size_limit.
 CREATE POLICY "Authenticated users can upload charity assets"
