@@ -102,11 +102,7 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
           ein,
           column,
         });
-        showToast(
-          "error",
-          "Upload saved but URL not linked",
-          rpcError.message,
-        );
+        showToast("error", "Upload saved but URL not linked", rpcError.message);
         return;
       }
 
