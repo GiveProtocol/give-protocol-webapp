@@ -91,10 +91,20 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
         .getPublicUrl(path);
       const column = kind === "logo" ? "logo_url" : "banner_image_url";
 
-      await supabase
-        .from("charity_profiles")
-        .update({ [column]: urlData.publicUrl })
-        .eq("ein", ein);
+      const { error: rpcError } = await supabase.rpc(
+        "update_charity_asset_url",
+        { p_ein: ein, p_column: column, p_url: urlData.publicUrl },
+      );
+
+      if (rpcError) {
+        Logger.error("Failed to save asset URL", {
+          error: rpcError,
+          ein,
+          column,
+        });
+        showToast("error", "Upload saved but URL not linked", rpcError.message);
+        return;
+      }
 
       if (kind === "logo") {
         onLogoUploaded(urlData.publicUrl);
@@ -135,19 +145,21 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
   }, []);
 
   const handleRemoveLogo = useCallback(async () => {
-    await supabase
-      .from("charity_profiles")
-      .update({ logo_url: null })
-      .eq("ein", ein);
+    await supabase.rpc("update_charity_asset_url", {
+      p_ein: ein,
+      p_column: "logo_url",
+      p_url: null,
+    });
     onLogoUploaded(null);
     showToast("success", "Logo removed");
   }, [ein, onLogoUploaded, showToast]);
 
   const handleRemoveBanner = useCallback(async () => {
-    await supabase
-      .from("charity_profiles")
-      .update({ banner_image_url: null })
-      .eq("ein", ein);
+    await supabase.rpc("update_charity_asset_url", {
+      p_ein: ein,
+      p_column: "banner_image_url",
+      p_url: null,
+    });
     onBannerUploaded(null);
     showToast("success", "Banner removed");
   }, [ein, onBannerUploaded, showToast]);
