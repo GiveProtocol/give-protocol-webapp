@@ -11,9 +11,9 @@ interface Donation {
   status: 'completed' | 'pending';
 }
 
-const fetchRecentDonations = async (): Promise<Donation[]> => {
+const fetchRecentDonations = (): Promise<Donation[]> => {
   // Simulated API call
-  return [
+  return Promise.resolve([
     {
       id: '1',
       amount: 1000,
@@ -49,7 +49,7 @@ const fetchRecentDonations = async (): Promise<Donation[]> => {
       date: '2024-02-28',
       status: 'completed'
     }
-  ];
+  ]);
 };
 
 export const RecentDonations: React.FC = () => {

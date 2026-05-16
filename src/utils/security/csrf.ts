@@ -106,16 +106,16 @@ export class CSRFProtection {
     return this.token;
   }
 
-  async validate(token: string): Promise<boolean> {
+  validate(token: string): boolean {
     if (!this.token || !token) {
       return false;
     }
 
     // Use constant-time comparison to prevent timing attacks
-    return await this.timingSafeEqual(token, this.token);
+    return this.timingSafeEqual(token, this.token);
   }
 
-  private async timingSafeEqual(a: string, b: string): Promise<boolean> {
+  private timingSafeEqual(a: string, b: string): boolean {
     this.validationAttempts++;
 
     if (a.length !== b.length) {

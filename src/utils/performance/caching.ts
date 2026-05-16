@@ -115,7 +115,7 @@ export class CacheManager {
    * }
    * ```
    */
-  async get<T>(key: string): Promise<T | null> {
+  get<T>(key: string): T | null {
     const entry = this.cache.get(key);
     const now = Date.now();
 

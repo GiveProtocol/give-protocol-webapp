@@ -84,7 +84,7 @@ export const supabaseHelpers = {
   },
 
   // Database helpers
-  async handleError(error: Error | unknown, context: string) {
+  handleError(error: Error | unknown, context: string) {
     console.error(`Supabase error in ${context}:`, error);
     
     // Log to monitoring if available

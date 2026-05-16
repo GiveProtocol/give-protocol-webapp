@@ -9,30 +9,14 @@ const mockValue = {
   loading: false,
   error: null,
   userType: null,
-  login: async () => {
-    /* no-op mock for testing */
-  },
-  loginWithGoogle: async () => {
-    /* no-op mock for testing */
-  },
-  loginWithApple: async () => {
-    /* no-op mock for testing */
-  },
-  logout: async () => {
-    /* no-op mock for testing */
-  },
-  resetPassword: async () => {
-    /* no-op mock for testing */
-  },
-  refreshSession: async () => {
-    /* no-op mock for testing */
-  },
-  register: async () => {
-    /* no-op mock for testing */
-  },
-  sendUsernameReminder: async () => {
-    /* no-op mock for testing */
-  },
+  login: () => Promise.resolve(),
+  loginWithGoogle: () => Promise.resolve(),
+  loginWithApple: () => Promise.resolve(),
+  logout: () => Promise.resolve(),
+  resetPassword: () => Promise.resolve(),
+  refreshSession: () => Promise.resolve(),
+  register: () => Promise.resolve(),
+  sendUsernameReminder: () => Promise.resolve(),
 };
 
 const AuthContext = createContext(mockValue);

@@ -359,7 +359,7 @@ describe("PriceFeedService", () => {
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ "some-defi-token": { usd: 42 } }),
+        json: () => Promise.resolve({ "some-defi-token": { usd: 42 } }),
       } as Response);
 
       const prices = await service.getTokenPrices(
@@ -373,7 +373,7 @@ describe("PriceFeedService", () => {
     it("should use CoinGecko for non-USD currencies", async () => {
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ ethereum: { eur: 2300 } }),
+        json: () => Promise.resolve({ ethereum: { eur: 2300 } }),
       } as Response);
 
       const prices = await service.getTokenPrices(["ethereum"], "eur");
@@ -388,7 +388,7 @@ describe("PriceFeedService", () => {
 
       (global.fetch as jest.Mock).mockResolvedValueOnce({
         ok: true,
-        json: async () => ({ ethereum: { usd: 2500 } }),
+        json: () => Promise.resolve({ ethereum: { usd: 2500 } }),
       } as Response);
 
       const prices = await service.getTokenPrices(["ethereum"], "usd");

@@ -44,7 +44,7 @@ export function useCharity(charityAddress: string) {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const fetchCharityInfo = async () => {
+    const fetchCharityInfo = () => {
       if (!charityAddress) return;
 
       try {

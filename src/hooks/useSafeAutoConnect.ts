@@ -44,7 +44,7 @@ export function useSafeAutoConnect() {
 
     hasAttemptedRef.current = true;
 
-    const autoConnect = async () => {
+    const autoConnect = () => {
       try {
         Logger.info("Safe App context detected, auto-connecting...");
 

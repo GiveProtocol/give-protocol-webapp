@@ -153,12 +153,13 @@ export class EVMAdapter {
   /**
    * Disconnect from the provider
    */
-  async disconnect(): Promise<void> {
+  disconnect(): Promise<void> {
     this.ethersProvider = null;
     this.ethersSigner = null;
     this.currentChainId = null;
     this.connectedAddress = null;
     Logger.info("EVM adapter disconnected");
+    return Promise.resolve();
   }
 
   /**
