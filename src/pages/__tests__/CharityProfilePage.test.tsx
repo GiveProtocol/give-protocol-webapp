@@ -450,6 +450,41 @@ describe("CharityProfilePage", () => {
     });
   });
 
+  describe("EIN format handling", () => {
+    it("passes raw EIN to service functions without stripping hyphens", async () => {
+      const hyphenatedEin = "99-1230001";
+      render(
+        <MemoryRouter initialEntries={[`/charity/${hyphenatedEin}`]}>
+          <Routes>
+            <Route path="/charity/:ein" element={<CharityProfilePage />} />
+          </Routes>
+        </MemoryRouter>,
+      );
+      await waitFor(() => {
+        expect(mockGetProfile).toHaveBeenCalledWith("99-1230001");
+        expect(mockGetRecord).toHaveBeenCalledWith("99-1230001");
+      });
+    });
+
+    it("loads the profile for an EIN stored with hyphens", async () => {
+      const hyphenatedEin = "99-1230001";
+      render(
+        <MemoryRouter initialEntries={[`/charity/${hyphenatedEin}`]}>
+          <Routes>
+            <Route path="/charity/:ein" element={<CharityProfilePage />} />
+          </Routes>
+        </MemoryRouter>,
+      );
+      await waitFor(() => {
+        const matches = screen.getAllByText("Test Charity Foundation");
+        expect(matches.length).toBeGreaterThanOrEqual(1);
+      });
+      expect(
+        screen.queryByText(/couldn.t find a charity with this EIN/i),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   describe("Logo avatar", () => {
     it("renders logo image when logo_url is provided", async () => {
       const profileWithLogo: CharityProfile = {

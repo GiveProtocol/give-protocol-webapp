@@ -523,8 +523,8 @@ function CharityProfilePage() {
     }
 
     const [profileResult, irsResult] = await Promise.all([
-      getCharityProfileByEin(einDigits),
-      getCharityRecordByEin(einDigits),
+      getCharityProfileByEin(rawEin ?? ""),
+      getCharityRecordByEin(rawEin ?? ""),
     ]);
 
     if (irsResult) {
@@ -538,7 +538,7 @@ function CharityProfilePage() {
     }
 
     setLoading(false);
-  }, [rawEin, einDigits]);
+  }, [rawEin]);
 
   useEffect(() => {
     fetchData();
