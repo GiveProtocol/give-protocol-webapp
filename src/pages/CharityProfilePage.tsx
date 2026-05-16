@@ -516,6 +516,11 @@ function CharityProfilePage() {
 
   // Fetch both profile and IRS record in parallel
   const fetchData = useCallback(async () => {
+    setLoading(true);
+    setNotFound(false);
+    setProfile(null);
+    setCharityRecord(null);
+
     if (!rawEin) {
       setNotFound(true);
       setLoading(false);
