@@ -344,16 +344,11 @@ export async function repairClaimedBy(
   email?: string | null,
 ): Promise<void> {
   try {
-    const updateFields: Record<string, string> = { claimed_by: userId };
-    if (email) {
-      updateFields.authorized_signer_email = email;
-    }
-
-    const { error } = await supabase
-      .from("charity_profiles")
-      .update(updateFields)
-      .eq("ein", ein)
-      .is("claimed_by", null);
+    const { error } = await supabase.rpc("repair_claimed_by", {
+      p_ein: ein,
+      p_user: userId,
+      p_email: email ?? null,
+    });
 
     if (error) {
       Logger.warn("Self-repair claimed_by failed", { error, ein, userId });
