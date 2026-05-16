@@ -257,6 +257,26 @@ describe("charityDataService", () => {
 
       expect(result).toBe(true);
     });
+
+    it("should return true when contactEmail is provided", async () => {
+      setMockResult("charity_requests", { data: null, error: null });
+
+      const result = await submitCharityRequest(
+        "123456789",
+        "user-uuid-1",
+        "contact@org.org",
+      );
+
+      expect(result).toBe(true);
+    });
+
+    it("should return true when contactEmail is omitted (backward compatibility)", async () => {
+      setMockResult("charity_requests", { data: null, error: null });
+
+      const result = await submitCharityRequest("123456789", "user-uuid-1");
+
+      expect(result).toBe(true);
+    });
   });
 
   describe("hasUserRequestedCharity", () => {
