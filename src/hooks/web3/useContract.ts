@@ -52,7 +52,7 @@ export function useContract(
 
       try {
         address = getContractAddress(contractName, chainId);
-      } catch (err) {
+      } catch (_err) {
         // Use development address if contract address is not found
         Logger.warn("Using development contract address", { contractType });
         // skipcq: SCT-A000 - These are placeholder development Ethereum addresses, not real secrets
