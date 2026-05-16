@@ -473,7 +473,10 @@ export const OrganizationProfileForm: React.FC<
           />
           <Input
             variant="enhanced"
-            label={t("organization.professionalNetwork", "Professional Network")}
+            label={t(
+              "organization.professionalNetwork",
+              "Professional Network",
+            )}
             value={formData.linkedin}
             onChange={handleLinkedinChange}
             error={errors.linkedin}
@@ -489,7 +492,10 @@ export const OrganizationProfileForm: React.FC<
           />
           <Input
             variant="enhanced"
-            label={t("organization.alternativeRegional", "Alternative & Regional")}
+            label={t(
+              "organization.alternativeRegional",
+              "Alternative & Regional",
+            )}
             value={formData.instagram}
             onChange={handleInstagramChange}
             error={errors.instagram}
