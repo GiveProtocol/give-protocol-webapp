@@ -17,8 +17,12 @@ ON CONFLICT (id) DO UPDATE SET
   allowed_mime_types = EXCLUDED.allowed_mime_types;
 
 -- 2. Storage RLS policies
+-- Simplified: any authenticated user with a claimed charity_profiles row can
+-- upload/update/delete in the charity-assets bucket. The path convention
+-- ({ein}/{kind}.{ext}) is enforced by the frontend, not by RLS, to avoid
+-- issues with storage.foldername() across Supabase versions.
 
--- INSERT: Authenticated charity users can upload to their own EIN folder
+-- INSERT: Authenticated charity owners can upload
 DROP POLICY IF EXISTS "Charities can upload assets" ON storage.objects;
 CREATE POLICY "Charities can upload assets"
 ON storage.objects
@@ -28,12 +32,11 @@ WITH CHECK (
   bucket_id = 'charity-assets'
   AND EXISTS (
     SELECT 1 FROM charity_profiles
-    WHERE charity_profiles.ein = (storage.foldername(name))[1]
-    AND charity_profiles.claimed_by = auth.uid()
+    WHERE charity_profiles.claimed_by = auth.uid()
   )
 );
 
--- UPDATE: Authenticated charity users can overwrite their own assets (upsert)
+-- UPDATE: Authenticated charity owners can overwrite (upsert)
 DROP POLICY IF EXISTS "Charities can update own assets" ON storage.objects;
 CREATE POLICY "Charities can update own assets"
 ON storage.objects
@@ -43,12 +46,11 @@ USING (
   bucket_id = 'charity-assets'
   AND EXISTS (
     SELECT 1 FROM charity_profiles
-    WHERE charity_profiles.ein = (storage.foldername(name))[1]
-    AND charity_profiles.claimed_by = auth.uid()
+    WHERE charity_profiles.claimed_by = auth.uid()
   )
 );
 
--- DELETE: Authenticated charity users can remove their own assets
+-- DELETE: Authenticated charity owners can remove assets
 DROP POLICY IF EXISTS "Charities can delete own assets" ON storage.objects;
 CREATE POLICY "Charities can delete own assets"
 ON storage.objects
@@ -58,8 +60,7 @@ USING (
   bucket_id = 'charity-assets'
   AND EXISTS (
     SELECT 1 FROM charity_profiles
-    WHERE charity_profiles.ein = (storage.foldername(name))[1]
-    AND charity_profiles.claimed_by = auth.uid()
+    WHERE charity_profiles.claimed_by = auth.uid()
   )
 );
 

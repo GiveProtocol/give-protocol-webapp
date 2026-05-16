@@ -77,8 +77,12 @@ export const LogoBannerUploadCard: React.FC<LogoBannerUploadCardProps> = ({
         .upload(path, file, { cacheControl: "3600", upsert: true });
 
       if (error) {
-        Logger.error("Logo/banner upload failed", { error, ein, kind });
-        showToast("error", "Upload failed", "Please try again.");
+        Logger.error("Logo/banner upload failed", { error, ein, kind, path });
+        showToast(
+          "error",
+          "Upload failed",
+          error.message || "Please try again.",
+        );
         return;
       }
 
