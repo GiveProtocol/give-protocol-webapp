@@ -15,7 +15,9 @@ import { createSafeProvider, isInSafeAppContext } from "@/lib/wallets";
 function handleConnectResult(promise: Promise<void>): void {
   promise
     .then(() => Logger.info("Successfully auto-connected to Safe"))
-    .catch((err: unknown) => Logger.error("Failed to auto-connect to Safe", { error: err }));
+    .catch((err: unknown) =>
+      Logger.error("Failed to auto-connect to Safe", { error: err }),
+    );
 }
 
 /**
@@ -50,7 +52,9 @@ export function useSafeAutoConnect() {
 
         const safeProvider = createSafeProvider();
         if (!safeProvider) {
-          Logger.warn("Could not create Safe provider despite being in Safe context");
+          Logger.warn(
+            "Could not create Safe provider despite being in Safe context",
+          );
           return;
         }
 

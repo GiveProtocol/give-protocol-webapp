@@ -14,8 +14,14 @@ jest.mock("@/utils/logger", () => ({
 
 // Spy on the real chainlinkPriceFeedService singleton (avoids ESM module mock issues)
 const mockGetPrice = jest.spyOn(chainlinkPriceFeedService, "getPrice");
-const mockGetPricesByCoingeckoIds = jest.spyOn(chainlinkPriceFeedService, "getPricesByCoingeckoIds");
-const mockChainlinkClearCache = jest.spyOn(chainlinkPriceFeedService, "clearCache");
+const mockGetPricesByCoingeckoIds = jest.spyOn(
+  chainlinkPriceFeedService,
+  "getPricesByCoingeckoIds",
+);
+const mockChainlinkClearCache = jest.spyOn(
+  chainlinkPriceFeedService,
+  "clearCache",
+);
 
 // Mock global fetch
 global.fetch = jest.fn() as jest.Mock;
@@ -327,7 +333,12 @@ describe("PriceFeedService", () => {
 
   describe("getChainlinkUsdPrice", () => {
     it("should return price from Chainlink for a known token", async () => {
-      mockGetPrice.mockResolvedValueOnce({ price: 2500, symbol: "ETH", updatedAt: 0, isValid: true });
+      mockGetPrice.mockResolvedValueOnce({
+        price: 2500,
+        symbol: "ETH",
+        updatedAt: 0,
+        isValid: true,
+      });
 
       const price = await service.getChainlinkUsdPrice("ETH");
 
