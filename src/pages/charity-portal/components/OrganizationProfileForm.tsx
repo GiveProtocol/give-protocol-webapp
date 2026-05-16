@@ -465,35 +465,41 @@ export const OrganizationProfileForm: React.FC<
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             variant="enhanced"
-            label={t("organization.twitter", "Twitter/X")}
+            label={t("organization.publicFeed", "Public Feed")}
             value={formData.twitter}
             onChange={handleTwitterChange}
             error={errors.twitter}
-            placeholder="https://twitter.com/organization"
+            placeholder="https://x.com/org, https://bsky.app/profile/org, or Mastodon URL..."
           />
           <Input
             variant="enhanced"
-            label={t("organization.facebook", "Facebook")}
-            value={formData.facebook}
-            onChange={handleFacebookChange}
-            error={errors.facebook}
-            placeholder="https://facebook.com/organization"
-          />
-          <Input
-            variant="enhanced"
-            label={t("organization.linkedin", "LinkedIn")}
+            label={t(
+              "organization.professionalNetwork",
+              "Professional Network",
+            )}
             value={formData.linkedin}
             onChange={handleLinkedinChange}
             error={errors.linkedin}
-            placeholder="https://linkedin.com/company/organization"
+            placeholder="https://linkedin.com/company/organization-name..."
           />
           <Input
             variant="enhanced"
-            label={t("organization.instagram", "Instagram")}
+            label={t("organization.communityMedia", "Community & Media")}
+            value={formData.facebook}
+            onChange={handleFacebookChange}
+            error={errors.facebook}
+            placeholder="https://instagram.com/org, facebook.com/org, or youtube.com/..."
+          />
+          <Input
+            variant="enhanced"
+            label={t(
+              "organization.alternativeRegional",
+              "Alternative & Regional",
+            )}
             value={formData.instagram}
             onChange={handleInstagramChange}
             error={errors.instagram}
-            placeholder="https://instagram.com/organization"
+            placeholder="e.g., Sina Weibo, Discord, GitHub, Linktree, or Blog URL..."
           />
         </div>
       </section>
