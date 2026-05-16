@@ -106,6 +106,11 @@ export class CSRFProtection {
     return this.token;
   }
 
+  /**
+   * Validates a received CSRF token against the stored token.
+   * @param token - The CSRF token to validate, typically received from a request header.
+   * @returns A promise that resolves to `true` if the token matches the stored token, or `false` if either token is missing or the values do not match.
+   */
   async validate(token: string): Promise<boolean> {
     if (!this.token || !token) {
       return false;
@@ -115,6 +120,12 @@ export class CSRFProtection {
     return await this.timingSafeEqual(token, this.token);
   }
 
+  /**
+   * Compares two strings in constant time to prevent timing attacks during token validation.
+   * @param a - The first string to compare.
+   * @param b - The second string to compare.
+   * @returns A promise that resolves to `true` if both strings have the same length and contents, otherwise `false`.
+   */
   private async timingSafeEqual(a: string, b: string): Promise<boolean> {
     this.validationAttempts++;
 
