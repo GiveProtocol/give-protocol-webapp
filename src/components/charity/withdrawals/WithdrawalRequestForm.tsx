@@ -41,7 +41,7 @@ const WithdrawalRequestForm: React.FC<WithdrawalRequestFormProps> = ({
         await onSubmit(numAmount);
         setAmount("");
         setValidationError("");
-      } catch (err) {
+      } catch (_err) {
         // Error handling is done by parent component
       }
     },

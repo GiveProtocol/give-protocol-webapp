@@ -53,7 +53,7 @@ export function useTransactionTracking() {
 
       if (error) throw error;
       setTransactions(data);
-    } catch (error) {
+    } catch (_error) {
       showToast("error", "Failed to fetch transactions");
     } finally {
       setLoading(false);
