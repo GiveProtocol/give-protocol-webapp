@@ -279,7 +279,7 @@ describe("CacheManager", () => {
       cache.set("number", 42);
       cache.set("boolean", true);
       cache.set("null", null);
-      const undef: undefined = void 0;
+      const undef = void 0;
       cache.set("undefined", undef);
       cache.set("object", { nested: { value: "test" } });
       cache.set("array", [1, 2, 3, { nested: "array" }]);
